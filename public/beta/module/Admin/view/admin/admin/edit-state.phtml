@@ -1,0 +1,81 @@
+<div class="sidebar">
+    <div class="side-panel" id="collapsibleNavbar">
+        <?php echo $this->partial('/application/index/left-menu', array(
+            'activeTab'=>\Application\Constants\Constants::State_Page
+
+        )); ?>
+    </div>
+</div>
+<link rel="stylesheet" href="<?php echo $this->basePath()?>/css/main.css">
+<script src="<?php echo $this->basePath()?>/js/radialIndicator.min.js"></script>
+<script src="<?php echo $this->basePath(); ?>/js/admin/edit-state.js?v=1"></script>
+<div class="wrapper">
+    <div class="main-panel ">
+        <?php echo $this->partial("/application/index/app-header"); ?>
+
+        <div class="main-container p-lg-4">
+            <div class="main-heading mb-3"><a href="<?php echo $this->basePath().'/a_dMin/state-list'?>"><i class="fa fa-arrow-left mr-2"></i></a> Edit State</div>
+
+            <div class="row">
+                <div class="col-12 col-lg-10">
+            <div class="row adding-form">
+                <div class="col-12 col-md-6 pt-md-5 mb-4 mt-n1">
+                    <div class="row">
+                    <div class="col-12">
+                        <label class="text-black-50">State</label>
+                        <input type="text" class="form-control" id="state" value="<?php echo $stateDetails['state_name']; ?>"/>
+                    </div>
+                    <div class="col-12">
+                        <label class="text-black-50">Description</label>
+                        <textarea class="form-control" id="description">
+                            <?php echo $stateDetails['state_description']; ?>
+                        </textarea>
+                    </div>
+                    <div class="col-12">
+                        <label class="text-black-50">Image Files</label>
+                        <div class="position-relative w-100 image-upload-wrapper">
+                            <input type="file" class="image-upload" name="image-file" multiple title=" ">
+                            <span class="position-absolute upload_btn"><img class="w-100" src="<?php echo $this->basePath();?>/img/upload-img.svg"> </span>
+                        </div>
+                    </div>
+                        <div class="col-12">
+                            
+                                <div class="image-preview-wrapper row">
+                                    <?php foreach($imageFiles as $image) { ?>
+                                        <div class="col-sm-4 mt-2 position-relative image-preview overflow-hidden" data-id="<?php echo $image['tourism_file_id']; ?>">
+                                            <img src="<?php echo $imageUrl.$image['file_path']; ?>" style="width: 100%;height: 100%">
+                                            <span class="bg-white circle close-icon" data-id="<?php echo $image['tourism_file_id']; ?>" data-edit="1">
+                                                <i class="fas fa-times position-absolute " data-id="<?php echo $image['tourism_file_id']; ?>"  data-edit="1"></i></span>
+                                        </div>
+
+                                    <?php } ?>
+                                </div>
+
+                        </div>
+                    </div>
+
+
+                    <div class="mt-3">
+                        <div class="row">
+                        <div> <button type="button" class="btn submit-btn" id="addPlace">Submit </button> </div>
+                    </div>
+                    </div>
+
+                </div>
+                <div class="col-12 col-md-6">
+                    <div class="text-capitalize heading mb-3">Audio</div>
+                    <div class="" id="file-upload-wrapper">
+                        <?php echo $this->partial("/admin/admin/file-upload-row",array('languages'=>$languages,'audioFiles'=>$audioFiles,'numberOfrows'=>0,"rowNumber"=>1)); ?>
+
+                    </div>
+                    <div class="row mt-3"><div class="col-sm-12 text-right"> <a  class="add-control"><i class="fas fa-plus-circle"></i>Add Audio</a></div></div>
+                </div>
+
+
+                <input type="hidden" value="<?php echo $stateDetails['state_id']; ?>" id="stateId">
+
+            </div>
+                </div>
+            </div>
+        </div>
+    </div>

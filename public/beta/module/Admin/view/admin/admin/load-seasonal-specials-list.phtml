@@ -1,0 +1,68 @@
+<?php if(isset($type) && $type =='initialize') { ?>
+    <div class="table-responsive">
+    <table class="table table-bordered table-hover table-striped" id="table">
+    <thead>
+    <tr>
+        <th>S.no</th>
+        <!-- <th data-placeholder="booking id" data-input="booking_id">booking id</th>
+         <th data-placeholder="booking data" data-input="booking_date">booking Date</th>
+         <th data-placeholder="tour type" data-input="tour_type">tour type</th>
+         <th data-placeholder="amount" data-input="amount">amount</th>
+         <th data-placeholder="booked by" data-input="user">booked by</th>
+         <th data-placeholder="activation date" data-input="activation_date">Activation Date</th>
+         <th data-placeholder="expiry date" data-input="expiry_date">Expiry Date</th>
+         <th data-placeholder="Members Count" data-input="members_count">Members Count</th>-->
+        <th data-placeholder="Festival Tour Name" data-input="seasonal_name">Festival Tour Name</th>
+        <th class="text-capitalize">Festival Tour type</th>
+        <!-- <th data-placeholder="start date" data-input="start_date">start date</th>
+        <th data-placeholder="end date" data-input="end_date">end date</th>
+        <th data-placeholder="price" data-input="price">price</th>
+        <th data-placeholder="discount price" data-input="discount_price">Discount price</th> -->
+        <th >Actions</th>
+    </tr>
+<?php } ?>
+
+<?php if(isset($type) && ($type =='initialize' || $type=="search") ) {?>
+    <input type="hidden" class="records" value="<?php echo $totalCount; ?>">
+    <tbody>
+<?php } ?>
+<?php if(count($seasonalSpecials))
+     {
+
+    $i=0;
+    if(isset($offset))
+    {
+        $i=$offset;
+    }
+
+    foreach ($seasonalSpecials as $packages)  { ?>
+        <tr class="position-relative">
+            <td><?php echo $i+1; ?></td>
+            <td ><?php echo $packages['seasonal_name']; ?></td>
+            <td ><?php echo \Admin\Model\SeasonalSpecials::seasonal_type[$packages['seasonal_type']]; ?></td>
+            <!-- <td class="text-capitalize "><?php //echo date("d-m-Y",strtotime($packages['start_date'])); ?></td>
+            <td class="text-capitalize "><?php //echo date("d-m-Y",strtotime($packages['end_date'])); ?></td>
+            <td class=""><?php //echo isset($packages['price'])?$packages['price']:0; ?></td>
+            <td class=""><?php //echo isset($packages['discount_price'])?$packages['discount_price']:0; ?></td> -->
+            <td><div class="d-flex">
+                    <a class="action-icon " href="<?php echo $this->basePath().'/a_dMin/edit-seasonal-special/'.base64_encode('tourismSpecialId='.$packages['seasonal_special_id'])?>" >
+                        <img src="<?php echo $this->basePath();?>/img/edit.png" class="img-fluid">
+                    </a>
+                    <div class="action-icon delete-place" data-id="<?php echo $packages['seasonal_special_id']; ?>">
+                        <img src="<?php echo $this->basePath();?>/img/delete.png" class="img-fluid" >
+                    </div>
+                </div></td>
+        </tr>
+        <?php $i++; }
+     } else { ?>
+    <tr ><td class="text-center" colspan="9">No data</td></tr>
+<?php  } ?>
+<?php if(isset($type) && ($type =='initialize' || $type=="search") ) {?>
+
+    </tbody>
+<?php } ?>
+<?php if(isset($type) && $type =='initialize') {?>
+
+    </table>
+    </div>
+<?php } ?>

@@ -1,0 +1,41 @@
+
+<div class="sidebar">
+    <div class="side-panel" id="collapsibleNavbar">
+        <?php echo $this->partial('/application/index/left-menu', array(
+            'activeTab'=>\Application\Constants\Constants::Subscriber_Count
+        )); ?>
+    </div>
+</div>
+<link rel="stylesheet" href="<?php echo $this->basePath()?>/css/main.css">
+
+
+
+<div class="wrapper">
+    <div class="main-panel ">
+        <?php echo $this->partial("/application/index/app-header"); ?>
+        <div class="main-container p-4" >
+            <div class="main-heading mb-3">Show/Hide Subscriber Count</div>
+            <div class="row adding-form1">
+                <div class="col-12 col-sm-12 col-md-4"">
+                <div class="row mt-3 align-items-center">
+                    <div class="col-8">Total subscriber count: </div>
+                    <div class="col-4 text-center"><?php echo $count;?></div>
+                </div>
+                <div class="row mt-3 align-items-center">
+                    <div class="col-8">Show subscriber count on splash screen</div>
+                    <div class="col-4 text-center">
+                        <input type="checkbox" id="ssc" name="ssc" value="0" <?php echo $ssc == "1" ? "checked" : "" ;?>>
+                    </div>
+                </div>
+            </div>
+
+    </div>
+    <div class="row mt-3">
+        <div class="col-8 text-center"> <button type="button" class="btn submit-btn" id="btnChange">Submit</button></div>
+    </div>
+
+</div>
+</div>
+</div>
+<script src="<?php echo $this->basePath().'/js/admin/edit-ssc.js?v=1';?>"></script>
+

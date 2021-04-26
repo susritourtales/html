@@ -1,0 +1,128 @@
+<div class="sidebar">
+    <div class="side-panel" id="collapsibleNavbar">
+        <?php echo $this->partial('/application/index/left-menu', array(
+            'activeTab'=>\Application\Constants\Constants::Seasonal_specials_list,
+            'mainActiveTab'=>\Application\Constants\Constants::Tour_Page
+
+        )); ?>
+    </div>
+</div>
+<link rel="stylesheet" href="<?php echo $this->basePath()?>/css/vendor/sol.css">
+<link rel="stylesheet" href="<?php echo $this->basePath(); ?>/css/vendor/bootstrap-datetimepicker.min.css"/>
+
+<link rel="stylesheet" href="<?php echo $this->basePath()?>/css/main.css">
+<script src="<?php echo $this->basePath(); ?>/js/vendor/sol.js"></script>
+<script type="text/javascript" src="<?php echo $this->basePath(); ?>/js/vendor/moment.min.js"></script>
+<script type="text/javascript" src="<?php echo $this->basePath(); ?>/js/vendor/bootstrap-datetimepicker.min.js"></script>
+<script src="<?php echo $this->basePath(); ?>/js/admin/add-seasonal-specials.js"></script>
+
+<div class="wrapper">
+    <div class="main-panel ">
+        <?php echo $this->partial("/application/index/app-header"); ?>
+
+        <div class="main-container p-lg-4">
+            <div class="main-heading mb-3"><a href="<?php echo $this->basePath().'/a_dMin/seasonal-specials-list'?>"><i class="fa fa-arrow-left mr-2"></i></a> Add Festival Tour </div>
+
+            <div class="row">
+                <div class="col-12 col-lg-10">
+            <div class="row adding-form">
+                <div class="col-12 col-md-6 pt-md-5 mb-4 mt-n1">
+
+                    <div class="row">
+                        <div class="col-12"><label class="text-black-50 text-capitalize">Festival Tour name</label>
+                            <input type="text" class="form-control" id="season_name"/>
+                        </div>
+                        <!-- <div class="col-12"><label class="text-black-50">Season Start Date</label>
+                            <input type="text" class="form-control" id="season_start_date"/>
+                        </div>
+                        <div class="col-12"><label class="text-black-50">Season end date</label>
+                            <input type="text" class="form-control" id="season_end_date"/>
+                        </div>
+                        <div class="col-12"><label class="text-black-50">No of Days</label>
+                            <input type="text" class="form-control" id="no_of_days"/>
+                        </div> -->
+                        <div class="col-12">
+                            <label class="text-black-50">Description</label>
+                            <textarea class="form-control" id="description"></textarea>
+                        </div>
+                        <div class="col-12">
+                            <label class="text-black-50">Upload</label>
+                            <div class="upload-div position-relative">
+                                <input type="file" class="upload-file"  accept="image/*">
+                                <span class="position-absolute file_name" ></span>
+                                <span class="position-absolute upload_btn"><img class="w-100" src="<?php echo $this->basePath();?>/img/upload-img.svg"> </span>
+                            </div>
+                        </div>
+
+                       <!--  <div class="col-12"><label class="text-black-50">Pricing</label>
+                            <input type="text" class="form-control price" id="price"/>
+                        </div>
+                        <div class="col-12"><label class="text-black-50">Discounted Price</label>
+                            <input type="text" class="form-control price" id="discounted_price"/>
+                        </div> -->
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 mb-4">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label class="text-black-50 heading">Select Festival Tour type</label>
+                                <div class="d-flex mt-2">
+                                    <div class="mr-3">
+                                        <label class="radio-custom position-relative mb-0 pointer" for="worldtour">
+                                            <input type="radio" id="worldtour" name="tourtype" checked value="2">
+                                            <span class="checkmark"></span>
+                                            <span>WT</span>
+                                        </label>
+                                    </div>
+                                    <div class="d-inline-block">
+                                        <label class="radio-custom position-relative mb-0 pointer" for="indiatour">
+                                            <input type="radio" id="indiatour" name="tourtype" value="1">
+                                            <span class="checkmark"></span>
+                                            <span>IT </span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="text-black-50">Places</label>
+                                <div class="border rounded p-3 custom-checkbox-list d-none">
+                                    <ul class="list-unstyled m-0">
+                                        <?php if(count($placesList)) {  foreach ($placesList as $place) { ?>
+                                            <li class="mb-3">
+                                                <label class="checkbox-custom position-relative mb-0 pointer" for="<?php echo $place['place_price_id']; ?>">
+                                                    <input type="checkbox" id="<?php echo $place['place_price_id']; ?>" name="places" value="<?php echo $place['tourism_place_id']; ?>">
+                                                    <span class="checkmark"></span>
+                                                    <span class="text-capitalize"><?php echo $place['place_name']; ?>, <?php echo $place['city_name']; ?>, <?php echo $place['country_name']; ?></span>
+                                                </label>
+                                            </li>
+                                        <?php } } ?>
+                                    </ul>
+
+                                </div>
+                                <div class="position-relative">
+                                    <select id="places_list" name="select" multiple>
+                                        <?php if(count($placesList)) {  foreach ($placesList as $place) { ?>
+                                            <option value="<?php echo $place['tourism_place_id']; ?>"><?php echo $place['place_name']; ?>, <?php echo $place['city_name']; ?>, <?php echo $place['country_name']; ?></option>
+                                        <?php } } ?>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="image-preview-wrapper">
+                    </div>
+                    </div>
+                </div>
+            </div>
+                </div>
+            </div>
+
+
+            <div class="mt-2">
+                <div class="row">
+                <div class="col-sm-12 text-left"> <button type="button" class="btn submit-btn" id="addSeason">Submit</button></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

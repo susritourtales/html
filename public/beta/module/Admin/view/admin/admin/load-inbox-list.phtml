@@ -1,0 +1,86 @@
+<?php if(isset($type) && $type =='initialize') { ?>
+
+<table class="table table-bordered table-hover table-striped" id="table">
+    <thead>
+    <tr>
+        <th>
+            S.No.
+        </th>
+        <th data-placeholder="User Name" data-input="user_name">
+            User name
+        </th>
+        <th data-placeholder="Received date" data-input="received_date">
+            Received date
+        </th>
+        <th data-placeholder="Message" data-input="message">
+            Message
+        </th>
+        <th>
+            Actions
+        </th>
+    </tr>
+    </thead>
+    <?php } ?>
+
+    <?php if(isset($type) && ($type =='initialize' || $type=="search") ) {
+
+    ?>
+    <input type="hidden" class="records" value="<?php echo $totalCount; ?>">
+    <tbody>
+    <?php } ?>
+    <?php if(count($inboxList))
+    {
+    $i=0;
+    if(isset($offset))
+    {
+        $i=$offset;
+    }
+
+    foreach ($inboxList as $inbox)
+    { ?>
+
+    <tr>
+        <td>
+            <div>
+                <?php echo $i+1; ?>
+            </div>
+        </td>
+        <td>
+            <div class="text-capitalize">
+                <?php echo $inbox['user_name']; ?>
+            </div>
+        </td>
+        <td>
+            <div>
+                <?php echo date("Y-m-d H:i",strtotime($inbox['created_at'])); ?>
+            </div>
+        </td>
+        <td>
+            <div>
+                <?php echo $inbox['message']; ?>
+            </div>
+        </td>
+        <td>
+            <div class="d-flex">
+                <div class="action-icon pointer reply-message"  data-id="<?php echo $inbox['inbox_id']?>">
+                    <i class="fas fa-reply color-444"></i>
+                </div>
+               <!-- <div class="action-icon delete-place" data-id="<?php /*echo $inbox['inbox_id']*/?>">
+                    <img src="<?php /*echo $this->basePath(); */?>/img/delete.png" class="img-fluid">
+                </div>-->
+            </div>
+        </td>
+    </tr>
+        <?php $i++; }
+    } else
+    { ?>
+        <tr ><td class="text-center" colspan="7">No data</td></tr>
+    <?php  } ?>
+    <?php if(isset($type) && ($type =='initialize' || $type=="search") ) {?>
+
+    </tbody>
+<?php } ?>
+    <?php if(isset($type) && $type =='initialize') {?>
+
+</table>
+<?php } ?>

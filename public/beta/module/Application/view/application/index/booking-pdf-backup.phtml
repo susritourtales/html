@@ -1,0 +1,728 @@
+<?php
+
+$tbody='';
+$discountPrice="";
+if($data['discount_percentage'])
+{
+    $discountPrice='<table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                            <tbody><tr>
+                                                                <td height="5"> </td>
+                                                            </tr>
+
+                                                            <tr>
+                                                                <td style="color:#4f4f4f;font-family:Verdana, Arial, sans-serif;font-size:14px;line-height:20px">
+
+                                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                        <tbody><tr>
+                                                                            <td width="5%"> </td>
+                                                                            <td>
+                                                                                <table width="100%" border="0" cellspacing="0" cellpadding="0" style="border:1px solid #d6d6d6;border-radius:5px; box-shadow:0px 0px 4px 0px #cccccc;">
+                                                                                    <tbody><tr>
+                                                                                        <td>
+
+                                                                                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                                                <tbody><tr>
+                                                                                                    <td width="5%"> </td>
+                                                                                                    <td>
+                                                                                                <tr>
+                                                                                                    <td width="5%"> </td>
+                                                                                                    <td>
+                                                                                                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                                                            <tbody><tr>
+                                                                                                                <td height="20"> </td>
+                                                                                                            </tr>
+                                                                                                            <tr>
+                                                                                                                <td align="left" style="color:#000;font-family:Verdana, Arial, sans-serif;font-size:16px;line-height:22px;">Discount Price</td>
+                                                                                                                <td align="right" style="color:#000;font-family:Verdana, Arial, sans-serif;font-size:16px;line-height:22px;"> &#8377; '.round((($data['price']*$data['discount_percentage'])/100),2).'</td>
+
+                                                                                                            </tr>
+
+
+                                                                                                            <tr>
+                                                                                                                <td height="20"> </td>
+                                                                                                            </tr>
+                                                                                                            </tbody></table>
+                                                                                                    </td>
+                                                                                                    <td width="5%"> </td>
+                                                                                                </tr>
+                                                                                                </td>
+                                                                                                <td width="5%"> </td>
+                                                                                                </tr>
+                                                                                                </tbody></table>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    </tbody></table>
+                                                                            </td>
+                                                                            <td width="5%"> </td>
+                                                                        </tr>
+                                                                        </tbody></table>
+
+
+
+                                                                </td>
+                                                            </tr>
+
+                                                            <tr>
+                                                                <td height="10"> </td>
+                                                            </tr>
+                                                            </tbody></table>
+                                                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                            <tbody><tr>
+                                                                <td height="5"> </td>
+                                                            </tr>
+
+                                                            <tr>
+                                                                <td style="color:#4f4f4f;font-family:Verdana, Arial, sans-serif;font-size:14px;line-height:20px">
+
+                                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                        <tbody><tr>
+                                                                            <td width="5%"> </td>
+                                                                            <td>
+                                                                                <table width="100%" border="0" cellspacing="0" cellpadding="0" style="border:1px solid #d6d6d6;border-radius:5px; box-shadow:0px 0px 4px 0px #cccccc;">
+                                                                                    <tbody><tr>
+                                                                                        <td>
+
+                                                                                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                                                <tbody><tr>
+                                                                                                    <td width="5%"> </td>
+                                                                                                    <td>
+                                                                                                <tr>
+                                                                                                    <td width="5%"> </td>
+                                                                                                    <td>
+                                                                                                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                                                            <tbody><tr>
+                                                                                                                <td height="20"> </td>
+                                                                                                            </tr>
+                                                                                                            <tr>
+                                                                                                                <td align="left" style="color:#000;font-family:Verdana, Arial, sans-serif;font-size:16px;line-height:22px;">Paid Amount</td>
+                                                                                                                <td align="right" style="color:#000;font-family:Verdana, Arial, sans-serif;font-size:16px;line-height:22px;"> &#8377; '.round(($data['price']-((($data['price']*$data['discount_percentage'])/100))),2).'</td>
+
+                                                                                                            </tr>
+
+
+                                                                                                            <tr>
+                                                                                                                <td height="20"> </td>
+                                                                                                            </tr>
+                                                                                                            </tbody></table>
+                                                                                                    </td>
+                                                                                                    <td width="5%"> </td>
+                                                                                                </tr>
+                                                                                                </td>
+                                                                                                <td width="5%"> </td>
+                                                                                                </tr>
+                                                                                                </tbody></table>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    </tbody></table>
+                                                                            </td>
+                                                                            <td width="5%"> </td>
+                                                                        </tr>
+                                                                        </tbody></table>
+
+
+
+                                                                </td>
+                                                            </tr>
+
+                                                            <tr>
+                                                                <td height="10"> </td>
+                                                            </tr>
+                                                            </tbody></table>';
+}
+
+if (isset($data['place_details'])) {
+    foreach ($data['place_details'] as $place) {
+        $tbody .= '
+    <tr> 
+    <td style="color:#4862a8;font-family:Verdana, Arial, sans-serif;font-size:18px;line-height:26px; text-decoration: none;">' . $place["place_name"] . '</td>
+    </tr>
+    <tr>
+    <td style="color:#4f4f4f;font-family:Verdana, Arial, sans-serif;font-size:14px;line-height:18px">' . $place["city_name"] . ', ' . $place["country_name"] . ' </td> 
+    </tr>
+    ';
+    }
+}else if (isset($data['seasonal_special_details']))
+{
+    $tbody .= '
+    <tr>
+    <td style="color:#4f4f4f;font-family:Verdana, Arial, sans-serif;font-size:14px;line-height:18px">Seasonal Package  Name</td> 
+    </tr>
+    <tr> 
+    <td style="color:#4862a8;font-family:Verdana, Arial, sans-serif;font-size:18px;line-height:26px; text-decoration: none;">' . $data['seasonal_special_details']['seasonal_name'] . '</td>
+    </tr>
+    
+    ';
+}
+$tpasswordbody='';
+$i=0;
+foreach ($data['passwords'] as $password) {
+    $i++;
+    $tpasswordbody .= '
+     <tr>
+                                                                                                                <td style="color:#333;font-family:Verdana, Arial, sans-serif;font-size:14px;line-height:26px; text-decoration: none;">User '.$i.'</td>
+                                                                                                                <td style="color:#333;font-family:Verdana, Arial, sans-serif;font-size:14px;line-height:18px;text-align: right;">
+                                                                                                                   '.$password.'
+
+                                                                                                                </td>
+                                                                                                            </tr>
+    ';
+}
+echo   $tableHTml = '
+<!DOCTYPE html>
+<html lang="en" >
+
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<!--[if !mso]><!--><meta http-equiv="X-UA-Compatible" content="IE=edge">
+<!--<![endif]-->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title></title>
+<style type="text/css">
+    body{width:100% !important;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;margin:0;padding:0;}
+    * {-webkit-font-smoothing:antialiased}
+    .ExternalClass * {line-height:100%}
+    table td {border-collapse:collapse; max-width:100% !important; word-break:break-word; -webkit-hyphens:auto; -moz-hyphens:auto; hyphens:auto; overflow:auto; white-space:normal;}
+    .wlf {width:610px}
+    @media only screen and (max-width:610px) {
+        .full-width {width:100% !important}
+        .t-none {display:none}
+        .t-center-txt {text-align:center}
+        .t-width {width:100% !important;max-width:100% !important;display:table !important}
+    }
+</style>
+<div>
+    <table width="100%" border="0" cellspacing="0" cellpadding="0"><tbody><tr><td>
+        <!--[if mso]><table width="610" border="0" cellspacing="0" cellpadding="0" align="center"><tr><td><![endif]-->
+        <table class="wlf full-width" width="100%" border="0" cellspacing="0" cellpadding="0" align="center" style="margin:0 auto;max-width:610px">
+            <tbody><tr>
+                <td width="5" style="font-size:1px;line-height:1px"> </td>
+                <td>
+
+
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0" style="min-width:100%">
+                        <tbody><tr>
+                            <td width="1" bgcolor="#a1a6a8" style="font-size:1px;line-height:1px"></td>
+                            <td bgcolor="#ffffff">
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0" style="min-width:100%">
+                                    <tbody><tr>
+                                        <td width="5%" style="font-size:1px;line-height:1px"> </td>
+                                        <td>
+                                            <table width="100%" border="0" cellspacing="0" cellpadding="0" style="border-bottom:1px solid #e7e7e7;min-width:100%">
+                                                <tbody><tr>
+                                                    <td height="20"> </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <table width="100%" border="0" cellspacing="0" cellpadding="0" style="min-width:100%">
+                                                            <tbody><tr>
+                                                                <td style="font-size:0;text-align:center">
+                                                                    <table class="t-width" width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width:170px;display:inline-block;vertical-align:middle">
+                                                                        <tbody><tr>
+                                                                            <td height="10" style="font-size:1px;line-height:1px"> </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td align="center" style="width:330px;">
+                                                                                <a href="" target="_blank"><img src="'.$baseUrl.'/img/user/logo.png" width="330px" height="" alt="" style="display:block;border:none;"></a>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td height="10" style="font-size:1px;line-height:1px"> </td>
+                                                                        </tr>
+                                                                        </tbody></table>
+                                                                    <!--[if mso]></td><td width="360"><![endif]-->
+                                                                    <table class="t-width" width="100%" border="0" cellspacing="0" cellpadding="0" style="display:inline-block; vertical-align:middle; max-width:360px;">
+                                                                        <tbody><tr>
+                                                                            <td class="t-none" width="20"> </td>
+                                                                            <td>
+
+                                                                            </td>
+                                                                            <td class="t-none" width="20"> </td>
+                                                                        </tr>
+                                                                        </tbody></table>
+                                                                </td>
+                                                            </tr>
+                                                            </tbody></table>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td height="20"> </td>
+                                                </tr>
+                                                </tbody></table>
+
+                                            <table width="100%" border="0" cellspacing="0" cellpadding="0" style="min-width:100%">
+                                                <tbody><tr>
+                                                    <td height="20"> </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="color:#4f4f4f;font-family:Verdana, Arial, sans-serif;font-size:14px;line-height:20px">
+
+
+                                                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                            <tbody><tr>
+                                                                <td height="5"> </td>
+                                                            </tr>
+
+                                                            <tr>
+                                                                <td style="color:#4f4f4f;font-family:Verdana, Arial, sans-serif;font-size:14px;line-height:20px">
+
+                                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                        <tbody><tr>
+                                                                            <td width="5%"> </td>
+                                                                            <td>
+                                                                                <table width="100%" border="0" cellspacing="0" cellpadding="0" style="border:1px solid #d6d6d6;border-radius:5px; box-shadow:0px 0px 4px 0px #cccccc;">
+                                                                                    <tbody><tr>
+                                                                                        <td>
+                                                                                            <table width="100%" bgcolor="#4862a8" border="0" cellspacing="0" cellpadding="0" style="border-top-left-radius:5px;border-top-right-radius:5px;background-color:#4862a8;">
+                                                                                                <tbody><tr>
+                                                                                                    <td width="5%"> </td>
+                                                                                                    <td>
+                                                                                                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                                                            <tbody><tr>
+                                                                                                                <td height="20"> </td>
+                                                                                                            </tr>
+                                                                                                            <tr>
+                                                                                                                <td align="left" style="color:#ffffff;font-family:Verdana, Arial, sans-serif;font-size:16px;line-height:22px;">Booking : #'.$data["booking_id"].'</td>
+                                                                                                                <td align="right" style="color:#ffffff;font-family:Verdana, Arial, sans-serif;font-size:16px;line-height:22px;">Booking Date : '.date("Y-m-d",strtotime($data["created_at"])).'</td>
+
+                                                                                                            </tr>
+                                                                                                            <tr>
+                                                                                                                <td height="5" style="font-size:1px;line-height:1px"> </td>
+                                                                                                            </tr>
+                                                                                                            <tr>
+                                                                                                                <td align="left" style="color:#ffffff;font-family:Verdana, Arial, sans-serif;font-size:16px;line-height:20px;overflow:hidden;">Tales type : '.\Admin\Model\PlacePrices::tour_type[$data['tour_type']].'</td>
+                                                                                                                
+                                                                                                            </tr>
+                                                                                                            <tr>
+                                                                                                                <td height="20"> </td>
+                                                                                                            </tr>
+                                                                                                            </tbody></table>
+                                                                                                    </td>
+                                                                                                    <td width="5%"> </td>
+                                                                                                </tr>
+                                                                                                </tbody></table>
+                                                                                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                                                <tbody><tr>
+                                                                                                    <td width="5%"> </td>
+                                                                                                    <td>
+                                                                                                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                                                            <tbody><tr>
+                                                                                                                <td height="20"> </td>
+                                                                                                            </tr>'.$tbody.'
+                                                                                                                                    
+                                                                                                            <tr>
+                                                                                                                <td height="20"> </td>
+                                                                                                            </tr>
+                                                                                                            </tbody></table>
+                                                                                                    </td>
+                                                                                                    <td width="5%"> </td>
+                                                                                                </tr>
+                                                                                                </tbody></table>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    </tbody></table>
+                                                                            </td>
+                                                                            <td width="5%"> </td>
+                                                                        </tr>
+                                                                        </tbody></table>
+
+
+
+                                                                </td>
+                                                            </tr>
+
+                                                            <tr>
+                                                                <td height="10"> </td>
+                                                            </tr>
+                                                            </tbody></table>
+
+                                                        <!--Activation Date-->
+                                                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                            <tbody><tr>
+                                                                <td height="5"> </td>
+                                                            </tr>
+
+                                                            <tr>
+                                                                <td style="color:#4f4f4f;font-family:Verdana, Arial, sans-serif;font-size:14px;line-height:20px">
+
+                                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                        <tbody><tr>
+                                                                            <td width="5%"> </td>
+                                                                            <td>
+                                                                                <table width="100%" border="0" cellspacing="0" cellpadding="0" style="border:1px solid #d6d6d6;border-radius:5px; box-shadow:0px 0px 4px 0px #cccccc;">
+                                                                                    <tbody><tr>
+                                                                                        <td>
+
+                                                                                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                                                <tbody><tr>
+                                                                                                    <td width="5%"> </td>
+                                                                                                    <td>
+                                                                                                <tr>
+                                                                                                    <td width="5%"> </td>
+                                                                                                    <td>
+                                                                                                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                                                            <tbody><tr>
+                                                                                                                <td height="20"> </td>
+                                                                                                            </tr>
+                                                                                                            <tr>
+                                                                                                                <td height="20" style="color:#000;font-family:Verdana, Arial, sans-serif;font-size:16px;line-height:22px;font-weight: bold;">    Password Validity </td>
+                                                                                                            </tr>
+                                                                                                            <tr>
+                                                                                                                <td height="20"> </td>
+                                                                                                            </tr>
+                                                                                                            <tr>
+                                                                                                                <td align="left" > From</td>
+                                                                                                                <td align="right" > To</td>
+
+                                                                                                            </tr>
+                                                                                                            <tr>
+                                                                                                                <td height="5" style="font-size:1px;line-height:1px"> </td>
+                                                                                                            </tr>
+                                                                                                            <tr>
+                                                                                                                <td align="left" style="color:#333;font-family:Verdana, Arial, sans-serif;font-size:16px;line-height:20px;overflow:hidden;">'.date("d M Y",strtotime($data["tour_date"])).'</td>
+                                                                                                                <td align="right" style="color:#333;font-family:Verdana, Arial, sans-serif;font-size:16px;line-height:20px;overflow:hidden;">'.date("d M Y",strtotime($data["expiry_date"])).'</td>
+                                                                                                            </tr>
+                                                                                                            <tr>
+                                                                                                                <td height="20"> </td>
+                                                                                                            </tr>
+                                                                                                                     <tr><td>Expiry : '.$data["no_of_days"].' days from date of downloading</td></tr>
+                                                                                                                      <tr>
+                                                                                                                <td height="20"> </td>
+                                                                                                            </tr>
+                                                                                                            </tbody></table>
+                                                                                                    </td>
+                                                                                                    <td width="5%"> </td>
+                                                                                                </tr>
+                                                                                                    </td>
+                                                                                                    <td width="5%"> </td>
+                                                                                                </tr>
+                                                                                                </tbody></table>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    </tbody></table>
+                                                                            </td>
+                                                                            <td width="5%"> </td>
+                                                                        </tr>
+                                                                        </tbody></table>
+
+
+
+                                                                </td>
+                                                            </tr>
+
+                                                            <tr>
+                                                                <td height="10"> </td>
+                                                            </tr>
+                                                            </tbody></table>
+
+                                                        <!--No of Users-->
+                                                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                            <tbody><tr>
+                                                                <td height="5"> </td>
+                                                            </tr>
+
+                                                            <tr>
+                                                                <td style="color:#4f4f4f;font-family:Verdana, Arial, sans-serif;font-size:14px;line-height:20px">
+
+                                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                        <tbody><tr>
+                                                                            <td width="5%"> </td>
+                                                                            <td>
+                                                                                <table width="100%" border="0" cellspacing="0" cellpadding="0" style="border:1px solid #d6d6d6;border-radius:5px; box-shadow:0px 0px 4px 0px #cccccc;">
+                                                                                    <tbody><tr>
+                                                                                        <td>
+                                                                                            <table width="100%"  border="0" cellspacing="0" cellpadding="0" style="border-top-left-radius:5px;border-top-right-radius:5px;">
+                                                                                                <tbody><tr>
+                                                                                                    <td width="5%"> </td>
+                                                                                                    <td>
+                                                                                                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                                                            <tbody>
+                                                                                                            <tr>
+                                                                                                                <td height="20"> </td>
+                                                                                                            </tr>
+                                                                                                            <tr>
+                                                                                                                <td align="left" style="color:#333;font-family:Verdana, Arial, sans-serif;font-size:16px;line-height:22px;">No of Users : </td>
+                                                                                                                <td align="right" style="color:#333;font-family:Verdana, Arial, sans-serif;font-size:16px;line-height:22px;">'.$data['no_of_users'].'</td>
+
+                                                                                                            </tr>
+
+
+
+                                                                                                            </tbody></table>
+                                                                                                    </td>
+                                                                                                    <td width="5%"> </td>
+                                                                                                </tr>
+                                                                                                </tbody></table>
+                                                                                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                                                <tbody><tr>
+                                                                                                    <td width="5%"> </td>
+                                                                                                    <td>
+                                                                                                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                                                            <tbody><tr>
+                                                                                                                <td height="20"> </td>
+                                                                                                                  <tr>
+                                                                                                                <td align="left" style="color:#000;font-family:Verdana, Arial, sans-serif;font-size:16px;line-height:22px;font-weight: bold;">User Name</td>
+                                                                                                                <td align="right" style="color:#000;font-family:Verdana, Arial, sans-serif;font-size:16px;line-height:22px;font-weight: bold;">Password</td>
+                                                                                                            </tr>
+                                                                                                            </tr>'.$tpasswordbody.'<tr><td height="20"></td></tr>
+
+
+
+
+
+
+
+
+
+
+                                                                                                            </tbody></table>
+                                                                                                    </td>
+                                                                                                    <td width="5%"> </td>
+                                                                                                </tr>
+                                                                                                </tbody></table>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    </tbody></table>
+                                                                            </td>
+                                                                            <td width="5%"> </td>
+                                                                        </tr>
+                                                                        </tbody></table>
+
+
+
+                                                                </td>
+                                                            </tr>
+
+                                                            <tr>
+                                                                <td height="10"> </td>
+                                                            </tr>
+                                                            </tbody></table>
+
+                                                        <!--Price-->
+                                                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                            <tbody><tr>
+                                                                <td height="5"> </td>
+                                                            </tr>
+
+                                                            <tr>
+                                                                <td style="color:#4f4f4f;font-family:Verdana, Arial, sans-serif;font-size:14px;line-height:20px">
+
+                                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                        <tbody><tr>
+                                                                            <td width="5%"> </td>
+                                                                            <td>
+                                                                                <table width="100%" border="0" cellspacing="0" cellpadding="0" style="border:1px solid #d6d6d6;border-radius:5px; box-shadow:0px 0px 4px 0px #cccccc;">
+                                                                                    <tbody><tr>
+                                                                                        <td>
+
+                                                                                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                                                <tbody><tr>
+                                                                                                    <td width="5%"> </td>
+                                                                                                    <td>
+                                                                                                <tr>
+                                                                                                    <td width="5%"> </td>
+                                                                                                    <td>
+                                                                                                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                                                            <tbody><tr>
+                                                                                                                <td height="20"> </td>
+                                                                                                            </tr>
+                                                                                                            <tr>
+                                                                                                                <td align="left" style="color:#000;font-family:Verdana, Arial, sans-serif;font-size:16px;line-height:22px;">Price</td>
+                                                                                                                <td align="right" style="color:#000;font-family:Verdana, Arial, sans-serif;font-size:16px;line-height:22px;"> &#8377; '.(round(($data['price']-$data['tax']),2)).'</td>
+
+                                                                                                            </tr>
+
+
+                                                                                                            <tr>
+                                                                                                                <td height="20"> </td>
+                                                                                                            </tr>
+                                                                                                            </tbody></table>
+                                                                                                    </td>
+                                                                                                    <td width="5%"> </td>
+                                                                                                </tr>
+                                                                                                </td>
+                                                                                                <td width="5%"> </td>
+                                                                                                </tr>
+                                                                                                </tbody></table>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    </tbody></table>
+                                                                            </td>
+                                                                            <td width="5%"> </td>
+                                                                        </tr>
+                                                                        </tbody></table>
+
+
+
+                                                                </td>
+                                                            </tr>
+
+                                                            <tr>
+                                                                <td height="10"> </td>
+                                                            </tr>
+                                                            </tbody></table>
+
+                                                        <!--Tax-->
+                                                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                            <tbody><tr>
+                                                                <td height="5"> </td>
+                                                            </tr>
+
+                                                            <tr>
+                                                                <td style="color:#4f4f4f;font-family:Verdana, Arial, sans-serif;font-size:14px;line-height:20px">
+
+                                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                        <tbody><tr>
+                                                                            <td width="5%"> </td>
+                                                                            <td>
+                                                                                <table width="100%" border="0" cellspacing="0" cellpadding="0" style="border:1px solid #d6d6d6;border-radius:5px; box-shadow:0px 0px 4px 0px #cccccc;">
+                                                                                    <tbody><tr>
+                                                                                        <td>
+
+                                                                                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                                                <tbody><tr>
+                                                                                                    <td width="5%"> </td>
+                                                                                                    <td>
+                                                                                                <tr>
+                                                                                                    <td width="5%"> </td>
+                                                                                                    <td>
+                                                                                                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                                                            <tbody><tr>
+                                                                                                                <td height="20"> </td>
+                                                                                                            </tr>
+                                                                                                            <tr>
+                                                                                                                <td align="left" style="color:#000;font-family:Verdana, Arial, sans-serif;font-size:16px;line-height:22px;">Tax</td>
+                                                                                                                <td align="right" style="color:#000;font-family:Verdana, Arial, sans-serif;font-size:16px;line-height:22px;"> &#8377; '.round($data['tax'],2).'</td>
+
+                                                                                                            </tr>
+
+
+                                                                                                            <tr>
+                                                                                                                <td height="20"> </td>
+                                                                                                            </tr>
+                                                                                                            </tbody></table>
+                                                                                                    </td>
+                                                                                                    <td width="5%"> </td>
+                                                                                                </tr>
+                                                                                                </td>
+                                                                                                <td width="5%"> </td>
+                                                                                                </tr>
+                                                                                                </tbody></table>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    </tbody></table>
+                                                                            </td>
+                                                                            <td width="5%"> </td>
+                                                                        </tr>
+                                                                        </tbody></table>
+
+
+
+                                                                </td>
+                                                            </tr>
+
+                                                            <tr>
+                                                                <td height="10"> </td>
+                                                            </tr>
+                                                            </tbody></table> 
+                                                             
+                                                         
+
+                                                        <!--Total Price-->
+                                                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                            <tbody><tr>
+                                                                <td height="5"> </td>
+                                                            </tr>
+
+                                                            <tr>
+                                                                <td style="color:#4f4f4f;font-family:Verdana, Arial, sans-serif;font-size:14px;line-height:20px">
+
+                                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                        <tbody><tr>
+                                                                            <td width="5%"> </td>
+                                                                            <td>
+                                                                                <table width="100%" border="0" cellspacing="0" cellpadding="0" style="border:1px solid #d6d6d6;border-radius:5px; box-shadow:0px 0px 4px 0px #cccccc;">
+                                                                                    <tbody><tr>
+                                                                                        <td>
+
+                                                                                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                                                <tbody><tr>
+                                                                                                    <td width="5%"> </td>
+                                                                                                    <td>
+                                                                                                <tr>
+                                                                                                    <td width="5%"> </td>
+                                                                                                    <td>
+                                                                                                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                                                                            <tbody><tr>
+                                                                                                                <td height="20"> </td>
+                                                                                                            </tr>
+                                                                                                            <tr>
+                                                                                                                <td align="left" style="color:#000;font-family:Verdana, Arial, sans-serif;font-size:16px;line-height:22px;font-weight: bold;">Total Price</td>
+                                                                                                                <td align="right" style="color:#000;font-family:Verdana, Arial, sans-serif;font-size:16px;line-height:22px;font-weight: bold;"> &#8377; '.round($data['price'],2).'</td>
+
+                                                                                                            </tr>
+
+
+                                                                                                            <tr>
+                                                                                                                <td height="20"> </td>
+                                                                                                            </tr>
+                                                                                                            </tbody></table>
+                                                                                                    </td>
+                                                                                                    <td width="5%"> </td>
+                                                                                                </tr>
+                                                                                                </td>
+                                                                                                <td width="5%"> </td>
+                                                                                                </tr>
+                                                                                                </tbody></table>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    </tbody></table>
+                                                                            </td>
+                                                                            <td width="5%"> </td>
+                                                                        </tr>
+                                                                        </tbody></table>
+
+
+
+                                                                </td>
+                                                            </tr>
+
+                                                            <tr>
+                                                                <td height="10"> </td>
+                                                            </tr>
+                                                            </tbody></table>
+                                                                <!--Discount Price-->
+                                                       '.$discountPrice.'
+                                                            
+
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td height="5"> </td>
+                                                </tr>
+                                                </tbody></table>
+                                        </td>
+                                        <td width="5%" style="font-size:1px;line-height:1px"> </td>
+                                    </tr>
+                                    </tbody></table>
+                            </td>
+                            <td width="1" bgcolor="#a1a6a8" style="font-size:1px;line-height:1px"></td>
+                        </tr>
+                        </tbody></table>
+
+
+                </td>
+                <td width="5" style="font-size:1px;line-height:1px"> </td>
+            </tr>
+            </tbody></table>
+        <!--[if mso]></td></tr></table><![endif]-->
+    </td></tr></tbody></table>
+</div>
+</body>
+</html>';

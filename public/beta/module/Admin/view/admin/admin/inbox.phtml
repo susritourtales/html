@@ -1,0 +1,45 @@
+
+<div class="sidebar">
+    <div class="side-panel" id="collapsibleNavbar">
+        <?php
+        echo $this->partial('/application/index/left-menu', array(
+            'activeTab' => \Application\Constants\Constants::Indox
+        ));
+        ?>
+    </div>
+</div>
+<link rel="stylesheet" href="<?php echo $this->basePath() ?>/css/main.css">
+
+<div class="wrapper">
+    <div class="main-panel ">
+        <?php echo $this->partial("/application/index/app-header"); ?>
+
+        <div class="main-container p-lg-4" >
+            <div class="d-flex justify-content-between mb-4"> <div class="main-heading">inbox</div> </div>
+            <div class="" id="recordsList">
+                <div class="table-responsive">
+                    <?php echo $this->partial('/admin/admin/load-inbox-list', array('inboxList'=>$inboxList,'totalCount'=>$totalCount,'type'=>'initialize'
+                    )); ?>
+                </div>
+            </div>
+            <?php if($totalCount > 10)
+            {
+                $paginationCount = ceil($totalCount / 10); ?>
+                <ul class="pagination float-right" id="listPager"></ul>
+            <?php } ?>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="inboxpopupModal">
+    <div class="modal-dialog">
+        <div class="modal-content" id="inboxMessage">
+
+
+
+        </div>
+    </div>
+</div>
+
+<script src="<?php echo $this->basePath(); ?>/js/pagination.js"></script>
+<script src="<?php echo $this->basePath().'/js/admin/inbox-list.js'?>"></script>

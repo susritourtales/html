@@ -1,0 +1,282 @@
+
+<div class="sidebar">
+    <div class="side-panel" id="collapsibleNavbar">
+        <?php
+        echo $this->partial('/application/index/left-menu', array(
+            'activeTab' => \Application\Constants\Constants::Tour_operator_list
+        ));
+        ?>
+    </div>
+</div>
+<link rel="stylesheet" href="<?php echo $this->basePath() ?>/css/main.css">
+<div class="wrapper">
+    <div class="main-panel ">
+        <?php echo $this->partial("/application/index/app-header"); ?>
+
+        <div class="main-container p-lg-4" >
+            <div class="d-flex justify-content-between mb-4">
+                <div class="main-heading">
+                    <a href="<?php echo $this->basePath() . '/a_dMin/tour-operator-list'; ?>" class="text-dark"><img src="<?php echo $this->basePath(); ?>/img/left-arrow.svg" alt="back-arrow" class="img-fluid mr-2" width="24">
+                      Edit Tour Operator
+                    </a>
+                </div>
+            </div>
+            <div class="" id="recordsList">
+                <div class="row">
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 mb-4">
+                        <label class="text-capitalize avant-md">
+                            company details
+                        </label>
+                        <div class="border p-4">
+                            <div class="mb-4">
+                                <label class="text-capitalize avant-md">
+                                    company name
+                                </label>
+                                <div class="border-bottom pb-2 text-capitalize">
+                                    <?php echo $tourOperatorDetails[0]['company_name']; ?>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="text-capitalize avant-md">
+                                    company PAN number
+                                </label>
+                                <div class="border-bottom pb-2 text-uppercase">
+                                    <?php echo $tourOperatorDetails[0]['pan_number']; ?>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="text-capitalize avant-md">
+                                    company registration certificate
+                                </label>
+                                <div class="border-bottom pb-2 text-capitalize position-relative">
+                                    <div>
+                                        registration certificate
+                                    </div>
+                                    <div class="view-certificate">
+                                        <a href="<?php echo $fileUrl.$tourOperatorDetails[0]['registration_certificate']?>" target="_blank"> view certificate</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 mb-4">
+                        <label class="text-capitalize avant-md">
+                            company contact details
+                        </label>
+                        <div class="border p-4">
+                            <div class="">
+                                <div class="row">
+                                    <div class="col-12 col-sm-12 col-md-6 mb-4">
+                                        <label class="text-capitalize avant-md">
+                                            contact name
+                                        </label>
+                                        <div class="border-bottom pb-2 text-capitalize">
+                                            <?php echo $tourOperatorDetails[0]['contact_person']; ?>
+                                        </div>
+                                    </div>
+                                    <!-- <div class="col-12 col-sm-12 col-md-6 mb-4">
+                                        <label class="text-capitalize avant-md">
+                                            Designation
+                                        </label>
+                                        <div class="border-bottom pb-2 text-uppercase">
+                                            <?php /*echo $tourOperatorDetails[0]['contact_name']; */?>
+                                        </div>
+                                    </div>-->
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="text-capitalize avant-md">
+                                    mobile number
+                                </label>
+                                <div class="border-bottom pb-2 text-uppercase">
+                                    <?php echo $tourOperatorDetails[0]['mobile']; ?>
+                                </div>
+                            </div>
+                            <div class="">
+                                <label class="text-capitalize avant-md">
+                                    Email
+                                </label>
+                                <div class="border-bottom pb-2 text-lowercase">
+                                    <?php echo $tourOperatorDetails[0]['email_id']; ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 mb-4">
+                        <label class="text-capitalize avant-md">
+                            STT coordinator 1
+                        </label>
+                        <div class="border p-4">
+                            <div class="">
+                                <div class="row">
+                                    <div class="col-12 col-sm-12 col-md-6 mb-4">
+                                        <label class="text-capitalize avant-md">
+                                            contact name
+                                        </label>
+                                        <div class="border-bottom pb-2 text-capitalize">
+                                            <?php echo $tourOperatorDetails[0]['user_name']; ?>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-12 col-md-6 mb-4">
+                                        <label class="text-capitalize avant-md">
+                                            mobile number
+                                        </label>
+                                        <div class="border-bottom pb-2 text-uppercase">
+                                            <?php echo $tourOperatorDetails[0]['coordinator_country_code'].$tourOperatorDetails[0]['coordinator_mobile']; ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="text-capitalize avant-md">
+                                    email
+                                </label>
+                                <div class="border-bottom pb-2 text-lowercase">
+                                    <?php echo $tourOperatorDetails[0]['coordinator_email']; ?>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="text-capitalize avant-md">
+                                    company authorization certificate
+                                </label>
+                                <div class="border-bottom pb-2 text-capitalize position-relative">
+                                    <div>
+                                        registration certificate
+                                    </div>
+                                    <div class="view-certificate">
+                                        <a href="<?php echo $fileUrl.$tourOperatorDetails[0]['coordinator_certificate']?>" target="_blank"> view certificate</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="">
+                                <label class="text-capitalize avant-md">
+                                    next Renewal date
+                                </label>
+                                <div class="border-bottom pb-2 text-capitalize">
+                                    <?php echo date('Y-m-d', strtotime("+6 months", strtotime($tourOperatorDetails[0]['certificate_date']))); ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <?php if(isset($tourOperatorDetails[1])) { ?>
+                        <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 mb-4">
+                            <label class="text-capitalize avant-md">
+                                STT coordinator 2
+                            </label>
+                            <div class="border p-4">
+                                <div class="">
+                                    <div class="row">
+                                        <div class="col-12 col-sm-12 col-md-6 mb-4">
+                                            <label class="text-capitalize avant-md">
+                                                contact name
+                                            </label>
+                                            <div class="border-bottom pb-2 text-capitalize">
+                                                <?php echo $tourOperatorDetails[1]['user_name']; ?>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-sm-12 col-md-6 mb-4">
+                                            <label class="text-capitalize avant-md">
+                                                mobile number
+                                            </label>
+                                            <div class="border-bottom pb-2 text-uppercase">
+                                                <?php echo $tourOperatorDetails[1]['coordinator_country_code'].$tourOperatorDetails[1]['coordinator_mobile']; ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="text-capitalize avant-md">
+                                        email
+                                    </label>
+                                    <div class="border-bottom pb-2 text-lowercase">
+                                        <?php echo $tourOperatorDetails[1]['coordinator_email']; ?>
+                                    </div>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="text-capitalize avant-md">
+                                        company authorization certificate
+                                    </label>
+                                    <div class="border-bottom pb-2 text-capitalize position-relative">
+                                        <div>
+                                            registration certificate
+                                        </div>
+                                        <div class="view-certificate">
+                                            view certificate
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="">
+                                    <label class="text-capitalize avant-md">
+                                        next Renewal date
+                                    </label>
+                                    <div class="border-bottom pb-2 text-capitalize">
+                                        <?php echo  date('Y-m-d', strtotime("+6 months", strtotime($tourOperatorDetails[1]['certificate_date']))) ; ?>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <?php }else{  ?>
+                        <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 mb-4">
+
+                        </div>
+                    <?php } ?>
+                    <?php if ($tourOperatorDetails[0]['status']==\Admin\Model\TourOperatorDetails::Approved_status) { ?>
+                        <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 mb-4 ">
+                            <div class="mb-3">
+                                <label class="checkbox-custom position-relative mb-0 pointer" for="apply-discount">
+                                    <input type="checkbox" id="apply-discount" name="discount" <?php echo ($tourOperatorDetails[0]['apply_discount']==1?'checked':'')?>>
+                                    <span class="checkmark"></span>
+                                    <span class="text-capitalize">apply discount</span>
+                                </label>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 col-sm-6 mb-3">
+                                    <label class="text-capitalize">
+                                        percentage
+                                    </label>
+                                    <input type="text" class="form-control form-control-lg" placeholder="%" id="percentage" value="<?php echo ($tourOperatorDetails[0]['apply_discount']==1?$tourOperatorDetails[0]['discount_percentage']:'')?>">
+                                </div>
+                                <div class="col-12 col-sm-6 mb-3">
+                                    <label class="text-capitalize">
+                                        duration
+                                    </label>
+                                    <input type="text" class="form-control form-control-lg number" id="duration" placeholder="in Days" value="<?php echo ($tourOperatorDetails[0]['apply_discount']==1?$tourOperatorDetails[0]['discount_days']:'')?>">
+                                </div>
+                                <?php if($tourOperatorDetails[0]['apply_discount']==1) { ?>
+                                    <div class="col-12 col-sm-6 mb-3">
+                                        <label class="text-capitalize">
+                                            discount end date
+                                        </label>
+                                        <div id="discountEndDate"><?php echo ($tourOperatorDetails[0]['apply_discount']==1?date("d/m/Y",strtotime($tourOperatorDetails[0]['discount_end_date'])):'');?></div>
+                                    </div>
+                                <?php } ?>
+                                <div class="col-12">
+                                    <button type="button" class="btn submit-btn" id="submit-discount">Submit</button>
+                                </div>
+                            </div>
+                        </div>
+                    <?php } ?>
+                    <?php if ($tourOperatorDetails[0]['status']==\Admin\Model\TourOperatorDetails::Pending_status) { ?>
+                        <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 mb-4">
+                            <div class="text-right status-btn">
+                                <button class="btn text-uppercase bg-danger avant-md text-white px-3" id="tour-operator-reject">
+                                    reject
+                                </button>
+                                <button class="btn text-uppercase bg-success avant-md text-white px-3 ml-2" id="tour-operator-accept">
+                                    accept
+                                </button>
+                            </div>
+                        </div>
+                    <?php } ?>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script>
+    var tourOperatorId='<?php echo $tourOperatorDetails[0]['tour_operator_id'];  ?>';
+</script>
+<script src="<?php echo $this->basePath().'/js/admin/tour-operator-details.js'?>"></script>
+

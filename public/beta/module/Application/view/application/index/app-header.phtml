@@ -1,0 +1,27 @@
+<nav class="navbar bg-white position-fixed">
+    <div class="ml-auto d-flex justify-content-center align-items-center">
+
+        <div class="d-inline-block mx-2 mx-lg-3">
+            <!--<img class="pointer" src="<?php /*echo $this->basePath(); */ ?>/img/notification_icon.svg">-->
+        </div>
+        <div class="d-inline-block mx-2 mx-lg-3">
+            <!--<img class="pointer" src="<?php /*echo $this->basePath(); */ ?>/img/chat_icon.svg">-->
+        </div>
+        <div class="d-inline-block mx-2 mx-lg-3">
+            <div class="dropdown">
+                <button type="button"
+                        class="btn bg-transparent  p-0 btn-outline-0 d-flex justify-content-center align-items-center">
+                    <div class="admin_profile rounded-circle mr-3"></div>
+                    <div>
+                        <div class="admin_name text-capitalize">Admin</div>
+                        <div class="logout-text">
+                            <a href="<?php echo $this->basePath();?>/logout">
+                                <i class="fas fa-power-off"></i> Logout</a>
+                        </div>
+                    </div>
+                </button>
+
+            </div>
+        </div>
+    </div>
+</nav>

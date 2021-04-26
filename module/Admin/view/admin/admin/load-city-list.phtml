@@ -1,0 +1,51 @@
+<?php if(isset($type) && $type =='initialize') { ?>
+<table class="table table-bordered table-hover table-striped" id="table">
+    <thead>
+    <tr>
+        <th>S.no</th>
+        <th data-placeholder="country" data-input="country">country</th>
+        <th data-placeholder="state" data-input="state">state</th>
+        <th data-placeholder="city" data-input="city">City</th>
+        <th>Action</th>
+    </tr>
+    <?php } ?>
+
+    <?php if(isset($type) && ($type =='initialize' || $type=="search") ) { ?>
+    <input type="hidden" class="records" value="<?php echo $totalCount; ?>">
+    <tbody>
+    <?php } ?>
+
+
+    <?php if(count($cityList))  {
+        $i=0;
+        if(isset($offset))
+        {
+            $i=$offset;
+        }
+
+        foreach ($cityList as $city) { ?>
+            <tr>
+                <td><?php echo $i+1; ?></td>
+                <td><?php echo $city['country_name']; ?></td>
+                <td><?php echo $city['state_name']; ?></td>
+                <td><?php echo $city['city_name']; ?></td>
+                <td><div class="d-flex">
+                        <a class="action-icon" href="<?php echo $this->basePath().'/a_dMin/edit-city/'.base64_encode('tourismPlaceId='.$city['id'])?>" >
+                            <img src="<?php echo $this->basePath();?>/img/edit.png" class="img-fluid">
+                        </a>
+                        <div class="action-icon delete-place" data-id="<?php echo $city['id']; ?>">
+                            <img src="<?php echo $this->basePath();?>/img/delete.png" class="img-fluid" >
+                        </div>
+                    </div></td>
+            </tr>
+            <?php $i++; } } else { ?>
+        <tr ><td class="text-center" colspan="7">No data</td></tr>
+    <?php  } ?>
+<?php if(isset($type) && ($type =='initialize' || $type=="search") ) { ?>
+
+    </tbody>
+<?php } ?>
+<?php if(isset($type) && $type =='initialize') { ?>
+
+    </table>
+<?php } ?>

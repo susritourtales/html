@@ -1,0 +1,105 @@
+<div class="sidebar">
+    <div class="side-panel" id="collapsibleNavbar">
+        <?php echo $this->partial('/application/index/left-menu', array(
+            'activeTab'=>\Application\Constants\Constants::Upcoming
+        )); ?>
+    </div>
+</div>
+<link rel="stylesheet" href="<?php echo $this->basePath()?>/css/vendor/select2.min.css">
+<link rel="stylesheet" href="<?php echo $this->basePath()?>/css/main.css">
+<script src="<?php echo $this->basePath()?>/js/radialIndicator.min.js"></script>
+<script src="<?php echo $this->basePath(); ?>/js/vendor/select2.full.min.js"></script>
+<script src="<?php echo $this->basePath(); ?>/js/admin/add-upcoming.js"></script>
+<div class="wrapper">
+    <div class="main-panel ">
+        <?php echo $this->partial("/application/index/app-header"); ?>
+        <div class="main-container p-lg-4">
+            <div class="main-heading mb-3"><a href="<?php echo $this->basePath().'/a_dMin/upcoming-list'?>"><i class="fa fa-arrow-left mr-2"></i></a> Add Upcoming</div>
+                <div class="row">
+                    <div class="col-12 col-lg-10">
+                        <div class="row adding-form">
+                            <div class="col-12 col-md-6 pt-md-5 mb-4 mt-n1">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <select  class="form-control" id="month">
+                                            <label class="text-black-50">Month</label>
+                                            <option value="0">-- month --</option>
+                                            <option value="JAN">JAN</option>
+                                            <option value="FEB">FEB</option>
+                                            <option value="MAR">MAR</option>
+                                            <option value="APR">APR</option>
+                                            <option value="MAY">MAY</option>
+                                            <option value="JUN">JUN</option>
+                                            <option value="JUL">JUL</option>
+                                            <option value="AUG">AUG</option>
+                                            <option value="SEP">SEP</option>
+                                            <option value="OCT">OCT</option>
+                                            <option value="NOV">NOV</option>
+                                            <option value="DEC">DEC</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-6">
+                                        <select  class="form-control" id="year">
+                                            <label class="text-black-50">Year</label>
+                                            <option value="0">-- year --</option>
+                                            <?php for ($x = 2020; $x <= 2070; $x++) {?>
+                                            <option value="<?php echo $x; ?>"><?php echo $x; ?></option>
+                                            <?php } ?>
+                                        </select>
+                                    </div>
+                                    <div class="col-12">
+                                        <select  class="form-control" id="tourtype">
+                                            <label class="text-black-50">Tour type</label>
+                                            <option value="0">--select tour type--</option>
+                                            <option value="1">India Tour</option>
+                                            <option value="2">World Tour</option>
+                                            <option value="3">City Tour</option>
+                                            <option value="4">Spiritual Tour</option>
+                                            <option value="5">Festival Tour</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="text-black-50">Country</label>
+                                        <input type="text" class="form-control" id="country"/>
+                                    </div>
+                                    <div class="col-12" id="state-wrapper"><label class="text-black-50">State</label>
+                                        <input type="text" class="form-control" id="state"/>
+                                    </div>
+                                    <div class="col-12"><label class="text-black-50">City</label>
+                                        <input type="text" class="form-control" id="city"/>
+                                    </div>
+                                    <div class="col-12"><label class="text-black-50">Place</label>
+                                        <input type="text" class="form-control" id="place"/>
+                                    </div>
+                                    <!-- <div class="col-12">
+                                        <label class="text-black-50">Languages</label>
+                                        <textarea class="form-control" id="languages"></textarea>
+                                    </div> -->
+                                    <div class="col-12 mb-3 "><label class="text-black-50 text-capitalize">Languages</label>
+                                        <select  class="form-control" id="languages" multiple>
+                                        <?php
+                                            if(count($languagesList)){
+                                            foreach ($languagesList as $lang)
+                                            {?>
+                                                <option value="<?php echo $lang['id']; ?>"><?php echo $lang['name']; ?></option>
+                                            <?php }
+                                        }else{?>
+                                            <option value=""></option>
+                                            <?php }?>
+                                            <option value=""></option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="tags-container"></div>
+                                    </div>
+                                </div>
+                                <div class="mt-3">
+                                    <div class="col-sm-9 text-left"> <button type="button" class="btn submit-btn" id="addUpcoming">Submit</button></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

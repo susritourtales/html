@@ -1,0 +1,110 @@
+<div class="sidebar">
+    <div class="side-panel" id="collapsibleNavbar">
+        <?php echo $this->partial('/application/index/left-menu', array(
+            'activeTab'=>\Application\Constants\Constants::Upcoming
+        )); ?>
+    </div>
+</div>
+<link rel="stylesheet" href="<?php echo $this->basePath()?>/css/vendor/select2.min.css">
+<link rel="stylesheet" href="<?php echo $this->basePath()?>/css/main.css">
+<script src="<?php echo $this->basePath()?>/js/radialIndicator.min.js"></script>
+<script src="<?php echo $this->basePath(); ?>/js/vendor/select2.full.min.js"></script>
+<script src="<?php echo $this->basePath(); ?>/js/admin/edit-upcoming.js"></script>
+<div class="wrapper">
+    <div class="main-panel ">
+        <?php echo $this->partial("/application/index/app-header"); ?>
+        <div class="main-container p-lg-4">
+            <div class="main-heading mb-3"><a href="<?php echo $this->basePath().'/a_dMin/upcoming-list'?>"><i class="fa fa-arrow-left mr-2"></i></a> Edit Upcoming</div>
+            <div class="row">
+                    <div class="col-12 col-lg-10">
+                        <div class="row adding-form">
+                            <div class="col-12 col-md-6 pt-md-5 mb-4 mt-n1">
+                                <div class="row">
+                                    <div class="col-6">
+                                    <?php 
+                                        $monthYear =  explode("-", $upcomingDetails['month_year']);
+                                    ?>
+                                        <select  class="form-control" id="month">
+                                            <label class="text-black-50">Month</label>
+                                            <option value="0">-- month --</option>
+                                            <option value="JAN" <?php echo ($monthYear[0] == "JAN") ? "selected": ""; ?>>JAN</option>
+                                            <option value="FEB" <?php echo ($monthYear[0] == "FEB") ? "selected": ""; ?>>FEB</option>
+                                            <option value="MAR" <?php echo ($monthYear[0] == "MAR") ? "selected": ""; ?>>MAR</option>
+                                            <option value="APR" <?php echo ($monthYear[0] == "APR") ? "selected": ""; ?>>APR</option>
+                                            <option value="MAY" <?php echo ($monthYear[0] == "MAY") ? "selected": ""; ?>>MAY</option>
+                                            <option value="JUN" <?php echo ($monthYear[0] == "JUN") ? "selected": ""; ?>>JUN</option>
+                                            <option value="JUL" <?php echo ($monthYear[0] == "JUL") ? "selected": ""; ?>>JUL</option>
+                                            <option value="AUG" <?php echo ($monthYear[0] == "AUG") ? "selected": ""; ?>>AUG</option>
+                                            <option value="SEP" <?php echo ($monthYear[0] == "SEP") ? "selected": ""; ?>>SEP</option>
+                                            <option value="OCT" <?php echo ($monthYear[0] == "OCT") ? "selected": ""; ?>>OCT</option>
+                                            <option value="NOV" <?php echo ($monthYear[0] == "NOV") ? "selected": ""; ?>>NOV</option>
+                                            <option value="DEC" <?php echo ($monthYear[0] == "DEC") ? "selected": ""; ?>>DEC</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-6">
+                                        <select  class="form-control" id="year">
+                                            <label class="text-black-50">Year</label>
+                                            <option value="0">-- year --</option>
+                                            <?php for ($x = 2020; $x <= 2070; $x++) {?>
+                                            <option value="<?php echo $x; ?>" <?php echo ($monthYear[1] == "$x") ? "selected": ""; ?>><?php echo $x; ?></option>
+                                            <?php } ?>
+                                        </select>
+                                    </div>
+                                    <div class="col-12">
+                                        <select  class="form-control" id="tourtype">
+                                            <label class="text-black-50">Tour type</label>
+                                            <option value="0">--select tour type--</option>
+                                            <option value="1" <?php echo ($upcomingDetails['tour_type'] == "1") ? "selected" :""; ?>>India Tour</option>
+                                            <option value="2" <?php echo ($upcomingDetails['tour_type'] == "2") ? "selected" :""; ?>>World Tour</option>
+                                            <option value="3" <?php echo ($upcomingDetails['tour_type'] == "3") ? "selected" :""; ?>>City Tour</option>
+                                            <option value="4" <?php echo ($upcomingDetails['tour_type'] == "4") ? "selected" :""; ?>>Spiritual Tour</option>
+                                            <option value="5" <?php echo ($upcomingDetails['tour_type'] == "5") ? "selected" :""; ?>>Festival Tour</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="text-black-50">Country</label>
+                                        <input type="text" class="form-control" id="country" value="<?php echo $upcomingDetails['country']; ?>"/>
+                                    </div>
+                                    <div class="col-12" id="state-wrapper"><label class="text-black-50">State</label>
+                                        <input type="text" class="form-control" id="state" value="<?php echo $upcomingDetails['state']; ?>"/>
+                                    </div>
+                                    <div class="col-12"><label class="text-black-50">City</label>
+                                    <input type="text" class="form-control" id="city" value="<?php echo $upcomingDetails['city']; ?>"/>
+                                    </div>
+                                    <div class="col-12"><label class="text-black-50">Place</label>
+                                        <input type="text" class="form-control" id="place" value="<?php echo $upcomingDetails['place']; ?>"/>
+                                    </div>
+                                    <!-- <div class="col-12">
+                                        <label class="text-black-50">Languages</label>
+                                        <textarea class="form-control" id="languages" value="<?php //echo $upcomingDetails['languages']; ?>"><?php echo $upcomingDetails['languages']; ?></textarea>
+                                    </div> -->
+                                    <div class="col-12 mb-3 "><label class="text-black-50 text-capitalize">Languages</label>
+                                        <select  class="form-control" id="languages" multiple>
+                                        <?php 
+                                            $udLangs = explode(',', $upcomingDetails['languages']);
+                                            if(count($languagesList)){
+                                            foreach ($languagesList as $lang)
+                                            {?>
+                                                <option value="<?php echo $lang['id']; ?>" <?php echo (in_array($lang['id'],$udLangs)?'selected':"")?>><?php echo $lang['name']; ?></option>
+                                            <?php }
+                                        }else{?>
+                                            <option value=""></option>
+                                            <?php }?>
+                                            <option value=""></option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="tags-container"></div>
+                                    </div>
+                                </div>
+                                <div class="mt-3">
+                                    <div class="col-sm-9 text-left"> <button type="button" class="btn submit-btn" id="editUpcoming">Submit</button></div>
+                                    <input type="hidden" id="huid" value="<?php echo $upcomingDetails['id']; ?>"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

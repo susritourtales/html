@@ -1,0 +1,64 @@
+<?php 
+
+
+if(isset($type) && $type =='initialize') { ?>
+<div id="expTable">
+<table class="table table-bordered table-hover table-striped" id="table">
+    <thead>
+    <tr>
+        <th>S.no</th>
+        <th data-placeholder="date" data-input="created_at">date</th>
+        <th data-placeholder="currency" data-input="currency">currency</th>
+        <th data-placeholder="amount" data-input="amount">amount</th>
+        <th data-placeholder="GST" data-input="GST">GST</th>
+    </tr>
+    <?php } ?>
+
+    <?php //if(isset($type) && $type =='initialize') { ?>
+    <input type="hidden" class="records" value="<?php echo $totalCount; ?>">
+    <tbody>
+    <?php //} ?>
+
+    <?php if(count($financialStatement))  {
+        $i=0;
+        if(isset($offset))
+        {
+            $i=$offset;
+        }
+        $totalAmount = 0;
+        $totalGST = 0;
+        foreach ($financialStatement as $fs) { ?>
+            <tr>
+                <td><?php echo $i+1; ?></td>
+                <td><?php echo $fs['created_at']; ?></td>
+                <td><?php echo $fs['currency']; ?></td>
+                <td><?php $actualAmt = round(($fs['amount']) / (1 + ($fs['GST']/100)),2);
+                    $totalAmount = $totalAmount + $actualAmt;
+                    echo $actualAmt; ?>/-</td>
+                <td><?php 
+                    $gst = $fs['amount'] - $actualAmt;
+                    $totalGST = $totalGST + $gst;
+                    echo $gst; ?>/-</td>
+            </tr>
+        <?php $i++; } ?>
+            <tr class="bg-success text-white font-weight-bolder">
+                <td></td>
+                <td></td>
+                <td></td>
+                <td><?php echo $totalAmount; ?>/-</td>
+                <td><?php echo $totalGST; ?>/-</td>
+            </tr>
+        <?php 
+        } else { ?>
+        <tr ><td class="text-center" colspan="5">No data</td></tr>
+    <?php  } ?>
+    <?php if(isset($type) && ($type =='initialize') ) { ?>
+
+    </tbody>
+<?php } ?>
+<?php if(isset($type) && $type =='initialize') { ?>
+    
+    </table></div>
+<?php
+} 
+?>

@@ -1,0 +1,376 @@
+<?php
+$additionalDetails=json_decode($tourOperatorDetails[0]['additional_details'],true);
+?>
+<div class="sidebar">
+    <div class="side-panel" id="collapsibleNavbar">
+        <?php
+        echo $this->partial('/application/index/left-menu', array(
+            'activeTab' => \Application\Constants\Constants::Tour_operator_list
+        ));
+        ?>
+    </div>
+</div>
+<style>
+    input
+    {
+        border: none !important;
+        border-bottom:1px solid  #dee2e6 !important;
+        border-radius: 0 !important;
+    }
+    input:focus
+    {
+        box-shadow: none !important;
+    }
+</style>
+
+<link rel="stylesheet" href="<?php echo $this->basePath(); ?>/css/vendor/bootstrap-datetimepicker.min.css"/>
+
+<link rel="stylesheet" href="<?php echo $this->basePath() ?>/css/main.css">
+
+<script type="text/javascript" src="<?php echo $this->basePath(); ?>/js/vendor/moment.min.js"></script>
+<script type="text/javascript" src="<?php echo $this->basePath(); ?>/js/vendor/bootstrap-datetimepicker.min.js"></script>
+<div class="wrapper">
+    <div class="main-panel ">
+        <?php echo $this->partial("/application/index/app-header"); ?>
+
+        <div class="main-container p-lg-4" >
+            <div class="d-flex justify-content-between mb-4"> 
+                <div class="main-heading">
+                    <a href="<?php echo $this->basePath() . '/a_dMin/tour-operator-list'; ?>" class="text-dark"><img src="<?php echo $this->basePath(); ?>/img/left-arrow.svg" alt="back-arrow" class="img-fluid mr-2" width="24">
+                        Tour Operator Details
+                    </a>
+                </div>
+            </div>
+            <div class="" id="recordsList">
+                <div class="row">
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 mb-4">
+                        <label class="text-capitalize avant-md">
+                            company details
+                        </label>
+                        <div class="border p-4">
+                            <div class="mb-4">
+                                <label class="text-capitalize avant-md">
+                                    company name
+                                </label>
+                                <div class="pb-2 text-capitalize">
+                                    <input type="text" value="<?php echo $tourOperatorDetails[0]['company_name']; ?>" class="form-control company-name">
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="text-capitalize avant-md">
+                                    company PAN number
+                                </label>
+                                <div class="pb-2 text-uppercase">
+                                    <input type="text" value="<?php echo $tourOperatorDetails[0]['pan_number']; ?>" class="form-control company-pan-number">
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="text-capitalize avant-md">
+                                    LLPIN/ CIN /1A Ref No.
+                                </label>
+                                <div class="pb-2 text-uppercase">
+                                    <input type="text" value="<?php echo $additionalDetails['llpin_ref_no']; ?>" class="form-control llpin-ref-no">
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="text-capitalize avant-md">
+                                    State
+                                </label>
+                                <div class="pb-2 text-uppercase">
+                                    <input type="text" value="<?php echo $tourOperatorDetails[0]['state']; ?>" class="form-control company-state">
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="text-capitalize avant-md">
+                                    Registration Date
+                                </label>
+                                <div class="pb-2 text-uppercase">
+                                    <input type="text" value="<?php echo $tourOperatorDetails[0]['registration_date']; ?>" class="form-control company-registration-date" id="company-registration-date">
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="text-capitalize avant-md">
+                                    company registration certificate
+                                </label>
+                                <div class="pb-2 text-capitalize position-relative">
+                                    <div class="position-relative uploadbox p-2 company-registration-certificate-name">
+                                        registration certificate
+                                        <input type="file" class="company-registration">
+                                    </div>
+                                    <div class="view-certificate">
+                                       <a href="<?php echo $fileUrl.$tourOperatorDetails[0]['registration_certificate']?>" class="company-registration-view-certificate" target="_blank"> view certificate</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="text-capitalize avant-md">
+                                  Company WebSite Url
+                                </label>
+                                <div class="pb-2 text-uppercase">
+                                    <input type="text" value="<?php echo $tourOperatorDetails[0]['state']; ?>" class="form-control company-url">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 mb-4">
+                        <label class="text-capitalize avant-md">
+                            company contact details
+                        </label>
+                        <div class="border p-4">
+                            <div class="">
+                                <div class="row">
+                                    <div class="col-12 col-sm-12 col-md-6 mb-4">
+                                        <label class="text-capitalize avant-md">
+                                            contact name
+                                        </label>
+                                        <div class="pb-2 text-capitalize">
+                                            <input type="text" value="<?php echo $tourOperatorDetails[0]['contact_person']; ?>" class="form-control company-contact-name">
+
+
+                                        </div>
+                                    </div>
+                                   <!-- <div class="col-12 col-sm-12 col-md-6 mb-4">
+                                        <label class="text-capitalize avant-md">
+                                            Designation
+                                        </label>
+                                        <div class="border-bottom pb-2 text-uppercase">
+                                            <?php /*echo $tourOperatorDetails[0]['contact_name']; */?>
+                                        </div>
+                                    </div>-->
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="text-capitalize avant-md">
+                                    Designation
+                                </label>
+                                <div class="pb-2 text-lowercase">
+                                    <input type="text" value="<?php  echo (isset($additionalDetails['designation'])?$additionalDetails['designation']:""); ?>" class="form-control company-designation">
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="text-capitalize avant-md">
+                                    mobile number
+                                </label>
+                                <div class="pb-2 text-uppercase">
+                                    <input type="text" value="<?php echo $tourOperatorDetails[0]['mobile']; ?>" class="form-control company-mobile-number">
+                                </div>
+                            </div>
+                            <div class="">
+                                <label class="text-capitalize avant-md">
+                                    Email
+                                </label>
+                                <div class="pb-2 text-lowercase">
+                                    <input type="text" value="<?php echo $tourOperatorDetails[0]['email_id']; ?>" class="form-control company-email">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 mb-4">
+                        <label class="text-capitalize avant-md">
+                            STT coordinator 1
+                        </label>
+                        <div class="border p-4">
+                            <div class="">
+                                <div class="row">
+                                    <div class="col-12 col-sm-12 col-md-6 mb-4">
+                                        <label class="text-capitalize avant-md">
+                                            contact name
+                                        </label>
+                                        <div class="pb-2 text-capitalize">
+                                            <input type="text" value="<?php echo $tourOperatorDetails[0]['user_name']; ?>" class="form-control coordinator-name">
+
+
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-12 col-md-6 mb-4">
+                                        <label class="text-capitalize avant-md">
+                                            mobile number
+                                        </label>
+                                        <div class="pb-2 text-uppercase">
+                                            <input type="text" value="<?php echo $tourOperatorDetails[0]['coordinator_mobile']; ?>" class="form-control coordinator-mobile">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="text-capitalize avant-md">
+                                    Designation
+                                </label>
+                                <div class="pb-2 text-lowercase">
+                                    <input type="text" value="<?php echo (isset($tourOperatorDetails[0])&& isset($tourOperatorDetails[0]['designation'])?$tourOperatorDetails[0]['designation']:""); ?>" class="form-control coordinator-designation">
+
+
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="text-capitalize avant-md">
+                                    email
+                                </label>
+                                <div class="pb-2 text-lowercase">
+                                    <input type="text" value="<?php echo $tourOperatorDetails[0]['coordinator_email']; ?>" class="form-control coordinator-email">
+
+
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="text-capitalize avant-md">
+                                    company authorization certificate
+                                </label>
+                                <div class="pb-2 text-capitalize position-relative">
+                                    <div class="position-relative uploadbox p-2 coordinator-registration-certificate-name">
+                                        registration certificate
+                                        <input type="file" class="coordinator-registration">
+                                    </div>
+                                    <div class="view-certificate">
+                                        <a href="<?php echo $fileUrl.$tourOperatorDetails[0]['coordinator_certificate']?>" target="_blank"> view certificate</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="">
+                                <label class="text-capitalize avant-md">
+                                    next Renewal date
+                                </label>
+                                <div class="pb-2 text-capitalize">
+                                    <?php echo date('d-m-Y',strtotime("+6 months",strtotime($tourOperatorDetails[0]['certificate_date']))); ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 mb-4">
+                        <label class="text-capitalize avant-md">
+                            STT coordinator 2
+                        </label>
+                        <div class="border p-4">
+                            <div class="">
+                                <div class="row">
+                                    <div class="col-12 col-sm-12 col-md-6 mb-4">
+                                        <label class="text-capitalize avant-md">
+                                            contact name
+                                        </label>
+                                        <div class="pb-2 text-capitalize">
+                                            <input type="text" value="<?php echo (isset($tourOperatorDetails[1])?$tourOperatorDetails[1]['user_name']:""); ?>" class="form-control coordinator-name-1">
+
+
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-12 col-md-6 mb-4">
+                                        <label class="text-capitalize avant-md">
+                                            mobile number
+                                        </label>
+                                        <div class="pb-2 text-uppercase">
+                                            <input type="text" value="<?php echo (isset($tourOperatorDetails[1])?$tourOperatorDetails[1]['coordinator_mobile']:""); ?>" class="form-control coordinator-mobile-1">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="text-capitalize avant-md">
+                                    Designation
+                                </label>
+                                <div class="pb-2 text-lowercase">
+                                    <input type="text" value="<?php echo (isset($tourOperatorDetails[1])&& isset($tourOperatorDetails[1]['designation'])?$tourOperatorDetails[1]['designation']:""); ?>" class="form-control coordinator-designation-1">
+
+
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="text-capitalize avant-md">
+                                    email
+                                </label>
+                                <div class="pb-2 text-lowercase">
+                                    <input type="text" value="<?php echo (isset($tourOperatorDetails[1])?$tourOperatorDetails[1]['coordinator_email']:""); ?>" class="form-control coordinator-email-1">
+
+
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="text-capitalize avant-md">
+                                    company authorization certificate
+                                </label>
+                                <div class="pb-2 text-capitalize position-relative">
+                                    <div class="position-relative uploadbox p-2 coordinator-registration-1-certificate-name">
+                                        registration certificate
+                                        <input type="file" class="coordinator-registration-1">
+                                    </div>
+                                    <?php if(isset($tourOperatorDetails[1])) { ?>
+                                    <div class="view-certificate">
+
+                                        <a href="<?php echo (isset($tourOperatorDetails[1])?$fileUrl.$tourOperatorDetails[1]['coordinator_certificate']:"")?>" target="_blank"> view certificate</a>
+
+                                    </div>
+                                    <?php } ?>
+                                </div>
+                            </div>
+                            <?php if(isset($tourOperatorDetails[1])) { ?>
+                            <div class="">
+                                <label class="text-capitalize avant-md">
+                                    next Renewal date
+                                </label>
+                                <div class="border-bottom pb-2 text-capitalize">
+                                    <?php echo  (isset($tourOperatorDetails[1])?date('d-m-Y', strtotime("+6 months", strtotime($tourOperatorDetails[1]['certificate_date']))):""); ?>
+                                </div>
+                            </div>
+                            <?php } ?>
+                        </div>
+                    </div>
+
+                    <?php if ($tourOperatorDetails[0]['status']==\Admin\Model\TourOperatorDetails::Approved_status) { ?>
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 mb-4 ">
+                        <div class="mb-3">
+                            <label class="checkbox-custom position-relative mb-0 pointer" for="apply-discount">
+                                <input type="checkbox" id="apply-discount" name="discount" <?php echo ($tourOperatorDetails[0]['apply_discount']==1?'checked':'')?>>
+                                <span class="checkmark"></span>
+                                <span class="text-capitalize">apply discount</span>
+                            </label>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 col-sm-6 mb-3">
+                                <label class="text-capitalize">
+                                    percentage
+                                </label>
+                                <input type="text" class="form-control form-control-lg" placeholder="%" id="percentage" value="<?php echo ($tourOperatorDetails[0]['apply_discount']==1?$tourOperatorDetails[0]['discount_percentage']:'')?>">
+                            </div>
+                            <div class="col-12 col-sm-6 mb-3">
+                                <label class="text-capitalize">
+                                    duration
+                                </label>
+                                <input type="text" class="form-control form-control-lg number" id="duration" placeholder="in Days" value="<?php echo ($tourOperatorDetails[0]['apply_discount']==1?$tourOperatorDetails[0]['discount_days']:'')?>">
+                            </div>
+                            <?php if($tourOperatorDetails[0]['apply_discount']==1) { ?>
+                            <div class="col-12 col-sm-6 mb-3">
+                                <label class="text-capitalize">
+                                    discount end date
+                                </label>
+                                <div id="discountEndDate"><?php echo ($tourOperatorDetails[0]['apply_discount']==1?date("d/m/Y",strtotime($tourOperatorDetails[0]['discount_end_date'])):'');?></div>
+                            </div>
+                            <?php } ?>
+                            <div class="col-12">
+                            <button type="button" class="btn submit-btn" id="submit-discount">Submit</button>
+                            </div>
+                        </div>
+                    </div>
+                    <?php } ?>
+                    <?php if ($tourOperatorDetails[0]['status']==\Admin\Model\TourOperatorDetails::Pending_status) { ?>
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 mb-4">
+                        <div class="text-right status-btn">
+                            <button class="btn text-uppercase bg-danger avant-md text-white px-3" id="tour-operator-reject">
+                                reject
+                            </button>
+                            <button class="btn text-uppercase bg-success avant-md text-white px-3 ml-2" id="tour-operator-accept">
+                                accept
+                            </button>
+                        </div>
+                    </div>
+                    <?php } ?>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script>
+    var tourOperatorId='<?php echo $tourOperatorDetails[0]['tour_operator_id'];  ?>';
+</script>
+<script src="<?php echo $this->basePath().'/js/admin/tour-operator-details.js'?>"></script>
+

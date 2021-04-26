@@ -1,0 +1,45 @@
+<div class="modal-header">
+    <h5 class="modal-title avant-md" id="exampleModalLabel">Reply</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body" >
+<form>
+    <div class="form-group">
+        <label class="text-capitalize avant-md">User name:</label>
+        <div class="text-capitalize">
+            <?php echo $inboxDetails['user_name']; ?>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="text-capitalize avant-md">received date:</label>
+        <div class="">
+            <?php echo date("Y-m-d H:i",strtotime($inboxDetails['created_at'])); ?>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="text-capitalize avant-md">Message:</label>
+        <div>
+            <?php echo $inboxDetails['message']; ?>
+        </div>
+    </div>
+    <div class="form-group">
+        <?php if($inboxDetails['reply']==''){?>
+        <label class="text-capitalize avant-md">Enter reply:</label>
+        <textarea class="form-control" id="message-text" rows="3" placeholder="Enter your reply here..."></textarea>
+        <?php } else{?>
+            <label class="text-capitalize avant-md">Reply Message:</label>
+            <div>
+                <?php echo $inboxDetails['reply']; ?>
+            </div>
+        <?php } ?>
+    </div>
+</form>
+</div>
+<?php if($inboxDetails['reply']==''){?>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+    <button type="button" class="btn btn-success" id="sendReply">Send message</button>
+</div>
+<?php } ?>

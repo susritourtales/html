@@ -1,0 +1,58 @@
+<?= $this->doctype() ?>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Susri Tourtales</title>
+
+    <?=
+    $this->headMeta()
+        ->appendName('viewport', 'width=device-width, initial-scale=1.0')
+        ->appendHttpEquiv('X-UA-Compatible', 'IE=edge')
+    ?>
+
+    <!-- Le styles -->
+    <?=
+    $this->headLink(['rel' => 'shortcut icon', 'type' => 'image/vnd.microsoft.icon', 'href' => $this->basePath() . '/img/logo.png'])
+        ->prependStylesheet($this->basePath('css/style.css'))
+        ->prependStylesheet($this->basePath('css/bootstrap.min.css'))
+        ->prependStylesheet($this->basePath() . '/css/vendor/fontAwesome/fontawesome-all.min.css')
+        ->prependStylesheet($this->basePath() . '/css/vendor/fontAwesome/fontawesome.min.css')
+        ->prependStylesheet($this->basePath() . '/css/jquery.mCustomScrollbar.css')
+    ?>
+
+    <!-- Scripts -->
+    <?=
+    $this->headScript()
+        ->prependFile($this->basePath('js/global.js'))
+        ->prependFile($this->basePath('js/vendor/fontawesome-all.min.js'))
+        ->prependFile($this->basePath('js/vendor/fontawesome.min.js'))
+        ->prependFile($this->basePath('js/popper.min.js'))
+        ->prependFile($this->basePath('js/bootstrap.min.js'))
+        ->prependFile($this->basePath('js/jquery.mCustomScrollbar.concat.min.js'))
+        ->prependFile($this->basePath('js/jquery.min.js'))
+    ?>
+
+    <script>
+        var BASE_URL = "<?php echo $this->basePath(); ?>";
+
+    </script>
+</head>
+<body>
+<?php echo $this->content; ?>
+
+<div class="feedback-section" id="feedbackSection"><span></span></div>
+<?= $this->inlineScript() ?>
+<script>
+    (function ($) {
+        $(window).load(function () {
+            $("#content-3").mCustomScrollbar({
+                scrollButtons: {enable: true},
+                theme: "light-thick",
+                scrollbarPosition: "outside"
+            });
+        });
+    })(jQuery);
+</script>
+</body>
+</html>

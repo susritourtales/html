@@ -1,0 +1,58 @@
+<div class="sidebar">
+    <div class="side-panel" id="collapsibleNavbar">
+        <?php echo $this->partial('/application/index/left-menu', array(
+            'activeTab'=>\Application\Constants\Constants::Tour_Page_City,
+            'mainActiveTab'=>\Application\Constants\Constants::Tour_Page
+
+        )); ?>
+    </div>
+</div>
+<link rel="stylesheet" href="<?php echo $this->basePath()?>/css/vendor/select2.min.css">
+<link rel="stylesheet" href="<?php echo $this->basePath()?>/css/main.css">
+<script src="<?php echo $this->basePath(); ?>/js/vendor/select2.full.min.js"></script>
+<script src="<?php echo $this->basePath(); ?>/js/admin/add-city-tour.js"></script>
+
+<div class="wrapper">
+    <div class="main-panel ">
+        <?php echo $this->partial("/application/index/app-header"); ?>
+
+        <div class="main-container p-lg-4">
+            <div class="main-heading mb-3"><a href="<?php echo $this->basePath().'/a_dMin/city-tour-list'?>"><i class="fa fa-arrow-left mr-2"></i></a> Add City Tour</div>
+
+            <div class="row">
+                <div class="col-12 col-lg-10">
+            <div class="row adding-form">
+                <div class="col-6">
+                    <div class="col-12 mb-3"><label class="text-black-50">Country</label>
+                        <select  class="form-control" id="country"> <option value="">--select country--</option>
+                            <?php foreach ($countryList as $country ) { ?>
+                                <option value="<?php echo $country['id']; ?>"><?php echo $country['country_name']; ?></option>
+                            <?php } ?>
+                        </select>
+                    </div>
+                    <div class="col-12 mb-3"><label class="text-black-50">City</label>
+                        <select  class="form-control" id="cities"><option value=""></option></select>
+                    </div>
+                    <!-- <div class="col-12 mb-3"><label class="text-black-50">Price</label>
+                        <input type="text" class="form-control" id="price">
+                    </div> -->
+                    <div class="col-12 mb-3 "><label class="text-black-50 text-capitalize">place name</label>
+                        <select  class="form-control" id="places" multiple><option value=""></option></select>
+                    </div>
+                    <div class="col-12">
+                        <div class="tags-container"></div>
+                    </div>
+                </div>
+            </div>
+                </div>
+            </div>
+
+
+            <div class="mt-2">
+                <div class="row">
+                <div class="col-sm-12 text-left"> <button type="button" class="btn submit-btn" id="addCityTour">Submit</button></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

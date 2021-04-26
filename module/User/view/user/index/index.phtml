@@ -1,0 +1,988 @@
+<div class="px-0 py-md-0 banner-fluid">
+
+<div class="container-fluid px-0">
+    <div class="owl-carousel" id="home-banner">
+
+           <?php foreach ($banners as $banner) {?>
+        <div class="item">
+            <a href="javascript:void(0);">
+                <div class="backgroung-img" style="background: url(<?php echo $imageUrl.$banner['image_path'];?>) no-repeat center/cover; height: 437px;border-radius: 10px;"></div>
+            </a>
+        </div>
+        <?php } ?>
+
+        <!--<div class="item">
+            <a href="javascript:void(0);">
+                <div class="backgroung-img" style="background: url(<?php /*echo $this->basePath(); */?>/img/user/banners/banner-1.png) no-repeat center/cover; height: 437px;border-radius: 10px;"></div>
+            </a>
+        </div>
+        <div class="item">
+            <a href="javascript:void(0);">
+                <div class="backgroung-img" style="background: url(<?php /*echo $this->basePath(); */?>/img/user/banners/banner-2.png) no-repeat center/cover; height: 437px;border-radius: 10px;"></div>
+            </a>
+        </div>
+        <div class="item">
+            <a href="javascript:void(0);">
+                <div class="backgroung-img" style="background: url(<?php /*echo $this->basePath(); */?>/img/user/banners/banner-3.png) no-repeat center/cover; height: 437px;border-radius: 10px;"></div>
+            </a>
+        </div>-->
+    </div>
+</div>
+</div>
+<?php if($marqText != ""){?>
+<div class="promotion-fluid py-2" style="background-color:#304379;">
+    <div class="container">
+        <div class="row pt-2">
+        <marquee behavior="scroll" direction="left" class="font-22">
+            <strong><?php echo $marqText; ?></strong>
+        </marquee>
+            <!-- <marquee behavior="scroll" direction="left" class="font-22"><strong>Welcome to Susri Tour Tales... Annual subscription: Rs 365 / year... Launch offer: Rs 199 / year, only till September 2020...</strong></marquee> -->
+        </div>
+    </div>
+</div>
+<?php } ?>
+<div class="container-fluid py-5 mission-fluid">
+<div class="container">
+    <div class="row">
+        <div class="col-12 col-sm-12 col-md-8 col-lg-8">
+            <div class="mb-2">
+                <div class="color-000 mission-text">
+                    Susri Tour Tales (STT) - Mission
+                </div>
+                <div class="mission-caption color-red mb-3">
+                    All the places you hear about, you may not be able to see….
+                    .. But what you intend to see, you should know about.
+                </div>
+            </div>
+            <div class="color-000">
+
+                <p class="color-red">
+                    STT fits in exactly here to assist you
+                </p>
+
+                <p class="color-000">
+                    STT provides you a short and crisp but comprehensive overview of the importance of the ‘tourist places’, through audio narrations  on your mobile phone in many Indian languages. You can listen to the “tales” any time you like – at home for general awareness, just before the tour or while travelling or at the hotel or even at the site. No need of Internet connectivity after downloading.
+                </p>
+
+                <p class="color-red">
+                    So,
+                </p>
+
+                <p class="color-blue mission-caption">
+                    If you are going on a tour….. this is the first “site” to visit !!!
+                </p>
+
+                <b>Welcome to susritourtales.com </b>
+            </div>
+            <!--<div>
+                <a href="<?php /*echo $this->basePath();*/?>/about-us" class="more-link position-relative d-inline-block text-white mt-4">
+                    Know More
+                </a>
+            </div>-->
+        </div>
+    </div>
+</div>
+</div>
+<div class="container-fluid mt-5 pb-3">
+<!-- <div class="container">
+        <div class="row mx-n2">
+            <div class="col-12 col-sm-12 col-md-6 mb-3 mb-md-0 px-2">
+                <div class="avant-md p-4 px-lg-5 bg-white border-radius-10 custom-shadow font-24 color-000 text-center align-items-center d-flex">
+                    <i> SUSRI Tour Tales is a mobile app that helps you hear the tales of places you visit</i>
+                </div>
+                <div class="avant-md p-3 p-lg-4 bg-white border-radius-10 custom-shadow font-24 mt-3">
+                    <div class="d-flex align-items-center color-000">
+                        <div class="mr-3">
+                            <img src="<?php echo $this->basePath(); ?>/img/user/google-play.png" class="img-fluid" alt="play-img">
+                        </div>
+                        Download Now on Google Play
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-12 col-md-6 px-2">
+                <div class="avant-md p-3 align-items-center p-lg-4 bg-white border-radius-10 custom-shadow font-24 h-100 row justify-content-center align-self-center mx-0">
+                    Foreign users may contact the following number or sponsors on whatsapp for subscritpion password:<p>+91 90596 44412</p>
+                </div>
+            </div>
+        </div>
+    </div> -->
+    <div class="container">
+        <div class="row mx-n2">
+            <div class="col-12 col-sm-12 col-md-6 mb-3 mb-md-0 px-2">
+                <div class="avant-md p-4 px-lg-5 bg-white border-radius-10 custom-shadow font-24 h-100 color-000 text-center align-items-center d-flex">
+                    <i> SUSRI Tour Tales is a mobile app that helps you hear the tales of places you visit</i>
+                </div>
+            </div>
+            <div class="col-12 col-sm-12 col-md-6 px-2">
+                <div class="avant-md p-3 p-lg-4 bg-white border-radius-10 custom-shadow font-24 h-100">
+                    <div class="d-flex align-items-center color-000">
+                        <div class="mr-3">
+                            <img src="<?php echo $this->basePath(); ?>/img/user/google-play.png" class="img-fluid" alt="play-img">
+                        </div>
+                        Download Now on Google Play
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid hear-fluid py-5">
+    <div class="container">
+        <div class="row display-flex mx-n2">
+            <div class="col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8 mb-4 mb-lg-0 px-2">
+                <div class="row">
+                    <div class="col-md-12 mb-4 mb-lg-0 px-2 mb-3">
+                        <div class="text-center mb-3">
+                            <div class="mb-2">
+                                <img src="<?php echo $this->basePath(); ?>/img/user/what-to-hear.png" class="img-fluid" alt="image">
+                            </div>
+                            <div class="text-uppercase color-000 avant-md hear-headding1">
+                                MISSION OF  STT
+                            </div>
+                        </div>
+                        <div class="whathear-box hear-text p-3 mx-2">
+                            <ul class="p-0 bullet-points">
+                            <li>
+                                    To highlight Indian Heritage through its world class monuments
+                                </li>
+                                <li>
+                                    To add value to the perception of Indian Tourism
+                                </li>
+                                <li>
+                                    To associate every  interested person  in the Mission
+                                </li>
+                                <li>
+                                    <b><span class="text-danger">To provide part time or full time </span><span class="text-uppercase text-primary">SMALL SCALE EARNING OPPORTUNITY</span><span class="text-danger"> to enterprising individuals – without any conditions or commitments</span></b>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6 my-3">
+                        <div class="text-center mb-3">
+                            <div class="mb-2">
+                                <img src="<?php echo $this->basePath(); ?>/img/user/why-to-hear.png" class="img-fluid" alt="image">
+                            </div>
+                            <div class="text-uppercase color-000 avant-md hear-headding1">
+                                STT tells the tales….
+                            </div>
+                        </div>
+                        <div class="whyhear-box hear-text p-3">
+                            <p class="text-danger">Tales about ?</p>
+                            <ul class="p-0 bullet-points">
+                                <li>Historical Monuments</li>
+                                <li>Natural wonders</li>
+                                <li>Museums and Exhibitions</li>
+                                <li>Temples and Spiritual Places</li>
+                                <li>… all sites of tourism interest.</li>
+                            </ul>
+                            <p class="text-danger">Tales cover …</p>
+                            <ul class="p-0 bullet-points">
+                                <li>Architectural  importance</li>
+                                <li>Creative  highlights</li>
+                                <li>Cultural background</li>
+                                <li>Rare facts, legends, myths  … etc.</li>
+                            </ul>
+                            <p class="text-danger">Tales Reference…</p>
+                            <ul class="p-0 bullet-points">
+                                <li>Encyclopaedia</li>
+                                <li>Books, Journals, Web sites</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6 my-3">
+                        <div class="text-center mb-3">
+                            <div class="mb-2">
+                                <img src="<?php echo $this->basePath(); ?>/img/user/how-to-hear.png" class="img-fluid" alt="image">
+                            </div>
+                            <div class="text-uppercase color-000 avant-md hear-headding1">
+                                Subscribers listen to tales….
+                            </div>
+                        </div>
+                        <div class="howhear-box hear-text p-3">
+                        <p class="text-danger">Why to listen to STT?</p>
+                            <ul class="p-0 bullet-points">
+                                <li>to know about what you see.</li>
+                                <li>to plan what you want to see.</li>
+                                <li>to be aware, even if you don’t see.</li>
+                                <li>to remember the trip for long.</li>
+                                <li>to add fulfilment to pilgrimage.</li>
+                                <li>to justify the tour expenditure.</li>
+                                <li>to enjoy narration in mother tongue</li>
+                                <li>to hear even without Internet</li>
+                                <li>to feel proud of Indian Heritage…..</li>
+                            </ul>
+                            <p class="text-danger">How to subscribe</p>
+                            <ul class="p-0 bullet-points">
+                                <li>By on-line payment, OR</li>
+                                <li>By using “Subscription Password” given by a sponsor.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 mb-4 mb-lg-0 px-2">
+                <div class="text-center mb-3">
+                    <div class="mb-2">
+                        <img src="<?php echo $this->basePath(); ?>/img/user/tour-operator.png" class="img-fluid" alt="image">
+                    </div>
+                    <div class="text-uppercase color-000 avant-md hear-headding1">
+                        Sponsors spread the App and earn….
+                    </div>
+                </div>
+                <div class="touroperator-box hear-text p-3">
+                    <p class="text-danger">Who is a Sponsor ?</p>
+                    <ul class="p-0 bullet-points"><li>Any subscriber who likes to earn  by spreading STT App.</li></ul>
+                    <p class="text-danger">Any qualification, application, selection or fee ?</p> 
+                    <ul class="p-0 bullet-points"><li>NIL</li></ul>
+                    <p class="text-danger">What is the role ?</p>
+                    <ul class="p-0 bullet-points">
+                        <li>Buy ‘subscription passwords’ at discounted price</li>
+                        <li>Sell to the interested  users  at concessional rate.</li> 
+                        <li>Earn Pride & Profit of  highlighting the National Heritage.</li>
+                    </ul>
+                    <p class="text-danger">Who can be successful sponsors ?</p>
+                    <ul class="p-0 bullet-points">
+                        <li>Any one and every one- like- </li>
+                        <li>Tour operators, travel  consultants, guides at the tourist spots,  hoteliers,  cab drivers,  unemployed youth, part-time job  seekers,  housewives, souvenir sellers …  …the list is endless.</li>
+                    </ul>
+                    <p class="text-danger">What is the PROFIT range ?</p>
+                    <ul class="p-0 bullet-points"><li>Discount starts at 30% and goes up to 80%</li>
+                        <li>Special discounts  if  earnings are spent on noble cause.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-12 my-4 mb-lg-0 px-2">
+                <div class="text-center mb-3">
+                    <div class="text-uppercase text-danger opp-box hear-text p-3">
+                        <b>YOUR  SUBSCRIPTION IS  OPPORTUNITY FOR AN ENTERPRISER</b>
+                    </div>
+                </div>
+           </div>
+        </div>
+    </div>
+</div>
+
+<!-- <div class="container-fluid hear-fluid py-5">
+    <div class="container">
+        <div class="row mx-n2">
+            <div class="col-12 col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-4 mb-lg-0 px-2">
+                <div class="text-center mb-3">
+                    <div class="mb-2">
+                        <img src="<?php echo $this->basePath(); ?>/img/user/what-to-hear.png" class="img-fluid" alt="image">
+                    </div>
+                    <div class="text-uppercase color-000 avant-md hear-headding1">
+                        WHAT TO HEAR FROM STT?
+                    </div>
+                </div>
+                <div class="whathear-box hear-text p-3">
+                    <ul class="p-0 bullet-points">
+                        <li>
+                            Temples of worship  and  spiritual places
+                        </li>
+                        <li>
+                            Historical monuments
+                        </li>
+                        <li>
+                            Heritage sites
+                        </li>
+                        <li>
+                            Architectural marvels
+                        </li>
+                        <li>
+                            Natural wonders
+                        </li>
+                        <li>
+                            Recreational and Adventure spots
+                        </li>
+                        <li>
+                            Museums and Exhibitions…. and many more
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="col-12 col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-4 mb-lg-0 px-2">
+                <div class="text-center mb-3">
+                    <div class="mb-2">
+                        <img src="<?php echo $this->basePath(); ?>/img/user/why-to-hear.png" class="img-fluid" alt="image">
+                    </div>
+                    <div class="text-uppercase color-000 avant-md hear-headding1">
+                        WHY TO HEAR THROUGH STT
+                    </div>
+                </div>
+                <div class="whyhear-box hear-text p-3">
+                    <ul class="p-0 bullet-points">
+                        <li>
+                            Awareness  perpetuates the  happiness.
+                        </li>
+                        <li>
+                            You can share the joy with confidence.
+                        </li>
+                        <li>
+                            Spiritual tours give  fulfilment.
+                        </li>
+                        <li>
+                            Tour expenditure suddenly appears ‘ Wow, worth it !!’.
+                        </li>
+                        <li>
+                            Listening while on tour will be fresh in memory.
+                        </li>
+                        <li>
+                            Listening in own language is  soothing and sweet.
+                        </li>
+                        <li>
+                            You can know about the places first and plan your tours. !!
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-12 col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-4 mb-lg-0 px-2">
+                <div class="text-center mb-3">
+                    <div class="mb-2">
+                        <img src="<?php echo $this->basePath(); ?>/img/user/how-to-hear.png" class="img-fluid" alt="image">
+                    </div>
+                    <div class="text-uppercase color-000 avant-md hear-headding1">
+                        HOW TO HEAR STT?
+                    </div>
+                </div>
+                <div class="howhear-box hear-text p-3">
+                    <ul class="p-0 bullet-points">
+                        <li>Install the app ‘Susri Tour Tales”   from  Google Playstore.</li>
+                        <li>Log in,  giving e-mail  Id.</li>
+                        <li>Select  the category of Tour Tales.</li>
+                        <li>Select the tales in the category.</li>
+                        <li>Specify number of users and time frame.</li>
+                        <li>Book the tales by on-line payment.</li>
+                        <li>Receive the password/s on e-mail.</li>
+                        <li>Download  directly from App or using password within 30 days.</li>
+                        <li>While downloading, choose your  preferred  language.</li>
+                        <li>Listen and Enjoy the tales whenever you want.</li>
+
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-12 col-sm-12 col-md-6 col-lg-3 col-xl-3 mb-4 mb-lg-0 px-2">
+                <div class="text-center mb-3">
+                    <div class="mb-2">
+                        <img src="<?php echo $this->basePath(); ?>/img/user/tour-operator.png" class="img-fluid" alt="image">
+                    </div>
+                    <div class="text-uppercase color-000 avant-md hear-headding1">
+                        STT FOR TOUR OPERATORS
+                    </div>
+                </div>
+                <div class="touroperator-box hear-text p-3">
+                    <ul class="p-0 bullet-points">
+                        <li> Make use of well researched and compiled information.</li>
+                        <li>Attract pan India  tourists with multilingual narrations.</li>
+                        <li>Relieve  your tour manager to focus only on tour logistics.</li>
+                        <li>Join in the mission of glorifying Indian Heritage.</li>
+                        <li>Add value to your tours by providing  Pocket Audio Guide.</li>
+                        <li>Susri Tour Tales- is easy and  Tour Operator friendly.</li>
+                        <li>Select Tales–Book- Receive Passwords-Distribute to tourists.</li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div> -->
+<div class="container-fluid hear-fluid pb-4">
+<div class="container">
+    <div class="text-uppercase avant-md tour-headding color-000 mb-3 d-flex justify-content-between">
+        <p class="mb-0">world tour Tales</p><p class="red mb-0"><a href="<?php echo $this->basePath().'/country-list/world-tour'?>">View More</a> </p>
+    </div>
+    <div class="row mb-2">
+        <?php if(count($worldTourPlacesList)) {
+            foreach ($worldTourPlacesList as $worldTour){?>
+            <div class="col-md-4 mb-4">
+                <div style="background: #f5f5f5 url('<?php echo $imageUrl.$worldTour['file_path']; ?>') no-repeat center / cover;" class="tour-row-img"></div>
+                <div class="d-flex justify-content-center align-items-center px-5 tour-row-title"><div class="text-capitalize color-000 avant-bk text-truncate tour-country"><?php echo $worldTour['place_name']?>, <?php echo $worldTour['country_name']; ?></div>
+                </div>
+            </div>
+        <?php } } ?>
+    </div>
+</div>
+</div>
+
+<div class="container-fluid hear-fluid pb-4">
+<div class="container">
+    <div class="text-uppercase avant-md tour-headding color-000 mb-3 d-flex justify-content-between">
+        <p class="mb-0">India tour Tales</p><p class="red mb-0"><a href="<?php echo $this->basePath().'/state-list/india-tour'?>">View More</a> </p>
+    </div>
+    <div class="row mb-2">
+        <?php if(count($indiaTourList)) {
+            foreach ($indiaTourList as $indiaTour){?>
+            <div class="col-md-4 mb-4">
+                <div style="background: #f5f5f5 url('<?php echo $imageUrl.$indiaTour['file_path']; ?>') no-repeat center / cover;" class="tour-row-img"></div>
+                <div class="d-flex justify-content-center align-items-center px-5 tour-row-title"><div class="text-capitalize color-000 avant-bk text-truncate tour-country"><?php echo $indiaTour['place_name']?>, <?php echo $indiaTour['state_name']; ?></div>
+                </div>
+            </div>
+        <?php } } ?>
+    </div>
+</div>
+</div>
+
+<div class="container-fluid hear-fluid pb-4">
+<div class="container">
+    <div class="text-uppercase avant-md tour-headding color-000 mb-3 d-flex justify-content-between">
+        <p class="mb-0">SPIRITUAL tour Tales</p><p class="red mb-0"><a href="<?php echo $this->basePath().'/state-list/spiritual-tour'?>">View More</a> </p>
+    </div>
+    <div class="row mb-2">
+        <?php if(count($spiritualTourplacesList)) {
+            foreach ($spiritualTourplacesList as $spiritualTour){?>
+            <div class="col-md-4 mb-4">
+                <div style="background: #f5f5f5 url('<?php echo $imageUrl.$spiritualTour['file_path']; ?>') no-repeat center / cover;" class="tour-row-img"></div>
+                <div class="d-flex justify-content-center align-items-center px-5 tour-row-title"><div class="text-capitalize color-000 avant-bk text-truncate tour-country"><?php echo $spiritualTour['place_name']?>, <?php echo $spiritualTour['state_name']; ?></div>
+                </div>
+            </div>
+        <?php } } ?>
+    </div>
+</div>
+</div>
+
+<div class="container-fluid hear-fluid pb-4">
+<div class="container">
+    <div class="text-uppercase avant-md tour-headding color-000 mb-3 d-flex justify-content-between">
+        <p class="mb-0">CITY tour Tales</p><p class="red mb-0"><a href="<?php echo $this->basePath().'/country-list/city-tour'?>">View More</a> </p>
+    </div>
+    <div class="row mb-2">
+        <?php if(count($cityTour)) {
+            foreach ($cityTour as $city){?>
+            <div class="col-md-4 mb-4">
+                <div style="background: #f5f5f5 url('<?php echo $imageUrl.$city['file_path']; ?>') no-repeat center / cover;" class="tour-row-img"></div>
+                <div class="d-flex justify-content-center align-items-center px-5 tour-row-title"><div class="text-capitalize color-000 avant-bk text-truncate tour-country"><?php echo $city['city_name']; ?></div>
+                </div>
+            </div>
+        <?php } } ?>
+    </div>
+</div>
+</div>
+
+<div class="container-fluid hear-fluid pb-4">
+<div class="container">
+    <div class="text-uppercase avant-md tour-headding color-000 mb-3 d-flex justify-content-between">
+        <p class="mb-0">Festival tour Tales</p><p class="red mb-0"><a href="<?php echo $this->basePath().'/seasonal-specials'?>">View More</a> </p>
+    </div>
+    <div class="row mb-2">
+        <?php if(count($seasonalSpecialslist)) {
+            foreach ($seasonalSpecialslist as $seasonalSpecial){?>
+            <div class="col-md-4 mb-4">
+                <div style="background: #f5f5f5 url('<?php echo $imageUrl.$seasonalSpecial['file_path']; ?>') no-repeat center / cover;" class="tour-row-img"></div>
+                <div class="d-flex justify-content-center align-items-center px-5 tour-row-title"><div class="text-capitalize color-000 avant-bk text-truncate tour-country"><?php echo $seasonalSpecial['seasonal_name']; ?></div>
+                </div>
+            </div>
+        <?php } } ?>
+    </div>
+</div>
+</div>
+
+<?php /* 
+<div class="container-fluid hear-fluid pb-5">
+<div class="container">
+    <div class="text-uppercase avant-md tour-headding color-000 mb-3 d-flex justify-content-between">
+        <p class="mb-0">world tour Tales</p><p class="red mb-0"><a href="<?php echo $this->basePath().'/country-list/world-tour'?>">View More</a> </p>
+    </div>
+    <div class="owl-carousel tour-silder" id="world-tour-slider">
+        <?php if(count($worldTourPlacesList)) {
+            foreach ($worldTourPlacesList as $worldTour){
+                ?>
+                <div class="slider-box bg-white mb-2 position-relative">
+                    <div class="slider-image position-relative" style="background: #f5f5f5 url('<?php echo $imageUrl.$worldTour['file_path']; ?>') no-repeat center / cover">
+                        <!--<div class="text-right">
+                            <span class="bookings text-white">
+                                600 Downloads
+                            </span>
+                        </div>-->
+                    </div>
+                    <div class="p-3">
+                        <div class="d-flex align-items-center">
+                            <div class="tour-country-flag mr-2" style="background: #f5f5f5 url('<?php echo $imageUrl.$worldTour['country_image_path']; ?>') no-repeat center / cover"></div>
+                            <div style="min-width: 0">
+                                <div class="text-capitalize color-000 avant-bk tour-country text-truncate ">
+                                    <?php echo $worldTour['place_name']?>, <?php echo $worldTour['country_name']; ?>
+                                </div>
+                                <!--<div class="color-333 d-flex align-items-center">
+                            <img src="<?php echo $this->basePath(); ?>/img/user/fav.png" class="img-fluid w-auto" alt="fav-img">1.5k
+                        </div>-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <?php } } ?>
+
+    </div>
+</div>
+</div>
+
+<div class="container-fluid hear-fluid pb-5">
+<div class="container">
+    <div class="text-uppercase avant-md tour-headding color-000 mb-3 d-flex justify-content-between">
+        <p class="mb-0">India tour Tales</p><p class="red mb-0"><a href="<?php echo $this->basePath().'/state-list/india-tour'?>">View More</a> </p>
+    </div>
+    <div class="owl-carousel tour-silder" id="india-tour-slider">
+        <?php if(count($indiaTourList)) {
+           foreach ($indiaTourList as $indiaTour) {?>
+            <div class="slider-box bg-white mb-2 position-relative">
+
+                <div class="slider-image position-relative" style="background: #f5f5f5 url('<?php echo $imageUrl.$indiaTour['file_path']; ?>') no-repeat center / cover">
+                    <!--<div class="text-right">
+                        <span class="bookings text-white">
+                            250 Downloads
+                        </span>
+                    </div>-->
+                </div>
+                <div class="p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="w-100">
+                            <div class="text-capitalize color-000 avant-bk tour-country">
+                                <?php echo $indiaTour['place_name']?>, <?php echo $indiaTour['state_name']; ?>
+                            </div>
+                            <!--<div class="color-333 d-flex align-items-center">
+                            <img src="<?php echo $this->basePath(); ?>/img/user/fav.png" class="img-fluid w-auto" alt="fav-img">1.5k
+                        </div>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <?php } }?>
+    </div>
+</div>
+</div>
+
+<div class="container-fluid hear-fluid pb-5">
+<div class="container">
+    <div class="text-uppercase avant-md tour-headding color-000 mb-3 d-flex justify-content-between">
+        <p class="mb-0">SPIRITUAL TOUR Tales</p><p class="red mb-0"><a href="<?php echo $this->basePath().'/state-list/spiritual-tour'?>"> View More </a> </p>
+    </div>
+    <div class="owl-carousel tour-silder" id="spiritual-tour-slider">
+        <?php foreach ($spiritualTourplacesList as $spiritualTour) {?>
+            <div class="slider-box bg-white mb-2 position-relative">
+
+                <div class="slider-image position-relative" style="background: #f5f5f5 url('<?php echo $imageUrl.$spiritualTour['file_path']; ?>') no-repeat center / cover">
+                    <!--<div class="text-right">
+                        <span class="bookings text-white">
+                            250 Downloads
+                        </span>
+                    </div>-->
+                </div>
+                <div class="p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="w-100">
+                            <div class="text-capitalize color-000 avant-bk tour-country">
+                                <?php echo $spiritualTour['place_name']?>, <?php echo $spiritualTour['state_name']; ?>
+                            </div>
+                            <!--<div class="color-333 d-flex align-items-center">
+                            <img src="<?php echo $this->basePath(); ?>/img/user/fav.png" class="img-fluid w-auto" alt="fav-img">1.5k
+                        </div>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <?php } ?>
+    </div>
+</div>
+</div>
+
+<div class="container-fluid hear-fluid pb-5">
+<div class="container">
+    <div class="text-uppercase avant-md tour-headding color-000 mb-3 d-flex justify-content-between">
+        <p class="mb-0">CITY TOUR Tales</p><p class="red mb-0"><a href="<?php echo $this->basePath().'/country-list/city-tour'?>"> View More </a> </p>
+    </div>
+    <div class="owl-carousel tour-silder" id="city-tour-slider">
+        <?php foreach ($cityTour as $city) {?>
+            <div class="slider-box bg-white mb-2 position-relative">
+            <a href="<?php echo $this->basePath();?>/places-list/<?php echo \Admin\Model\PlacePrices::tour_type_url[\Admin\Model\PlacePrices::tour_type_City_tour];?>/<?php echo str_replace(" ","-",strtolower($city['city_name']))?>" class="stretched-link"></a>
+                <div class="slider-image position-relative" style="background: #f5f5f5 url('<?php echo $imageUrl.$city['file_path']; ?>') no-repeat center / cover">
+                    <!--<div class="text-right">
+                        <span class="bookings text-white">
+                            250 Downloads
+                        </span>
+                    </div>-->
+                </div>
+                <div class="p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="w-100">
+                            <div class="text-capitalize color-000 avant-bk tour-country">
+                                <?php echo $city['city_name']; ?>
+                            </div>
+                            <!--<div class="color-333 d-flex align-items-center">
+                            <img src="<?php echo $this->basePath(); ?>/img/user/fav.png" class="img-fluid w-auto" alt="fav-img">1.5k
+                        </div>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <?php } ?>
+    </div>
+</div>
+</div>
+
+<div class="container-fluid hear-fluid pb-5">
+<div class="container">
+    <div class="text-uppercase avant-md tour-headding color-000 mb-3 d-flex justify-content-between">
+        <p class="mb-0">Festival TOUR Tales</p><p class="red mb-0"><a href="<?php echo $this->basePath().'/seasonal-specials'?>"> View More </a> </p>
+    </div>
+    <div class="owl-carousel tour-silder" id="seasonal-tour-slider">
+        <?php foreach ($seasonalSpecialslist as $seasonalSpecial) {?>
+            <div class="slider-box bg-white mb-2 position-relative">
+                <a href="<?php echo $this->basePath();?>/seasonal-places-list/<?php echo base64_encode("placesList=".$seasonalSpecial['seasonal_special_id'])?>" class="stretched-link"></a>
+                <div class="slider-image position-relative" style="background: #f5f5f5 url('<?php echo $imageUrl.$seasonalSpecial['file_path']; ?>') no-repeat center / cover">
+                    <!--<div class="text-right">
+                        <span class="bookings text-white">
+                            250 Downloads
+                        </span>
+                    </div>-->
+                </div>
+                <div class="p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="w-100">
+                            <div class="text-capitalize color-000 avant-bk tour-country">
+                                <?php echo $seasonalSpecial['seasonal_name']; ?>
+                            </div>
+                            <!--<div class="color-333 d-flex align-items-center">
+                            <img src="<?php echo $this->basePath(); ?>/img/user/fav.png" class="img-fluid w-auto" alt="fav-img">1.5k
+                        </div>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <?php } ?>
+    </div>
+</div>
+</div>
+*/?>
+<div class="container-fluid pb-5">
+<div class="container">
+    <div class="row mx-n2">
+        <div class="col-12 col-sm-12 col-md-6 mb-3 mb-md-0 px-2">
+            <div class="d-flex align-items-center justify-content-center border-radius-10 custom-shadow font-22 bg-white p-4 text-center font-italic avant-md color-000 h-100">
+                You can listen in English or Hindi or in your regional language.
+            </div>
+        </div>
+        <div class="col-12 col-sm-12 col-md-6 px-2">
+            <div class="border-radius-10 custom-shadow bg-white d-flex flex-wrap p-3">
+
+                <!-- <button class="btn color-333 language-box">
+                    Assamese
+                </button> -->
+                <button class="btn color-333 language-box">
+                    bengali
+                </button>
+                <button class="btn color-333 language-box">
+                    gujarathi
+                </button>
+                <button class="btn color-333 language-box">
+                    kannada
+                </button>
+                <button class="btn color-333 language-box">
+                    malayalam
+                </button>
+                <button class="btn color-333 language-box">
+                    marathi
+                </button>
+
+                <button class="btn color-333 language-box">
+                    Odiya
+                </button>
+                <button class="btn color-333 language-box">
+                    punjabi
+                </button>
+
+                <button class="btn color-333 language-box">
+                    tamil
+                </button>
+                <button class="btn color-333 language-box">
+                    telugu
+                </button>
+                <button class="btn color-333 language-box">
+                    urdu
+                </button>
+
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<!--<div class="container-fluid hear-fluid pb-5">
+<div class="container">
+    <div class="text-uppercase avant-md tour-headding color-000 mb-3">
+        Acknowledgements
+    </div>
+    <div class="owl-carousel" id="acknowledgements-slider">
+        <div class="slider-box bg-white mb-2 p-4 position-relative">
+            <a href="javascript:void(0);" class="stretched-link"></a>
+            <div class="mb-3 acknowledgements-logo">
+                <img src="<?php echo $this->basePath(); ?>/img/user/tvisha.png" class="img-fluid w-auto" alt="tvisha">
+            </div>
+            <div class="color-333">
+                I would like to thanks Tvisha Technologies for developing such a wonderful application.
+            </div>
+        </div>
+        <div class="slider-box bg-white mb-2 p-4 position-relative">
+            <a href="javascript:void(0);" class="stretched-link"></a>
+            <div class="mb-3 acknowledgements-logo">
+                <img src="<?php echo $this->basePath(); ?>/img/user/shutterstock.png" class="img-fluid w-auto" alt="tvisha">
+            </div>
+            <div class="color-333">
+                I would like to thanks Shutterstock for providing Images for us.
+            </div>
+        </div>
+        <div class="slider-box bg-white mb-2 p-4 position-relative">
+            <a href="javascript:void(0);" class="stretched-link"></a>
+            <div class="mb-3 acknowledgements-logo">
+                <img src="<?php echo $this->basePath(); ?>/img/user/freepik.png" class="img-fluid w-auto" alt="tvisha">
+            </div>
+            <div class="color-333">
+                I would like to thanks freepik for providing Images for us.
+            </div>
+        </div>
+    </div>
+</div>
+</div>-->
+
+<script>
+
+$('#world-tour-slider').owlCarousel({
+    stagePadding: 0,
+    autoplay: false,
+    loop: false,
+    margin: 10,
+    items: 4,
+    lazyLoad: true,
+    dots: false,
+    nav:true,
+  
+    responsive: {
+        0: {
+            items: 1,
+            stagePadding: 20
+        },
+        768: {
+            items: 1,
+            stagePadding: 100
+        },
+        992: {
+            items:4,
+            stagePadding: 0
+        },
+        1400: {
+            items: 3,
+            stagePadding: 0
+        },
+        1600: {
+            items: 3,
+            stagePadding: 0
+        },
+        1800: {
+            items: 3,
+            stagePadding: 0
+        }
+    }
+});
+</script>
+<script>
+$('#india-tour-slider').owlCarousel({
+    stagePadding: 0,
+    autoplay: false,
+    loop: false,
+    margin: 10,
+    items: 4,
+    lazyLoad: true,
+    dots: false,
+    nav:true,
+    responsive: {
+        0: {
+            items: 1
+        },
+        576: {
+            items: 2,
+            margin: 15
+        },
+        768: {
+            items: 3,
+            margin: 15
+        },
+        992: {
+            items: 3,
+            margin: 15
+        }
+    }
+});
+</script>
+
+<script>
+
+$('#spiritual-tour-slider').owlCarousel({
+    stagePadding: 0,
+    autoplay: false,
+    loop: false,
+    margin: 10,
+    items: 4,
+    lazyLoad: true,
+    dots: false,
+    nav:true,
+    responsive: {
+        0: {
+            items: 1,
+            stagePadding: 20
+        },
+        768: {
+            items: 1,
+            stagePadding: 100
+        },
+        992: {
+            items:4,
+            stagePadding: 0
+        },
+        1400: {
+            items: 3,
+            stagePadding: 0
+        },
+        1600: {
+            items: 3,
+            stagePadding: 0
+        },
+        1800: {
+            items: 3,
+            stagePadding: 0
+        }
+    }
+});
+$('#city-tour-slider').owlCarousel({
+    stagePadding: 0,
+    autoplay: false,
+    loop: false,
+    margin: 10,
+    items: 4,
+    lazyLoad: true,
+    dots: false,
+    nav:true,
+    responsive: {
+        0: {
+            items: 1
+        },
+        576: {
+            items: 2,
+            margin: 15
+        },
+        768: {
+            items: 4,
+            margin: 15
+        },
+        992: {
+            items: 4,
+            margin: 15
+        }
+    }
+});
+$('#seasonal-tour-slider').owlCarousel({
+    stagePadding: 0,
+    autoplay: false,
+    loop: false,
+    margin: 10,
+    items: 4,
+    lazyLoad: true,
+    dots: false,
+    nav:true,
+    responsive: {
+        0: {
+            items: 1
+        },
+        576: {
+            items: 2,
+            margin: 15
+        },
+        768: {
+            items: 4,
+            margin: 15
+        },
+        992: {
+            items: 4,
+            margin: 15
+        }
+    }
+});
+</script>
+
+<script>
+
+$('#acknowledgements-slider').owlCarousel({
+    stagePadding: 0,
+    autoplay: true,
+    loop: true,
+    margin: 10,
+    items: 3,
+    lazyLoad: true,
+    dots: false,
+    nav:false,
+    responsive: {
+        0: {
+            items: 1,
+            stagePadding: 20
+        },
+        768: {
+            items: 1,
+            stagePadding: 20
+        },
+        992: {
+            items: 3,
+            stagePadding: 0
+        },
+        1400: {
+            items: 3,
+            stagePadding: 0
+        },
+        1600: {
+            items: 3,
+            stagePadding: 0
+        },
+        1800: {
+            items: 3,
+            stagePadding: 0
+        }
+    }
+});
+</script>
+<script>
+$('#home-banner').owlCarousel({
+    stagePadding: 200,
+    autoplay: true,
+    loop: true,
+    margin: 10,
+    items: 1,
+    lazyLoad: true,
+    dots: false,
+    nav:true,
+    responsive: {
+        0: {
+            items: 1,
+            stagePadding: 20
+        },
+        768: {
+            items: 1,
+            stagePadding: 100
+        },
+        992: {
+            items: 1,
+            stagePadding: 100
+        },
+        1400: {
+            items: 1,
+            stagePadding: 300
+        },
+        1600: {
+            items: 1,
+            stagePadding: 200
+        },
+        1800: {
+            items: 1,
+            stagePadding: 230
+        }
+    }
+});
+</script>

@@ -1,0 +1,115 @@
+
+<?php if(isset($type) && $type =='initialize') { ?>
+<div class="table-responsive">
+<table class="table table-bordered table-hover table-striped" id="extTable">
+    <thead>
+    <tr>
+        <th>S.no</th>
+        <th data-placeholder="registration date" data-input="sponsor_reg_date">registration date</th>
+        <th data-placeholder="expiry date" data-input="subscription_end_date">expiry date</th>
+        <th data-placeholder="users" data-input="user_name">user name</th>
+        <th data-placeholder="mobile" data-input="mobile">mobile number</th>
+        <th data-placeholder="email" data-input="email">email</th>
+        <th data-placeholder="state" data-input="res_state">state</th>        
+        <th data-placeholder="sponsor type" data-type="select" data-input="sponsor_type" data-value='[{"value":"1","text":"Tour Operator"},{"value":"2","text":"Hotelier"},{"value":"3","text":"Travel Agent"},{"value":"4","text":"Tourism Consultant"},{"value":"5","text":"Freelancer"},{"value":"6","text":"Charity Org"}]'>sponsor type</th>
+        <th data-placeholder="passwords bought" data-input="bookings_count">passwords bought</th>
+        <th data-placeholder="passwords redeemed" data-input="bookings_count">passwords redeemed</th>
+        <th data-placeholder="discount percentage" data-input="discount_percentage">discount percentage</th>
+        <th data-placeholder="total amount" data-input="booking_price">total amount</th>
+        <th data-placeholder="promoter" data-input="ref_by">promoter</th>
+        <th data-placeholder="prm. mobile" data-input="ref_mobile">prm. mobile</th>
+        <th data-placeholder="notify">notify</th>
+    </tr>
+    <?php } ?>
+
+    <?php if(isset($type) && ($type =='initialize' || $type=="search") ) {?>
+    <input type="hidden" class="records" value="<?php echo $totalCount; ?>">
+    <tbody>
+    <?php } ?>
+
+    <?php if(count($sponsorsList))
+      {
+        $i=0;
+        if(isset($offset))
+        {
+            $i=$offset;
+        }
+
+        foreach ($sponsorsList as $user) { 
+                $gt2m = true;
+                $regDt = date("d-m-Y",strtotime($user['sponsor_reg_date']));
+                $today = date("d-m-Y");
+                $diffDays = ($today - $regDt);
+                if($diffDays < 61){
+                    $gt2m = false;
+                }
+            ?>
+            <tr class="position-relative <?php if(($user['pcount'] < $user['npcp']) && $gt2m){echo "text-danger";}?>" data-id="<?php echo base64_encode("sponsorid=".$user['user_id']); ?>">
+                <td><?php echo $i+1; ?></td>
+                <td>
+                    <?php 
+                    if(!is_null($user['sponsor_reg_date']) && $user['sponsor_reg_date'] != "0000-00-00")
+                        echo date("d-m-Y",strtotime($user['sponsor_reg_date'])); 
+                    else 
+                        echo "NA";?>
+                </td>
+                <td>
+                    <?php 
+                    if(!is_null($user['subscription_end_date']) && $user['subscription_end_date'] != "0000-00-00")
+                        echo date("d-m-Y",strtotime($user['subscription_end_date'])); 
+                    else 
+                        echo "NA";?>
+                </td>
+                <td><?php echo $user['user_name']; ?></td>
+                <td><?php echo "+".$user['mobile_country_code'].' '.$user['mobile']; ?></td>
+                <td><?php echo $user['email']; ?></td>
+                <td><?php echo $user['res_state']; ?></td>
+                <td><?php 
+                    switch ($user['sponsor_type']) {
+                        case "1":
+                            echo "Tour&nbsp;Operator";
+                            break;
+                        case "2":
+                            echo "Hotlier";
+                            break;
+                        case "3":
+                            echo "Travel Agent";
+                            break;
+                        case "4":
+                            echo "Tourism&nbsp;Consultant";
+                            break;
+                        case "5":
+                            echo "Freelancer";
+                            break;
+                        case "6":
+                            echo "Charity&nbsp;Org";
+                            break;
+                        default:
+                        echo "";
+                    } ?>
+                </td>
+                <td class="text-center"><?php echo $user['ptcount']; ?></td>
+                <td class="text-center"><?php echo $user['redeemed_count']; ?></td>
+                <td><input data-id="<?php echo base64_encode("sponsorid=".$user['user_id']);?>" type="text" class="tdp" value="<?php echo $user['discount_percentage']; ?>" onclick="event.cancelBubble=true; return false;"/></td>
+                <td class="text-center"><?php echo round($user['booking_price'],2); ?></td>
+                <td><input data-id="<?php echo base64_encode("sponsorid=".$user['user_id']);?>" type="text" class="tref" value="<?php echo $user['ref_by']; ?>" onclick="event.cancelBubble=true; return false;"/></td>
+                <td><input data-id="<?php echo base64_encode("sponsorid=".$user['user_id']);?>" type="text" class="trfm" value="<?php echo $user['ref_mobile']; ?>" onclick="event.cancelBubble=true; return false;"/></td>
+                <td><div class="col-sm-9 text-left">
+                        <a class="action-icon" href="<?php echo $this->basePath().'/a_dMin/edit-notify/'.base64_encode('sponsorid='.$user['user_id'])?>">
+                            <img src="<?php echo $this->basePath();?>/img/edit.png" class="img-fluid">
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            <?php $i++; } } else { ?>
+        <tr ><td class="text-center" colspan="14">No data</td></tr>
+    <?php  } ?>
+    <?php if(isset($type) && ($type =='initialize' || $type=="search") ) {?>
+
+    </tbody>
+    <?php } ?>
+    <?php if(isset($type) && $type =='initialize') {?>
+
+</table>
+</div>
+<?php } ?>

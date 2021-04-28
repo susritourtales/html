@@ -35,6 +35,7 @@ class Mail
             $content = $this->getContentFromTemplate($template, $data);
             print_r($content);
             $body = $this->getMailBodyFromHtml($content,$attach,$filename,$filePath,$data);
+            print_r($body);
             $fromName = "Susri tour tales";
             if(isset($data['sender'])){
                 if(trim($data['sender']) != ""){

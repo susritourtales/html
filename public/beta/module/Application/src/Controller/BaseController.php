@@ -1454,7 +1454,7 @@ class BaseController extends AbstractActionController
     }
         
     public function logRequest($logString){
-        $fullPath = "/var/www/html/public/beta/httplogs.txt";
+        $fullPath = "/var/www/html/public/httplogs.txt";
         $parts = explode( '/', $fullPath );
         array_pop( $parts );
         $dir = implode( '/', $parts );

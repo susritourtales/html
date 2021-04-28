@@ -327,7 +327,7 @@ class BaseController extends AbstractActionController
         }
 
     }
-    function emailSTTLogFiles($receiverEmail, $subject, $action,$data ,$attach)
+    function emailSTTLogFiles($receiverEmail, $subject, $action,$data)// ,$attach)
     {
         try
         {
@@ -340,8 +340,8 @@ class BaseController extends AbstractActionController
                     'action' => $action,
                     "baseUrl" => 'http://susritourtales.com',
                     "data" => $data
-                ),
-                array($attach)
+                )/* ,
+                array($attach) */
             );
             return true;
         }catch(\Exception $e)

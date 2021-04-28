@@ -1637,9 +1637,39 @@ elseif ($action =='notify') {
 }
 elseif ($action =='logs'){
     if($data['type'] == "http")
-        echo $tableHTml = "http log file - " . date('d-m-Y');
+        $str = "database log file - " . date('d-m-Y');
     else if($data['type'] == "db")
-        echo $tableHTml = "database log file - " . date('d-m-Y');
+        $str = "database log file - " . date('d-m-Y');
+        echo $tableHTml = '<!DOCTYPE html>
+        <html lang="en" >
+            <head>
+                <meta charset="UTF-8">
+                <title></title>
+            </head>
+            <body>
+                <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+                <!--[if !mso]><!--><meta http-equiv="X-UA-Compatible" content="IE=edge">
+                <!--<![endif]-->
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title></title>
+                <style type="text/css">
+                    body{width:100% !important;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;margin:0;padding:0;}
+                    * {-webkit-font-smoothing:antialiased}
+                    .ExternalClass * {line-height:100%}
+                    table td {border-collapse:collapse; max-width:100% !important; word-break:break-word; -webkit-hyphens:auto; -moz-hyphens:auto; hyphens:auto; overflow:auto; white-space:normal;}
+                    .wlf {width:610px}
+                    @media only screen and (max-width:610px) {
+                        .full-width {width:100% !important}
+                        .t-none {display:none}
+                        .t-center-txt {text-align:center}
+                        .t-width {width:100% !important;max-width:100% !important;display:table !important}
+                    }
+                </style>
+                <div>
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0"><tbody><tr><td>' . $str . '</td></tr></tbody></table>
+                </div>
+            </body>
+        </html>';
 }
 else if($action =='mail-booking-details')
 {

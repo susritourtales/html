@@ -1455,7 +1455,7 @@ class BaseController extends AbstractActionController
         
     public function logRequest($logString){
         $fullPath = "/var/www/html/public/beta/logs/httplogs.txt";
-        $timestamp = date("dd/mm/yyyy")." &raquo;";
+        $timestamp = "\n\n". date("d-m-Y H:i:s") . ">> ";
         $myfile = file_put_contents($fullPath, $timestamp. $logString.PHP_EOL , FILE_APPEND | LOCK_EX);
         /* print_r(error_get_last());
         return $myfile; */

@@ -1635,6 +1635,12 @@ elseif ($action =='notify') {
     </body>
     </html>';
 }
+elseif ($action =='logs'){
+    if($data['type'] == "http")
+        echo $tableHTml = "http log file - " . date('d-m-Y');
+    else if($data['type'] == "db")
+        echo $tableHTml = "database log file - " . date('d-m-Y');
+}
 else if($action =='mail-booking-details')
 {
         $mailTxt="";

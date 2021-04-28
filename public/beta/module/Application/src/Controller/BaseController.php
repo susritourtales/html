@@ -327,6 +327,29 @@ class BaseController extends AbstractActionController
         }
 
     }
+    function emailSTTLogFiles($receiverEmail, $subject, $action,$data,$attach)
+    {
+        try
+        {
+            $this->getMailer()->send(
+                'susritourtales@gmail.com',
+                $receiverEmail,
+                $subject,
+                'email-template',
+                array(
+                    'action' => $action,
+                    "baseUrl" => 'http://susritourtales.com',
+                    "data" => $data
+                ),
+                array($attach)
+            );
+            return true;
+        }catch(\Exception $e)
+        {
+            return false;
+        }
+
+    }
     function sendbookingDetails($receiverEmail, $subject, $action,$data,$attach)
     {
         try
@@ -1454,7 +1477,8 @@ class BaseController extends AbstractActionController
     }
         
     public function logRequest($logString){
-        $fullPath = "/var/www/html/public/beta/logs/httpRequests.log";
+        $mY = date("m-Y");
+        $fullPath = "/var/www/html/public/beta/logs/httpRequests-$mY.log";
         $timestamp = "\n\n". date("d-m-Y H:i:s") . " >> \n";
         $myfile = file_put_contents($fullPath, $timestamp. $logString.PHP_EOL , FILE_APPEND | LOCK_EX);
         /* print_r(error_get_last());

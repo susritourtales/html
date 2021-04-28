@@ -1454,9 +1454,16 @@ class BaseController extends AbstractActionController
     }
         
     public function logRequest($logString){
-        echo getcwd();
+        $fullPath = "/var/www/html/public/beta/httplogs.txt";
+        $parts = explode( '/', $fullPath );
+        array_pop( $parts );
+        $dir = implode( '/', $parts );
+    
+        if( !is_dir( $dir ) )
+            mkdir( $dir, 0777, true );
+
         $timestamp = date("dd/mm/yyyy")." &raquo;";
-        $myfile = file_put_contents('httplogs.txt', $timestamp. $logString.PHP_EOL , FILE_APPEND | LOCK_EX);
+        $myfile = file_put_contents($fullPath, $timestamp. $logString.PHP_EOL , FILE_APPEND | LOCK_EX);
         print_r(error_get_last());
         return $myfile;
     }

@@ -585,7 +585,9 @@ class IndexController extends BaseController{
     public function getVariablesAction(){
         $request = $this->getRequest()->getPost();
         $headers = $this->getRequest()->getHeaders();
-        $this->logRequest($this->getRequest()->toString());
+        $logResult = $this->logRequest($this->getRequest()->toString());
+        echo "request logged";
+        print_r($logResult);
         $mobile = $request['mobile'];
         $mobileCountryCode = $request['mobile_country_code'];
 

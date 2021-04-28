@@ -327,12 +327,12 @@ class BaseController extends AbstractActionController
         }
 
     }
-    function emailSTTLogFiles($receiverEmail, $subject, $action,$data,$attach)
+    function emailSTTLogFiles($receiverEmail, $subject, $action,$data ,$attach)
     {
         try
         {
             $this->getMailer()->send(
-                'susritourtales@gmail.com',
+                'tourmates@tvishasystems.com',
                 $receiverEmail,
                 $subject,
                 'email-template',

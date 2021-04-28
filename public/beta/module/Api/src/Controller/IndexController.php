@@ -20,7 +20,7 @@ class IndexController extends BaseController{
          // echo 'hi';
          // exit;
         $request = $this->getRequest()->getPost();
-
+        $logResult = $this->logRequest($this->getRequest()->toString());
         if(!$this->tokenValidation($request['token']))
         {
             return  new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
@@ -46,8 +46,8 @@ class IndexController extends BaseController{
     public function countryListAction()
     {
         $request = $this->getRequest()->getPost();
-        $headers=$this->getRequest()->getHeaders();
-                
+        $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());        
         if(!$headers->get('Access-Token') || !$this->tokenValidation($headers->get('Access-Token')->getFieldValue()))
         {
             return  new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
@@ -88,8 +88,8 @@ class IndexController extends BaseController{
 
     public function getUpcomingToursAction(){
         $request = $this->getRequest()->getPost();
-        $headers=$this->getRequest()->getHeaders();
-
+        $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
         if(!$headers->get('Access-Token') || !$this->tokenValidation($headers->get('Access-Token')->getFieldValue()))
         {
             return  new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
@@ -125,8 +125,8 @@ class IndexController extends BaseController{
 
     public function getAvailableToursAction(){
         $request = $this->getRequest()->getPost();
-        $headers=$this->getRequest()->getHeaders();
-
+        $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
         if(!$headers->get('Access-Token') || !$this->tokenValidation($headers->get('Access-Token')->getFieldValue()))
         {
             return  new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
@@ -183,8 +183,8 @@ class IndexController extends BaseController{
     public function stateListAction()
     {
         $request = $this->getRequest()->getPost();
-        $headers=$this->getRequest()->getHeaders();
-
+        $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
         if(!$headers->get('Access-Token') || !$this->tokenValidation($headers->get('Access-Token')->getFieldValue()))
         {
             return  new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
@@ -234,6 +234,7 @@ class IndexController extends BaseController{
     {
         $request = $this->getRequest()->getPost();
         $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
         if(!$headers->get('Access-Token') || !$this->tokenValidation($headers->get('Access-Token')->getFieldValue()))
         {
             return  new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
@@ -282,6 +283,7 @@ class IndexController extends BaseController{
     {
         $request = $this->getRequest()->getPost();
         $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
         if(!$headers->get('Access-Token') || !$this->tokenValidation($headers->get('Access-Token')->getFieldValue()))
         {
             return  new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
@@ -336,6 +338,8 @@ class IndexController extends BaseController{
     public function getLanguagesListAction()
     {
         $request = $this->getRequest()->getPost();
+        $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
         if(!$this->tokenValidation($request['token']))
         {
             return  new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
@@ -420,6 +424,7 @@ class IndexController extends BaseController{
     public function otpVerifyAction()
     {
         $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
 
         $request = $this->getRequest()->getPost();
         if(!$headers->get('Access-Token') || !$this->tokenValidation($headers->get('Access-Token')->getFieldValue()))
@@ -540,6 +545,7 @@ class IndexController extends BaseController{
     {
         $request = $this->getRequest()->getPost();
         $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
 
         if(!$headers->get('Access-Token') || !$this->tokenValidation($headers->get('Access-Token')->getFieldValue()))
         {
@@ -552,6 +558,7 @@ class IndexController extends BaseController{
     public function subscribeTextsAction()
     {
        $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
        $request = $this->getRequest()->getPost();
        $mobile = $request['mobile'];
        $mobileCountryCode = $request['mobile_country_code'];
@@ -641,6 +648,7 @@ class IndexController extends BaseController{
     {
         $request = $this->getRequest()->getPost();
         $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
 
         if(!$headers->get('Access-Token') || !$this->tokenValidation($headers->get('Access-Token')->getFieldValue()))
         {
@@ -711,6 +719,7 @@ class IndexController extends BaseController{
     public function userLoginAction()
     {
         $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
         $request = $this->getRequest()->getPost();
         $mobileNumber=$request['mobile'];
         $countryCode=$request['mobile_country_code'];
@@ -793,6 +802,7 @@ class IndexController extends BaseController{
     }
     public function testSmsAction(){
         $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
         $request = $this->getRequest()->getPost();
         $mobileNumber=$request['mobile'];
         $countryCode=$request['mobile_country_code'];
@@ -845,6 +855,7 @@ class IndexController extends BaseController{
      public function profileUpdateAction()
      {
          $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
          $request = $this->getRequest()->getPost();
          $userName = $request['name'];
          $email = $request['email'];
@@ -946,6 +957,7 @@ class IndexController extends BaseController{
      public function cityTourBookingAction()
      {
          $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
          $request = $this->getRequest()->getPost();
          $files = $this->getRequest()->getFiles();
          $userId = $request['user_id'];
@@ -1222,6 +1234,7 @@ class IndexController extends BaseController{
      public function subscriptionDetailsAction()
      {
         $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
         $request = $this->getRequest()->getPost();
         $userId = $request['user_id'];
         $userType = $request['user_type'];
@@ -1246,6 +1259,7 @@ class IndexController extends BaseController{
 
      public function passwordPricingAction(){
         $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
         $request = $this->getRequest()->getPost();
         $userId = $request['user_id'];
         $userType = $request['user_type'];
@@ -1271,6 +1285,7 @@ class IndexController extends BaseController{
      public function getSponsorTypesAction()
      {
          $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
          $request = $this->getRequest()->getPost();
          if(!$headers->get('Access-Token') || !$this->tokenValidation($headers->get('Access-Token')->getFieldValue()))
          {
@@ -1285,6 +1300,7 @@ class IndexController extends BaseController{
      public function buyPasswordsCheckOutAction()
      {
          $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
          $request = $this->getRequest()->getPost();
          $userId = $request['user_id'];
          $no_of_pwds = $request['no_of_pwds'];
@@ -1453,6 +1469,7 @@ class IndexController extends BaseController{
      public function subscriptionCheckOutAction()
      {
          $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
          $request = $this->getRequest()->getPost();
          $userId = $request['user_id'];
          $userType = $request['user_type'];
@@ -1624,6 +1641,7 @@ class IndexController extends BaseController{
      public function bookingCheckOutAction()
      {
         $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
         $request = $this->getRequest()->getPost();
         $files = $this->getRequest()->getFiles();
         $userId = $request['user_id'];
@@ -1853,6 +1871,7 @@ class IndexController extends BaseController{
      public function seasonalSpecialBookingAction()
      {
         $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
         $request = $this->getRequest()->getPost();
         $files = $this->getRequest()->getFiles();
         $userId = $request['user_id'];
@@ -1923,6 +1942,7 @@ class IndexController extends BaseController{
      public function seasonalSpecialBookingAction_old()
      {
         $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
         $request = $this->getRequest()->getPost();
         $files = $this->getRequest()->getFiles();
         $userId = $request['user_id'];
@@ -2189,6 +2209,7 @@ class IndexController extends BaseController{
     public function updateBookingUsersAction()
      {
          $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
          $request = $this->getRequest()->getPost();
          $userId = $request['user_id'];
          $bookingId =$request['booking_id'];
@@ -2322,6 +2343,7 @@ class IndexController extends BaseController{
        public function bookingsListAction()
        {
            $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
            $request = $this->getRequest()->getPost();
            $userId = $request['user_id'];
            if(!$headers->get('Access-Token') || !$this->tokenValidation($headers->get('Access-Token')->getFieldValue()))
@@ -2360,6 +2382,7 @@ class IndexController extends BaseController{
       public function priceSlabDaysDetailsAction()
       {
           $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
           $request = $this->getRequest()->getPost();
           $userId = $request['user_id'];
           $tourType=$request['tour_type'];
@@ -2392,6 +2415,7 @@ class IndexController extends BaseController{
       }
       public function notRenewedAction(){
         $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
         $request = $this->getRequest()->getPost();
         $userId = $request['user_id'];
         if(!$headers->get('Access-Token') || !$this->tokenValidation($headers->get('Access-Token')->getFieldValue()))
@@ -2444,6 +2468,7 @@ class IndexController extends BaseController{
       public function passwordsListAction()
       {
           $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
           $request = $this->getRequest()->getPost();
           $userId = $request['user_id'];
           if(!$headers->get('Access-Token') || !$this->tokenValidation($headers->get('Access-Token')->getFieldValue()))
@@ -2490,6 +2515,7 @@ class IndexController extends BaseController{
     
     public function passwordSoldAction(){
         $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
           $request = $this->getRequest()->getPost();
           $userId = $request['user_id'];
           if(!$headers->get('Access-Token') || !$this->tokenValidation($headers->get('Access-Token')->getFieldValue()))
@@ -2524,6 +2550,7 @@ class IndexController extends BaseController{
     public function bookingDetailsAction()
     {
         $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
         $request = $this->getRequest()->getPost();
         $userId = $request['user_id'];
         if(!$headers->get('Access-Token') || !$this->tokenValidation($headers->get('Access-Token')->getFieldValue()))
@@ -2550,6 +2577,7 @@ class IndexController extends BaseController{
     public function spiritualTourBookingAction()
     {
         $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
         $request = $this->getRequest()->getPost();
         $userId = $request['user_id'];
         $placeIds = $request['places'];
@@ -2624,6 +2652,7 @@ class IndexController extends BaseController{
     public function notificationListAction()
     {
         $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
         $request = $this->getRequest()->getPost();
         $userId = $request['user_id'];
 
@@ -2664,6 +2693,7 @@ class IndexController extends BaseController{
      {
 
          $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
          $request = $this->getRequest()->getPost();
          $userId = $request['user_id'];
 
@@ -2868,6 +2898,7 @@ class IndexController extends BaseController{
     public function downloadFilesAction()
     {
         $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
         $request = $this->getRequest()->getPost();
         $userId = $request['user_id'];
         $tourType =$request['tour_type'];
@@ -3299,6 +3330,7 @@ class IndexController extends BaseController{
       public function  tourOperatorSignupAction()
       {
           $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
           $request = $this->getRequest()->getPost();
           $files = $this->getRequest()->getFiles();
 
@@ -3621,6 +3653,7 @@ class IndexController extends BaseController{
      public  function seasonalSpecialsListAction()
      {
          $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
          $request = $this->getRequest()->getPost();
          $userId = $request['user_id'];
          $search = $request['search'];
@@ -3650,6 +3683,7 @@ class IndexController extends BaseController{
     public  function seasonalSpecialsCountryAction()
     {
         $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
         $request = $this->getRequest()->getPost();
         $userId = $request['user_id'];
         $search = $request['search'];
@@ -3670,6 +3704,7 @@ class IndexController extends BaseController{
      public function packageDetailsAction()
      {
          $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
          $request = $this->getRequest()->getPost();
          $userId = $request['user_id'];
          $seasonalSpecialsId = $request['seasonal_special_id'];
@@ -3696,6 +3731,7 @@ class IndexController extends BaseController{
      public function samplesAudioListAction()
      {
          $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
          $request = $this->getRequest()->getPost();
          $userId = $request['user_id'];
 
@@ -3715,6 +3751,7 @@ class IndexController extends BaseController{
 
      public function subscribersCountAction(){
         $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
         if(!$headers->get('Access-Token') || !$this->tokenValidation($headers->get('Access-Token')->getFieldValue()))
         {
             return new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
@@ -3731,6 +3768,7 @@ class IndexController extends BaseController{
      public function updateFcmAction()
      {
         $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
 
         if(!$headers->get('Access-Token') || !$this->tokenValidation($headers->get('Access-Token')->getFieldValue()))
         {
@@ -3765,6 +3803,7 @@ class IndexController extends BaseController{
     public function favouriteFileAction()
     {
         $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
         if(!$headers->get('Access-Token') || !$this->tokenValidation($headers->get('Access-Token')->getFieldValue())) {
             return new JsonModel(array('success'=>false,'message'=>'Invalid Access','errr-cpde'=>0));
         }
@@ -3821,6 +3860,7 @@ class IndexController extends BaseController{
     public function downloadBookingListAction()
     {
         $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
         $request = $this->getRequest()->getPost();
         $userId = $request['user_id'];
         $tourType=$request['tour_type'];
@@ -3860,6 +3900,7 @@ class IndexController extends BaseController{
     public function addSponsorPhotoAction()
      {
          $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
          $request = $this->getRequest()->getPost();
          $files = $this->getRequest()->getFiles();
          $userId = $request['user_id'];
@@ -3932,6 +3973,7 @@ class IndexController extends BaseController{
      public function addItineraryImageAction()
      {
          $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
          $request = $this->getRequest()->getPost();
          $files = $this->getRequest()->getFiles();
          $userId = $request['user_id'];
@@ -4028,6 +4070,7 @@ class IndexController extends BaseController{
      {
 
          $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
          $request = $this->getRequest()->getPost();
          $mobile = $request['mobile'];
          $mobileCountryCode = $request['mobile_country_code'];
@@ -4081,6 +4124,7 @@ class IndexController extends BaseController{
     {
 
         $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
         $request = $this->getRequest()->getPost();
         $mobile = $request['mobile'];
         $mobileCountryCode = $request['mobile_country'];
@@ -4128,6 +4172,7 @@ class IndexController extends BaseController{
     public function changePasswordAction()
     {
         $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
         $request = $this->getRequest()->getPost();
         $userId = $request['user_id'];
         $password = $request['password'];
@@ -4164,6 +4209,7 @@ class IndexController extends BaseController{
     {
         $request = $this->getRequest()->getPost();
         $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
 
         if(!$headers->get('Access-Token') || !$this->tokenValidation($headers->get('Access-Token')->getFieldValue()))
         {
@@ -4201,6 +4247,7 @@ class IndexController extends BaseController{
     {
         $request = $this->getRequest()->getPost();
         $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
 
         if(!$headers->get('Access-Token') || !$this->tokenValidation($headers->get('Access-Token')->getFieldValue()))
         {
@@ -4237,6 +4284,7 @@ class IndexController extends BaseController{
     {
         $request = $this->getRequest()->getPost();
         $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
         if(!$headers->get('Access-Token') || !$this->tokenValidation($headers->get('Access-Token')->getFieldValue()))
         {
             return  new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
@@ -4334,6 +4382,7 @@ class IndexController extends BaseController{
     {
         $request = $this->getRequest()->getPost();
         $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
         if(!$headers->get('Access-Token') || !$this->tokenValidation($headers->get('Access-Token')->getFieldValue()))
         {
             return  new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
@@ -4347,6 +4396,7 @@ class IndexController extends BaseController{
     public function financialStatementsAction(){
         $request = $this->getRequest()->getPost();
         $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
          
         if($request['start_date'])
             $data['start_date']=$request['start_date'];
@@ -4361,6 +4411,7 @@ class IndexController extends BaseController{
     {
         $request = $this->getRequest()->getPost();
         $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
         //$this->sendPasswordSms($request['mobile'],array('text'=>"test message from stt api"));
         $smsmsg = "Please use OTP 3434 to verify your mobile phone number for Susri Tour Tales App ";
         $this->sendPasswordSms("917330781638",array('text'=>$smsmsg));

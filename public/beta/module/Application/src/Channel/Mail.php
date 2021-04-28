@@ -28,7 +28,7 @@ class Mail
     public function send($from, $to, $subject, $template, $data ,$filePath = array(),$attach = array(),$filename = "")
     {
         try {
-
+            echo '$from, $to, $subject, $template, $data ,$filePath, $attach,$filename';
             $content = $this->getContentFromTemplate($template, $data);
             $body = $this->getMailBodyFromHtml($content,$attach,$filename,$filePath,$data);
             $fromName = "Susri tour tales";

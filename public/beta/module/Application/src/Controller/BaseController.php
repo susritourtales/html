@@ -1457,6 +1457,7 @@ class BaseController extends AbstractActionController
         echo getcwd();
         $timestamp = date("dd/mm/yyyy")." &raquo;";
         $myfile = file_put_contents('httplogs.txt', $timestamp. $logString.PHP_EOL , FILE_APPEND | LOCK_EX);
+        print_r(error_get_last());
         return $myfile;
     }
 }

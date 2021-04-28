@@ -1454,7 +1454,7 @@ class BaseController extends AbstractActionController
     }
         
     public function logRequest($logString){
-        $fullPath = "/var/www/html/public/httplogs.txt";
+        $fullPath = "/var/www/html/public/beta/logs/httplogs.txt";
         echo exec('whoami');
         $parts = explode( '/', $fullPath );
         array_pop( $parts );

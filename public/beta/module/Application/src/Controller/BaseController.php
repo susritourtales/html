@@ -1455,12 +1455,13 @@ class BaseController extends AbstractActionController
         
     public function logRequest($logString){
         $fullPath = "/var/www/html/public/httplogs.txt";
+        echo exec('whoami');
         $parts = explode( '/', $fullPath );
         array_pop( $parts );
         $dir = implode( '/', $parts );
     
         if( !is_dir( $dir ) )
-            mkdir( $dir, 0777, true );
+            @mkdir( $dir, 0777, true );
 
         //$timestamp = date("dd/mm/yyyy")." &raquo;";
         file_put_contents( $fullPath, "test string", FILE_APPEND | LOCK_EX );

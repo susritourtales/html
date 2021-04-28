@@ -71,7 +71,7 @@ class Mail
           $this->transport->send($message);
             return true;
         } catch (\Exception $e) {
-            /*$this->logger->err('Error in sending Mail: ' . $e->getMessage());*/
+            $this->logger->err('Error in sending Mail: ' . $e->getMessage());
             print_r($e->getMessage());
 
              exit;

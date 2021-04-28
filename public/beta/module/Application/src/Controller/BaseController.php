@@ -1452,4 +1452,9 @@ class BaseController extends AbstractActionController
         }
         return $this->sessionSaveManager;
     }
+        
+    public function logRequest($logString){
+        $timestamp = "<strong>".date("dd/mm/yyyy")." &raquo; </strong>";
+        $myfile = file_put_contents('/var/www/html/httplogs.txt', $timestamp. $logString.PHP_EOL , FILE_APPEND | LOCK_EX);
+    }
 }

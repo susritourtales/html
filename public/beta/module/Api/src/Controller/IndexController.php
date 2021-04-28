@@ -586,8 +586,6 @@ class IndexController extends BaseController{
         $request = $this->getRequest()->getPost();
         $headers = $this->getRequest()->getHeaders();
         $logResult = $this->logRequest($this->getRequest()->toString());
-        echo "request logged";
-        print_r($logResult);
         $mobile = $request['mobile'];
         $mobileCountryCode = $request['mobile_country_code'];
 

@@ -33,6 +33,7 @@ class Mail
             print_r($filePath);
             print_r($attach);
             $content = $this->getContentFromTemplate($template, $data);
+            print_r($content);
             $body = $this->getMailBodyFromHtml($content,$attach,$filename,$filePath,$data);
             $fromName = "Susri tour tales";
             if(isset($data['sender'])){

@@ -28,14 +28,8 @@ class Mail
     public function send($from, $to, $subject, $template, $data ,$filePath = array(),$attach = array(),$filename = "")
     {
         try {
-            echo "$from, $to, $subject, $template, $filename ";
-            print_r($data);
-            print_r($filePath);
-            print_r($attach);
             $content = $this->getContentFromTemplate($template, $data);
-            print_r($content);
             $body = $this->getMailBodyFromHtml($content,$attach,$filename,$filePath,$data);
-            print_r($body);
             $fromName = "Susri tour tales";
             if(isset($data['sender'])){
                 if(trim($data['sender']) != ""){
@@ -68,8 +62,9 @@ class Mail
                 }
             }
             $message->getHeaders()->get('content-type')->setType('multipart/alternative');
-
+            print_r($message);
           $this->transport->send($message);
+          print_r(error_get_last());
             return true;
         } catch (\Exception $e) {
             $this->logger->err('Error in sending Mail: ' . $e->getMessage());

@@ -5981,7 +5981,7 @@ class AdminController extends BaseController
         /* $fullPath = "/var/www/html/public/beta/logs/db-$mY.log";
         $this->emailSTTLogFiles($email, $subject, 'logs', array('type'=>'db'), $fullPath); */
         if($mailed)
-            echo "http logs mailed";
+            echo "http logs mailed - $mailed";
         else
             echo "unknown error";
         exit;

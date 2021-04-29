@@ -564,11 +564,11 @@ class IndexController extends BaseController
                     }
                 }
             }
-            return new JsonModel(array('success'=>false,'message'=>'false1'));
+            return new JsonModel(array('success'=>false,'message'=>'false'));
         }
         catch (\Exception $e)
         {
-            return new JsonModel(array('success'=>false,'message'=>'false2'));
+            return new JsonModel(array('success'=>false,'message'=>$e->getMessage()));
         }
     }
 

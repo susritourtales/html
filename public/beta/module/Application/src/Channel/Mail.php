@@ -62,12 +62,12 @@ class Mail
                 }
             }
             $message->getHeaders()->get('content-type')->setType('multipart/alternative');
-            print_r($message);
+            //print_r($message);
           $this->transport->send($message);
-          print_r(error_get_last());
+          //print_r(error_get_last());
             return true;
         } catch (\Exception $e) {
-            $this->logger->err('Error in sending Mail: ' . $e->getMessage());
+            //$this->logger->err('Error in sending Mail: ' . $e->getMessage());
             print_r($e->getMessage());
 
              exit;

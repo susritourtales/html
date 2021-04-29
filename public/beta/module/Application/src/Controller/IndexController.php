@@ -457,12 +457,12 @@ class IndexController extends BaseController
                                     if($userDetails['email'])
                                     {
                                         // added by Manjary - start - remove on live - start
-                                        $stream_opts = [
+                                        /* $stream_opts = [
                                             "ssl" => [
                                                 "verify_peer"=>false,
                                                 "verify_peer_name"=>false,
                                             ]
-                                        ]; 
+                                        ]; */ 
                                         // added by Manjary - end -- remove on live
                                         if($bookingList['booking_type']==\Admin\Model\Bookings::booking_Subscription){
                                             $bookingList['heading'] = "Welcome as STT Subscriber";

@@ -13,7 +13,6 @@ class BaseTable
     protected $logger;
     protected $sql;
     protected $select;
-    protected $sttProfiler;
 
     function __construct(TableGateway $tablegateway)
     {
@@ -74,7 +73,6 @@ class BaseTable
 
                  $table = $platform->quoteIdentifier($this->tableGateway->getTable());
                  $query = "INSERT INTO $table $columns VALUES $placeholder";
-                 //$this->logSqlQuery("");
                  $this->tableGateway->adapter->query($query)->execute($values);
                  return true;
 
@@ -102,7 +100,6 @@ class BaseTable
     {
         try {
             $data["updated_at"] = date("Y-m-d H:i:s");
-            //$this->logSqlQuery("");
             $update = $this->tableGateway->update($data, $where);
             return $update;
         } catch (\Exception $e) {
@@ -152,20 +149,6 @@ class BaseTable
         );
 
         $statementContainer->setSql($query);
-        //$this->logSqlQuery($statementContainer->queryToString());
         return $statementContainer->execute();
     }
-
-    public function logSqlQuery($logString){
-        $mY = date("m-Y");
-        $fullPath = "/var/www/html/public/beta/logs/sql-$mY.log";
-        $timestamp = "\n\n". date("d-m-Y H:i:s") . " >> \n";
-        $myfile = file_put_contents($fullPath, $timestamp. $logString.PHP_EOL , FILE_APPEND | LOCK_EX);
-        /* print_r(error_get_last());
-        return $myfile; */
-    }
-    /* function __destruct(){
-        $profiles = $this->sttProfiler->getQueryProfiles();
-        print_r($profiles);exit;
-    } */
 }

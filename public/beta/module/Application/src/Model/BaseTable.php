@@ -96,7 +96,7 @@ class BaseTable
         $data["updated_at"] = date("Y-m-d H:i:s");
         print_r($data);
         $dbAdapter = $this->tableGateway->adapter;
-        $Profiler = $dbAdapter->getProfiler();
+        $Profiler = $dbAdapter->getProfiler()->setEnabled(true);
         $profiles = $Profiler->getQueryProfiles();
         echo "\n\n";
         print_r($profiles);exit;

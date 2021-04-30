@@ -18,8 +18,6 @@ class BaseTable
     function __construct(TableGateway $tablegateway)
     {
         $this->tableGateway = $tablegateway;
-        /* $profiler = new Laminas\Db\Adapter\Profiler() ;
-        $this->sttProfiler = $profiler; */
     }
 
     public function getSql()
@@ -96,12 +94,13 @@ class BaseTable
     {
         $data["created_at"] = date("Y-m-d H:i:s");
         $data["updated_at"] = date("Y-m-d H:i:s");
-        $profiler = new Laminas\Db\Adapter\Profiler();
         print_r($data);
-        $insert = $this->tableGateway->insert($data);
-        $profiles = $profiler->getQueryProfiles();
+        $dbAdapter = $this->tableGateway->adapter;
+        $Profiler = $dbAdapter->getProfiler();
+        $profiles = $Profiler->getQueryProfiles();
         echo "\n\n";
         print_r($profiles);exit;
+        $insert = $this->tableGateway->insert($data);
         return $insert;
     }
 

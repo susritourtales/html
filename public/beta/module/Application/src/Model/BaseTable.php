@@ -93,7 +93,7 @@ class BaseTable
     {
         $data["created_at"] = date("Y-m-d H:i:s");
         $data["updated_at"] = date("Y-m-d H:i:s");
-        print_r($data);exit;
+        print_r($data);
         $insert = $this->tableGateway->insert($data);
         return $insert;
     }

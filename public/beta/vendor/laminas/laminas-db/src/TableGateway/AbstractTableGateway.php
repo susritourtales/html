@@ -306,7 +306,7 @@ abstract class AbstractTableGateway implements TableGatewayInterface
         }
 
         $statement = $this->sql->prepareStatementForSqlObject($insert);
-        $this->logSqlQuery($this->sql->getSqlStringForSqlObject($insert));
+        $this->logSqlQuery($this->sql->buildSqlString($insert));
         $result = $statement->execute();
         $this->lastInsertValue = $this->adapter->getDriver()->getConnection()->getLastGeneratedValue();
 
@@ -390,7 +390,7 @@ abstract class AbstractTableGateway implements TableGatewayInterface
         }
 
         $statement = $this->sql->prepareStatementForSqlObject($update);
-        $this->logSqlQuery($this->sql->getSqlStringForSqlObject($update));
+        $this->logSqlQuery($this->sql->buildSqlString($update));
         $result = $statement->execute();
 
         // apply postUpdate features
@@ -461,7 +461,7 @@ abstract class AbstractTableGateway implements TableGatewayInterface
         }
 
         $statement = $this->sql->prepareStatementForSqlObject($delete);
-        $this->logSqlQuery($this->sql->getSqlStringForSqlObject($delete));
+        $this->logSqlQuery($this->sql->buildSqlString($delete));
         $result = $statement->execute();
 
         // apply postDelete features

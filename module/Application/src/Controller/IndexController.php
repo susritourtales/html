@@ -235,7 +235,7 @@ class IndexController extends BaseController
     {
         try{
             $details=$this->getRequest()->getPost();
-
+            // print_r($details);
             if(!isset($details['error'])) 
             {
                 $attributes = array("razorpay_signature" => $_REQUEST['razorpay_signature'], "razorpay_payment_id" => $_REQUEST['razorpay_payment_id'], "razorpay_order_id" => $_REQUEST['razorpay_order_id']);
@@ -568,7 +568,7 @@ class IndexController extends BaseController
         }
         catch (\Exception $e)
         {
-            return new JsonModel(array('success'=>false,'message'=>'false'));
+            return new JsonModel(array('success'=>false,'message'=>$e->getMessage()));
         }
     }
 

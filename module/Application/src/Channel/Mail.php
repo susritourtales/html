@@ -28,7 +28,6 @@ class Mail
     public function send($from, $to, $subject, $template, $data ,$filePath = array(),$attach = array(),$filename = "")
     {
         try {
-
             $content = $this->getContentFromTemplate($template, $data);
             $body = $this->getMailBodyFromHtml($content,$attach,$filename,$filePath,$data);
             $fromName = "Susri tour tales";
@@ -63,11 +62,12 @@ class Mail
                 }
             }
             $message->getHeaders()->get('content-type')->setType('multipart/alternative');
-
+            //print_r($message);
           $this->transport->send($message);
+          //print_r(error_get_last());
             return true;
         } catch (\Exception $e) {
-            /*$this->logger->err('Error in sending Mail: ' . $e->getMessage());*/
+            //$this->logger->err('Error in sending Mail: ' . $e->getMessage());
             print_r($e->getMessage());
 
              exit;

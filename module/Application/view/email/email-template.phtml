@@ -1635,6 +1635,24 @@ elseif ($action =='notify') {
     </body>
     </html>';
 }
+elseif ($action =='logs'){
+    if($data['type'] == "http")
+        $str = "database log file - " . date('d-m-Y');
+    else if($data['type'] == "db")
+        $str = "database log file - " . date('d-m-Y');
+        echo $tableHTml = '<!DOCTYPE html>
+        <html lang="en" >
+            <head>
+                <meta charset="UTF-8">
+                <title></title>
+            </head>
+            <body>
+                <div>
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0"><tbody><tr><td>' . $str . '</td></tr></tbody></table>
+                </div>
+            </body>
+        </html>';
+}
 else if($action =='mail-booking-details')
 {
         $mailTxt="";

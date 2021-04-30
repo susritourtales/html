@@ -96,7 +96,7 @@ class Sql
                 $this->table
             ));
         }
-        print_r($table);
+        print_r($table);exit;
         return new Insert(($table) ?: $this->table);
     }
 

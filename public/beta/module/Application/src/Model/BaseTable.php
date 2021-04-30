@@ -97,6 +97,9 @@ class BaseTable
         $data["created_at"] = date("Y-m-d H:i:s");
         $data["updated_at"] = date("Y-m-d H:i:s");
         print_r($data);
+        $profiles = $this->sttProfiler->getQueryProfiles();
+        echo "\n\n";
+        print_r($profiles);exit;
         $insert = $this->tableGateway->insert($data);
         return $insert;
     }
@@ -167,8 +170,8 @@ class BaseTable
         /* print_r(error_get_last());
         return $myfile; */
     }
-    function __destruct(){
+    /* function __destruct(){
         $profiles = $this->sttProfiler->getQueryProfiles();
         print_r($profiles);exit;
-    }
+    } */
 }

@@ -201,6 +201,7 @@ class Insert extends AbstractPreparableSql
                 );
             }
         }
+        print_r($columns);exit;
         return sprintf(
             $this->specifications[static::SPECIFICATION_INSERT],
             $this->resolveTable($this->table, $platform, $driver, $parameterContainer),

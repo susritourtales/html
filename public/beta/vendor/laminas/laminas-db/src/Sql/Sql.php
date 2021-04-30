@@ -96,8 +96,6 @@ class Sql
                 $this->table
             ));
         }
-        echo "in Sql.php \n";
-        print_r($this->table);exit;
         return new Insert(($table) ?: $this->table);
     }
 

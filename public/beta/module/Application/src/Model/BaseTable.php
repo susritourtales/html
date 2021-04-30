@@ -13,10 +13,13 @@ class BaseTable
     protected $logger;
     protected $sql;
     protected $select;
+    protected $sttProfiler;
 
     function __construct(TableGateway $tablegateway)
     {
         $this->tableGateway = $tablegateway;
+        $profiler = new Laminas\Db\Adapter\Profiler() ;
+        $this->sttProfiler = $profiler;
     }
 
     public function getSql()
@@ -73,7 +76,7 @@ class BaseTable
 
                  $table = $platform->quoteIdentifier($this->tableGateway->getTable());
                  $query = "INSERT INTO $table $columns VALUES $placeholder";
-                 $this->logSqlQuery("");
+                 //$this->logSqlQuery("");
                  $this->tableGateway->adapter->query($query)->execute($values);
                  return true;
 
@@ -102,7 +105,7 @@ class BaseTable
     {
         try {
             $data["updated_at"] = date("Y-m-d H:i:s");
-            $this->logSqlQuery("");
+            //$this->logSqlQuery("");
             $update = $this->tableGateway->update($data, $where);
             return $update;
         } catch (\Exception $e) {
@@ -163,5 +166,9 @@ class BaseTable
         $myfile = file_put_contents($fullPath, $timestamp. $logString.PHP_EOL , FILE_APPEND | LOCK_EX);
         /* print_r(error_get_last());
         return $myfile; */
+    }
+    function __destruct(){
+        $profiles = $this->sttProfiler->getQueryProfiles();
+        print_r($profiles);exit;
     }
 }

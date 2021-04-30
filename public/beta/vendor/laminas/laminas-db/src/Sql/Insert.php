@@ -201,7 +201,12 @@ class Insert extends AbstractPreparableSql
                 );
             }
         }
-        print_r($columns);exit;
+        echo "insert: " . sprintf(
+            $this->specifications[static::SPECIFICATION_INSERT],
+            $this->resolveTable($this->table, $platform, $driver, $parameterContainer),
+            implode(', ', $columns),
+            implode(', ', $values)
+        );
         return sprintf(
             $this->specifications[static::SPECIFICATION_INSERT],
             $this->resolveTable($this->table, $platform, $driver, $parameterContainer),
@@ -222,7 +227,12 @@ class Insert extends AbstractPreparableSql
 
         $columns = array_map([$platform, 'quoteIdentifier'], array_keys($this->columns));
         $columns = implode(', ', $columns);
-
+        echo "select: " . sprintf(
+            $this->specifications[static::SPECIFICATION_SELECT],
+            $this->resolveTable($this->table, $platform, $driver, $parameterContainer),
+            $columns ? "($columns)" : "",
+            $selectSql
+        );
         return sprintf(
             $this->specifications[static::SPECIFICATION_SELECT],
             $this->resolveTable($this->table, $platform, $driver, $parameterContainer),

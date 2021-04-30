@@ -236,7 +236,7 @@ abstract class AbstractTableGateway implements TableGatewayInterface
 
         // prepare and execute
         $statement = $this->sql->prepareStatementForSqlObject($select);
-        $this->logSqlQuery($this->sql->buildSqlString($select));
+        // $this->logSqlQuery($this->sql->buildSqlString($select));
         $result = $statement->execute();
 
         // build result set
@@ -306,7 +306,7 @@ abstract class AbstractTableGateway implements TableGatewayInterface
         }
 
         $statement = $this->sql->prepareStatementForSqlObject($insert);
-        $this->logSqlQuery($this->sql->buildSqlString($insert));
+        // $this->logSqlQuery($this->sql->buildSqlString($insert));
         $result = $statement->execute();
         $this->lastInsertValue = $this->adapter->getDriver()->getConnection()->getLastGeneratedValue();
 
@@ -390,7 +390,7 @@ abstract class AbstractTableGateway implements TableGatewayInterface
         }
 
         $statement = $this->sql->prepareStatementForSqlObject($update);
-        $this->logSqlQuery($this->sql->buildSqlString($update));
+        // $this->logSqlQuery($this->sql->buildSqlString($update));
         $result = $statement->execute();
 
         // apply postUpdate features
@@ -461,7 +461,7 @@ abstract class AbstractTableGateway implements TableGatewayInterface
         }
 
         $statement = $this->sql->prepareStatementForSqlObject($delete);
-        $this->logSqlQuery($this->sql->buildSqlString($delete));
+        // $this->logSqlQuery($this->sql->buildSqlString($delete));
         $result = $statement->execute();
 
         // apply postDelete features
@@ -557,14 +557,5 @@ abstract class AbstractTableGateway implements TableGatewayInterface
                 $tableObject = clone $tableObject;
             }
         }
-    }
-
-    public function logSqlQuery($logString){
-        $mY = date("m-Y");
-        $fullPath = "/var/www/html/public/beta/logs/sql-$mY.log";
-        $timestamp = "\n\n". date("d-m-Y H:i:s") . " >> \n";
-        $myfile = file_put_contents($fullPath, $timestamp. $logString.PHP_EOL , FILE_APPEND | LOCK_EX);
-        /* print_r(error_get_last());
-        return $myfile; */
     }
 }

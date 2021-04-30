@@ -236,7 +236,7 @@ abstract class AbstractTableGateway implements TableGatewayInterface
 
         // prepare and execute
         $statement = $this->sql->prepareStatementForSqlObject($select);
-        $this->logSqlQuery($select);
+        $this->logSqlQuery($statement);
         $result = $statement->execute();
 
         // build result set

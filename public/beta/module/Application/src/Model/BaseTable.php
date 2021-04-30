@@ -94,13 +94,6 @@ class BaseTable
     {
         $data["created_at"] = date("Y-m-d H:i:s");
         $data["updated_at"] = date("Y-m-d H:i:s");
-        print_r($data);
-        $dbAdapter = $this->tableGateway->adapter;
-        print_r($dbAdapter);exit;
-        $Profiler = $dbAdapter->getProfiler()->setEnabled(true);
-        $profiles = $Profiler->getQueryProfiles();
-        echo "\n\n";
-        print_r($profiles);exit;
         $insert = $this->tableGateway->insert($data);
         return $insert;
     }

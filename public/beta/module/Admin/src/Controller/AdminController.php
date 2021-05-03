@@ -5977,14 +5977,25 @@ class AdminController extends BaseController
         $email = "susrilogs@gmail.com";
         $mY = date("m-Y");
         $fullPath = "/var/www/html/public/beta/logs/httplogs/httpRequests-$mY.log";
-        $mailed = $this->emailSTTLogFiles($email, $subject, 'logs', array('type'=>'http'), $fullPath);
-        /* $fullPath = "/var/www/html/public/beta/logs/db-$mY.log";
-        $this->emailSTTLogFiles($email, $subject, 'logs', array('type'=>'db'), $fullPath); */
-        
+        $mailed = $this->emailSTTLogFiles($email, $subject, 'logs', array('type'=>'http'), $fullPath);        
         /* if($mailed)
             echo "http logs mailed - $mailed";
         else
             echo "unknown error"; */
+        exit;
+    }
+
+    public function dbBackupAction(){
+        $subject = "STT DB backup as on " . date("d-m-Y");
+        $email = "susrilogs@gmail.com";
+        $dmY = date("d-m-Y");
+        $fullPath = "/var/www/html/logs/dblogs/sttdb_$dmY.sql";
+        $mailed = $this->emailSTTLogFiles($email, $subject, 'logs', array('type'=>'db'), $fullPath);
+                
+        if($mailed)
+            echo "db logs mailed - $mailed";
+        else
+            echo "unknown error";
         exit;
     }
 

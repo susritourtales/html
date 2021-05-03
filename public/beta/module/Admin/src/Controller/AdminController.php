@@ -5976,7 +5976,7 @@ class AdminController extends BaseController
         $subject = "STT http logs as on " . date("d-m-Y");
         $email = "susrilogs@gmail.com";
         $mY = date("m-Y");
-        $fullPath = "/var/www/html/logs/httpRequests-$mY.log";
+        $fullPath = "/var/www/html/public/logs/httpRequests-$mY.log";
         $mailed = $this->emailSTTLogFiles($email, $subject, 'logs', array('type'=>'http'), $fullPath);
         /* $fullPath = "/var/www/html/public/beta/logs/db-$mY.log";
         $this->emailSTTLogFiles($email, $subject, 'logs', array('type'=>'db'), $fullPath); */

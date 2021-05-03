@@ -5988,6 +5988,20 @@ class AdminController extends BaseController
         exit;
     }
 
+    public function dbBackupAction(){
+        $subject = "STT DB backup as on " . date("d-m-Y");
+        $email = "susrilogs@gmail.com";
+        $dmY = date("d-m-Y");
+        $fullPath = "/var/www/html/logs/dblogs/sttdb_$dmY.sql";
+        $mailed = $this->emailSTTLogFiles($email, $subject, 'logs', array('type'=>'db'), $fullPath);
+                
+        if($mailed)
+            echo "db logs mailed - $mailed";
+        else
+            echo "unknown error";
+        exit;
+    }
+
     public function addRmmCronAction()
        {
             $cron=new CronJob();

@@ -5995,11 +5995,11 @@ class AdminController extends BaseController
         $fullPath = "/var/www/html/logs/dblogs/sttdb_$dmY.sql";
         $mailed = $this->emailSTTLogFiles($email, $subject, 'logs', array('type'=>'db'), $fullPath);
                 
-        if($mailed)
+        /* if($mailed)
             echo "db logs mailed - $mailed";
         else
-            echo "unknown error";
-        exit;
+            echo "unknown error"; */
+        exit; 
     }
 
     public function addRmmCronAction()

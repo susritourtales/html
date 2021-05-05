@@ -5993,6 +5993,7 @@ class AdminController extends BaseController
         $email = "susrilogs@gmail.com";
         $dmY = date("d-m-Y");
         $fullPath = "/var/www/html/logs/dblogs/sttdb_$dmY.sql";
+        print_r($fullPath); exit;
         $mailed = $this->emailSTTLogFiles($email, $subject, 'logs', array('type'=>'db'), $fullPath);
         //print_r(error_get_last());
         if($mailed)

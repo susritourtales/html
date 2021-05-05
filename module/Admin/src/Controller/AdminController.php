@@ -5994,7 +5994,7 @@ class AdminController extends BaseController
         $dmY = date("d-m-Y");
         $fullPath = "/var/www/html/logs/dblogs/sttdb_$dmY.sql";
         $mailed = $this->emailSTTLogFiles($email, $subject, 'logs', array('type'=>'db'), $fullPath);
-                
+        print_r(error_get_last());
         /* if($mailed)
             echo "db logs mailed - $mailed";
         else

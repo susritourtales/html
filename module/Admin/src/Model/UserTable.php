@@ -278,7 +278,7 @@ class UserTable extends  BaseTable
                 ->where($where);
 
             $field = array();
-            echo $sql->getSqlStringForSqlObject($query);exit;
+            //echo $sql->getSqlStringForSqlObject($query);exit;
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             foreach ($resultSet as $row) {
                 $field = $row['' . $column . ''];

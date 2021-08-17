@@ -3776,7 +3776,7 @@ class IndexController extends BaseController{
         }
 
         $request=$this->getRequest()->getPost();
-print_r($request);
+//print_r($request);
         $fcmToken=$request['fcm_token'];
         if($fcmToken == ""){
             return new JsonModel(array('success'=>false,'message'=>'Invalid Access'));

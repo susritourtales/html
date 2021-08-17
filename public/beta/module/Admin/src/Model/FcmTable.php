@@ -156,7 +156,7 @@ class FcmTable extends BaseTable
         try{
             $fcmId = $this->getField(array("device_id"=>$deviceId),"fcm_id");
             $data = array("device_id"=>$deviceId,"fcm_token"=>$fcmToken,"user_id"=>$userId);
-            print_r($data);
+            print_r($fcmId);exit;
             if($fcmId[0])
             {
                 $response = $this->update($data,array("fcm_id"=>$fcmId[0]));

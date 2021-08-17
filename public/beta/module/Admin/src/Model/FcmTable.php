@@ -139,7 +139,7 @@ class FcmTable extends BaseTable
                     ->from(array("f" => "fcm"))
                     ->columns(array("fcm_token"))
                     ->where($where->equalTo("user_id", $userId));
-                /*echo $sql->getSqlStringForSqlObject($query);exit;*/
+                echo $sql->getSqlStringForSqlObject($query);exit;
                 $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
                 $data = array();
                 foreach ($resultSet as $row) {

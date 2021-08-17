@@ -162,8 +162,8 @@ class FcmTable extends BaseTable
                 echo "update";
                 $response = $this->update($data,array("fcm_id"=>$fcmId[0]));
 
-            }else{
-                print_r($data); 
+            }else{ 
+                echo "insert";
                 $response = $this->insert($data);
                 print_r($response); exit;
             }

@@ -600,8 +600,9 @@ class IndexController extends BaseController{
         {
             return new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
         }
-echo "1"; exit;
+
         if($mobile != ""){
+            echo "1"; exit;
             $checkUser=$this->userTable()->getField(array('mobile_country_code'=>$mobileCountryCode,'mobile'=>$mobile),'user_id');
         }
         $userExists = false;

@@ -165,7 +165,7 @@ class FcmTable extends BaseTable
             }else{
                 echo "insert";
                 $response = $this->insert($data);
-                print_r(error_get_last()); exit;
+                print_r($response); exit;
             }
             
             return $response;

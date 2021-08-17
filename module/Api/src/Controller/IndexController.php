@@ -595,17 +595,17 @@ class IndexController extends BaseController{
         $logResult = $this->logRequest($this->getRequest()->toString());
         $mobile = $request['mobile'];
         $mobileCountryCode = $request['mobile_country_code'];
-
+print_r($request);
         if(!$headers->get('Access-Token') || !$this->tokenValidation($headers->get('Access-Token')->getFieldValue()))
         {
             return new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
         }
 
         if($mobile != ""){
-            echo "1"; exit;
+            //echo "1"; exit;
             $checkUser=$this->userTable()->getField(array('mobile_country_code'=>$mobileCountryCode,'mobile'=>$mobile),'user_id');
         }
-        //echo $mobile; exit;
+        
         $userExists = false;
         if($checkUser){
             $userExists = true;

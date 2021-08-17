@@ -57,8 +57,8 @@ class FcmTable extends BaseTable
     public function saveFcm($fcmToken,$deviceId,$userId){
         try{
             $fcmTks = $this->getDeviceIds($userId);
-            print_r($fcmTks);exit;
             if(count($fcmTks)>1){
+                echo "if";exit;
                 $activefts = $this->getLoginCount($userId);
                 if(count($activefts) == 0){
                     $this->update(array("logout"=> false),array("fcm_token" => $fcmToken));
@@ -71,7 +71,7 @@ class FcmTable extends BaseTable
                     else return false;
                 }
             }else{
-                echo "else";
+                echo "else";exit;
                 $save = $this->checkAndUpdateFcm($fcmToken,$deviceId, $userId);
                 return false;
             }

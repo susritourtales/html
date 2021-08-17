@@ -605,7 +605,7 @@ class IndexController extends BaseController{
             echo "1"; exit;
             $checkUser=$this->userTable()->getField(array('mobile_country_code'=>$mobileCountryCode,'mobile'=>$mobile),'user_id');
         }
-        echo "2"; exit;
+        echo $mobile; exit;
         $userExists = false;
         if($checkUser){
             $userExists = true;

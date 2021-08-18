@@ -3795,7 +3795,7 @@ class IndexController extends BaseController{
         if($logout)
             return new JsonModel(array('success'=>true,'message'=>"multilogin"));
         else{
-            $save=$this->fcmTable()->saveFcm($fcmToken,$deviceId,$userId);
+            //$save=$this->fcmTable()->saveFcm($fcmToken,$deviceId,$userId);
             return new JsonModel(array('success'=>false,'message'=>"updated"));
         }
     }

@@ -432,6 +432,10 @@ class IndexController extends BaseController{
             return  new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
         }        
         $otp=$request["otp"];
+        $user_id=$request["user_id"];
+        $countryCode = $request["country_code"];
+        $mobile = $request["mobile"];
+
         if($countryCode == "91"){
             if($otp=='' || $otp==null)
             {
@@ -439,9 +443,6 @@ class IndexController extends BaseController{
             }
         }
 
-        $user_id=$request["user_id"];
-        $countryCode = $request["country_code"];
-        $mobile = $request["mobile"];
         if($user_id=='' || $user_id==null)
         {
             return new JsonModel(array("success"=>false,"message"=>"UserId is missing"));

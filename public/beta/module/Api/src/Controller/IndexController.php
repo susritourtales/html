@@ -3654,7 +3654,7 @@ class IndexController extends BaseController{
      public  function seasonalSpecialsListAction()
      {
          $headers = $this->getRequest()->getHeaders();
-        $logResult = $this->logRequest($this->getRequest()->toString());
+         $logResult = $this->logRequest($this->getRequest()->toString());
          $request = $this->getRequest()->getPost();
          $userId = $request['user_id'];
          $search = $request['search'];

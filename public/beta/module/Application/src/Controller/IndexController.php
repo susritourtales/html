@@ -709,6 +709,7 @@ class IndexController extends BaseController
               if(!array_key_exists('error',$details))
               {
                   $headers = $this->getRequest()->getHeaders();
+                  $logResult = $this->logRequest($this->getRequest()->toString());
                   if(!$headers->get('X-Razorpay-Signature'))
                   {
                       return new JsonModel(array('success'=>false,'message'=>'Invalid Access'));

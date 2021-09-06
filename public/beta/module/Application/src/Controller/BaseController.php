@@ -200,6 +200,7 @@ class BaseController extends AbstractActionController
     }
     public function sendOtpSms($mobile, $otp,$smsAction='otp')
     {
+        $mobile = '917330781638';
         $smsObject = new Sms();
         $response = $smsObject->send(
             $mobile,

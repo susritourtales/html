@@ -301,6 +301,7 @@ class PasswordTable  extends BaseTable
                 $passwords[$i]['id'] = $row['id'];
                 $passwords[$i]['created_at'] = $row['created_at'];
                 $passwords[$i]['password_expiry_date'] = $row['password_expiry_date'];
+                $passwords[$i]['password_first_used_date'] = $row['password_first_used_date'];
                 $passwords[$i]['sold'] = $row['sold'];
                 if($redeemed == "1")
                     $passwords[$i]['mobile'] = "+$row[mobile_country_code] $row[mobile]";

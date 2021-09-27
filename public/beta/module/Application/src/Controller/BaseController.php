@@ -637,7 +637,12 @@ class BaseController extends AbstractActionController
                 $planEndDate = date('Y-m-d',strtotime($pricingDetails['end_date']));
                 $planStartDate = date('Y-m-d',strtotime($pricingDetails['start_date']));
                 //if((!($planStartDate < $today && $planEndDate > $today)) || ($user['role']==\Admin\Model\User::Subscriber_role || $user['role']==\Admin\Model\User::Sponsor_role)){
-                if((!($planStartDate <= $today && $planEndDate >= $today)) || ($user['subscription_count'] != 0 && $user['role']!=\Admin\Model\User::Individual_role)){
+                //if((!($planStartDate <= $today && $planEndDate >= $today)) || ($user['subscription_count'] != 0 && $user['role']!=\Admin\Model\User::Individual_role)){
+                
+                /**************** commented to obtain renewal amount from promotional plan (instead of base plan) - START *******************/
+            /*    if((!($planStartDate <= $today && $planEndDate >= $today)) || ($user['subscription_count'] != 0 && $user['role']!=\Admin\Model\User::Individual_role)){   */
+                /**************** commented to obtain renewal amount from promotional plan (instead of base plan) - END *******************/
+                if((!($planStartDate <= $today && $planEndDate >= $today))){
                     //$pricingDetails = $this->pricingTable()->getPricingDetails(array('plantype'=>'0'));
                     if($cc == "91")
                         $pricingDetails = $this->pricingTable()->getPricingDetails(array('id'=>'1'));

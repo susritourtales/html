@@ -263,7 +263,7 @@ class IndexController extends BaseController
                                 $bookingList=$this->bookingsTable()->bookingsDetailsEmail($bookingId);
                                 if(count($bookingList)==0){
                                     $userId=$this->bookingsTable()->getField(array('booking_id'=>$bookingId), 'user_id');
-                                    $udata=$this->userTable()->getFields(array('user_id'=>$userId), array('role','subscription_count'));
+                                    $udata=$this->userTable()->getFields(array('user_id'=>$userId), array('role','subscription_count', 'subscription_start_date', 'subscription_end_date'));
                                     $pdata['bonus_flag'] = false;
                                     $userType=$udata['role'];
                                     $scount=$udata['subscription_count'];                                    
@@ -282,8 +282,16 @@ class IndexController extends BaseController
                                     //if($userType == \Admin\Model\User::Individual_role){
                                     if($bookingType == \Admin\Model\Bookings::booking_Subscription){
                                         $where=array("user_id"=>$userId);
-                                        $update=array("subscription_count"=>$scount+1,
-                                        "subscription_type"=>$bookingType,"subscription_start_date"=>date("Y-m-d"), "subscription_end_date"=>date('Y-m-d', strtotime(date("y-m-d") . " +  $validityPeriod days")));
+                                        $subsdt = date("Y-m-d");
+                                        $subedt = date('Y-m-d', strtotime(date("y-m-d") . " +$validityPeriod days"));
+                                        $renewed_on = date("Y-m-d");
+                                        if($scount > 0) // if renewal
+                                        {
+                                            $subsdt = date('Y-m-d', strtotime($udata['subscription_end_date'] . " +1 days"));
+                                            $subedt = date('Y-m-d', strtotime($subsdt . " +$validityPeriod days"));
+                                        } 
+                                        $update=array("subscription_count"=>$scount+1, "subscription_type"=>$bookingType,"subscription_start_date"=>$subsdt, "subscription_end_date"=>$subedt, "renewed_on" => $renewed_on);
+                                        // $update=array("subscription_count"=>$scount+1, "subscription_type"=>$bookingType,"subscription_start_date"=>date("Y-m-d"), "subscription_end_date"=>date('Y-m-d', strtotime(date("y-m-d") . " +  $validityPeriod days")));
                                         
                                         if($userType == \Admin\Model\User::Individual_role)
                                             $update["role"] = \Admin\Model\User::Subscriber_role;
@@ -320,8 +328,9 @@ class IndexController extends BaseController
                                     $bookingList['discount_percentage'] = ($bookingTourDetails['discount_percentage']==""?0:$bookingTourDetails['discount_percentage']);
                                     $bookingList['discount_price'] = $bookingTourDetails['price'];
                                     $bookingList['booking_id'] = $bookingId;
-                                    $bookingList['subs_start_date'] = $userDetails['subscription_start_date'];
-                                    $bookingList['subs_end_date'] = $userDetails['subscription_end_date'];
+                                    $bookingList['subs_start_date'] = $subsdt; //$userDetails['subscription_start_date'];
+                                    $bookingList['subs_end_date'] = $subedt; //$userDetails['subscription_end_date'];
+                                    $bookingList['renewed_on'] = $renewed_on;
                                     //$bookingList['tour_type'] = \Admin\Model\PlacePrices::tour_type_All_tour;
                                     $bookingList['booking_type'] = $bookingType;
                                     $bookingList['user_name'] = $userDetails['user_name'];
@@ -378,7 +387,7 @@ class IndexController extends BaseController
                                 else
                                 {
                                     $userId=$this->bookingsTable()->getField(array('booking_id'=>$bookingId), 'user_id');
-                                    $udata=$this->userTable()->getFields(array('user_id'=>$userId), array('role','subscription_count'));
+                                    $udata=$this->userTable()->getFields(array('user_id'=>$userId), array('role','subscription_count', 'subscription_start_date', 'subscription_end_date'));
                                     $userType=$udata['role'];
                                     $scount=$udata['subscription_count'];                                    
                                     $bookingDetails=$this->bookingsTable()->bookingDetails(array('user_id'=>$userId, 'booking_id'=>$bookingId));
@@ -397,7 +406,17 @@ class IndexController extends BaseController
                                     //if($userType == \Admin\Model\User::Individual_role){
                                     if($bookingType == \Admin\Model\Bookings::booking_Subscription){
                                         $where=array("user_id"=>$userId);
-                                        $update=array("subscription_count"=>$scount+1,"subscription_type"=>$bookingType,"subscription_start_date"=>date("Y-m-d"), "subscription_end_date"=>date('Y-m-d', strtotime(date("y-m-d") . " +  $validityPeriod days")));
+                                        $subsdt = date("Y-m-d");
+                                        $subedt = date('Y-m-d', strtotime(date("y-m-d") . " +$validityPeriod days"));
+                                        $renewed_on = date("Y-m-d");
+                                        if($scount > 0) // if renewal
+                                        {
+                                            $subsdt = date('Y-m-d', strtotime($udata['subscription_end_date'] . " +1 days"));
+                                            $subedt = date('Y-m-d', strtotime($subsdt . " +$validityPeriod days"));
+                                        } 
+                                        $update=array("subscription_count"=>$scount+1, "subscription_type"=>$bookingType,"subscription_start_date"=>$subsdt, "subscription_end_date"=>$subedt, "renewed_on" => $renewed_on);
+                                        
+                                        //$update=array("subscription_count"=>$scount+1,"subscription_type"=>$bookingType,"subscription_start_date"=>date("Y-m-d"), "subscription_end_date"=>date('Y-m-d', strtotime(date("y-m-d") . " +  $validityPeriod days")));
                                         if($userType == \Admin\Model\User::Individual_role)
                                             $update["role"] = \Admin\Model\User::Subscriber_role;
                                         $this->userTable()->updateUser($update,$where);
@@ -430,8 +449,9 @@ class IndexController extends BaseController
                                     $GSTD = 1 + ($pricingDetails['GST']/100);
                                     $bookingList['tax'] = ($bookingTourDetails['price']?($bookingTourDetails['price']-($bookingTourDetails['price']/$GSTD)):0);
                                     $bookingList['booking_id'] = $bookingId;
-                                    $bookingList['subs_start_date'] = $userDetails['subscription_start_date'];
-                                    $bookingList['subs_end_date'] = $userDetails['subscription_end_date'];
+                                    $bookingList['subs_start_date'] = $subsdt; //$userDetails['subscription_start_date'];
+                                    $bookingList['subs_end_date'] = $subedt; //$userDetails['subscription_end_date'];
+                                    $bookingList['renewed_on'] = $renewed_on;
                                     $bookingList['user_name'] = $userDetails['user_name'];
                                     $bookingList['mobile'] = $userDetails['mobile'];
                                     $bookingList['mobile_country_code'] = $userDetails['mobile_country_code'];

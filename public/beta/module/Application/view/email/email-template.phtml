@@ -577,7 +577,8 @@ else if($action =='mail-stt-user'){
 
     if($data['booking_type']==\Admin\Model\Bookings::booking_Subscription || $data['booking_type']==\Admin\Model\Bookings::booking_Sponsored_Subscription){
         $hdrtxt = $data['heading'];
-        $bookingdt = 'Booking Date : ' . date("d-m-Y",strtotime($data["subs_start_date"]));
+        //$bookingdt = 'Booking Date : ' . date("d-m-Y",strtotime($data["subs_start_date"]));
+        $bookingdt = 'Booking Date : ' . date("d-m-Y",strtotime($data["renewed_on"]));
         $timeFrameTxt = '';
         $tpasswordbody='';
         $tpasswords = '';

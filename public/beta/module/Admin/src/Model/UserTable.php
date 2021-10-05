@@ -1111,7 +1111,7 @@ class UserTable extends  BaseTable
             $users = array();
             $where=new Where();
             //$where->equalTo('u.user_id', '241');
-            $where->lessThan(new \Laminas\Db\Sql\Expression('DATEDIFF(`u`.`subscription_end_date`,NOW())'), 31);
+                $where->lessThan(new \Laminas\Db\Sql\Expression('DATEDIFF(`u`.`subscription_end_date`,NOW())'), 5); //31);
             $where->and->greaterThan(new \Laminas\Db\Sql\Expression('DATEDIFF(`u`.`subscription_end_date`,NOW())'), 0);
             $where->and->equalTo('u.mobile_country_code', '91');
             $query = $sql->select()

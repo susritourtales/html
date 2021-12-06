@@ -1,0 +1,64 @@
+
+<?php if(isset($type) && $type =='initialize') { ?>
+<table class="table table-bordered table-hover table-striped" id="table">
+    <thead>
+    <tr>
+        <th>S.no</th>
+        <th data-placeholder="sponsor name" data-input="user_name">sponsor name</th>
+        <th data-placeholder="mobile" data-input="mobile">mobile</th>
+        <th data-placeholder="expiry date" data-input="subscription_end_date">expiry date</th>
+        <th data-placeholder="pwds purchased" data-input="pwds_purchased">pwds purchased</th>
+        <th data-placeholder="amount paid" data-input="amount_paid">amount paid</th>
+        <th>apply 50% discount</th>
+        <th>terminate sponsor</th>
+    </tr>
+    <?php } ?>
+
+    <?php if(isset($type) && ($type =='initialize' || $type=="search") ) {?>
+    <input type="hidden" class="records" value="<?php echo $totalCount; ?>">
+    <tbody>
+    <?php } ?>
+
+    <?php if(count($sponsorsPerformance))
+      {
+        $i=0;
+        if(isset($offset))
+        {
+            $i=$offset;
+        }
+
+        foreach ($sponsorsPerformance as $sp) { 
+            $fontColor = "";
+            if($sp['sponsor_status'] == \Admin\Model\Refer::sponsor_terminated)
+                $fontColor = "text-danger";
+            if($sp['sponsor_status'] == \Admin\Model\Refer::sponsor_successful)
+                $fontColor = "text-success";
+            if($sp['sponsor_status'] == \Admin\Model\Refer::sponsor_active)
+                $fontColor = "text-primary";
+            ?>
+
+            <tr class="<?php echo $fontColor; ?>">
+                <td data-id="<?php echo base64_encode("sponsorid=".$sp['user_id']); ?>"><?php echo $i+1; ?></td>
+                <td data-id="<?php echo base64_encode("sponsorid=".$sp['user_id']); ?>"><div id="div_<?php echo $sp['user_id']; ?>"><?php echo $sp['user_name']; ?></div></td>
+                <td data-id="<?php echo base64_encode("sponsorid=".$sp['user_id']); ?>"><?php echo "+".$sp['mobile_country_code'].' '.$sp['mobile']; ?></td>
+                <td data-id="<?php echo base64_encode("sponsorid=".$sp['user_id']); ?>"><?php echo date("d-m-Y",strtotime($sp['subscription_end_date'])); ?></td>
+                <td data-id="<?php echo base64_encode("sponsorid=".$sp['user_id']); ?>" class="text-center"><?php echo $sp['pwds_purchased']; ?></td>
+                <td data-id="<?php echo base64_encode("sponsorid=".$sp['user_id']); ?>" class="text-center"><?php echo round($sp['amount_paid'],2); ?></td>
+                <td class="text-center">
+                    <input type="checkbox" id="fcb_<?php echo $sp['user_id']; ?>" class="cbc" name="fcb_<?php echo $sp['user_id']; ?>" value="<?php echo $sp['user_id']; ?>" <?php echo $sp['disc50'] == \Admin\Model\Refer::discount_50 ? "checked disabled" : "" ;?> <?php echo  $sp['sponsor_status'] == \Admin\Model\Refer::sponsor_terminated ? "disabled" : ""?> >
+                </td>
+                <td class="text-center">
+                    <input type="checkbox" id="tcb_<?php echo $sp['user_id']; ?>" class="cbc" name="tcb_<?php echo $sp['user_id']; ?>" value="<?php echo $sp['user_id']; ?>" <?php echo $sp['sponsor_status'] == \Admin\Model\Refer::sponsor_terminated ? "checked disabled" : "" ;?>>
+                </td>
+            </tr>
+            <?php $i++; } } else { ?>
+        <tr ><td class="text-center" colspan="8">No data</td></tr>
+    <?php  } ?>
+    <?php if(isset($type) && ($type =='initialize' || $type=="search") ) {?>
+
+    </tbody>
+    <?php } ?>
+    <?php if(isset($type) && $type =='initialize') {?>
+
+</table>
+<?php } ?>

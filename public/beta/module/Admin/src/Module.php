@@ -65,6 +65,14 @@ use Admin\Model\Refer;  // -- Added my Manjary
 use Admin\Model\ReferTable;  // -- Added my Manjary
 use Admin\Model\Ssc;  // -- Added my Manjary
 use Admin\Model\SscTable;  // -- Added my Manjary
+use Admin\Model\PromoterDetails;  // -- Added my Manjary
+use Admin\Model\PromoterDetailsTable;  // -- Added my Manjary
+use Admin\Model\PromoterTransactions;  // -- Added my Manjary
+use Admin\Model\PromoterTransactionsTable;  // -- Added my Manjary
+use Admin\Model\PromoterPayments;  // -- Added my Manjary
+use Admin\Model\PromoterPaymentsTable;  // -- Added my Manjary
+use Admin\Model\PromoterParameters;  // -- Added my Manjary
+use Admin\Model\PromoterParametersTable;  // -- Added my Manjary
 use Laminas\Db\ResultSet\ResultSet;
 use Laminas\Db\TableGateway\TableGateway;
 use Laminas\ModuleManager\Feature\ConfigProviderInterface;
@@ -263,6 +271,54 @@ class Module implements ConfigProviderInterface
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new Refer());
                     return new TableGateway('refer', $dbAdapter, null, $resultSetPrototype);
+                },
+                "Admin/Model/PromoterDetailsTable" => function ($sm) {    // -- added by Manjary
+                    $tableGateway = $sm->get('PromoterDetailsTableGateway');
+                    $table = new PromoterDetailsTable($tableGateway);
+                    return $table;
+                },
+                'PromoterDetailsTableGateway' => function ($sm)      // -- added by Manjary
+                {
+                    $dbAdapter = $sm->get('Laminas\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new PromoterDetails());
+                    return new TableGateway('promoter_details', $dbAdapter, null, $resultSetPrototype);
+                },
+                "Admin/Model/PromoterTransactionsTable" => function ($sm) {    // -- added by Manjary
+                    $tableGateway = $sm->get('PromoterTransactionsTableGateway');
+                    $table = new PromoterTransactionsTable($tableGateway);
+                    return $table;
+                },
+                'PromoterTransactionsTableGateway' => function ($sm)      // -- added by Manjary
+                {
+                    $dbAdapter = $sm->get('Laminas\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new PromoterTransactions());
+                    return new TableGateway('promoter_transactions', $dbAdapter, null, $resultSetPrototype);
+                },
+                "Admin/Model/PromoterPaymentsTable" => function ($sm) {    // -- added by Manjary
+                    $tableGateway = $sm->get('PromoterPaymentsTableGateway');
+                    $table = new PromoterPaymentsTable($tableGateway);
+                    return $table;
+                },
+                'PromoterPaymentsTableGateway' => function ($sm)      // -- added by Manjary
+                {
+                    $dbAdapter = $sm->get('Laminas\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new PromoterPayments());
+                    return new TableGateway('promoter_payments', $dbAdapter, null, $resultSetPrototype);
+                },
+                "Admin/Model/PromoterParametersTable" => function ($sm) {    // -- added by Manjary
+                    $tableGateway = $sm->get('PromoterParametersTableGateway');
+                    $table = new PromoterParametersTable($tableGateway);
+                    return $table;
+                },
+                'PromoterParametersTableGateway' => function ($sm)      // -- added by Manjary
+                {
+                    $dbAdapter = $sm->get('Laminas\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new PromoterParameters());
+                    return new TableGateway('promoter_parameters', $dbAdapter, null, $resultSetPrototype);
                 },
                 "Admin/Model/PricingTable" => function ($sm) {    // -- added by Manjary
                     $tableGateway = $sm->get('PricingTableGateway');

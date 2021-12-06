@@ -1,0 +1,53 @@
+
+<?php if(isset($type) && $type =='initialize') { ?>
+<style>
+.table-condensed thead tr th{ color: unset !important;}
+.calign input{text-align: center !important;}
+</style>
+<div class="table-responsive">
+<table class="table table-bordered table-hover table-striped" id="extTable">
+    <thead>
+    <tr>
+        <th>S.no</th>
+        <th data-placeholder="pwd ceiling" data-input="pwd_ceiling" class="calign">Pwd Ceiling</th>
+        <!-- <th data-placeholder="Min Pwds to pay" data-input="min_pay_pwds" class="calign">Min Pwds to pay</th> -->
+        <th data-placeholder="amt per pwd" data-input="amt_per_pwd">Amt per Pwd</th>
+        <th data-placeholder="Redeem ceiling" data-input="redeem_ceiling" class="calign">Redeem ceiling</th>
+        <th data-placeholder="pay after pwds" data-input="pay_after_pwds" class="calign">Pay after pwds</th>
+    </tr>
+    <?php } ?>
+
+    <?php if(isset($type) && ($type =='initialize' || $type=="search") ) {?>
+    <input type="hidden" class="records" value="<?php echo $totalCount; ?>">
+    <tbody>
+    <?php } ?>
+
+    <?php if(count($pparameters))
+      {
+        $i=0;
+        if(isset($offset))
+        {
+            $i=$offset;
+        }
+
+        foreach ($pparameters as $prm) { ?>
+            <tr class="position-relative" data-id="<?php echo base64_encode("pid=".$prm['id']);?>">
+                <td><?php echo $i+1; ?></td>
+                <td class="text-center"><?php echo $prm['pwd_ceiling']; ?></td>
+                <!-- <td class="text-center"><?php //echo $prm['min_pay_pwds']; ?></td> -->
+                <td class="text-center"><?php echo $prm['amt_per_pwd']; ?></td>
+                <td class="text-center"><?php echo $prm['redeem_ceiling']; ?></td>
+                <td class="text-center"><?php echo $prm['pay_after_pwds']; ?></td>
+            </tr>
+            <?php $i++; } } else { ?>
+        <tr ><td class="text-center" colspan="7">No data</td></tr>
+    <?php  } ?>
+    <?php if(isset($type) && ($type =='initialize' || $type=="search") ) {?>
+
+    </tbody>
+    <?php } ?>
+    <?php if(isset($type) && $type =='initialize') {?>
+
+</table>
+</div>
+<?php } ?>

@@ -577,7 +577,7 @@ else if($action =='mail-stt-user'){
 
     if($data['booking_type']==\Admin\Model\Bookings::booking_Subscription || $data['booking_type']==\Admin\Model\Bookings::booking_Sponsored_Subscription){
         $hdrtxt = $data['heading'];
-        //$bookingdt = 'Booking Date : ' . date("d-m-Y",strtotime($data["subs_start_date"]));
+        // $bookingdt = 'Booking Date : ' . date("d-m-Y",strtotime($data["subs_start_date"]));
         $bookingdt = 'Booking Date : ' . date("d-m-Y",strtotime($data["renewed_on"]));
         $timeFrameTxt = '';
         $tpasswordbody='';
@@ -1126,16 +1126,15 @@ elseif ($action =='renew-remainder') {
                         <p>Dear Subscriber,</p>
                         <p>Namasthe.</p>                     
                         <p>Your subscription period is going to expire by ' . date("d-M-Y",strtotime($data["subscription_end_date"])) . '.</p>
-                        <p>If this is the first renewal, you will be charged at 75% of the current base price. If it is 2nd or subsequent renewal, you will be charged at 50% of the base price.</p>
+                        <p>If this is the first renewal, you will be charged at 65% of the current subscription price and if it is 2nd or subsequent renewal, you will be charged at 40% of the current subscription price.</p>
                         <br>
-                        <p>Renewal discount will only be given on base price and not on &#39;Offer&#39; price even if offer is available at the time of renewal.</p>
+                        <p>If you do not renew within the time, you will have to subscribe afresh at current subscription price or using a password.</p>
                         <br>
-                        <p>If you do not renew within the time, you will have to subscribe again at prevailing base price charges.</p>
+                        <p>Renew on time and take advantage of the concessional payment.</p>
+                        <p>Press the “Renew” button in the App and complete the process of Renewal.</p>
                         <br>
-                        <p>Please complete the process of Renewal.</p>
-                        <br>
-                        <p>Regards.</p>
-                        <p>STT.</p>
+                        <p>Regards</p>
+                        <p>STT</p>
                     </td>
                     <td width="5%"> </td>
                 </tr>
@@ -1151,21 +1150,20 @@ elseif ($action =='renew-remainder') {
                         <p>Dear Sponsor,</p>
                         <p>Namasthe.</p>                     
                         <p>You subscription period is going to expire by ' . date("d-M-Y",strtotime($data["subscription_end_date"])) . ' .</p>
-                        <p>If this is the first renewal, you will be charged at 75% of the current base price. If it is 2nd or subsequent renewal, you will be charged at 50% of the base price.</p>
+                        <p>If this is the first renewal, you will be charged at 65% of the current subscription price and if it is 2nd or subsequent renewal, you will be charged at 40% of the current subscription price.</p>
                         <br>
-                        <p>Renewal discount will only be given on base price and not on &#39;Offer&#39; price even if offer is available at the time of renewal.</p>
+                        <p>If you do not renew within the time, you will have to subscribe afresh at current subscription price or using a password.</p>
                         <br>
-                        <p>If you do not renew within the time, you will have to subscribe again at prevailing base price charges.</p>
-                        <br>
-                        <p>Please complete the process of Renewal.</p>
+                        <p>Renew on time and take advantage of the concessional payment.</p>
+                        <p>Press the “Renew” button in the App and complete the process of Renewal.</p>
                         <br>
                         <p>***</p>
                         <br>
-                        <p>Caution: As &#34;Sponsor&#34; renewal on time is necessary in order to preserve your discount status. Otherwise, you will lose your &#34;discount status on purchase of passwords&#34; and have to start your business as Sponsor afresh.</p>
-                        <p>Regards.</p>
-                        <p>STT.</p>
+                        <p>Caution: If you are operating as &#34;Sponsor&#34; renewal on time is necessary in order to preserve your discount status. Otherwise, you will lose your &#34;discount status on purchase of passwords&#34; and have to start your business as Sponsor afresh.</p>
+                        <p>Regards</p>
+                        <p>STT</p>
                     </td>
-                    <td width="5%"> </td>
+                    <td width="5%"></td>
                 </tr>
             </tbody></table></td></tr>
             <tr><td><table><tbody><tr><td width="5%"> &nbsp;</td><td>&nbsp;</td><td width="5%">&nbsp; </td></tr></tbody></table></td></tr>';

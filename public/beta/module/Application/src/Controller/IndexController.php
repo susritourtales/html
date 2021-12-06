@@ -235,6 +235,313 @@ class IndexController extends BaseController
     {
         try{
             $details=$this->getRequest()->getPost();
+            // print_r($details); exit;
+            if(!isset($details['error'])) 
+            {
+                $attributes = array("razorpay_signature" => $_REQUEST['razorpay_signature'], "razorpay_payment_id" => $_REQUEST['razorpay_payment_id'], "razorpay_order_id" => $_REQUEST['razorpay_order_id']);
+                
+                if(count($details) && count($attributes))
+                {
+                    if(isset($details['razorpay_order_id']) && $details['razorpay_payment_id'])
+                    {
+                        $checkPayment = $this->paymentTable()->getPayment(array('payment_request_id' => $details['razorpay_order_id']));
+                        if(count($checkPayment))
+                        {
+                            if($checkPayment[0]['status']==\Admin\Model\Payments::payment_success)
+                            {
+                                return new JsonModel(array('success'=>true,'message'=>'Payment Done'));
+                            }   
+                            $status = \Admin\Model\Payments::payment_success;
+                            $updateData = array('status' => $status, 'payment_response_id' => $details['razorpay_payment_id']);
+                            $updateBookingData = array('payment_status' => $status);
+                            $paymentRequest = $this->paymentTable()->updatePayment($updateData, array('payment_request_id' => $details['razorpay_order_id']));
+                            if($paymentRequest) //if($status==\Admin\Model\Payments::payment_success)
+                            {
+                                $bookingId=$checkPayment[0]['booking_id'];
+                                $paymentRequest = $this->bookingsTable()->updateBooking($updateBookingData, array('booking_id' => $bookingId));
+                                //$getUserDetails = array();
+                                $bookingList=$this->bookingsTable()->bookingsDetailsEmail($bookingId);
+                                
+                                $userId=$this->bookingsTable()->getField(array('booking_id'=>$bookingId), 'user_id');
+                                $udata=$this->userTable()->getFields(array('user_id'=>$userId), array('role','subscription_count', 'subscription_start_date', 'subscription_end_date'));
+                                $pdata['bonus_flag'] = false;
+                                $userType=$udata['role'];
+                                $scount=$udata['subscription_count'];                                    
+                                $bookingDetails=$this->bookingsTable()->bookingDetails(array('user_id'=>$userId, 'booking_id'=>$bookingId));
+                                $bookingType = $bookingDetails['booking_type'];
+                                if($bookingType == \Admin\Model\Bookings::booking_Subscription)
+                                {
+                                    $pricingDetails = $this->getEffectivePricingDetails($userId);
+                                    $validityPeriod = $pricingDetails['subscription_validity'];
+                                }                                        
+                                elseif($bookingType == \Admin\Model\Bookings::booking_Buy_Passwords)
+                                {
+                                    $pricingDetails = $this->getPasswordPricingDetails($userId);
+                                    $validityPeriod = $pricingDetails["sponsor_pwd_validity"];
+                                }
+                                //if($userType == \Admin\Model\User::Individual_role){
+                                if($bookingType == \Admin\Model\Bookings::booking_Subscription){
+                                    $where=array("user_id"=>$userId);
+                                    $subsdt = date("Y-m-d");
+                                    $subedt = date('Y-m-d', strtotime(date("y-m-d") . " +$validityPeriod days"));
+                                    $renewed_on = date("Y-m-d");
+                                    if($scount > 0) // if renewal
+                                    {
+                                        if(date('Y-m-d', strtotime($udata['subscription_end_date'])) > date("Y-m-d")){
+                                            $subsdt = date('Y-m-d', strtotime($udata['subscription_end_date'] . " +1 days"));
+                                            $subedt = date('Y-m-d', strtotime($subsdt . " +$validityPeriod days"));
+                                        }
+                                    } 
+                                    $update=array("subscription_count"=>$scount+1, "subscription_type"=>$bookingType,"subscription_start_date"=>$subsdt, "subscription_end_date"=>$subedt, "renewed_on" => $renewed_on);
+                                    
+                                    //$update=array("subscription_count"=>$scount+1, "subscription_type"=>$bookingType,"subscription_start_date"=>date("Y-m-d"), "subscription_end_date"=>date('Y-m-d', strtotime(date("y-m-d") . " +  $validityPeriod days")));
+                                    if($userType == \Admin\Model\User::Individual_role)
+                                        $update["role"] = \Admin\Model\User::Subscriber_role;
+                                    
+                                    $this->userTable()->updateUser($update,$where);
+                                }elseif($bookingType == \Admin\Model\Bookings::booking_Buy_Passwords){
+                                    $subedt = $udata['subscription_end_date'];
+                                }
+                                // if subscriber/sponsor - start
+                                $userDetails=$this->userTable()->getFields(array('user_id'=>$userId),array('user_id','user_name','email','mobile','mobile_country_code','role','subscription_count','subscription_start_date','subscription_end_date','res_state','address','status','company_role','bonus_flag', 'discount_percentage','passwords_count'));
+
+                                $bookingTourDetails=$this->bookingtourdetailsTable()->getFields(array('booking_id'=>$bookingId),  array('discount_percentage','tour_date','no_of_days','no_of_users','expiry_date','sponsered_users','price','booking_tour_id', 'created_at'));
+                                $pdata['bonus_flag'] = 0; //false;
+                                if($bookingType == \Admin\Model\Bookings::booking_Buy_Passwords){
+                                    /* if($userDetails['passwords_count'] < $pricingDetails["sponsor_bonus_min"] && $userDetails['passwords_count'] + $bookingTourDetails['no_of_users'] >= $pricingDetails["sponsor_bonus_min"]) */
+                                    if($userDetails['passwords_count']<10 && $userDetails['passwords_count'] + $bookingTourDetails['no_of_users'] >= 10)
+                                    {
+                                        $pdata['bonus_flag'] = true;
+                                        $data['passwords_count'] = $userDetails['passwords_count'] + $bookingTourDetails['no_of_users'];
+                                        $data['bonus_flag'] = 1;
+                                        $pcUpdate=$this->userTable()->updateUser($data,array('user_id'=>$userId));
+                                    }else{
+                                        $data['passwords_count'] = $userDetails['passwords_count'] + $bookingTourDetails['no_of_users'];
+                                        $data['bonus_flag'] = 0;
+                                        $pcUpdate=$this->userTable()->updateUser($data,array('user_id'=>$userId));
+                                    }
+                                    // check if the sponsor has promoter
+                                    $promoterId = $this->referTable()->getField(array('user_id'=> $userId), 'ref_id');
+                                    $spoPwdOldCount = $this->referTable()->getField(array('user_id'=> $userId), 'pwds_purchased');
+                                    $amtPerPwd = $this->promoterParametersTable()->getField(array('id'=>'1'), 'amt_per_pwd');
+                                    //echo "$userId, $promoterId , $amtPerPwd"; exit;
+                                    $spoPwdCount = $bookingTourDetails['no_of_users'];
+                                    if($pdata['bonus_flag'])
+                                        $spoPwdCount = $bookingTourDetails['no_of_users']-$pricingDetails["sponsor_comp_pwds"];
+                                    $prmTransAmt = round(($amtPerPwd * $spoPwdCount),2);
+                                    
+                                    // if sponsor has a promoter, get promoter details
+                                    if($promoterId){
+                                        //get and check Promoter status and subscription validity (=> he ll be sponsor until sed)
+                                        $promoterRes = $this->userTable()->getFields(array('user_id'=> $promoterId), array('is_promoter', 'role', 'subscription_end_date'));
+                                        $today = date("Y-m-d");
+                                        if($promoterRes['is_promoter'] == \Admin\Model\User::Is_Promoter && $promoterRes['role'] == \Admin\Model\User::Sponsor_role && $promoterRes['subscription_end_date'] >= $today){
+                                            // get and check sponsor status
+                                            $sponsorStatus = $this->referTable()->getField(array('user_id'=> $userId), 'sponsor_status');
+                                            if($sponsorStatus == \Admin\Model\Refer::sponsor_active){
+                                                // update no of passwords bought by sponsor under promoter in refer table
+                                                $updatePwdCount = $this->referTable()->updateRefer(array('pwds_purchased'=>$spoPwdOldCount + $spoPwdCount), array('user_id'=>$userId));
+                                                $pwdCeiling = $this->promoterParametersTable()->getField(array('id'=>1), 'pwd_ceiling');
+                                                if($spoPwdOldCount + $spoPwdCount >= $pwdCeiling){
+                                                    // update sponsor status to successful
+                                                    $updateSS = $this->referTable()->updateRefer(array('sponsor_status'=>\Admin\Model\Refer::sponsor_successful), array('user_id'=>$userId));
+                                                }
+                                                if($spoPwdOldCount < $pwdCeiling)
+                                                {
+                                                    /* $promBank = $this->promoterDetailsTable()->getFields(array('user_id'=>$promoterId), array('ifsc_code', 'bank_ac_no', 'due_amount', 'trigger_payment', 'latest_paid_date')); */
+                                                    $promBank = $this->promoterDetailsTable()->getFields(array('user_id'=>$promoterId), array('ifsc_code', 'bank_ac_no', 'due_amount', 'trigger_payment', 'latest_paid_date'));
+                                                    $spoPay = $this->referTable()->getFields(array('user_id'=>$userId), array('due_amount', 'trigger_payment', 'latest_paid_date'));
+                                                    $currentDT = date("Y-m-d H:i:s");
+                                                    // create promoter transactions array
+                                                    $transArr = array('promoter_id'=>$promoterId, 
+                                                    'transaction_type'=>\Admin\Model\PromoterTransactions::transaction_due, 'sponsor_id'=>$userId, 'account_no'=>$promBank['bank_ac_no'], 'ifsc_code'=>$promBank['ifsc_code'], 'transaction_date'=>$currentDT,'no_of_pwds'=>$spoPwdCount, 'amount'=>$prmTransAmt);
+                                                    // update promoter transaction
+                                                    $addPrmTrans = $this->promoterTransactionsTable()->addPromoterTransaction($transArr);
+                                                    //print_r($addPrmTrans);
+                                                    //update promoter payments table
+                                                    $ppres = $this->promoterPaymentsTable()->setSponsorPaymentDetails(array("due_date"=>$currentDT, "due_amount"=>$prmTransAmt, "promoter_id"=>$promoterId, "sponsor_id"=>$userId, 'transaction_type'=>\Admin\Model\PromoterTransactions::transaction_due));
+
+                                                    //update promoter details table
+                                                    /* $upPrmDetails = $this->promoterDetailsTable()->updatePromoterDetails(array('due_amount'=> $promBank['due_amount'] + $prmTransAmt, 'latest_due_date'=>$currentDT, 'trigger_payment'=>$promBank['trigger_payment']+$spoPwdCount), array('user_id'=>$promoterId)); */
+                                                    $upRefDetails = $this->referTable()->updateRefer(array('due_amount'=> $spoPay['due_amount'] + $prmTransAmt, 'latest_due_date'=>$currentDT, 'trigger_payment'=>$spoPay['trigger_payment']+$spoPwdCount), array('user_id'=>$userId));
+                                                }
+                                            }
+                                            /* else{
+                                                return new JsonModel(array('success'=>false,'message'=>"sponsor status = " . $sponsorStatus));
+                                            } */
+                                        }
+                                        /* else {
+                                            return new JsonModel(array('success'=>false,'message'=>"promoter status = " . $promoterRes['is_promoter']. ", role = ". $promoterRes['role']));
+                                        } */
+                                    }
+                                }
+                                
+                                if($pdata['bonus_flag'])
+                                    $totalOriPrice = round(($pricingDetails['oriprice'] * ($bookingTourDetails['no_of_users']-$pricingDetails["sponsor_comp_pwds"])),2);
+                                else                                    
+                                    $totalOriPrice = round(($pricingDetails['oriprice'] * $bookingTourDetails['no_of_users']),2);
+
+                                $GSTD = 1 + ($pricingDetails['GST']/100);
+                                if(count($bookingList)==0){
+                                    $bookingList = $bookingTourDetails;
+                                    $bookingList['user_type'] = $userType;
+                                    $bookingList['tax'] = ($bookingTourDetails['price']?($bookingTourDetails['price']-($bookingTourDetails['price']/$GSTD)):0);
+                                    $bookingList['discount_percentage'] = ($bookingTourDetails['discount_percentage']==""?0:$bookingTourDetails['discount_percentage']);
+                                    $bookingList['discount_price'] = $bookingTourDetails['price'];
+                                }
+                                                                
+                                $bookingList['booking_id'] = $bookingId;
+                                $bookingList['subs_start_date'] = $subsdt; //$userDetails['subscription_start_date'];
+                                $bookingList['subs_end_date'] = $subedt; //$userDetails['subscription_end_date'];
+                                $bookingList['renewed_on'] = $renewed_on;
+                                //$bookingList['tour_type'] = \Admin\Model\PlacePrices::tour_type_All_tour;
+                                $bookingList['booking_type'] = $bookingType;
+                                $bookingList['user_name'] = $userDetails['user_name'];
+                                $bookingList['mobile'] = $userDetails['mobile'];
+                                $bookingList['mobile_country_code'] = $userDetails['mobile_country_code'];
+                                $bookingList['email'] = $userDetails['email'];
+                                $bookingList['res_state'] = $userDetails['res_state'];
+                                $bookingList['address'] = $userDetails['address'];
+                                $bookingList['status'] = $userDetails['status'];
+                                $bookingList['company_role'] = $userDetails['company_role'];
+                                $bookingList['role'] = $userDetails['role'];
+                                $bookingList['user_type']=$userDetails['role'];
+                                $bookingList['passwords_count'] = $userDetails['passwords_count'];
+                                $bookingList['user_id'] = $userId;
+                                $bookingList['annual_price'] = $pricingDetails['annual_price'];
+                                $bookingList['plantype'] = $pricingDetails['plantype'];
+                                $bookingList['start_date'] = $pricingDetails['start_date'];
+                                $bookingList['end_date'] = $pricingDetails['end_date'];
+                                $bookingList['sponsor_bonus_min'] = $pricingDetails['sponsor_bonus_min'];
+                                //$bookingList['price'] = $pricingDetails['price'];
+                                $bookingList['offerPrice'] = $pricingDetails['oriprice'];
+                                $bookingList['oriprice'] = $totalOriPrice; //  * $GSTD;
+                                $bookingList['bonus_flag'] = $pdata['bonus_flag']; //$userDetails['bonus_flag'];
+                                $bookingList['subscription_count'] = $userDetails['subscription_count'];
+                                if($userDetails['email'])
+                                {
+                                    // added by Manjary - start - remove on live - start
+                                    $stream_opts = [
+                                        "ssl" => [
+                                            "verify_peer"=>false,
+                                            "verify_peer_name"=>false,
+                                        ]
+                                    ]; 
+                                    // added by Manjary - end -- remove on live
+                                    if($bookingList['booking_type']==\Admin\Model\Bookings::booking_Subscription){
+                                        $bookingList['heading']  ="Welcome as STT Subscriber";
+                                        $this->mailSTTUserNoAttachment($userDetails['email'], $bookingList['heading'] , 'mail-stt-user', $bookingList);
+                                    }
+                                    elseif($bookingList['booking_type']==\Admin\Model\Bookings::booking_Buy_Passwords)
+                                    {
+                                        $bookingList['passwords']=$this->bookingsTable()->bookingPasswords($bookingId);
+                                        $html = file_get_contents($this->getBaseUrl() . '/application/booking-pdf?suid=0&bid=' . $bookingId, false, stream_context_create($stream_opts));// added by Manjary - end -- remove on live
+                                        //$html = file_get_contents($this->getBaseUrl() . '/application/booking-pdf?bid=' . $bookingId, true);// - removed by Manjary to make local work - use on live
+                                        $mpdf = new mPDF(['tempDir' => getcwd()."/public/data/temp"]);
+                                        $mpdf->SetDisplayMode("fullpage");
+                                        $mpdf->WriteHTML($html);
+                                        $mpdf->Output(getcwd()."/public/data/susri_booking_".$bookingId.".pdf", "F"); 
+                                        $bookingList['heading'] = "STT Passwords Purchase Details";
+                                        $this->emailSTTUserWithAttachment($userDetails['email'], $bookingList['heading'], 'mail-stt-user', $bookingList,getcwd()."/public/data/susri_booking_".$bookingId.".pdf"); 
+                                    }
+                                    //$this->sendbookingDetails($email, $subject, 'mail-booking-details', $bookingList,getcwd()."/public/data/susri_booking_".$bookingId.".pdf");
+                                }
+                                // if subscriber/sponsor -  end
+
+
+                                $message = "";
+                                $notificationTitle = "";
+                                $smsMessage = "";
+                                if($bookingType == \Admin\Model\Bookings::booking_Subscription){
+                                    if($bookingList['subscription_count'] == "1"){
+                                        if($bookingList['mobile_country_code'] == "91"){
+                                            $message="Congratulations on your choice of subscribing to STT.\nWelcome to Susri Tour Tales.\nSelect, Download and Listen to the tales about the tourist places  of your choice.\nEnjoy your time with STT.\n\nYou can also become a sponsor. For details, see the message  sent to your registered mail Id.";
+                                        } else {
+                                            $message="Congratulations on your choice of subscribing to STT.\nWelcome to Susri Tour Tales.\nSelect, Download and Listen to the tales about the tourist places  of your choice.\nEnjoy your time with STT.";
+                                        }
+                                        $notificationTitle = "Welcome as Subscriber";
+                                        $smsMessage="Welcome%20to%20Susri%20Tour%20Tales.%0ADownload%20and%20Listen%20to%20the%20tales%20of%20your%20choice.%0A%0ABecome%20a%20sponsor%20and%20earn%20through%20App.%0ASee%20e-mail%20message%20for%20details.";
+                                    }else{
+                                        $message="Thank you for your association with STT.\nWish you a happy time with STT.";
+                                        $notificationTitle = "Renewal sucsessful";
+                                        $smsMessage="Thank%20you%20for%20your%20continued%20association%20with%20STT.%20%0AWish%20you%20one%20more%20year%20of%20awareness%20and%20enjoyment.";
+                                    }
+                                }
+                                elseif($bookingType == \Admin\Model\Bookings::booking_Buy_Passwords){
+                                    if($bookingList['bonus_flag']){
+                                        $message = "Congratulations.\nAs you have completed the purchase of first 10 passwords, you are eligible to receive 5 bonus passwords. They are sent to your registered e-mail.";
+                                        $smsMessage = "Congratulations.%0ABy%20purchasing%20ten%20passwords%2C%20you%20have%20become%20eligible%20to%20receive%205%20bonus%20passwords.%20%0A%0AThey%20are%20sent%20to%20your%20registered%20e-mail.";
+                                    }else{
+                                        $message="Your " . $bookingList['no_of_users'] . " passwords purchased have been mailed to your registered mail Id.\nThe passwords are required to be re-deemed before one year.\nPassword  used on one device cannot be re-used on other.";
+                                        $smsMessage="Your%20" . $bookingList['no_of_users'] . "%20passwords%20have%20been%20mailed%20to%20your%20registered%20mail%20Id.%0APasswords%20are%20required%20to%20be%20re-deemed%20before%20one%20year.";
+                                    }
+                                    $notificationTitle = "Passwords purchased successfully";
+
+                                    // promoter portal code - check if the sponsor is under a promoter -> if yes update promoter_transactions table
+                                    $exists = $this->referTable()->getRefers(array("user_id"=>$bookingList['user_id']));
+                                    if($exists)
+                                        $promoter_id = $this->referTable()->getField(array('user_id'=>$bookingList['user_id']), array('ref_id'));
+                                    if($promoter_id){
+                                        $app = $this->promoterParametersTable()->getField(array('id'=>1), array('amt_per_pwd'));
+                                        if($app){
+                                            if($bookingList['bonus_flag'])
+                                                $amt = round(($app * ($bookingList['no_of_users']-$pricingDetails["sponsor_comp_pwds"])),2);
+                                            else                                    
+                                                $amt = round(($app * $bookingList['no_of_users']),2);
+                                            
+                                            $ptData = array('promoter_id'=>$promoter_id, 'sponsor_id'=>$bookingList['user_id'], 'transaction_type'=>\Admin\Model\PromoterTransactions::transaction_due, 'transaction_date'=>date("Y-m-d"), 'amount'=>$amt, 'created_at'=>date("Y-m-d H:i:s"),'updated_at'=>date("Y-m-d H:i:s"));
+                                            $ptres = $this->promoterTransactionsTable()->addPromoterTransaction($ptData);
+                                        }
+                                    }
+                                }
+
+                                $notificationDetails = array('notification_data_id'=>$bookingId ,'status' => \Admin\Model\Notification::STATUS_UNREAD, 'notification_recevier_id' => $userId, 'notification_type' => \Admin\Model\Notification::NOTIFICATION_TYPE_BOOKING_NOTIFICATION, 'notification_text' => $message,'created_at'=>date("Y-m-d H:i:s"),'updated_at'=>date("Y-m-d H:i:s"));
+                                $registrationIds = $this->fcmTable()->getDeviceIds($userId);
+                                $notification=   $this->notificationTable()->saveData($notificationDetails);
+                                
+                                if ($registrationIds)
+                                {
+                                    $notification = new SendFcmNotification();
+                                    $notification->sendPushNotificationToFCMSever($registrationIds, array('message' => $notificationDetails['notification_text'], 'title' => $notificationTitle, 'id' => $notificationDetails['notification_data_id'], 'type' => $notificationDetails['notification_type']));
+                                }
+                                //$counter=1;
+                                $this->sendPasswordSms($bookingList['mobile_country_code'].$bookingList['mobile'],$smsMessage);//array('text'=>$smsMessage));
+                                if($bookingList['bonus_flag'])
+                                    $this->userTable()->updateUser(array('bonus_flag'=>false),array('user_id'=>$userId));
+                            }
+                            $refDetails = $this->referTable()->getRefers(array('user_id'=>$userId));
+                            return new JsonModel(array('success'=>true,'message'=>'success','user'=> array(
+                                'id'=>$bookingList['user_id'],  // 'id'=>$bookingList['user_id'],
+                                'name'=>$bookingList['user_name'],
+                                'email'=>$bookingList['email'],
+                                'resState'=>$bookingList['res_state'],
+                                'address'=>$bookingList['address'],
+                                'type'=>$bookingList['status'],
+                                'mobile_country_code'=>$bookingList['mobile_country_code'],
+                                'mobile'=>$bookingList['mobile'],
+                                'ref_name'=>$refDetails[0]['ref_by'],
+                                'ref_mobile'=>$refDetails[0]['ref_mobile'],
+                                'company_name'=>$bookingList['company_role'],
+                                'role'=>$bookingList['role'],
+                                'subscription_end_date'=>$bookingList['subs_end_date']
+                                )
+                            ));
+                        }
+                    }
+                }
+            }
+            return new JsonModel(array('success'=>false,'message'=>'false'));
+        }
+        catch (\Exception $e)
+        {
+            return new JsonModel(array('success'=>false,'message'=>$e->getMessage()));
+        }
+    }
+
+    public function paymentGateWayResponseAction_13092021()
+    {
+        try{
+            $details=$this->getRequest()->getPost();
             // print_r($details);
             if(!isset($details['error'])) 
             {
@@ -263,7 +570,7 @@ class IndexController extends BaseController
                                 $bookingList=$this->bookingsTable()->bookingsDetailsEmail($bookingId);
                                 if(count($bookingList)==0){
                                     $userId=$this->bookingsTable()->getField(array('booking_id'=>$bookingId), 'user_id');
-                                    $udata=$this->userTable()->getFields(array('user_id'=>$userId), array('role','subscription_count', 'subscription_start_date', 'subscription_end_date'));
+                                    $udata=$this->userTable()->getFields(array('user_id'=>$userId), array('role','subscription_count'));
                                     $pdata['bonus_flag'] = false;
                                     $userType=$udata['role'];
                                     $scount=$udata['subscription_count'];                                    
@@ -282,16 +589,8 @@ class IndexController extends BaseController
                                     //if($userType == \Admin\Model\User::Individual_role){
                                     if($bookingType == \Admin\Model\Bookings::booking_Subscription){
                                         $where=array("user_id"=>$userId);
-                                        $subsdt = date("Y-m-d");
-                                        $subedt = date('Y-m-d', strtotime(date("y-m-d") . " +$validityPeriod days"));
-                                        $renewed_on = date("Y-m-d");
-                                        if($scount > 0) // if renewal
-                                        {
-                                            $subsdt = date('Y-m-d', strtotime($udata['subscription_end_date'] . " +1 days"));
-                                            $subedt = date('Y-m-d', strtotime($subsdt . " +$validityPeriod days"));
-                                        } 
-                                        $update=array("subscription_count"=>$scount+1, "subscription_type"=>$bookingType,"subscription_start_date"=>$subsdt, "subscription_end_date"=>$subedt, "renewed_on" => $renewed_on);
-                                        // $update=array("subscription_count"=>$scount+1, "subscription_type"=>$bookingType,"subscription_start_date"=>date("Y-m-d"), "subscription_end_date"=>date('Y-m-d', strtotime(date("y-m-d") . " +  $validityPeriod days")));
+                                        $update=array("subscription_count"=>$scount+1,
+                                        "subscription_type"=>$bookingType,"subscription_start_date"=>date("Y-m-d"), "subscription_end_date"=>date('Y-m-d', strtotime(date("y-m-d") . " +  $validityPeriod days")));
                                         
                                         if($userType == \Admin\Model\User::Individual_role)
                                             $update["role"] = \Admin\Model\User::Subscriber_role;
@@ -328,9 +627,8 @@ class IndexController extends BaseController
                                     $bookingList['discount_percentage'] = ($bookingTourDetails['discount_percentage']==""?0:$bookingTourDetails['discount_percentage']);
                                     $bookingList['discount_price'] = $bookingTourDetails['price'];
                                     $bookingList['booking_id'] = $bookingId;
-                                    $bookingList['subs_start_date'] = $subsdt; //$userDetails['subscription_start_date'];
-                                    $bookingList['subs_end_date'] = $subedt; //$userDetails['subscription_end_date'];
-                                    $bookingList['renewed_on'] = $renewed_on;
+                                    $bookingList['subs_start_date'] = $userDetails['subscription_start_date'];
+                                    $bookingList['subs_end_date'] = $userDetails['subscription_end_date'];
                                     //$bookingList['tour_type'] = \Admin\Model\PlacePrices::tour_type_All_tour;
                                     $bookingList['booking_type'] = $bookingType;
                                     $bookingList['user_name'] = $userDetails['user_name'];
@@ -387,7 +685,7 @@ class IndexController extends BaseController
                                 else
                                 {
                                     $userId=$this->bookingsTable()->getField(array('booking_id'=>$bookingId), 'user_id');
-                                    $udata=$this->userTable()->getFields(array('user_id'=>$userId), array('role','subscription_count', 'subscription_start_date', 'subscription_end_date'));
+                                    $udata=$this->userTable()->getFields(array('user_id'=>$userId), array('role','subscription_count'));
                                     $userType=$udata['role'];
                                     $scount=$udata['subscription_count'];                                    
                                     $bookingDetails=$this->bookingsTable()->bookingDetails(array('user_id'=>$userId, 'booking_id'=>$bookingId));
@@ -406,17 +704,7 @@ class IndexController extends BaseController
                                     //if($userType == \Admin\Model\User::Individual_role){
                                     if($bookingType == \Admin\Model\Bookings::booking_Subscription){
                                         $where=array("user_id"=>$userId);
-                                        $subsdt = date("Y-m-d");
-                                        $subedt = date('Y-m-d', strtotime(date("y-m-d") . " +$validityPeriod days"));
-                                        $renewed_on = date("Y-m-d");
-                                        if($scount > 0) // if renewal
-                                        {
-                                            $subsdt = date('Y-m-d', strtotime($udata['subscription_end_date'] . " +1 days"));
-                                            $subedt = date('Y-m-d', strtotime($subsdt . " +$validityPeriod days"));
-                                        } 
-                                        $update=array("subscription_count"=>$scount+1, "subscription_type"=>$bookingType,"subscription_start_date"=>$subsdt, "subscription_end_date"=>$subedt, "renewed_on" => $renewed_on);
-                                        
-                                        //$update=array("subscription_count"=>$scount+1,"subscription_type"=>$bookingType,"subscription_start_date"=>date("Y-m-d"), "subscription_end_date"=>date('Y-m-d', strtotime(date("y-m-d") . " +  $validityPeriod days")));
+                                        $update=array("subscription_count"=>$scount+1,"subscription_type"=>$bookingType,"subscription_start_date"=>date("Y-m-d"), "subscription_end_date"=>date('Y-m-d', strtotime(date("y-m-d") . " +  $validityPeriod days")));
                                         if($userType == \Admin\Model\User::Individual_role)
                                             $update["role"] = \Admin\Model\User::Subscriber_role;
                                         $this->userTable()->updateUser($update,$where);
@@ -449,9 +737,8 @@ class IndexController extends BaseController
                                     $GSTD = 1 + ($pricingDetails['GST']/100);
                                     $bookingList['tax'] = ($bookingTourDetails['price']?($bookingTourDetails['price']-($bookingTourDetails['price']/$GSTD)):0);
                                     $bookingList['booking_id'] = $bookingId;
-                                    $bookingList['subs_start_date'] = $subsdt; //$userDetails['subscription_start_date'];
-                                    $bookingList['subs_end_date'] = $subedt; //$userDetails['subscription_end_date'];
-                                    $bookingList['renewed_on'] = $renewed_on;
+                                    $bookingList['subs_start_date'] = $userDetails['subscription_start_date'];
+                                    $bookingList['subs_end_date'] = $userDetails['subscription_end_date'];
                                     $bookingList['user_name'] = $userDetails['user_name'];
                                     $bookingList['mobile'] = $userDetails['mobile'];
                                     $bookingList['mobile_country_code'] = $userDetails['mobile_country_code'];

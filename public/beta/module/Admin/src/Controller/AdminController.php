@@ -2267,10 +2267,10 @@ class AdminController extends BaseController
          if ($this->getRequest()->isXmlHttpRequest())
          {
              $request = $this->getRequest()->getPost();
+            // var_dump($request);exit;
             $userName=$request['user_name'];
             $password=$request['password'];
              $user = $this->userTable()->authenticateUser($userName, $password);
-
              if(count($user) && $user['role']==\Admin\Model\User::Admin_role)
             {
                 if(ob_get_length())
@@ -3290,6 +3290,566 @@ class AdminController extends BaseController
         }
     }
 
+    public function payPromoterAction(){
+        if(!$this->getLoggedInUserId())
+        {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        if ($this->getRequest()->isXmlHttpRequest())
+        {
+            $request = $this->getRequest()->getPost();
+            $id = $request['id'];
+            $currentDT = date("Y-m-d H:i:s");
+            $pdata = $this->promoterPaymentsTable()->getFields(array("id"=>$id),array('due_date', 'due_amount', 'promoter_id', 'sponsor_id', 'status'));
+            $pdata['id'] = $request['id'];
+            $pdata['paid_amount'] = $request['amt'];
+            $pdata['trans_ref'] = $request['tr'];
+            $pdata['paid_date'] = $currentDT;
+            $pdata['transaction_type'] = \Admin\Model\PromoterTransactions::transaction_paid;
+            $response = $this->promoterPaymentsTable()->setSponsorPaymentDetails($pdata);
+            //$response = true;
+            if($response)
+            {
+                // create promoter transactions array
+                /* $promBank = $this->promoterDetailsTable()->getFields(array('user_id'=>$pdata['promoter_id']), array('ifsc_code', 'bank_ac_no', 'due_amount', 'paid_amount', 'trigger_payment', 'latest_paid_date')); */
+                $promBank = $this->promoterDetailsTable()->getFields(array('user_id'=>$pdata['promoter_id']), array('ifsc_code', 'bank_ac_no'));
+                $spoPay = $this->referTable()->getFields(array('user_id'=>$pdata['sponsor_id']), array('due_amount', 'paid_amount', 'trigger_payment', 'latest_paid_date'));
+                $transArr = array('promoter_id'=>$pdata['promoter_id'], 'transaction_type'=>\Admin\Model\PromoterTransactions::transaction_paid, 'sponsor_id'=>$pdata['sponsor_id'], 'account_no'=>$promBank['bank_ac_no'], 'ifsc_code'=>$promBank['ifsc_code'], 'transaction_date'=>$currentDT,'no_of_pwds'=>'0', 'amount'=>$pdata['paid_amount'], 'transaction_ref'=>$pdata['trans_ref']);
+                // update promoter transactions table
+                $addPrmTrans = $this->promoterTransactionsTable()->addPromoterTransaction($transArr);
+                //$addPrmTrans = true;
+                if($addPrmTrans){ 
+                    // update promoter details table
+                    /* $promBank = $this->promoterDetailsTable()->getFields(array('user_id'=>$pdata['promoter_id']), array( 'due_amount', 'paid_amount')); */
+                    $trig = 0;
+                    if($spoPay['due_amount'] - $pdata['paid_amount'] > 0) //if($promBank['due_amount'] - $pdata['paid_amount'] > 0)
+                        $trig = 1;
+                    /* $detres = $this->promoterDetailsTable()->updatePromoterDetails(array('due_amount'=> $promBank['due_amount'] - $pdata['paid_amount'], 'latest_due_date'=>$currentDT, 'trigger_payment'=>$trig, 'paid_amount'=>$promBank['paid_amount'] + $pdata['paid_amount'], 'latest_paid_date'=>$currentDT), array('user_id'=>$pdata['promoter_id'])); */
+                    $detres = $this->referTable()->updateRefer(array('due_amount'=> $spoPay['due_amount'] - $pdata['paid_amount'], 'latest_due_date'=>$currentDT, 'trigger_payment'=>$trig, 'paid_amount'=>$spoPay['paid_amount'] + $pdata['paid_amount'], 'latest_paid_date'=>$currentDT), array('user_id'=>$pdata['sponsor_id']));
+                    if($detres){
+                        return new JsonModel(array('success'=>true,"message"=>'paid successfully'));
+                    }else{
+                        return new JsonModel(array('success'=>false,"message"=>'unable to process the payment'));
+                    }
+                }else{
+                    return new JsonModel(array('success'=>false,"message"=>'unable to process the payment'));
+                }
+            }else{
+                return new JsonModel(array('success'=>false,"message"=>'unable to process the payment'));
+            }
+        }
+    } //unable to process the payment
+
+    public function sponsorDisc50Action(){
+        if(!$this->getLoggedInUserId())
+        {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+
+        if ($this->getRequest()->isXmlHttpRequest()){
+            $request = $this->getRequest()->getPost();  //var_dump($request);exit;
+            $sponsorid = $request['sid'];
+            //echo $sponsorid;exit;
+            $rresponse = $this->referTable()->updateRefer(array('disc50'=>\Admin\Model\Refer::discount_50), array('user_id'=>$sponsorid));
+            if($rresponse){
+                $response = $this->userTable()->updateUser(array('discount_percentage'=>50), array('user_id'=>$sponsorid));
+                if($response){
+                    return new JsonModel(array('success'=>true , 'message'=>'updated successfully'));
+                }else{
+                    return new JsonModel(array('success'=>false,'message'=>'unable to update'));
+                }
+            }else{
+                return new JsonModel(array('success'=>false,'message'=>'unable to update'));
+            }
+        }
+    }
+
+    public function sponsorTerminateAction(){
+        if(!$this->getLoggedInUserId())
+        {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+
+        if ($this->getRequest()->isXmlHttpRequest()){
+            $request = $this->getRequest()->getPost();  //var_dump($request);exit;
+            $sponsorid = $request['sid'];
+            //echo $sponsorid;exit;
+            $response = $this->referTable()->updateRefer(array('sponsor_status'=>\Admin\Model\Refer::sponsor_terminated), array('user_id'=>$sponsorid));
+            if($response){
+                return new JsonModel(array('success'=>true , 'message'=>'updated successfully'));
+            }else{
+                return new JsonModel(array('success'=>false,'message'=>'unable to update'));
+            }
+        }
+    }
+
+    public function promoterTerminateAction(){
+        if(!$this->getLoggedInUserId())
+        {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+
+        if ($this->getRequest()->isXmlHttpRequest()){
+            $request = $this->getRequest()->getPost();  //var_dump($request);exit;
+            $promoterid = $request['pid'];
+            $response = $this->userTable()->updateUser(array('is_promoter'=>\Admin\Model\User::Is_terminated_Promoter), array('user_id'=>$promoterid));
+            if($response){
+                return new JsonModel(array('success'=>true , 'message'=>'updated successfully'));
+            }else{
+                return new JsonModel(array('success'=>false,'message'=>'unable to update'));
+            }
+        }
+    }
+
+    public function sponsorsPerformanceAction()
+    {
+        if(!$this->getLoggedInUserId())
+        {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        
+        $paramId = $this->params()->fromRoute('id', '');
+        if (!$paramId)
+        {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        $userIdString = rtrim($paramId, "=");
+        $userIdString = base64_decode($userIdString);
+        $userIdString = explode("=", $userIdString);
+        $promoterId = array_key_exists(1, $userIdString) ? $userIdString[1] : 0;
+
+        $sponsorsPerformance=$this->referTable()->getSponsorsPerfAdmin(array('promoterId'=>$promoterId,'limit'=>10,'offset'=>0));
+        $sponsorsCount=$this->referTable()->getSponsorsPerfAdminCount(array('promoterId'=>$promoterId));
+        $promoterName=$this->userTable()->getFields(array('user_id'=>$promoterId),array('user_name'));
+        return new ViewModel(array('sponsorsPerformance'=>$sponsorsPerformance,'totalCount'=>$sponsorsCount[0]['sponsors_count'], 'promoterName'=>$promoterName));
+    }
+
+    public function loadSponsorsPerformanceAction(){
+        if ($this->getRequest()->isXmlHttpRequest())
+        {
+            $request = $this->getRequest()->getPost();  //var_dump($request);exit;          
+            $searchData=array('limit'=>10,'offset'=>0);
+            $type=$request['type'];
+            $offset=0;
+            $filterData=$request['filter'];
+            if($filterData)
+            {
+                $filterData=json_decode($filterData,true);
+                $userIdString = $filterData['uid']['text'];
+                $userIdString = base64_decode($userIdString);
+                $userIdString = explode("=", $userIdString);
+                $promoterId = array_key_exists(1, $userIdString) ? $userIdString[1] : 0; 
+                //echo $promoterId; exit;
+                $searchData['user_id'] = $promoterId;
+
+                if(isset($filterData['user_name']))
+                { 
+                    if(isset($filterData['user_name']['text']))
+                    { 
+                        $searchData['user_name']=$filterData['user_name']['text'];
+                    }
+                    if(isset($filterData['user_name']['order']) && $filterData['user_name']['order'])
+                    {
+                        $searchData['user_name_order']=$filterData['user_name']['order'];
+                    }
+                }
+                if(isset($filterData['mobile']))
+                {
+                    if(isset($filterData['mobile']['text']))
+                    {
+                        $searchData['mobile']=$filterData['mobile']['text'];
+                    }
+                    if(isset($filterData['mobile']['order']) && $filterData['mobile']['order'])
+                    {
+                        $searchData['mobile_order']=$filterData['mobile']['order'];
+                    }
+                }
+                if(isset($filterData['subscription_end_date']))
+                {
+                    if(isset($filterData['subscription_end_date']['text']))
+                    {
+                        $searchData['subscription_end_date']=$filterData['subscription_end_date']['text'];
+                    }
+                    if(isset($filterData['subscription_end_date']['order']) && $filterData['subscription_end_date']['order'])
+                    {
+                        $searchData['subscription_end_date_order']=$filterData['subscription_end_date']['order'];
+                    }
+                }
+                if(isset($filterData['pwds_purchased']))
+                {
+                    if(isset($filterData['pwds_purchased']['text']))
+                    {
+                        $searchData['pwds_purchased']=$filterData['pwds_purchased']['text'];
+                    }
+                    if(isset($filterData['pwds_purchased']['order']) && $filterData['pwds_purchased']['order'])
+                    {
+                        $searchData['pwds_purchased_order']=$filterData['pwds_purchased']['order'];
+                    }
+                }                
+                if(isset($filterData['amount_paid']))
+                {
+                    if(isset($filterData['amount_paid']['text']))
+                    {
+                        $searchData['amount_paid']=$filterData['amount_paid']['text'];
+                    }
+                    if(isset($filterData['amount_paid']['order']) && $filterData['amount_paid']['order'])
+                    {
+                        $searchData['amount_paid_order']=$filterData['amount_paid']['order'];
+                    }
+                }
+            }
+
+            if(isset($request['page_number']))
+            {
+                $userIdString = $request['uid'];
+                $userIdString = base64_decode($userIdString);
+                $userIdString = explode("=", $userIdString);
+                $promoterId = array_key_exists(1, $userIdString) ? $userIdString[1] : 0; 
+                //echo $promoterId; exit;
+
+                $pageNumber = $request['page_number'];
+                $offset = ($pageNumber * 10 - 10);
+                $limit = 10;
+                $searchData['offset']=$offset;
+                $searchData['limit']=$limit;
+            }
+            $searchData['promoterId']=$promoterId;
+            $totalCount=0;
+            
+            if($type && $type=='search')
+            {
+                $totalCount=$this->referTable()->getSponsorsPerfAdminCount($searchData);
+            }
+
+            $sponsorsPerformance=$this->referTable()->getSponsorsPerfAdmin($searchData);
+            $promoterName=$this->userTable()->getFields(array('user_id'=>$promoterId),array('user_name'));
+            $view = new ViewModel(array('sponsorsPerformance'=>$sponsorsPerformance, 'promoterName'=>$promoterName, 'offset' => $offset,'type'=>$type,'totalCount'=>$totalCount[0]['sponsors_count']));
+            $view->setTerminal(true);
+            return $view;
+        }
+    }
+
+    public function sponsorsTransactionsAction(){
+        if(!$this->getLoggedInUserId())
+        {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        
+        $paramId = $this->params()->fromRoute('id', '');
+        if (!$paramId)
+        {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        $userIdString = rtrim($paramId, "=");
+        $userIdString = base64_decode($userIdString);
+        $userIdString = explode("=", $userIdString);
+        $sponsorId = array_key_exists(1, $userIdString) ? $userIdString[1] : 0;
+        //echo $sponsorId;exit;
+        $data = array('sponsorId'=>$sponsorId, 'limit'=>10,'offset'=>0);
+        $sponsorTransactions = $this->promoterTransactionsTable()->getSponsorwiseTransactions($data);
+        //var_dump($sponsorTransactions); exit;
+        $sponsorAllTransactions = $this->promoterTransactionsTable()->getSponsorwiseAllTransactions($data);
+        $sponsorName=$this->userTable()->getFields(array('user_id'=>$sponsorId),array('user_name'));
+        return new ViewModel(array('sponsorTransactions'=>$sponsorTransactions,'totalCount'=>count($sponsorAllTransactions), 'sponsorName'=>$sponsorName));
+    }
+
+    public function loadSponsorsTransactionsAction(){
+        if ($this->getRequest()->isXmlHttpRequest())
+        {
+            $request = $this->getRequest()->getPost();  //var_dump($request);exit;          
+            $searchData=array('limit'=>10,'offset'=>0);
+            $type=$request['type'];
+            $offset=0;
+            $filterData=$request['filter'];
+            if($filterData)
+            {
+                $filterData=json_decode($filterData,true);
+                $userIdString = $filterData['uid']['text'];
+                $userIdString = base64_decode($userIdString);
+                $userIdString = explode("=", $userIdString);
+                $sponsorId = array_key_exists(1, $userIdString) ? $userIdString[1] : 0; 
+                //echo $sponsorId; exit;
+                $searchData['user_id'] = $sponsorId;
+
+                if(isset($filterData['promoter_name']))
+                { 
+                    if(isset($filterData['promoter_name']['text']))
+                    { 
+                        $searchData['promoter_name']=$filterData['promoter_name']['text'];
+                    }
+                    if(isset($filterData['promoter_name']['order']) && $filterData['promoter_name']['order'])
+                    {
+                        $searchData['promoter_name_order']=$filterData['promoter_name']['order'];
+                    }
+                }
+                if(isset($filterData['promoter_mobile']))
+                {
+                    if(isset($filterData['promoter_mobile']['text']))
+                    {
+                        $searchData['promoter_mobile']=$filterData['promoter_mobile']['text'];
+                    }
+                    if(isset($filterData['promoter_mobile']['order']) && $filterData['promoter_mobile']['order'])
+                    {
+                        $searchData['promoter_mobile_order']=$filterData['promoter_mobile']['order'];
+                    }
+                }
+            }
+
+            if(isset($request['page_number']))
+            {
+                $userIdString = $request['uid'];
+                $userIdString = base64_decode($userIdString);
+                $userIdString = explode("=", $userIdString);
+                $sponsorId = array_key_exists(1, $userIdString) ? $userIdString[1] : 0; 
+                //echo $sponsorId; exit;
+
+                $pageNumber = $request['page_number'];
+                $offset = ($pageNumber * 10 - 10);
+                $limit = 10;
+                $searchData['offset']=$offset;
+                $searchData['limit']=$limit;
+            }
+            $searchData['sponsorId']=$sponsorId;
+            $totalCount=0;
+            
+            if($type && $type=='search')
+            {
+                //$totalCount=$this->promoterTransactionsTable()->getSponsorwiseAllTransactions($searchData);
+                $sponsorAllTransactions = $this->promoterTransactionsTable()->getSponsorwiseAllTransactions($searchData);
+            }
+
+            $sponsorTransactions = $this->promoterTransactionsTable()->getSponsorwiseTransactions($searchData);
+            //$sponsorAllTransactions = $this->promoterTransactionsTable()->getSponsorwiseAllTransactions($searchData);
+            $sponsorName=$this->userTable()->getFields(array('user_id'=>$sponsorId),array('user_name'));
+            $view =  new ViewModel(array('sponsorTransactions'=>$sponsorTransactions,'offset' => $offset,'type'=>$type,'totalCount'=>count($sponsorAllTransactions), 'sponsorName'=>$sponsorName, 'offset' => $offset));
+            $view->setTerminal(true);
+            return $view;
+        }
+    }
+
+    public function promotersPaymentsAction(){
+        if(!$this->getLoggedInUserId())
+        {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        
+        $promotersPayments = $this->promoterPaymentsTable()->getPromotersPaymentsDetails();
+        $promotersAllPayments = $this->promoterPaymentsTable()->getPromotersPaymentsDetailsCount();
+        return new ViewModel(array('promotersPayments'=>$promotersPayments,'totalCount'=>count($promotersAllPayments)));
+    }
+
+    public function loadPromotersPaymentsAction(){
+        if ($this->getRequest()->isXmlHttpRequest())
+        {
+            $request = $this->getRequest()->getPost();  //var_dump($request);exit;          
+            $searchData=array('limit'=>10,'offset'=>0);
+            $type=$request['type'];
+            $offset=0;
+            $filterData=$request['filter'];
+            if($filterData)
+            {
+                $filterData=json_decode($filterData,true);
+                $userIdString = $filterData['uid']['text'];
+                $userIdString = base64_decode($userIdString);
+                $userIdString = explode("=", $userIdString);
+                $sponsorId = array_key_exists(1, $userIdString) ? $userIdString[1] : 0; 
+                //echo $sponsorId; exit;
+                $searchData['user_id'] = $sponsorId;
+
+                if(isset($filterData['promoter_name']))
+                { 
+                    if(isset($filterData['promoter_name']['text']))
+                    { 
+                        $searchData['promoter_name']=$filterData['promoter_name']['text'];
+                    }
+                    if(isset($filterData['promoter_name']['order']) && $filterData['promoter_name']['order'])
+                    {
+                        $searchData['promoter_name_order']=$filterData['promoter_name']['order'];
+                    }
+                }
+                if(isset($filterData['promoter_mobile']))
+                {
+                    if(isset($filterData['promoter_mobile']['text']))
+                    {
+                        $searchData['promoter_mobile']=$filterData['promoter_mobile']['text'];
+                    }
+                    if(isset($filterData['promoter_mobile']['order']) && $filterData['promoter_mobile']['order'])
+                    {
+                        $searchData['promoter_mobile_order']=$filterData['promoter_mobile']['order'];
+                    }
+                }
+            }
+
+            if(isset($request['page_number']))
+            {
+                $userIdString = $request['uid'];
+                $userIdString = base64_decode($userIdString);
+                $userIdString = explode("=", $userIdString);
+                $sponsorId = array_key_exists(1, $userIdString) ? $userIdString[1] : 0; 
+                //echo $sponsorId; exit;
+
+                $pageNumber = $request['page_number'];
+                $offset = ($pageNumber * 10 - 10);
+                $limit = 10;
+                $searchData['offset']=$offset;
+                $searchData['limit']=$limit;
+            }
+            $searchData['sponsorId']=$sponsorId;
+            $totalCount=0;
+            
+            if($type && $type=='search')
+            {
+                $totalCount=$this->referTable()->getSponsorsPerfAdminCount($searchData);
+            }
+
+            $promotersPayments = $this->promoterPaymentsTable()->getPromotersPaymentsDetails($searchData);
+            $promotersAllPayments = $this->promoterPaymentsTable()->getPromotersPaymentsDetailsCount($searchData);
+            $view = new ViewModel(array('promotersPayments'=>$promotersPayments,'offset' => $offset,'type'=>$type,'totalCount'=>count($promotersAllPayments)));
+            $view->setTerminal(true);
+            return $view;
+
+            /* $sponsorTransactions = $this->promoterTransactionsTable()->getSponsorwiseTransactions($searchData);
+            $sponsorAllTransactions = $this->promoterTransactionsTable()->getSponsorwiseAllTransactions($searchData);
+            $sponsorName=$this->userTable()->getFields(array('user_id'=>$sponsorId),array('user_name'));
+            $view = new ViewModel(array('sponsorTransactions'=>$sponsorTransactions,'totalCount'=>count($sponsorAllTransactions), 'sponsorName'=>$sponsorName));
+            $view->setTerminal(true);
+            return $view; */
+        }
+    }
+
+    public function promotersListAction()
+    {
+        if(!$this->getLoggedInUserId())
+        {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        
+        $promotersList=$this->userTable()->getAllPromotersAdmin();
+        $promotersListCount=$this->userTable()->getAllPromotersAdminCount();
+        return new ViewModel(array('promotersList'=>$promotersList,'totalCount'=>$promotersListCount[0]['promoters_count']));
+    }
+
+    public function loadPromotersListAction()
+    {
+        if ($this->getRequest()->isXmlHttpRequest())
+        {
+            $request = $this->getRequest()->getPost();
+
+            $searchData=array('limit'=>10,'offset'=>0);
+            $type=$request['type'];
+            $offset=0;
+            $filterData=$request['filter'];
+            if($filterData)
+            {
+                $filterData=json_decode($filterData,true);
+
+                if(isset($filterData['user_name']))
+                { 
+                    if(isset($filterData['user_name']['text']))
+                    { 
+                        $searchData['user_name']=$filterData['user_name']['text'];
+                    }
+                    if(isset($filterData['user_name']['order']) && $filterData['user_name']['order'])
+                    {
+                        $searchData['user_name_order']=$filterData['user_name']['order'];
+                    }
+                }
+                if(isset($filterData['mobile']))
+                {
+                    if(isset($filterData['mobile']['text']))
+                    {
+                        $searchData['mobile']=$filterData['mobile']['text'];
+                    }
+                    if(isset($filterData['mobile']['order']) && $filterData['mobile']['order'])
+                    {
+                        $searchData['mobile_order']=$filterData['mobile']['order'];
+                    }
+                }
+                if(isset($filterData['sponsors_successful']))
+                {
+                    if(isset($filterData['sponsors_successful']['text']))
+                    {
+                        $searchData['sponsors_successful']=$filterData['sponsors_successful']['text'];
+                    }
+                    if(isset($filterData['sponsors_successful']['order']) && $filterData['sponsors_successful']['order'])
+                    {
+                        $searchData['sponsors_successful_order']=$filterData['sponsors_successful']['order'];
+                    }
+                }
+                if(isset($filterData['sponsors_terminated']))
+                {
+                    if(isset($filterData['sponsors_terminated']['text']))
+                    {
+                        $searchData['sponsors_terminated']=$filterData['sponsors_terminated']['text'];
+                    }
+                    if(isset($filterData['sponsors_terminated']['order']) && $filterData['sponsors_terminated']['order'])
+                    {
+                        $searchData['sponsors_terminated_order']=$filterData['sponsors_terminated']['order'];
+                    }
+                }
+                if(isset($filterData['sponsors_active']))
+                {
+                    if(isset($filterData['sponsors_active']['text']))
+                    {
+                        $searchData['sponsors_active']=$filterData['sponsors_active']['text'];
+                    }
+                    if(isset($filterData['sponsors_active']['order']) && $filterData['sponsors_active']['order'])
+                    {
+                        $searchData['sponsors_active_order']=$filterData['sponsors_active']['order'];
+                    }
+                }
+                if(isset($filterData['amount_due']))
+                {
+                    if(isset($filterData['amount_due']['text']))
+                    {
+                        $searchData['amount_due']=$filterData['amount_due']['text'];
+                    }
+                    if(isset($filterData['amount_due']['order']) && $filterData['amount_due']['order'])
+                    {
+                        $searchData['amount_due_order']=$filterData['amount_due']['order'];
+                    }
+                }
+                if(isset($filterData['amount_paid']))
+                {
+                    if(isset($filterData['amount_paid']['text']))
+                    {
+                        $searchData['amount_paid']=$filterData['amount_paid']['text'];
+                    }
+                    if(isset($filterData['amount_paid']['order']) && $filterData['amount_paid']['order'])
+                    {
+                        $searchData['amount_paid_order']=$filterData['amount_paid']['order'];
+                    }
+                }
+            }
+
+            if(isset($request['page_number']))
+            {
+                $pageNumber = $request['page_number'];
+                $offset = ($pageNumber * 10 - 10);
+                $limit = 10;
+                $searchData['offset']=$offset;
+                $searchData['limit']=$limit;
+            }
+
+            $totalCount=0;
+            //var_dump($searchData);exit;
+            if($type && $type=='search')
+            {
+                $countResult=$this->userTable()->getAllPromotersAdminCount($searchData);
+
+                if(count($countResult))
+                {
+                    $totalCount=count($countResult);
+                }
+            }
+            
+            $promotersList=$this->userTable()->getAllPromotersAdmin($searchData);
+            $view = new ViewModel(array('promotersList' => $promotersList, 'offset' => $offset,'type'=>$type,'totalCount'=>$totalCount[0]['promoters_count']));
+            $view->setTerminal(true);
+            return $view;
+        }
+    }
+
     public function sponsorsListAction()
     {
         if(!$this->getLoggedInUserId())
@@ -3587,6 +4147,62 @@ class AdminController extends BaseController
         }
         $pricing = $this->pricingTable()->getPricingDetails(array("id"=>$pid));
         $view = new ViewModel(array('pricing' => $pricing));
+        return $view;
+    }
+
+    public function promoterParametersAction()
+    {
+        if(!$this->getLoggedInUserId())
+        {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        $pparameters=$this->promoterParametersTable()->getPromoterParameters();
+        return new ViewModel(array('pparameters'=>$pparameters,'totalCount'=>count($pparameters)));
+    }
+
+    public function editPromoterParametersAction()
+    {
+        if($this->getRequest()->isXmlHttpRequest())
+        {  
+            $request = $this->getRequest()->getPost();
+            $pid = $request['pid'];        
+            $data = array();
+
+            $val=$request['pc'];
+            if(!is_null($val) && $val != "")
+                $data['pwd_ceiling'] = $val;
+                
+            /* $val=$request['mpp'];
+            if(!is_null($val) && $val != "")
+                $data['min_pay_pwds'] = $val; */
+
+            $val=$request['app'];
+            if(!is_null($val) && $val != "")
+                $data['amt_per_pwd'] = $val;
+            
+            $val=$request['rc'];
+            if(!is_null($val) && $val != "")
+                $data['redeem_ceiling'] = $val;
+
+            $val=$request['pap'];
+            if(!is_null($val) && $val != "")
+                $data['pay_after_pwds'] = $val;
+            
+            $response = $this->promoterParametersTable()->setPromoterParameters($data, array('id'=>$pid));
+
+            if($response){
+                return new JsonModel(array('success'=>true , 'message'=>'updated successfully'));
+            }else{
+                return new JsonModel(array('success'=>false,'message'=>'unable to update'));
+            }
+        }
+
+        if(!$this->getLoggedInUserId())
+        {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        $pparameters = $this->promoterParametersTable()->getPromoterParameters();
+        $view = new ViewModel(array('pparameters' => $pparameters[0]));
         return $view;
     }
 
@@ -5773,6 +6389,61 @@ class AdminController extends BaseController
         $view = new ViewModel(array('languagesList'=>$languagesList));
         return $view;
     }
+
+    public function addPromoterAction()
+    {
+        if($this->getRequest()->isXmlHttpRequest())
+        {            
+            $request = $this->getRequest()->getPost();
+            $action = $request['action'];
+            if($action == "find"){
+                $mobile = $request['mobile'];
+                $user = $this->userTable()->getFields(array("mobile"=>$mobile, "is_promoter"=>\Admin\Model\User::Is_Promoter, "role"=>\Admin\Model\User::Sponsor_role), array("user_id", "user_name"));
+                if($user){
+                    return new JsonModel(array('success'=>true , 'id'=>$user['user_id'], 'name'=>$user['user_name']));
+                }else{
+                    return new JsonModel(array('success'=>false,'message'=>'Sponsor not found'));
+                }
+            }
+            elseif($action == "add"){
+                $mobile = $request['mobile'];
+                $response = $this->userTable()->updateUser(array("is_promoter"=>\Admin\Model\User::Is_Promoter), array("mobile"=>$mobile, "mobile_country_code"=>'91'));
+                $userId = $this->userTable()->getField(array("mobile"=>$mobile), "user_id");
+                if($response){
+                    $nTitle = "Welcome as Promoter";
+                    $message="Congratulations! You are Promoter now. Please logout and login into the app to acces your Promoter profile";
+                    $notificationDetails = array('notification_data_id'=>$userId ,'status' => \Admin\Model\Notification::STATUS_UNREAD, 'notification_recevier_id' => $userId, 'notification_type' => \Admin\Model\Notification::NOTIFICATION_TYPE_BOOKING_NOTIFICATION, 'notification_text' => $message,'created_at'=>date("Y-m-d H:i:s"),'updated_at'=>date("Y-m-d H:i:s"));
+                    $registrationIds = $this->fcmTable()->getDeviceIds($userId);
+                    $notification = $this->notificationTable()->saveData($notificationDetails);
+                    if ($registrationIds)
+                    {
+                        $notification = new SendFcmNotification();
+                        $notification->sendPushNotificationToFCMSever($registrationIds, array('message' => $notificationDetails['notification_text'], 'title' => $nTitle, 'id' => $notificationDetails['notification_data_id'], 'type' => $notificationDetails['notification_type']));
+                    }
+                    
+                    return new JsonModel(array('success'=>true , 'message'=>'added successfully'));
+                }else{
+                    return new JsonModel(array('success'=>false,'message'=>'unable to add promoter'));
+                }
+            }
+            
+            //$response=$this->upcomingTable()->addUpcoming($data);
+            $response['success'] = 1;
+            if($response['success']){
+                return new JsonModel(array('success'=>true , 'message'=>'added successfully'));
+            }else{
+                return new JsonModel(array('success'=>false,'message'=>'unable to add upcoming details'));
+            }
+        }
+        if(!$this->getLoggedInUserId())
+        {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        $languagesList=$this->languagesTable()->getLanguages();
+        $view = new ViewModel(array('languagesList'=>$languagesList));
+        return $view;
+    }
+
     public function editUpcomingAction()
     {
         $paramId = $this->params()->fromRoute('id', '');

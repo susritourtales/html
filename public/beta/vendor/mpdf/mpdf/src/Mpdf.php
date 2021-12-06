@@ -9565,7 +9565,7 @@ class Mpdf implements \Psr\Log\LoggerAwareInterface
 
 			case Destination::FILE:
 				$f = fopen($name, 'wb');
-
+				
 				if (!$f) {
 					throw new \Mpdf\MpdfException(sprintf('Unable to create output file %s', $name));
 				}

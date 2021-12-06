@@ -484,7 +484,8 @@ class IndexController extends BaseController{
                 'sponsor_type'=>$checkUser['sponsor_type'],    // Added by Manjary for STT subscription version
                 'subscription_end_date'=>$checkUser['subscription_end_date'],  // Added by Manjary 
                 'non_renewal_handled'=>false,   // Added by Manjary
-                'image_path'=>$photoFilePath  // Added by Manjary for STT 
+                'image_path'=>$photoFilePath,  // Added by Manjary for STT 
+                'is_promoter'=>$checkUser['is_promoter']
             );
             $prefs=array(
                 'max_tales'=>$prefs['max_tales'],
@@ -528,7 +529,8 @@ class IndexController extends BaseController{
                 'sponsor_type'=>$checkUser['sponsor_type'],    // Added by Manjary for STT subscription version
                 'subscription_end_date'=>$checkUser['subscription_end_date'],  // Added by Manjary 
                 'non_renewal_handled'=>false,   // Added by Manjary
-                'image_path'=>$photoFilePath  // Added by Manjary for STT 
+                'image_path'=>$photoFilePath,  // Added by Manjary for STT 
+                'is_promoter'=>$checkUser['is_promoter']
             );
             $prefs=array(
                 'max_tales'=>$prefs['max_tales'],
@@ -858,6 +860,7 @@ class IndexController extends BaseController{
          $headers = $this->getRequest()->getHeaders();
         $logResult = $this->logRequest($this->getRequest()->toString());
          $request = $this->getRequest()->getPost();
+        
          $userName = $request['name'];
          $email = $request['email'];
          $userId = $request['user_id'];
@@ -899,25 +902,34 @@ class IndexController extends BaseController{
             $refData['ref_by'] = $refName;
             $refData['ref_mobile'] = $refMobile;
             $refData['user_id'] = $userId;
+            $refId = $this->userTable()->getField(array('mobile'=>$refMobile), 'user_id');
+            if($refId != null){
+                $refData['ref_id'] = $refId;
+            }
          }
+         
          if($role)
          {
             $data['role']=$role;
          }
 
-           if(!count($data))
-           {
-               return  new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
-           }
-           $data['discount_percentage'] = 30;
+         if(!count($data))
+         {
+            return  new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
+         }
+         $data['discount_percentage'] = 30;
          $profileUpdate=$this->userTable()->updateUser($data,array('user_id'=>$userId));
+         //var_dump($data); exit;
+         //var_dump($refData); exit;
+         $refUpdate['success'] = true;
          if($refData)
-            $refUpdate = $this->referTable()->addRefer($refData);
+            if($refData['ref_id'] != null)
+                $refUpdate = $this->referTable()->addRefer($refData);
 
-           if($profileUpdate)
+           if($profileUpdate && $refUpdate['success'])
            {
                //$checkUser=$this->userTable()->getUserByUserId($userId);
-               $checkUser=$this->userTable()->getFields(array('user_id'=>$userId),array('user_id','user_name','email','mobile','mobile_country_code','role','subscription_start_date','subscription_end_date','res_state','address','status','company_role','sponsor_type','sponsor_reg_date'));
+               $checkUser=$this->userTable()->getFields(array('user_id'=>$userId),array('user_id','user_name','email','mobile','mobile_country_code','role','subscription_start_date','subscription_end_date','res_state','address','status','company_role','sponsor_type','sponsor_reg_date', 'is_promoter'));
                $photoFilePath = $this->sponsorPhotoTable()->getField(array('file_data_id'=>$userId),'file_path');
                $refDetails = $this->referTable()->getRefers(array('user_id'=>$userId));
                $user=array(
@@ -936,7 +948,8 @@ class IndexController extends BaseController{
                    'image_path'=>$photoFilePath,
                    'subscription_end_date'=>$checkUser['subscription_end_date'],
                    'non_renewal_handled'=>false,
-                   'sponsor_type'=>$checkUser['sponsor_type']    // Added by Manjary for STT subscription version
+                   'sponsor_type'=>$checkUser['sponsor_type'],    // Added by Manjary for STT subscription version
+                   'is_promoter'=>$checkUser['is_promoter']
                );
                
                if(intval($role) == \Admin\Model\User::Sponsor_role){
@@ -1286,7 +1299,7 @@ class IndexController extends BaseController{
      public function getSponsorTypesAction()
      {
          $headers = $this->getRequest()->getHeaders();
-        $logResult = $this->logRequest($this->getRequest()->toString());
+         $logResult = $this->logRequest($this->getRequest()->toString());
          $request = $this->getRequest()->getPost();
          if(!$headers->get('Access-Token') || !$this->tokenValidation($headers->get('Access-Token')->getFieldValue()))
          {
@@ -1298,10 +1311,304 @@ class IndexController extends BaseController{
          }
         return new JsonModel(array("success"=>false,"message"=>"Something Went wrong"));
      }
+
+     public function getPromoterNameAction(){
+         $headers = $this->getRequest()->getHeaders();
+         $logResult = $this->logRequest($this->getRequest()->toString());
+         $request = $this->getRequest()->getPost();
+         if(!$headers->get('Access-Token') || !$this->tokenValidation($headers->get('Access-Token')->getFieldValue()))
+         {
+            return  new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
+         }
+         $mobile = $request['mobile'];
+         $promoterName = "";
+         $promoterName = $this->userTable()->getField(array("mobile"=>$mobile, "is_promoter"=>\Admin\Model\User::Is_Promoter, "role"=>\Admin\Model\User::Sponsor_role), "user_name");
+         if(strlen($promoterName)){
+            return new JsonModel(array('success'=>true,'message'=>'Success','name'=>$promoterName));
+         }
+        return new JsonModel(array("success"=>false,"message"=>"Promoter not found. Please check the promoter mobile number entered."));
+     }
+
+     public function setPromoterTermsFlagAction(){
+        $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
+        $request = $this->getRequest()->getPost();
+        if(!$headers->get('Access-Token') || !$this->tokenValidation($headers->get('Access-Token')->getFieldValue()))
+        {
+           return  new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
+        }
+        $where = array("user_id" => $request['user_id']);
+        $data = array("terms_accepted" => $request['terms_accepted']);
+        $res = $this->promoterDetailsTable()->addUpdatePromoterDetails($data, $where);
+        if($res){
+            return new JsonModel(array('success'=>true,'message'=>'success'));
+        }
+        return new JsonModel(array("success"=>false,"message"=>"Unknown error"));
+     }
+
+     public function getPromoterTermsFlagAction(){
+        $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
+        $request = $this->getRequest()->getPost();
+        if(!$headers->get('Access-Token') || !$this->tokenValidation($headers->get('Access-Token')->getFieldValue()))
+        {
+           return  new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
+        }
+        $where = array("user_id" => $request['user_id']);
+        $col = "terms_accepted";
+        $res = $this->promoterDetailsTable()->getField($where, $col);
+        
+        if($res){
+            return new JsonModel(array('success'=>true,'message'=>$res));
+        }
+        return new JsonModel(array("success"=>false,"message"=>"not found"));
+     }
+
+     public function getPromoterDetailsAction(){
+        $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
+        $request = $this->getRequest()->getPost();
+        if(!$headers->get('Access-Token') || !$this->tokenValidation($headers->get('Access-Token')->getFieldValue()))
+        {
+           return  new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
+        }
+        $where = array("user_id" => $request['user_id']);
+        $res = $this->promoterDetailsTable()->getPromoterDetails($where);
+        $ures = $this->userTable()->getFields($where, array("user_name", "email", "status"=>"is_promoter", "resigned_date"));
+        $rArr = array_merge($ures, $res);
+        //var_dump($ures);exit;
+        if($rArr){
+            return new JsonModel(array('success'=>true,'promoter'=>$rArr));
+        }
+        return new JsonModel(array("success"=>false,"message"=>"not found"));
+     }
+
+     public function updatePromoterDetailsAction(){
+        $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
+        $request = $this->getRequest()->getPost();
+        if(!$headers->get('Access-Token') || !$this->tokenValidation($headers->get('Access-Token')->getFieldValue()))
+        {
+           return  new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
+        }
+        $where = array("user_id" => $request['user_id']);
+        $udata = array("user_name" => $request['user_name'], "email"=> $request['email']);
+        $pdata = array("state_city" => $request['state'],"permanent_addr"=>$request['permanent_addr'], "bank_name"=> $request['bank_name'], "ifsc_code"=>$request['ifsc_code'], "bank_ac_no"=>$request['bank_ac_no']);
+        $upres = $this->userTable()->updateUser($udata, $where);
+        if($upres){
+            $uppres = $this->promoterDetailsTable()->addUpdatePromoterDetails($pdata, $where);
+            if($uppres){
+                $res = $this->promoterDetailsTable()->getPromoterDetails($where);
+                $ures = $this->userTable()->getFields($where, array("user_name", "email", "status"=>"is_promoter", "resigned_date"));
+                $rArr = array_merge($ures, $res);
+                return new JsonModel(array('success'=>true,'promoter'=>$rArr));
+            }
+        }
+        return new JsonModel(array("success"=>false,"message"=>"Unknown error"));
+     }
+
+     public function getPromoterProfessionalSummaryAction(){
+        $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
+        $request = $this->getRequest()->getPost();
+        if(!$headers->get('Access-Token') || !$this->tokenValidation($headers->get('Access-Token')->getFieldValue()))
+        {
+           return  new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
+        }
+        $res = $this->userTable()->getPromoterProfessionalSummary($request['user_id']);
+        
+        if($res){
+            return new JsonModel(array('success'=>true,'message'=>'success', 'summary'=>$res));
+        }
+        return new JsonModel(array("success"=>false,"message"=>"not found"));
+     }
+
+     public function setPromoterDetailsAction(){
+        $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
+        $request = $this->getRequest()->getPost();
+        if(!$headers->get('Access-Token') || !$this->tokenValidation($headers->get('Access-Token')->getFieldValue()))
+        {
+           return  new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
+        }
+        $where = array("user_id" => $request['user_id']);
+        $data = $request;
+        unset($data['user_id']);
+        
+        $res = $this->promoterDetailsTable()->addUpdatePromoterDetails($data, $where);
+        if($res){
+            return new JsonModel(array('success'=>true,'message'=>'success'));
+        }
+        return new JsonModel(array("success"=>false,"message"=>"Unknown error"));
+     }
+
+     public function getSponsorsPerformanceListAction(){
+        $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
+        $request = $this->getRequest()->getPost();
+        if(!$headers->get('Access-Token') || !$this->tokenValidation($headers->get('Access-Token')->getFieldValue()))
+        {
+           return  new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
+        }
+        $limit=$request['limit'];
+        $offset=$request['offset'];
+        
+        if(is_null($limit))
+        {
+            $limit=10;
+        }else{
+            $limit=intval($limit);
+        }
+
+        if(is_null($offset))
+        {
+            $offset=0;
+        }else{
+            $offset=intval($offset);
+        }
+        $data = array('promoterId'=>$request['user_id'], 'limit'=>$limit,'offset'=>$offset);
+        $res = $this->referTable()->getSponsorsPerfAdmin($data);
+        return new JsonModel(array('success'=>true,'message'=>'success', 'sponsors'=>$res));
+     }
+
+     /* public function getPromoterTransactionsAction(){
+        $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
+        $request = $this->getRequest()->getPost();
+        if(!$headers->get('Access-Token') || !$this->tokenValidation($headers->get('Access-Token')->getFieldValue()))
+        {
+           return  new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
+        }
+        $limit=$request['limit'];
+        $offset=$request['offset'];
+        
+        if(is_null($limit))
+        {
+            $limit=10;
+        }else{
+            $limit=intval($limit);
+        }
+
+        if(is_null($offset))
+        {
+            $offset=0;
+        }else{
+            $offset=intval($offset);
+        }
+        $data = array('promoterId'=>$request['user_id'], 'limit'=>$limit,'offset'=>$offset);
+        $res = $this->promoterTransactionsTable()->getPromoterPaymentDetails($data);
+        return new JsonModel(array('success'=>true,'message'=>'success', 'transactions'=>$res));
+     } */
+
+     public function getPromoterSponsorwiseTransactionsAction(){
+        $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
+        $request = $this->getRequest()->getPost();
+        if(!$headers->get('Access-Token') || !$this->tokenValidation($headers->get('Access-Token')->getFieldValue()))
+        {
+           return  new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
+        }
+        $limit=$request['limit'];
+        $offset=$request['offset'];
+        
+        if(is_null($limit))
+        {
+            $limit=10;
+        }else{
+            $limit=intval($limit);
+        }
+
+        if(is_null($offset))
+        {
+            $offset=0;
+        }else{
+            $offset=intval($offset);
+        }
+        $data = array('sponsorId'=>$request['user_id'], 'limit'=>$limit,'offset'=>$offset);
+        $res = $this->promoterTransactionsTable()->getSponsorwiseTransactions($data);
+        return new JsonModel(array('success'=>true,'message'=>'success', 'transactions'=>$res));
+     }
+
+     public function setSponsorDisc50Action(){
+        $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
+        $request = $this->getRequest()->getPost();
+        if(!$headers->get('Access-Token') || !$this->tokenValidation($headers->get('Access-Token')->getFieldValue()))
+        {
+           return  new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
+        }
+        $where = array("user_id" => $request['user_id']);
+        
+        $rresponse = $this->referTable()->updateRefer(array('disc50'=>\Admin\Model\Refer::discount_50), $where);
+            if($rresponse){
+                $response = $this->userTable()->updateUser(array('discount_percentage'=>50), $where);
+                if($response){
+                    return new JsonModel(array('success'=>true , 'message'=>'discount applied successfully'));
+                }else{
+                    return new JsonModel(array('success'=>false,'message'=>'unknown error'));
+                }
+            }else{
+                return new JsonModel(array('success'=>false,'message'=>'unknown error'));
+            }
+     }
+
+     public function promoterRedeemAction(){
+        $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
+        $request = $this->getRequest()->getPost();
+        if(!$headers->get('Access-Token') || !$this->tokenValidation($headers->get('Access-Token')->getFieldValue()))
+        {
+           return  new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
+        }
+        $where = array("user_id" => $request['user_id']);
+        $res = $this->promoterDetailsTable()->updatePromoterDetails(array('redeem'=>1), $where);
+        if($res){
+            return new JsonModel(array('success'=>true,'message'=>'success'));
+        }else{
+            return new JsonModel(array('success'=>false,'message'=>'unknown error'));
+        }
+     }
+
+     public function promoterResignAction(){
+        $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
+        $request = $this->getRequest()->getPost();
+        if(!$headers->get('Access-Token') || !$this->tokenValidation($headers->get('Access-Token')->getFieldValue()))
+        {
+           return  new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
+        }
+        $where = array("user_id" => $request['user_id']);
+        $today = date('Y-m-d H:i:s');
+        $response = $this->userTable()->updateUser(array('is_promoter'=>\Admin\Model\User::Is_terminated_Promoter, 'resigned_date'=>$today), $where);
+        if($response){
+            $rdt = $this->userTable()->getField($where, 'resigned_date');
+            return new JsonModel(array('success'=>true , 'message'=>$rdt));
+        }else{
+            return new JsonModel(array('success'=>false,'message'=>'unknown error'));
+        }
+     }
+
+     public function sponsorTerminateAction(){
+        $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
+        $request = $this->getRequest()->getPost();
+        if(!$headers->get('Access-Token') || !$this->tokenValidation($headers->get('Access-Token')->getFieldValue()))
+        {
+           return  new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
+        }
+        $where = array("user_id" => $request['user_id']);
+        $response = $this->referTable()->updateRefer(array('sponsor_status'=>\Admin\Model\Refer::sponsor_terminated), $where);
+        if($response){
+            return new JsonModel(array('success'=>true , 'message'=>'sponsor terminated successfully'));
+        }else{
+            return new JsonModel(array('success'=>false,'message'=>'unknown error'));
+        }
+    }
+
      public function buyPasswordsCheckOutAction()
      {
          $headers = $this->getRequest()->getHeaders();
-        $logResult = $this->logRequest($this->getRequest()->toString());
+         $logResult = $this->logRequest($this->getRequest()->toString());
          $request = $this->getRequest()->getPost();
          $userId = $request['user_id'];
          $no_of_pwds = $request['no_of_pwds'];
@@ -1368,7 +1675,7 @@ class IndexController extends BaseController{
          $passwordsData=array();
          $aes=new Aes();
          $bookingTourDetails['price']=$price;
-         $userName=$userDetails['user_name'];
+         //$userName=$userDetails['user_name'];
          $email=$userDetails['email'];
          
          if($userDetails['role'] == \Admin\Model\User::Sponsor_role)// && $userDetails['apply_discount'] == "1")
@@ -1407,7 +1714,7 @@ class IndexController extends BaseController{
                     }
                  }
                  $passwordsData[] = array('user_id' => 0, 'hash' => $hash, 'password' => $encryptPassword, 'status' => 1,"booking_id"=>$bookingId,'created_at'=>date("Y-m-d H:i:s"),'updated_at'=>date("Y-m-d H:i:s"),'password_expiry_date'=>$bookingEndDate,'password_type'=>$passwordType);
-                 $bookingPassword = array($password.$bookingId);
+                 //$bookingPassword = array($password.$bookingId);
              }
 
              $this->passwordTable()->addMutiplePasswords($passwordsData);
@@ -1446,7 +1753,7 @@ class IndexController extends BaseController{
 
                     $userDetails = $this->userTable()->getFields(array('user_id' => $userId), array('email', 'mobile', 'mobile_country_code','role','user_name'));
                     $mobile = $userDetails['mobile'];
-                    $mobileCountry = $userDetails['mobile_country_code'];
+                    //$mobileCountry = $userDetails['mobile_country_code'];
                     $userType = $userDetails['role'];
                     $email = $userDetails['email'];
 
@@ -2459,7 +2766,8 @@ class IndexController extends BaseController{
                 'sponsor_type'=>$checkUser['sponsor_type'],
                 'subscription_end_date'=>$checkUser['subscription_end_date'],
                 'image_path'=>$photoFilePath,
-                'non_renewal_handled'=>true
+                'non_renewal_handled'=>true,
+                'is_promoter'=>$checkUser['is_promoter']
             ); 
             return new JsonModel(array('success'=>true,'message'=>'user downgraded','user'=>$user));
         }else
@@ -2805,7 +3113,7 @@ class IndexController extends BaseController{
             $updatePassword=$this->passwordTable()->updatePassword(array('user_id'=>$userId,'password_first_used_date'=>$currentDate),array('id'=>$response[0]['id']));
             if($updatePassword){
                 $where=array("user_id"=>$userId);
-                $update=array("role"=>\Admin\Model\User::Subscriber_role, "subscription_type"=>\Admin\Model\Bookings::booking_Sponsored_Subscription, "subscription_start_date"=>date("Y-m-d"), "subscription_end_date"=>$bookingEndDate, "subscription_count"=>$subscriptionCount);
+                $update=array("role"=>\Admin\Model\User::Subscriber_role, "subscription_type"=>\Admin\Model\Bookings::booking_Sponsored_Subscription, "subscription_start_date"=>date("Y-m-d"), "subscription_end_date"=>$bookingEndDate, "subscription_count"=>$subscriptionCount, "renewed_on"=>date("Y-m-d"));
                 $this->userTable()->updateUser($update,$where);
             }
             
@@ -2847,11 +3155,12 @@ class IndexController extends BaseController{
                 'sponsor_type'=>$checkUser['sponsor_type'],// Added by Manjary for STT SV
                 'image_path'=>$photoFilePath,
                 'subscription_end_date'=>$checkUser['subscription_end_date'],
-                'company_name'=>""
+                'company_name'=>"",
+                'is_promoter'=>$checkUser['is_promoter']
             );
             
             if(intval($checkUser['role']) == \Admin\Model\User::Subscriber_role){
-                $userDetails=$this->userTable()->getFields(array('user_id'=>$checkUser['user_id']),array('user_id','user_name','email','mobile','mobile_country_code','role','subscription_start_date','subscription_end_date','res_state','address','status','company_role'));
+                $userDetails=$this->userTable()->getFields(array('user_id'=>$checkUser['user_id']),array('user_id','user_name','email','mobile','mobile_country_code','role','subscription_start_date','subscription_end_date','res_state','address','status','company_role','renewed_on'));
                 $bookingDetails=$this->bookingsTable()->bookingDetails(array('user_id'=>$userId, 'booking_id'=>$bookingId));
                 $bookingTourDetails=$this->bookingtourdetailsTable()->getFields(array('booking_id'=>$bookingId),  array('discount_percentage','tour_date','no_of_days','no_of_users','expiry_date','sponsered_users','price','booking_tour_id', 'created_at'));
                 
@@ -2866,6 +3175,7 @@ class IndexController extends BaseController{
                 $bookingList['role'] = $userDetails['role'];
                 $bookingList['email']=$userDetails['email'];
                 $bookingList['subs_start_date'] = $userDetails['subscription_start_date'];
+                $bookingList['renewed_on'] = $userDetails['renewed_on'];
                 $bookingList['subs_end_date'] = $userDetails['subscription_end_date'];
                 $bookingList['booking_type'] = \Admin\Model\Bookings::booking_Sponsored_Subscription;
                 $bookingList['user_id'] = $userId;

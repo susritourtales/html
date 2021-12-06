@@ -24,7 +24,6 @@ class Sms
             $apiKey = urlencode('LYD9m1xiwRQ-aUZo0QDyAW4qpZZhVgYjBVjXhSvsmw');
             $test = false;
             // Message details
-            $mobile = '917330781638';
             $numbers = array($mobile);
             $sender = urlencode('STTMSG');
             $numbers = implode(',', $numbers);

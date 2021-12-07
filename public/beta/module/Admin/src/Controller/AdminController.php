@@ -6398,7 +6398,8 @@ class AdminController extends BaseController
             $action = $request['action'];
             if($action == "find"){
                 $mobile = $request['mobile'];
-                $user = $this->userTable()->getFields(array("mobile"=>$mobile, "is_promoter"=>\Admin\Model\User::Is_Promoter, "role"=>\Admin\Model\User::Sponsor_role), array("user_id", "user_name"));
+                $user = $this->userTable()->getFields(array("mobile"=>$mobile, "role"=>\Admin\Model\User::Sponsor_role), array("user_id", "user_name")); 
+                // "is_promoter"=>\Admin\Model\User::Is_Promoter,
                 if($user){
                     return new JsonModel(array('success'=>true , 'id'=>$user['user_id'], 'name'=>$user['user_name']));
                 }else{

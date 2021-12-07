@@ -331,25 +331,35 @@ class IndexController extends BaseController
                                     $prmTransAmt = round(($amtPerPwd * $spoPwdCount),2);
                                     
                                     // if sponsor has a promoter, get promoter details
-                                    if($promoterId){
+                                    if($promoterId){ 
                                         //get and check Promoter status and subscription validity (=> he ll be sponsor until sed)
                                         $promoterRes = $this->userTable()->getFields(array('user_id'=> $promoterId), array('is_promoter', 'role', 'subscription_end_date'));
                                         $today = date("Y-m-d");
-                                        if($promoterRes['is_promoter'] == \Admin\Model\User::Is_Promoter && $promoterRes['role'] == \Admin\Model\User::Sponsor_role && $promoterRes['subscription_end_date'] >= $today){
+                                        if($promoterRes['is_promoter'] == \Admin\Model\User::Is_Promoter && $promoterRes['role'] == \Admin\Model\User::Sponsor_role && $promoterRes['subscription_end_date'] >= $today){ 
                                             // get and check sponsor status
                                             $sponsorStatus = $this->referTable()->getField(array('user_id'=> $userId), 'sponsor_status');
                                             if($sponsorStatus == \Admin\Model\Refer::sponsor_active){
                                                 // update no of passwords bought by sponsor under promoter in refer table
                                                 $updatePwdCount = $this->referTable()->updateRefer(array('pwds_purchased'=>$spoPwdOldCount + $spoPwdCount), array('user_id'=>$userId));
                                                 $pwdCeiling = $this->promoterParametersTable()->getField(array('id'=>1), 'pwd_ceiling');
-                                                if($spoPwdOldCount + $spoPwdCount >= $pwdCeiling){
+                                                $redeemCeiling = $this->promoterParametersTable()->getField(array('id'=>1), 'redeem_ceiling');
+                                                if($spoPwdOldCount + $spoPwdCount >= $pwdCeiling){ 
                                                     // update sponsor status to successful
                                                     $updateSS = $this->referTable()->updateRefer(array('sponsor_status'=>\Admin\Model\Refer::sponsor_successful), array('user_id'=>$userId));
                                                 }
                                                 if($spoPwdOldCount < $pwdCeiling)
-                                                {
+                                                { 
                                                     /* $promBank = $this->promoterDetailsTable()->getFields(array('user_id'=>$promoterId), array('ifsc_code', 'bank_ac_no', 'due_amount', 'trigger_payment', 'latest_paid_date')); */
-                                                    $promBank = $this->promoterDetailsTable()->getFields(array('user_id'=>$promoterId), array('ifsc_code', 'bank_ac_no', 'due_amount', 'trigger_payment', 'latest_paid_date'));
+                                                    $promBank = $this->promoterDetailsTable()->getFields(array('user_id'=>$promoterId), array('ifsc_code', 'bank_ac_no', 'redeemed_at', 'redeem'));
+                                                   
+                                                    $ttlPromPwds = $this->referTable()->getTotalPromoterPasswords($promoterId);
+                                                    
+                                                    if($promBank['redeem'] == '1'){ 
+                                                        if($ttlPromPwds + $spoPwdCount - $promBank['redeemed_at'] >= $redeemCeiling){
+                                                            // update redeem value
+                                                            $updateRV = $this->promoterDetailsTable()->updatePromoterDetails(array('redeem'=>'0'), array('user_id'=>$promoterId));
+                                                        }
+                                                    }
                                                     $spoPay = $this->referTable()->getFields(array('user_id'=>$userId), array('due_amount', 'trigger_payment', 'latest_paid_date'));
                                                     $currentDT = date("Y-m-d H:i:s");
                                                     // create promoter transactions array

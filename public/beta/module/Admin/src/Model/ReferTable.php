@@ -176,6 +176,28 @@ class ReferTable extends   BaseTable
         }
     }
 
+    public function getTotalPromoterPasswords($promoterId){
+        try
+        {
+            $sql = $this->getSql();
+            $pwdqry = $sql->select()
+                    ->columns(array('total_passwords'=>new \Laminas\Db\Sql\Expression('SUM(`r`.`pwds_purchased`)')))
+                    ->from(array('r' => 'refer'))
+                    ->where(array('r.ref_id'=> $promoterId));
+                // echo $sql->getSqlStringForSqlObject($pwdqry);exit;
+                $pwdres = $sql->prepareStatementForSqlObject($pwdqry)->execute();
+                $pwdresArr = array();
+                foreach($pwdres as $r){
+                    $pwdresArr[] = $r;
+                }
+                return $pwdresArr[0]['total_passwords'];
+        }
+        catch (\Exception $e)
+        {
+            return false;
+        }
+    }
+
     public function getSponsorsPerfAdmin($data=array('limit'=>10,'offset'=>0)){
         try{
             $sql = $this->getSql();

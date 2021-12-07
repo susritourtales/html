@@ -103,7 +103,8 @@ class PromoterDetailsTable extends BaseTable
                 ->from($this->tableName)
                 ->columns($column )
                 ->where($where);
-
+            
+            //echo $sql->getSqlStringForSqlObject($query);exit;
             $field = array();
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             foreach ($resultSet as $row) {

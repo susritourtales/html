@@ -732,11 +732,11 @@ class IndexController extends BaseController{
         }
         if($mobileNumber=="")
         {
-            return new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
+            return new JsonModel(array('success'=>false,'message'=>'Mobile number missing'));
         }
         if($countryCode=="")
         {
-            return new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
+            return new JsonModel(array('success'=>false,'message'=>'Country code missinsg'));
         }
         //$checkMobile=$this->userTable()->verfiyUser(array('mobile'=>$mobileNumber,'mobile_country_code'=>$countryCode,'role'=>\Admin\Model\User::Individual_role));  -- removed by Manjary
         $checkMobile=$this->userTable()->verfiyUser(array('mobile'=>$mobileNumber,'mobile_country_code'=>$countryCode));
@@ -1357,7 +1357,6 @@ class IndexController extends BaseController{
         $where = array("user_id" => $request['user_id']);
         $col = "terms_accepted";
         $res = $this->promoterDetailsTable()->getField($where, $col);
-        
         if($res){
             return new JsonModel(array('success'=>true,'message'=>$res));
         }

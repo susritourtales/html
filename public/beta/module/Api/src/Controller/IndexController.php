@@ -925,7 +925,7 @@ class IndexController extends BaseController{
          if($refData)
             if($refData['ref_id'] != null)
                 $refUpdate = $this->referTable()->addRefer($refData);
-var_dump( $refUpdate);
+
            if($profileUpdate && $refUpdate['success'])
            {
                //$checkUser=$this->userTable()->getUserByUserId($userId);

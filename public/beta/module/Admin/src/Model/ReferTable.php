@@ -71,6 +71,7 @@ class ReferTable extends   BaseTable
                 }
             }
             else {
+                var_dump($exists); exit;
                 $insert = $this->insert($data);
                 if($insert){
                     return array("success" => true,"id" => $this->tableGateway->lastInsertValue);

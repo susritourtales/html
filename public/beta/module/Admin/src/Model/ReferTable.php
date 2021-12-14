@@ -71,7 +71,6 @@ class ReferTable extends   BaseTable
                 }
             }
             else {
-                var_dump($data); exit;
                 $insert = $this->insert($data);
                 if($insert){
                     return array("success" => true,"id" => $this->tableGateway->lastInsertValue);
@@ -80,8 +79,8 @@ class ReferTable extends   BaseTable
                 }
             }
         }catch(\Exception $e){
-            /* print_r($e->getMessage());
-            exit; */
+            print_r($e->getMessage());
+            exit; 
             return array("success" => false);
         }
     }

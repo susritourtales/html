@@ -3726,6 +3726,7 @@ class AdminController extends BaseController
         
         $promotersList=$this->userTable()->getAllPromotersAdmin();
         $promotersListCount=$this->userTable()->getAllPromotersAdminCount();
+        var_dump($promotersList); exit;
         return new ViewModel(array('promotersList'=>$promotersList,'totalCount'=>$promotersListCount[0]['promoters_count']));
     }
 

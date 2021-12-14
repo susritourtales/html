@@ -79,8 +79,8 @@ class ReferTable extends   BaseTable
                 }
             }
         }catch(\Exception $e){
-            print_r($e->getMessage());
-            exit; 
+            /* print_r($e->getMessage());
+            exit; */
             return array("success" => false);
         }
     }

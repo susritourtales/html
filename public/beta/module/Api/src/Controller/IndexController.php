@@ -1402,6 +1402,7 @@ class IndexController extends BaseController{
                 $rArr = array_merge($ures, $res);
                 return new JsonModel(array('success'=>true,'promoter'=>$rArr));
             }
+            return new JsonModel(array("success"=>false,"message"=>"Details not updated"));
         }
         return new JsonModel(array("success"=>false,"message"=>"Unknown error"));
      }

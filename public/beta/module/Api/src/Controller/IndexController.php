@@ -919,8 +919,8 @@ class IndexController extends BaseController{
          }
          $data['discount_percentage'] = 30;
          $profileUpdate=$this->userTable()->updateUser($data,array('user_id'=>$userId));
-         var_dump($data); exit;
-         //var_dump($refData); exit;
+         //var_dump($data); exit;
+         var_dump($refData); exit;
          $refUpdate['success'] = true;
          if($refData)
             if($refData['ref_id'] != null)

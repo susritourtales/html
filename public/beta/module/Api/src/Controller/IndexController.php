@@ -1339,6 +1339,7 @@ class IndexController extends BaseController{
         }
         $where = array("user_id" => $request['user_id']);
         $data = array("terms_accepted" => $request['terms_accepted']);
+        var_dump($data);
         $res = $this->promoterDetailsTable()->addUpdatePromoterDetails($data, $where);
         if($res){
             return new JsonModel(array('success'=>true,'message'=>'success'));

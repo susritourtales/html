@@ -754,12 +754,17 @@ class UserTable extends  BaseTable
             }
             if(array_key_exists('bookings_count',$data))
             {
-                $where->and->like("b.booking_count",'%'.$data['bookings_count']."%");
+                //$where->and->like("b.booking_count",'%'.$data['bookings_count']."%"); 
+                $where->nest()
+                ->like("b.booking_count",'%'.$data['bookings_count']."%")
+                ->or
+                ->isNull("b.booking_count")
+                ->unnest();
             }
             if(array_key_exists('booking_total_payment',$data))
             {
                 $where->and->like("b.booking_price",'%'.$data['booking_total_payment']."%");
-            }
+            } 
 
             $order=array();
             if(array_key_exists('user_name_order',$data))
@@ -830,7 +835,7 @@ class UserTable extends  BaseTable
                 ->join(array('pc'=>'password'),new \Laminas\Db\Sql\Expression('pc.booking_id=bo.booking_id and pc.password_type=0 and bo.booking_type='. \Admin\Model\Bookings::booking_Buy_Passwords . ' and bo.payment_status=' . \Admin\Model\Payments::payment_success),array('ptcount'=>new \Laminas\Db\Sql\Expression('COUNT(`pc`.`id`)')),'left')
                 ->join(array('b'=>$bookingList),'b.user_id=u.user_id',array('booking_count','booking_price'),'left')
                 ->join(array('r'=>'refer'), 'r.user_id=u.user_id',array('ref_by','ref_mobile'),'left')
-               // ->join(array('r'=>$redeemed),'b.user_id=u.user_id',array('redeemed_count'))
+               /* // ->join(array('r'=>$redeemed),'b.user_id=u.user_id',array('redeemed_count')) */
                 ->where($where)
                 ->limit($data['limit'])
                 ->offset($data['offset'])

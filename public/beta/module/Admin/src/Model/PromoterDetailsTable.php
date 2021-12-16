@@ -26,7 +26,6 @@ class PromoterDetailsTable extends BaseTable
             $id = $this->getField($where, 'id');
             if($id != ""){
                 $update = $this->updatePromoterDetails($data, $where);
-                echo "update=" . $update;
                 if($update){
                     return array("success" => true);
                 }else{

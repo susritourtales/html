@@ -22,6 +22,8 @@ class PromoterDetailsTable extends BaseTable
 
     public function addUpdatePromoterDetails($data, $where)
     {
+        var_dump($data);
+        var_dump($where);
         try{
             $id = $this->getField($where, 'id');
             if($id != ""){

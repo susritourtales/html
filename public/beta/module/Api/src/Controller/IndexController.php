@@ -682,7 +682,7 @@ class IndexController extends BaseController{
             }
 
             $update = $this->otpTable()->updateData(array('status' => \Admin\Model\Otp::Is_verifed), $data);
-            $otp=$this->generateOtp();
+            $otp="1111"; //$this->generateOtp();
             if($type==\Admin\Model\Otp::LOGIN_OTP)
             {
                 $mobileNumber = $userDetails['mobile_country_code'] . $userDetails['mobile'];
@@ -779,7 +779,7 @@ class IndexController extends BaseController{
 
              $update = $this->otpTable()->updateData(array('status' => \Admin\Model\Otp::Is_verifed), $data);
 
-             $otp=$this->generateOtp();
+             $otp="1111"; //$this->generateOtp();
 
              $insertData=array("user_id"=>$user_id,"otp_type"=>\Admin\Model\Otp::LOGIN_OTP,"status"=>\Admin\Model\Otp::Not_verifed,'otp'=>$otp);
 

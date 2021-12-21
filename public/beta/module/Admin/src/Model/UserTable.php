@@ -1104,8 +1104,13 @@ class UserTable extends  BaseTable
         try{
             $sql = $this->getSql();
             $where=new Where();
-            $where->equalTo('u.is_promoter',\Admin\Model\User::Is_Promoter);
-            $where->or->equalTo('u.is_promoter',\Admin\Model\User::Is_terminated_Promoter); 
+            $where->nest()
+                ->equalTo("u.is_promoter",\Admin\Model\User::Is_Promoter)
+                ->or
+                ->equalTo("u.is_promoter",\Admin\Model\User::Is_terminated_Promoter)
+                ->unnest();
+            /* $where->equalTo('u.is_promoter',\Admin\Model\User::Is_Promoter);
+            $where->or->equalTo('u.is_promoter',\Admin\Model\User::Is_terminated_Promoter);  */
             $order=array();
             
             if(array_key_exists('user_name',$data))

@@ -1156,7 +1156,7 @@ class UserTable extends  BaseTable
                 ->limit($data['limit'])
                 ->offset($data['offset'])
                 ->order($order);
-             echo $sql->getSqlStringForSqlObject($query);exit;
+            // echo $sql->getSqlStringForSqlObject($query);exit;
 
             $result = $sql->prepareStatementForSqlObject($query)->execute();
             $promoters=array();

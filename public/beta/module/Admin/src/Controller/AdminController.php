@@ -3832,7 +3832,7 @@ class AdminController extends BaseController
             }
 
             $totalCount=0;
-            //var_dump($searchData);exit;
+            var_dump($searchData);exit;
             if($type && $type=='search')
             {
                 $countResult=$this->userTable()->getAllPromotersAdminCount($searchData);

@@ -7,8 +7,8 @@
         <th data-placeholder="date" data-input="transaction_date">date</th>
         <th data-placeholder="no of pwds" data-input="no_of_pwds">no of pwds</th>
         <th data-placeholder="amount" data-input="amount">amount</th>
-        <th data-placeholder="total amt due" data-input="cdamt">amount due</th>
         <th data-placeholder="total amt paid" data-input="cpamt">amount paid</th>
+        <th data-placeholder="total amt due" data-input="cdamt">amount due</th>
         <th data-placeholder="tran ref" data-input="transaction_ref">tran ref</th>
         <th data-placeholder="total pwds" data-input="cpwds">cumulative pwds</th>
     </tr>
@@ -35,8 +35,8 @@
                 <td><?php echo date("d-m-Y",strtotime($st['transaction_date'])); ?></td>
                 <td><?php echo $st['no_of_pwds'] == "" ? '0' : $st['no_of_pwds']; ?></td>
                 <td class="text-center"><?php echo $st['amount']; ?></td>
-                <td class="text-center"><?php echo $st['cdamt']; ?></td>
                 <td class="text-center"><?php echo $st['cpamt']; ?></td>
+                <td class="text-center"><?php echo $st['cdamt']; ?></td>
                 <td class="text-center"><?php echo $st['transaction_ref']; ?></td>
                 <td class="text-center"><?php echo $st['cpwds']; ?></td>
             </tr>

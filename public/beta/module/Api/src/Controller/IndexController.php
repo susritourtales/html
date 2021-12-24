@@ -1579,7 +1579,7 @@ class IndexController extends BaseController{
         }
         $where = array("user_id" => $request['user_id']);
         $today = date('Y-m-d H:i:s');
-        $response = $this->userTable()->updateUser(array('is_promoter'=>\Admin\Model\User::Is_terminated_Promoter, 'resigned_date'=>$today), $where);
+        $response = $this->userTable()->updateUser(array('is_promoter'=>\Admin\Model\User::Is_resigned_Promoter, 'resigned_date'=>$today), $where);
         if($response){
             $rdt = $this->userTable()->getField($where, 'resigned_date');
             return new JsonModel(array('success'=>true , 'message'=>$rdt));

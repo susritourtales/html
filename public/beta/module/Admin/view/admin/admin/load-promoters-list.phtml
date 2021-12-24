@@ -14,6 +14,7 @@
         <th data-placeholder="amount due" data-input="amount_due">amount due</th>
         <th data-placeholder="amount paid" data-input="amount_paid">amount paid</th>
         <th>terminate promoter</th>
+        <th class="text-center">status</th>
         <th data-placeholder="expiry date" data-input="subscription_end_date">expiry date</th>
         <th data-placeholder="state city" data_input="state_city">state / city</th>
         <th data-placeholder="perm address" data_input="permanent_addr">permanent address</th>
@@ -38,7 +39,7 @@
 
         foreach ($promotersList as $promoter) { 
             $fontColor = "";
-            if($promoter['is_promoter'] == \Admin\Model\User::Is_terminated_Promoter)
+            if($promoter['is_promoter'] == \Admin\Model\User::Is_terminated_Promoter || $promoter['is_promoter'] == \Admin\Model\User::Is_resigned_Promoter)
                 $fontColor = "text-danger";?>
             <tr class="position-relative <?php echo $fontColor; ?>" data-id="<?php echo base64_encode("promoterid=".$promoter['user_id']); ?>">
                 <td><?php echo $i+1; ?></td>
@@ -51,8 +52,18 @@
                 <td class="text-center"><?php echo $promoter['amount_due']; ?></td>
                 <td class="text-center"><?php echo $promoter['amount_paid']; ?></td>
                 <td class="text-center">
-                    <input type="checkbox" id="tcb_<?php echo $promoter['user_id']; ?>" name="tcb_<?php echo $promoter['user_id']; ?>" value="<?php echo $promoter['user_id']; ?>" <?php echo $promoter['is_promoter'] == \Admin\Model\User::Is_terminated_Promoter ? "checked disabled" : "" ;?> onclick="event.stopPropagation();">
+                    <input type="checkbox" id="tcb_<?php echo $promoter['user_id']; ?>" name="tcb_<?php echo $promoter['user_id']; ?>" value="<?php echo $promoter['user_id']; ?>" <?php echo $promoter['is_promoter'] == \Admin\Model\User::Is_terminated_Promoter || $promoter['is_promoter'] == \Admin\Model\User::Is_resigned_Promoter ? "checked disabled" : "" ;?> onclick="event.stopPropagation();">
                     <?php //echo $promoter['is_promoter'];?>
+                </td>
+                <td class="text-center">
+                    <?php
+                    if($promoter['is_promoter'] == \Admin\Model\User::Is_terminated_Promoter)
+                        echo "T";
+                    elseif($promoter['is_promoter'] == \Admin\Model\User::Is_resigned_Promoter)
+                        echo "R";
+                    else
+                        echo "A";
+                    ?>
                 </td>
                 <td class="text-center">
                     <?php 

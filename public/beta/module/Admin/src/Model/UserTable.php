@@ -1108,6 +1108,8 @@ class UserTable extends  BaseTable
                 ->equalTo("u.is_promoter",\Admin\Model\User::Is_Promoter)
                 ->or
                 ->equalTo("u.is_promoter",\Admin\Model\User::Is_terminated_Promoter)
+                ->or
+                ->equalTo("u.is_promoter",\Admin\Model\User::Is_resigned_Promoter)
                 ->unnest();
             /* $where->equalTo('u.is_promoter',\Admin\Model\User::Is_Promoter);
             $where->or->equalTo('u.is_promoter',\Admin\Model\User::Is_terminated_Promoter);  */

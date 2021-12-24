@@ -3394,6 +3394,19 @@ class AdminController extends BaseController
             $promoterid = $request['pid'];
             $response = $this->userTable()->updateUser(array('is_promoter'=>\Admin\Model\User::Is_terminated_Promoter), array('user_id'=>$promoterid));
             if($response){
+                // notify promoter that he is terminated
+
+                $registrationIds = $this->fcmTable()->getDeviceIds($promoterid);
+                $subject = "Promoter Termination";
+                $message = "You are terminated as the promoter. However you can continue as sponsor and user of the App";
+                $notificationDetails = array('notification_data_id'=>$promoterid,'status' => \Admin\Model\Notification::STATUS_UNREAD, 'notification_recevier_id' => $promoterid, 'notification_type' => \Admin\Model\Notification::NOTIFICATION_TYPE_BOOKING_NOTIFICATION, 'notification_text' => $message,'created_at'=>date("Y-m-d H:i:s"),'updated_at'=>date("Y-m-d H:i:s"));
+                $notification = $this->notificationTable()->saveData($notificationDetails);
+                if ($registrationIds)
+                {
+                    $notification = new SendFcmNotification();
+                    $notification->sendPushNotificationToFCMSever($registrationIds, array('message' => $notificationDetails['notification_text'], 'title' => $subject, 'id' => $notificationDetails['notification_data_id'],'type' => $notificationDetails['notification_type']));
+                }
+
                 return new JsonModel(array('success'=>true , 'message'=>'updated successfully'));
             }else{
                 return new JsonModel(array('success'=>false,'message'=>'unable to update'));
@@ -3656,15 +3669,15 @@ class AdminController extends BaseController
                 //echo $sponsorId; exit;
                 $searchData['user_id'] = $sponsorId;
 
-                if(isset($filterData['promoter_name']))
+                if(isset($filterData['sponsor_mobile']))
                 { 
-                    if(isset($filterData['promoter_name']['text']))
+                    if(isset($filterData['sponsor_mobile']['text']))
                     { 
-                        $searchData['promoter_name']=$filterData['promoter_name']['text'];
+                        $searchData['sponsor_mobile']=$filterData['sponsor_mobile']['text'];
                     }
-                    if(isset($filterData['promoter_name']['order']) && $filterData['promoter_name']['order'])
+                    if(isset($filterData['sponsor_mobile']['order']) && $filterData['sponsor_mobile']['order'])
                     {
-                        $searchData['promoter_name_order']=$filterData['promoter_name']['order'];
+                        $searchData['sponsor_mobile_order']=$filterData['sponsor_mobile']['order'];
                     }
                 }
                 if(isset($filterData['promoter_mobile']))

@@ -34,6 +34,7 @@ class User
     const Is_Not_Promoter = 0;
     const Is_Promoter = 1;
     const Is_terminated_Promoter = 2;
+    const Is_resigned_Promoter = 3;
 
     public function exchangeArray(array $data)
     {

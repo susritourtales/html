@@ -178,6 +178,10 @@ class PromoterPaymentsTable extends BaseTable
             {
                 $where->and->like("r.ref_mobile",'%'.$data['promoter_mobile']."%");
             }
+            if(array_key_exists('sponsor_mobile',$data))
+            {
+                $where->and->like("u.mobile",'%'.$data['sponsor_mobile']."%");
+            }
 
             if(array_key_exists('promoter_name_order',$data))
             {
@@ -199,13 +203,23 @@ class PromoterPaymentsTable extends BaseTable
                     $order[]='r.ref_mobile desc';
                 }
             }
+            if(array_key_exists('sponsor_mobile_order',$data))
+            {
+                if($data['sponsor_mobile_order']==1)
+                {
+                    $order[]='u.mobile asc';
+                }else if($data['sponsor_mobile_order']==-1)
+                {
+                    $order[]='u.mobile desc';
+                }
+            }
 
             if(!count($order))
             {
                 $order='pp.id desc';
             }
-
             //$where->and->equalTo('pd.redeem', 1);
+            //$where->and->notEqualTo('pp.due_amount', 0);
 
             /* $query = $sql->select()
                 ->columns(array("id", "due_date","due_amount", "promoter_id", "sponsor_id", "paid_date", "paid_amount", "trans_ref", "status"))
@@ -225,7 +239,7 @@ class PromoterPaymentsTable extends BaseTable
                 ->join(array('r'=>'refer'), 'r.user_id=pp.sponsor_id',array("ref_by","ref_mobile","trigger_payment", "latest_paid_date"),'left')
                 ->join(array('u'=>'users'), 'u.user_id=pp.sponsor_id',array("user_name","mobile","mobile_country_code"),'left')
                 ->join(array('pr'=>'promoter_parameters'), 'pr.id<=pp.promoter_id', array("pay_after_pwds", "amt_per_pwd", "redeem_value"))
-                ->join(array('pd'=>'promoter_details'), "pd.user_id=pp.promoter_id and (r.trigger_payment >= pr.pay_after_pwds or pp.due_amount >= pr.amt_per_pwd * pr.pay_after_pwds or pr.redeem_value = pd.redeem)",array("bank_ac_no","ifsc_code", "redeem"))
+                ->join(array('pd'=>'promoter_details'), "pd.user_id=pp.promoter_id and (r.trigger_payment >= pr.pay_after_pwds or pp.due_amount >= pr.amt_per_pwd * pr.pay_after_pwds or pr.redeem_value = pd.redeem)", array("bank_ac_no","ifsc_code", "redeem"))
                 ->where($where)
                 ->limit($data['limit'])
                 ->offset($data['offset'])

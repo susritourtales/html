@@ -29,15 +29,18 @@
         }
 
         foreach ($sponsorTransactions as $st) { 
+            $fontColor = "";
+            if($st['transaction_ref'] != "")
+                $fontColor = "text-success";
             if(1==1){ //if(!$st['sr']){?>
-            <tr>
+            <tr class="<?php echo $fontColor; ?>">
                 <td><?php echo $i+1; ?></td>
                 <td><?php echo date("d-m-Y",strtotime($st['transaction_date'])); ?></td>
                 <td><?php echo $st['no_of_pwds'] == "" ? '0' : $st['no_of_pwds']; ?></td>
                 <td class="text-center"><?php echo $st['amount']; ?></td>
                 <td class="text-center"><?php echo $st['cpamt']; ?></td>
                 <td class="text-center"><?php echo $st['cdamt']; ?></td>
-                <td class="text-center"><?php echo $st['transaction_ref']; ?></td>
+                <td class="text-center"><?php echo ($st['transaction_ref'] == "") ? "-" : "Rs " . $st['amount'] . " - " . $st['transaction_ref']; ?></td>
                 <td class="text-center"><?php echo $st['cpwds']; ?></td>
             </tr>
             <?php $i++; } } } else { ?>

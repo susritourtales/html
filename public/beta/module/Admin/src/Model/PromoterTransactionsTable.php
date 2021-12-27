@@ -139,7 +139,7 @@ class PromoterTransactionsTable extends BaseTable
                 $p = $temp['cpwds'] = $row['no_of_pwds'] + $p;
                 $temp['sr'] = 0;
                 $transArr[] = $temp;
-                if($temp['transaction_type'] == \Admin\Model\PromoterTransactions::transaction_paid){
+                /* if($temp['transaction_type'] == \Admin\Model\PromoterTransactions::transaction_paid){
                     $dtemp = $temp;
                     $dtemp['transaction_type'] = \Admin\Model\PromoterTransactions::transaction_due;
                     $dtemp['transaction_ref'] = "";
@@ -147,7 +147,7 @@ class PromoterTransactionsTable extends BaseTable
                     $dtemp['no_of_pwds'] = "";
                     $dtemp['sr'] = 1; // to be used to not display summary row inserted after stt payment
                     $transArr[] = $dtemp;
-                }
+                } */
             }
             //var_dump($transArr); exit;
             return array_slice($transArr, $data['offset'], $data['limit']);

@@ -35,8 +35,8 @@
             <?php $bgClr = "style='background-color:LightGray;'";
             if($payment['status'] == \Admin\Model\PromoterPayments::status_due){
                 $bgClr = "style='background-color:PaleGreen;'";
-            if($payment['redeem'] == "1")
-                $bgClr = "style='background-color:Pink;'";
+            if($payment['due_amount'] < 500)
+                $bgClr = "style='background-color:LightSalmon;'";
             } ?>
             <tr class="position-relative" <?php echo $bgClr; ?>>
                 <td><?php echo $i+1; ?></td>

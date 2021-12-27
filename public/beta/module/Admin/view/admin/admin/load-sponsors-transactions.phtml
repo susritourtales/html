@@ -32,7 +32,7 @@
             $fontColor = "";
             if($st['transaction_ref'] != "")
                 $fontColor = "text-success";
-            if(1==1){ //if(!$st['sr']){?>
+            if(!$st['sr']){ //if(1==1){ ?>
             <tr class="<?php echo $fontColor; ?>">
                 <td><?php echo $i+1; ?></td>
                 <td><?php echo date("d-m-Y",strtotime($st['transaction_date'])); ?></td>

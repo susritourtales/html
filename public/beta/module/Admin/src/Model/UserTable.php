@@ -1151,7 +1151,7 @@ class UserTable extends  BaseTable
             }
             
             $query = $sql->select()
-                ->columns(array("user_id","user_name","mobile","mobile_country_code","subscription_end_date", "is_promoter"))
+                ->columns(array("user_id","user_name","mobile","mobile_country_code","subscription_end_date", "is_promoter", "email"))
                 ->from(array('u' => 'users'))
                 ->join(array('pd'=>'promoter_details'), 'pd.user_id=u.user_id',array("state_city" ,"permanent_addr",'bank_name', 'ifsc_code', 'bank_ac_no'),'left')
                 ->where($where)

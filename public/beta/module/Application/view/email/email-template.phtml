@@ -128,7 +128,7 @@ else if($action =='mail-stt-user'){
                         <tbody>
                             <tr>
                                 <td width="5%"> </td>
-                                <td>
+                                <td><!--
                                     <table width="100%" border="0" cellspacing="0" cellpadding="0" style="border:1px solid #d6d6d6;border-radius:5px; box-shadow:0px 0px 4px 0px #cccccc;background-color:#eed9c4;">
                                         <tbody>
                                             <tr>
@@ -167,7 +167,7 @@ else if($action =='mail-stt-user'){
                                                 </td>
                                             </tr>
                                         </tbody>
-                                    </table>
+                                    </table> -->
                                 </td>
                                 <td width="5%"> </td>
                             </tr>
@@ -578,7 +578,7 @@ else if($action =='mail-stt-user'){
     if($data['booking_type']==\Admin\Model\Bookings::booking_Subscription || $data['booking_type']==\Admin\Model\Bookings::booking_Sponsored_Subscription){
         $hdrtxt = $data['heading'];
         // $bookingdt = 'Booking Date : ' . date("d-m-Y",strtotime($data["subs_start_date"]));
-        $bookingdt = 'Booking Date : ' . date("d-m-Y",strtotime($data["renewed_on"]));
+        $bookingdt = 'Date of Subscription : ' . date("d-m-Y",strtotime($data["renewed_on"]));
         $timeFrameTxt = '';
         $tpasswordbody='';
         $tpasswords = '';
@@ -699,18 +699,14 @@ else if($action =='mail-stt-user'){
                     <td>
                         <p>Dear Sponsor,</p>
                         <p>Namasthe.</p>                     
-                        <p><b>Congratulations on converting yourself as a Sponsor of STT</b></p>
+                        <p><b>Congratulations on registering yourself as a Sponsor of STT. You will continue to be a Sponsor till you remain as subscriber.</b></p>
                         <p>By becoming a  Sponsor, you joined the Promotion Group of STT.</p> 
-                        <p>As a sponsor, you can buy the “subscription passwords” at discounted  price and help your tourist customers  to  become subscribers at  concessional price.</p>  
-                        <p>That means, your advantage of getting the discount  is shared between you and your tourist.</p>
-                        <p>The starting discount offered to you  is 30%. After you buy the first 10 passwords at 30% discount,  you will get 5 free passwords as  bonus.</p>
-                        <p>You can buy a maximum of 99 passwords only at a time.</p>
-                        <p>Based on your performance of buying more and more passwords, you will get better discounts.</p>
-                        <p>For every 500 password purchases, you can get additional 10% discount. Maximum percentage of discount will be 70%.</p>
-                        <p>If you do not meet the minimum performance criterion, your discount will be reduced or  even your sponsor status  may be withdrawn.</p> 
-                        <p>The minimum performance  criterion  is to purchase at least 20 passwords in 60 days.</p> 
+                        <p>As a sponsor, you can buy the “subscription passwords” at discounted  price and sell to your tourist customers  to  become subscribers at  concessional price.</p>
+                        <p>The starting discount offered to you  is 30%. After you buy the first 10 passwords,  you will get 5 free passwords as  bonus.</p>
+                        <p>Based on your performance of buying more and more passwords, you will get better discounts even up to 70%.</p>
+                        <p>If you do not purchase the passwords for a long time your discount will be reduced as decided by STT.</p>
                         <p>You can view the record of your password purchases in your mobile.</p>
-                        <p>The passwords  purchased  are  to be re-deemed for subscription  within one year.</p>
+                        <p>The passwords purchased  are valid for one year. That is, they can be redeemed for subscription anytime within one year.</p>
                         <p>Wish you all the best in your service to Indian Tourism and your business as a Sponsor of STT.</p><br>
                         <p>Regards.</p>
                         <p>STT.</p>
@@ -723,7 +719,7 @@ else if($action =='mail-stt-user'){
     elseif($data['booking_type']==\Admin\Model\Bookings::booking_Buy_Passwords)
     {
         $hdrtxt = $data['heading']; 
-        $bookingdt = 'Booking Date : ' . date("d-m-Y",strtotime($data["created_at"]));
+        $bookingdt = 'Purchase Date : ' . date("d-m-Y",strtotime($data["created_at"]));
         $tpasswordbody="";
         $tValidity="";
         if(count($data['passwords'])>0)
@@ -766,7 +762,7 @@ else if($action =='mail-stt-user'){
                 <tr>
                     <td width="5%"> </td>
                     <td>
-                        <p>Thank you for purchasing '.$pwdsPurchased.' passwords at '.date("H:i",strtotime($data["created_at"])).' on '.date("d-M-Y",strtotime($data["created_at"])).' at a discount of '.$data["discount_percentage"].'%.
+                        <p>Thank you for purchasing '.$pwdsPurchased.' passwords at '.date("H:i",strtotime($data["created_at"])).' on '.date("d-M-Y",strtotime($data["created_at"])).' at a discount of '.$data["discount_percentage"].'% on current subscription price.
                         Please find the passwords below.</p>
                     </td>
                     <td width="5%"> </td>
@@ -775,7 +771,7 @@ else if($action =='mail-stt-user'){
             </tbody></table></td></tr>
             <tr><td><table><tbody><tr><td width="5%"> &nbsp;</td><td>&nbsp;</td><td width="5%">&nbsp; </td></tr></tbody></table></td></tr>';
             if($data['bonus_flag'] || $data['passwords_count'] > 10){
-                $timeFrameTxt = '<tr><td height="20"> </td></tr><tr><td colspan="2"><div>Please ensure that they are redeemed within an year.<br>
+                $timeFrameTxt = '<tr><td height="20"> </td></tr><tr><td colspan="2"><div>Please ensure that they are redeemed within one year from date of purchase.<br>
                 Wish you all the best as a Sponsor of STT.                
                 </div></td></tr><tr><td height="20"></td></tr>
                 ';
@@ -822,7 +818,7 @@ else if($action =='mail-stt-user'){
                                                                                         <td height="20"> </td>
                                                                                     </tr>
                                                                                     <tr>
-                                                                                        <td align="left" style="color:#000;font-family:Verdana, Arial, sans-serif;font-size:16px;line-height:22px;font-weight: bold;">User Name</td>
+                                                                                        <td align="left" style="color:#000;font-family:Verdana, Arial, sans-serif;font-size:16px;line-height:22px;font-weight: bold;">S. No</td>
                                                                                         <td align="right" style="color:#000;font-family:Verdana, Arial, sans-serif;font-size:16px;line-height:22px;font-weight: bold;">Password</td>
                                                                                     </tr> '.$tpasswordbody.$timeFrameTxt .'
                                                                                     <tr>
@@ -1128,10 +1124,7 @@ elseif ($action =='renew-remainder') {
                         <p>Your subscription period is going to expire by ' . date("d-M-Y",strtotime($data["subscription_end_date"])) . '.</p>
                         <p>If this is the first renewal, you will be charged at 65% of the current subscription price and if it is 2nd or subsequent renewal, you will be charged at 40% of the current subscription price.</p>
                         <br>
-                        <p>If you do not renew within the time, you will have to subscribe afresh at current subscription price or using a password.</p>
-                        <br>
-                        <p>Renew on time and take advantage of the concessional payment.</p>
-                        <p>Press the “Renew” button in the App and complete the process of Renewal.</p>
+                        <p>You can renew on any day in the last one month before your subscription expiry. Please complete the process of Renewal by opening the \'menu\' in the App.</p>
                         <br>
                         <p>Regards</p>
                         <p>STT</p>
@@ -1752,18 +1745,14 @@ else if($action =='mail-booking-details')
                         <td>
                             <p>Dear Sponsor,</p>
                             <p>Namasthe.</p>                     
-                            <p><b>Congratulations on converting yourself as a Sponsor of STT</b></p>
+                            <p><b>Congratulations on registering yourself as a Sponsor of STT. You will continue to be a Sponsor till you remain as subscriber.</b></p>
                             <p>By becoming a  Sponsor, you joined the Promotion Group of STT.</p> 
-                            <p>As a sponsor, you can buy the “subscription passwords” at discounted  price and help your tourist customers  to  become subscribers at  concessional price.</p>  
-                            <p>That means, your advantage of getting the discount  is shared between you and your tourist.</p>
-                            <p>The starting discount offered to you  is 30%. After you buy the first 10 passwords at 30% discount,  you will get 5 free passwords as  bonus.</p>
-                            <p>You can buy a maximum of 99 passwords only at a time.</p>
-                            <p>Based on your performance of buying more and more passwords, you will get better discounts.</p>
-                            <p>For every 500 password purchases, you can get additional 10% discount. Maximum percentage of discount will be 70%.</p>
-                            <p>If you do not meet the minimum performance criterion, your discount will be reduced or  even your sponsor status  may be withdrawn.</p> 
-                            <p>The minimum performance  criterion  is to purchase at least 20 passwords in 60 days.</p> 
+                            <p>As a sponsor, you can buy the “subscription passwords” at discounted  price and sell to  your tourist customers  to  become subscribers at  concessional price.</p>
+                            <p>The starting discount offered to you  is 30%. After you buy the first 10 passwords,  you will get 5 free passwords as  bonus.</p>
+                            <p>Based on your performance of buying more and more passwords, you will get better discounts discounts even up to 70%.</p>
+                            <p>If you do not purchase the passwords for a long time your discount will be reduced as decided by STT.</p>
                             <p>You can view the record of your password purchases in your mobile.</p>
-                            <p>The passwords  purchased  are  to be re-deemed for subscription  within one year.</p>
+                            <p>The passwords purchased  are valid for one year. That is, they can be redeemed for subscription anytime within one year.</p>
                             <p>Wish you all the best in your service to Indian Tourism and your business as a Sponsor of STT.</p><br>
                             <p>Regards.</p>
                             <p>STT.</p>
@@ -1778,7 +1767,7 @@ else if($action =='mail-booking-details')
                     <tr>
                         <td width="5%"> </td>
                         <td>
-                            <p>Thank you for purchasing '.$data["no_of_users"].' passwords at '.date("H:i",strtotime($data["created_at"])).' on '.date("d-M-Y",strtotime($data["created_at"])).' at a discount of '.$data["discount_percentage"].'%.
+                            <p>Thank you for purchasing '.$data["no_of_users"].' passwords at '.date("H:i",strtotime($data["created_at"])).' on '.date("d-M-Y",strtotime($data["created_at"])).' at a discount of '.$data["discount_percentage"].'% on current subscription price.
                             Please find the passwords below.</p>
                         </td>
                         <td width="5%"> </td>
@@ -2351,7 +2340,7 @@ else if($action =='mail-booking-details')
                                                                                                                                                                         <td height="20"> </td>
                                                                                                                                                                     </tr>
                                                                                                                                                                     <tr>
-                                                                                                                                                                        <td align="left" style="color:#000;font-family:Verdana, Arial, sans-serif;font-size:16px;line-height:22px;font-weight: bold;">User Name</td>
+                                                                                                                                                                        <td align="left" style="color:#000;font-family:Verdana, Arial, sans-serif;font-size:16px;line-height:22px;font-weight: bold;">S. No</td>
                                                                                                                                                                         <td align="right" style="color:#000;font-family:Verdana, Arial, sans-serif;font-size:16px;line-height:22px;font-weight: bold;">Password</td>
                                                                                                                                                                     </tr> '.$tpasswordbody.'
                                                                                                                                                                     <tr>
@@ -3436,7 +3425,7 @@ else if($action =='mail-privileged-booking-details')
                                                                                                                     <td height="20"> </td>
                                                                                                                 </tr>
                                                                                                                 <tr>
-                                                                                                                    <td align="left" style="color:#000;font-family:Verdana, Arial, sans-serif;font-size:16px;line-height:22px;font-weight: bold;">User Name</td>
+                                                                                                                    <td align="left" style="color:#000;font-family:Verdana, Arial, sans-serif;font-size:16px;line-height:22px;font-weight: bold;">S. No</td>
                                                                                                                     <td align="right" style="color:#000;font-family:Verdana, Arial, sans-serif;font-size:16px;line-height:22px;font-weight: bold;">Password</td>
                                                                                                                 </tr>
                                                                                                                 '.$tpasswordbody.'<tr><td height="20"></td></tr>

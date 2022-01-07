@@ -102,7 +102,8 @@ class PromoterTransactionsTable extends BaseTable
         {
             $sql = $this->getSql();
             $where=new Where();
-            $where->equalTo('pt.sponsor_id',$data['sponsorId']);            
+            $where->equalTo('pt.sponsor_id',$data['sponsorId']);
+            $where->notEqualTo('pt.amount', "0");
             $order=array();
 
             if(!count($order))

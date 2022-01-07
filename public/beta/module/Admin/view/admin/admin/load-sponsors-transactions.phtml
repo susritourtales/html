@@ -29,11 +29,11 @@
         }
 
         foreach ($sponsorTransactions as $st) { 
-            $fontColor = "";
+            $color = "";
             if($st['transaction_ref'] != "")
-                $fontColor = "text-success";
+                $color = "bg-success text-white";
             if(1==1){ //if(!$st['sr']){?>
-            <tr class="<?php echo $fontColor; ?>">
+            <tr class="<?php echo $color; ?>">
                 <td><?php echo $i+1; ?></td>
                 <td><?php echo date("d-m-Y",strtotime($st['transaction_date'])); ?></td>
                 <td><?php echo $st['no_of_pwds'] == "" ? '0' : $st['no_of_pwds']; ?></td>

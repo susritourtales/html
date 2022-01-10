@@ -239,8 +239,8 @@ class PromoterPaymentsTable extends BaseTable
                 ->join(array('r'=>'refer'), 'r.user_id=pp.sponsor_id',array("ref_by","ref_mobile","trigger_payment", "latest_paid_date"),'left')
                 ->join(array('u'=>'users'), 'u.user_id=pp.sponsor_id',array("user_name","mobile","mobile_country_code"),'left')
                 ->join(array('pr'=>'promoter_parameters'), 'pr.id<=pp.promoter_id', array("pay_after_pwds", "amt_per_pwd", "redeem_value"))
-                /* ->join(array('pd'=>'promoter_details'), "pd.user_id=pp.promoter_id and (r.trigger_payment >= pr.pay_after_pwds)", array("bank_ac_no","ifsc_code", "redeem")) */
-                ->join(array('pd'=>'promoter_details'), "pd.user_id=pp.promoter_id and (r.trigger_payment >= pr.pay_after_pwds or pp.due_amount >= pr.amt_per_pwd * pr.pay_after_pwds or pr.redeem_value = pd.redeem)", array("bank_ac_no","ifsc_code", "redeem"))
+                ->join(array('pd'=>'promoter_details'), "pd.user_id=pp.promoter_id and (r.trigger_payment >= pr.pay_after_pwds or pp.due_amount > 0)", array("bank_ac_no","ifsc_code", "redeem"))
+                /* ->join(array('pd'=>'promoter_details'), "pd.user_id=pp.promoter_id and (r.trigger_payment >= pr.pay_after_pwds or pp.due_amount >= pr.amt_per_pwd * pr.pay_after_pwds or pr.redeem_value = pd.redeem)", array("bank_ac_no","ifsc_code", "redeem")) */
                 ->where($where)
                 ->limit($data['limit'])
                 ->offset($data['offset'])
@@ -291,8 +291,8 @@ class PromoterPaymentsTable extends BaseTable
                 ->join(array('r'=>'refer'), 'r.user_id=pp.sponsor_id',array("ref_by","ref_mobile","trigger_payment", "latest_paid_date"),'left')
                 ->join(array('u'=>'users'), 'u.user_id=pp.sponsor_id',array("user_name","mobile","mobile_country_code"),'left')
                 ->join(array('pr'=>'promoter_parameters'), 'pr.id<=pp.promoter_id', array("pay_after_pwds", "amt_per_pwd", "redeem_value"))
-                /* ->join(array('pd'=>'promoter_details'), "pd.user_id=pp.promoter_id and (r.trigger_payment >= pr.pay_after_pwds)", array("bank_ac_no","ifsc_code", "redeem")) */
-                ->join(array('pd'=>'promoter_details'), "pd.user_id=pp.promoter_id and (r.trigger_payment >= pr.pay_after_pwds or pp.due_amount >= pr.amt_per_pwd * pr.pay_after_pwds or pr.redeem_value = pd.redeem)",array("bank_ac_no","ifsc_code", "redeem"))
+                ->join(array('pd'=>'promoter_details'), "pd.user_id=pp.promoter_id and (r.trigger_payment >= pr.pay_after_pwds or pp.due_amount > 0)", array("bank_ac_no","ifsc_code", "redeem"))
+                /* ->join(array('pd'=>'promoter_details'), "pd.user_id=pp.promoter_id and (r.trigger_payment >= pr.pay_after_pwds or pp.due_amount >= pr.amt_per_pwd * pr.pay_after_pwds or pr.redeem_value = pd.redeem)",array("bank_ac_no","ifsc_code", "redeem")) */
                 ->where($where)
                 ->order($order);
 

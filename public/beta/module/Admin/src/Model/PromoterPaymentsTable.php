@@ -263,12 +263,56 @@ class PromoterPaymentsTable extends BaseTable
         }
     }
 
-    public function getPromotersPaymentsDetailsCount(){ 
+    public function getPromotersPaymentsDetailsCount($data=array()){ 
         try
         {
             $sql = $this->getSql();
             $where=new Where();         
             $order=array();
+
+            if(array_key_exists('promoter_name',$data))
+            {
+                $where->and->like("r.ref_by",'%'.$data['promoter_name']."%");
+            }
+            if(array_key_exists('promoter_mobile',$data))
+            {
+                $where->and->like("r.ref_mobile",'%'.$data['promoter_mobile']."%");
+            }
+            if(array_key_exists('sponsor_mobile',$data))
+            {
+                $where->and->like("u.mobile",'%'.$data['sponsor_mobile']."%");
+            }
+
+            if(array_key_exists('promoter_name_order',$data))
+            {
+                if($data['promoter_name_order']==1)
+                {
+                    $order[]='r.ref_by asc';
+                }else if($data['promoter_name_order']==-1)
+                {
+                    $order[]='r.ref_by desc';
+                }
+            }
+            if(array_key_exists('promoter_mobile_order',$data))
+            {
+                if($data['promoter_mobile_order']==1)
+                {
+                    $order[]='r.ref_mobile asc';
+                }else if($data['promoter_mobile_order']==-1)
+                {
+                    $order[]='r.ref_mobile desc';
+                }
+            }
+            if(array_key_exists('sponsor_mobile_order',$data))
+            {
+                if($data['sponsor_mobile_order']==1)
+                {
+                    $order[]='u.mobile asc';
+                }else if($data['sponsor_mobile_order']==-1)
+                {
+                    $order[]='u.mobile desc';
+                }
+            }
 
             if(!count($order))
             {

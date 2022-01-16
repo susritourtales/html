@@ -4,7 +4,7 @@ $(document).ready(function(){
         var pc=$.trim($("#pwd_ceiling").val());
        /*  var mpp=$.trim($("#min_pay_pwds").val()); */
         var app=$.trim($("#amt_per_pwd").val());
-        var rc=$.trim($("#redeem_ceiling").val());
+        /* var rc=$.trim($("#redeem_ceiling").val()); */
         var pap=$.trim($("#pay_after_pwds").val());
 
         if(pc=='')
@@ -24,11 +24,11 @@ $(document).ready(function(){
             return false;
         }
 
-        if(rc=='')
+        /* if(rc=='')
         {
             messageDisplay("Please enter redeem ceiling");
             return false;
-        }
+        } */
 
         if(pap=='')
         {
@@ -41,7 +41,7 @@ $(document).ready(function(){
         formData.append("pc",pc);
         /* formData.append("mpp",mpp); */
         formData.append("app",app);
-        formData.append("rc",rc);
+        /* formData.append("rc",rc); */
         formData.append("pap",pap);
         formData.append("pid",pid);
                 

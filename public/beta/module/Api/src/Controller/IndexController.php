@@ -918,6 +918,7 @@ class IndexController extends BaseController{
             return  new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
          }
          $data['discount_percentage'] = 30;
+         $roleb4 = $this->userTable()->getField(array('user_id'=>$userId), 'role');
          $profileUpdate=$this->userTable()->updateUser($data,array('user_id'=>$userId));
          //var_dump($data); exit;
          //var_dump($refData); exit;
@@ -954,13 +955,15 @@ class IndexController extends BaseController{
                
                if(intval($role) == \Admin\Model\User::Sponsor_role){
                     if(intval($checkUser['role']) == \Admin\Model\User::Sponsor_role){
-                        $userDetails=$checkUser;
-                        $userDetails['booking_type']=\Admin\Model\Bookings::booking_Sponsorship;
-                        $userDetails['subs_start_date'] = $checkUser['subscription_start_date'];
-                        $userDetails['subs_end_date'] = $checkUser['subscription_end_date'];
-                        $this->mailToUser($userDetails);
-                        $this->notifyUser($userDetails);
-                        $this->smsUser($userDetails);
+                        if($checkUser['role'] != $roleb4){
+                            $userDetails=$checkUser;
+                            $userDetails['booking_type']=\Admin\Model\Bookings::booking_Sponsorship;
+                            $userDetails['subs_start_date'] = $checkUser['subscription_start_date'];
+                            $userDetails['subs_end_date'] = $checkUser['subscription_end_date'];
+                            $this->mailToUser($userDetails);
+                            $this->notifyUser($userDetails);
+                            $this->smsUser($userDetails);
+                        }
                     }
                 }
                return new JsonModel(array("success"=>true,"message"=>"Profile updated","user"=>$user,'status'=>1));

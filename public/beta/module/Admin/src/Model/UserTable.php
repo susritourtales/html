@@ -655,7 +655,7 @@ class UserTable extends  BaseTable
                 ->join(array('bt'=>'booking_tour_details'),new \Laminas\Db\Sql\Expression('bt.booking_id=b.booking_id and (b.booking_type='.\Admin\Model\Bookings::booking_by_User . ' or (b.booking_type='.\Admin\Model\Bookings::booking_Subscription . ' and b.payment_status=1) or b.booking_type='.\Admin\Model\Bookings::booking_Sponsored_Subscription . ')'))
             ->group(array('b.user_id'));
             $query = $sql->select()
-                ->columns(array("user_id","mobile","email","res_state","subscription_start_date",
+                ->columns(array("user_id","mobile","email","res_state","subscription_start_date","subscription_end_date","role",
                     "mobile_country_code","user_name","subscription_type"))
                 ->from(array('u' => 'users'))
                 ->join(array('b'=>$bookingList),'b.user_id=u.user_id',array('booking_count','booking_price'))
@@ -710,7 +710,7 @@ class UserTable extends  BaseTable
                 ->group(array('b.user_id'));
 
             $query = $sql->select()
-                ->columns(array("user_id","mobile","email","res_state","subscription_start_date",
+                ->columns(array("user_id","mobile","email","res_state","subscription_start_date","subscription_end_date","role",
                     "mobile_country_code","user_name","subscription_type"))
                 ->from(array('u' => 'users'))
                 ->join(array('b'=>$bookingList),'b.user_id=u.user_id')

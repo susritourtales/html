@@ -4,5 +4,13 @@
 			"path": "..\\..\\..\\..\\..\\.."
 		}
 	],
-	"settings": {}
+	"settings": {
+		"intelephense.diagnostics.undefinedFunctions": false,
+		"intelephense.diagnostics.undefinedConstants": false,
+		"intelephense.diagnostics.undefinedClassConstants": false,
+		"intelephense.diagnostics.undefinedMethods": false,
+		"intelephense.diagnostics.undefinedProperties": false,
+		"intelephense.diagnostics.undefinedTypes": false,
+		"intelephense.diagnostics.undefinedSymbols": false
+	}
 }

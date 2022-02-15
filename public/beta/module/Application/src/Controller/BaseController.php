@@ -73,6 +73,7 @@ class BaseController extends AbstractActionController
     protected $cityTourSlabDaysTable;
     
     const  token='dG91cmlzbUFwcGxpY2F0aW9u';
+    const apk_version = '1.2.53';
     public function onDispatch(MvcEvent $e)
     {
 
@@ -111,6 +112,15 @@ class BaseController extends AbstractActionController
         }
 
          return true;
+    }
+
+    public  function isApkVersionlatest($vc)
+    {
+        if(!($vc == \Application\Controller\BaseController::apk_version))
+        {
+             return false;
+        }
+        return true;
     }
 
      public function filesUrl()

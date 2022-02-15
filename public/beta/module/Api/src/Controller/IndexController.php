@@ -726,9 +726,14 @@ class IndexController extends BaseController{
         $request = $this->getRequest()->getPost();
         $mobileNumber=$request['mobile'];
         $countryCode=$request['mobile_country_code'];
+        $vc = $request['vc'];
+
         if(!$headers->get('Access-Token') || !$this->tokenValidation($headers->get('Access-Token')->getFieldValue()))
         {
             return  new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
+        }
+        if(!$this->isApkVersionlatest($vc)){
+            return  new JsonModel(array('success'=>false,'message'=>'Please update your app to latest version available on playstore to proceed further'));
         }
         if($mobileNumber=="")
         {
@@ -1615,10 +1620,14 @@ class IndexController extends BaseController{
          $request = $this->getRequest()->getPost();
          $userId = $request['user_id'];
          $no_of_pwds = $request['no_of_pwds'];
+         $vc = $request['vc'];
          
          if(!$headers->get('Access-Token') || !$this->tokenValidation($headers->get('Access-Token')->getFieldValue()))
          {
             return  new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
+         }
+         if(!$this->isApkVersionlatest($vc)){
+            return  new JsonModel(array('success'=>false,'message'=>'Please update your app to latest version available on playstore to proceed further'));
          }
          if($userId=="")
          {
@@ -1784,11 +1793,15 @@ class IndexController extends BaseController{
          $request = $this->getRequest()->getPost();
          $userId = $request['user_id'];
          $userType = $request['user_type'];
+         $vc = $request['vc'];
          //$tourType = $request['tour_type'];
 
          if(!$headers->get('Access-Token') || !$this->tokenValidation($headers->get('Access-Token')->getFieldValue()))
          {
             return  new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
+         }
+         if(!$this->isApkVersionlatest($vc)){
+            return  new JsonModel(array('success'=>false,'message'=>'Please update your app to latest version available on playstore to proceed further'));
          }
          if($userId=="")
          {

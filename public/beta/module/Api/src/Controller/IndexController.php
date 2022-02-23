@@ -773,7 +773,7 @@ class IndexController extends BaseController{
                 return  new JsonModel(array('success'=>true,'message'=>'Please update your app to latest version available on playstore','user_id'=>$user_id,'status'=>2));
              }
              else
-                return  new JsonModel(array('success'=>true,'message'=>'login','user_id'=>$user_id,'status'=>2));
+                return  new JsonModel(array('success'=>true,'message'=>'','user_id'=>$user_id,'status'=>2));
 
          }else{
              $saveData=array('mobile_country_code'=>$countryCode,'mobile'=>$mobileNumber,'role'=>\Admin\Model\User::Individual_role,'status'=>1);

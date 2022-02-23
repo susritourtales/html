@@ -732,9 +732,9 @@ class IndexController extends BaseController{
         {
             return  new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
         }
-        if(!$this->isApkVersionlatest($vc)){
-            return  new JsonModel(array('success'=>false,'message'=>'Please update your app to latest version available on playstore to proceed further'));
-        }
+        /* if(!$this->isApkVersionlatest($vc)){
+            return  new JsonModel(array('success'=>false,'message'=>'Please update your app to latest version available on playstore'));
+        } */
         if($mobileNumber=="")
         {
             return new JsonModel(array('success'=>false,'message'=>'Mobile number missing'));
@@ -769,7 +769,11 @@ class IndexController extends BaseController{
              if($errMsg != ""){
                  return new JsonModel(array('success'=>false,'message'=>$errMsg));
              } */
-             return  new JsonModel(array('success'=>true,'message'=>'login','user_id'=>$user_id,'status'=>2));
+             if(!$this->isApkVersionlatest($vc)){
+                return  new JsonModel(array('success'=>true,'message'=>'Please update your app to latest version available on playstore','user_id'=>$user_id,'status'=>2));
+             }
+             else
+                return  new JsonModel(array('success'=>true,'message'=>'login','user_id'=>$user_id,'status'=>2));
 
          }else{
              $saveData=array('mobile_country_code'=>$countryCode,'mobile'=>$mobileNumber,'role'=>\Admin\Model\User::Individual_role,'status'=>1);
@@ -1627,7 +1631,7 @@ class IndexController extends BaseController{
             return  new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
          }
          if(!$this->isApkVersionlatest($vc)){
-            return  new JsonModel(array('success'=>false,'message'=>'Please update your app to latest version available on playstore to proceed further'));
+            return  new JsonModel(array('success'=>false,'message'=>'Please update your app to latest version available on playstore'));
          }
          if($userId=="")
          {
@@ -1801,7 +1805,7 @@ class IndexController extends BaseController{
             return  new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
          }
          if(!$this->isApkVersionlatest($vc)){
-            return  new JsonModel(array('success'=>false,'message'=>'Please update your app to latest version available on playstore to proceed further'));
+            return  new JsonModel(array('success'=>false,'message'=>'Please update your app to latest version available on playstore'));
          }
          if($userId=="")
          {

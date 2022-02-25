@@ -809,7 +809,7 @@ class IndexController extends BaseController{
              if($errMsg != ""){
                  return new JsonModel(array('success'=>false,'message'=>$errMsg));
              } */
-             return  new JsonModel(array('success'=>true,'message'=>'Verfiy otp','user_id'=>$user_id,'status'=>1));
+             return  new JsonModel(array('success'=>true,'message'=>'','user_id'=>$user_id,'status'=>1));
          }
     }
     public function testSmsAction(){

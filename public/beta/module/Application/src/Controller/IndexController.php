@@ -472,17 +472,20 @@ class IndexController extends BaseController
                                         $notificationTitle = "Welcome as Subscriber";
                                         $smsMessage="Welcome%20to%20Susri%20Tour%20Tales.%0ADownload%20and%20Listen%20to%20the%20tales%20of%20your%20choice.%0A%0ABecome%20a%20sponsor%20and%20earn%20through%20App.%0ASee%20e-mail%20message%20for%20details.";
                                     }else{
-                                        $message="Thank you for your association with STT.\nWish you a happy time with STT.";
+                                        /* $message="Thank you for your association with STT.\nWish you a happy time with STT."; */
+                                        $message = "Thank you for your timely renewal of STT. We wish you happy tours with STT.";
                                         $notificationTitle = "Renewal sucsessful";
                                         $smsMessage="Thank%20you%20for%20your%20continued%20association%20with%20STT.%20%0AWish%20you%20one%20more%20year%20of%20awareness%20and%20enjoyment.";
                                     }
                                 }
                                 elseif($bookingType == \Admin\Model\Bookings::booking_Buy_Passwords){
                                     if($bookingList['bonus_flag']){
-                                        $message = "Congratulations.\nAs you have completed the purchase of first 10 passwords, you are eligible to receive 5 bonus passwords. They are sent to your registered e-mail.";
+                                        $message ="Congratulations.\nAs you have completed the purchase of first ten passwords you are eligible to receive five bonus passwords. They are sent to your registered e-mail and you can also find them in ‘Menu>Password History’ in the App.";
+                                        /* $message = "Congratulations.\nAs you have completed the purchase of first 10 passwords, you are eligible to receive 5 bonus passwords. They are sent to your registered e-mail."; */
                                         $smsMessage = "Congratulations.%0ABy%20purchasing%20ten%20passwords%2C%20you%20have%20become%20eligible%20to%20receive%205%20bonus%20passwords.%20%0A%0AThey%20are%20sent%20to%20your%20registered%20e-mail.";
                                     }else{
-                                        $message="Your " . $bookingList['no_of_users'] . " passwords purchased have been mailed to your registered mail Id.\nThe passwords are required to be re-deemed before one year.\nPassword  used on one device cannot be re-used on other.";
+                                        $message="Your " . $bookingList['no_of_users'] . " passwords purchased have been sent to your registered mail id. You can also find them in ‘Menu>Password History’ in the App. Use them before one year.";
+                                        /* $message="Your " . $bookingList['no_of_users'] . " passwords purchased have been mailed to your registered mail Id.\nThe passwords are required to be re-deemed before one year.\nPassword  used on one device cannot be re-used on other."; */
                                         $smsMessage="Your%20" . $bookingList['no_of_users'] . "%20passwords%20have%20been%20mailed%20to%20your%20registered%20mail%20Id.%0APasswords%20are%20required%20to%20be%20re-deemed%20before%20one%20year.";
                                     }
                                     $notificationTitle = "Passwords purchased successfully";
@@ -816,17 +819,20 @@ class IndexController extends BaseController
                                         $notificationTitle = "Welcome as Subscriber";
                                         $smsMessage="Welcome%20to%20Susri%20Tour%20Tales.%0ADownload%20and%20Listen%20to%20the%20tales%20of%20your%20choice.%0A%0ABecome%20a%20sponsor%20and%20earn%20through%20App.%0ASee%20e-mail%20message%20for%20details.";
                                     }else{
-                                        $message="Thank you for your association with STT.\nWish you a happy time with STT.";
+                                        /* $message="Thank you for your association with STT.\nWish you a happy time with STT."; */
+                                        $message = "Thank you for your timely renewal of STT. We wish you happy tours with STT.";
                                         $notificationTitle = "Renewal sucsessful";
                                         $smsMessage="Thank%20you%20for%20your%20continued%20association%20with%20STT.%20%0AWish%20you%20one%20more%20year%20of%20awareness%20and%20enjoyment.";
                                     }
                                 }
                                 elseif($bookingType == \Admin\Model\Bookings::booking_Buy_Passwords){
                                     if($bookingList['bonus_flag']){
-                                        $message = "Congratulations.\nAs you have completed the purchase of first 10 passwords, you are eligible to receive 5 bonus passwords. They are sent to your registered e-mail.";
+                                        $message ="Congratulations.\nAs you have completed the purchase of first ten passwords you are eligible to receive five bonus passwords. They are sent to your registered e-mail and you can also find them in ‘Menu>Password History’ in the App.";
+                                        /* $message = "Congratulations.\nAs you have completed the purchase of first 10 passwords, you are eligible to receive 5 bonus passwords. They are sent to your registered e-mail."; */
                                         $smsMessage = "Congratulations.%0ABy%20purchasing%20ten%20passwords%2C%20you%20have%20become%20eligible%20to%20receive%205%20bonus%20passwords.%20%0A%0AThey%20are%20sent%20to%20your%20registered%20e-mail.";
                                     }else{
-                                        $message="Your " . $bookingList['no_of_users'] . " passwords purchased have been mailed to your registered mail Id.\nThe passwords are required to be re-deemed before one year.\nPassword  used on one device cannot be re-used on other.";
+                                        $message="Your " . $bookingList['no_of_users'] . " passwords purchased have been sent to your registered mail id. You can also find them in ‘Menu>Password History’ in the App. Use them before one year."; 
+                                        /* $message="Your " . $bookingList['no_of_users'] . " passwords purchased have been mailed to your registered mail Id.\nThe passwords are required to be re-deemed before one year.\nPassword  used on one device cannot be re-used on other."; */
                                         $smsMessage="Your%20" . $bookingList['no_of_users'] . "%20passwords%20have%20been%20mailed%20to%20your%20registered%20mail%20Id.%0APasswords%20are%20required%20to%20be%20re-deemed%20before%20one%20year.";
                                     }
                                     $notificationTitle = "Passwords purchased successfully";

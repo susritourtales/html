@@ -73,7 +73,7 @@ class BaseController extends AbstractActionController
     protected $cityTourSlabDaysTable;
     
     const  token='dG91cmlzbUFwcGxpY2F0aW9u';
-    const apk_version = '1.2.59';
+    const apk_version = '1.2.61';
     public function onDispatch(MvcEvent $e)
     {
 
@@ -482,7 +482,8 @@ class BaseController extends AbstractActionController
 
     public function notifyUser($userDetails){
         if($userDetails['booking_type']==\Admin\Model\Bookings::booking_Sponsorship){
-            $message="Congratulations on converting yourself as a \"Sponsor\".\nWelcome to the Promoting Group of STT.\n\nYou can buy passwords at discounted price and  sell them to interested persons/tourists.\nIt gives you an opportunity to earn simultaneously while serving the tourist.\nPlease go through the e-mail for more details.";
+            $message="Congratulations on registering as Sponsor. You can now buy passwords at discounted price and sell them at profit to the tourists.";
+            /* $message="Congratulations on converting yourself as a \"Sponsor\".\nWelcome to the Promoting Group of STT.\n\nYou can buy passwords at discounted price and  sell them to interested persons/tourists.\nIt gives you an opportunity to earn simultaneously while serving the tourist.\nPlease go through the e-mail for more details."; */
             $nTitle = "Welcome as Sponsor";
         }
         elseif($userDetails['booking_type']==\Admin\Model\Bookings::booking_Subscription|| $userDetails['booking_type']==\Admin\Model\Bookings::booking_Sponsored_Subscription){

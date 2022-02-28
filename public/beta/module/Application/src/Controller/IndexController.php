@@ -303,7 +303,7 @@ class IndexController extends BaseController
                                     $subedt = $udata['subscription_end_date'];
                                 }
                                 // if subscriber/sponsor - start
-                                $userDetails=$this->userTable()->getFields(array('user_id'=>$userId),array('user_id','user_name','email','mobile','mobile_country_code','role','subscription_count','subscription_start_date','subscription_end_date','res_state','address','status','company_role','bonus_flag', 'discount_percentage','passwords_count'));
+                                $userDetails=$this->userTable()->getFields(array('user_id'=>$userId),array('user_id','user_name','email','mobile','mobile_country_code','role','subscription_count','subscription_start_date','subscription_end_date','res_state','address','status','company_role','bonus_flag', 'discount_percentage','passwords_count', 'sponsor_type'));
 
                                 $bookingTourDetails=$this->bookingtourdetailsTable()->getFields(array('booking_id'=>$bookingId),  array('discount_percentage','tour_date','no_of_days','no_of_users','expiry_date','sponsered_users','price','booking_tour_id', 'created_at'));
                                 $pdata['bonus_flag'] = 0; //false;
@@ -428,6 +428,7 @@ class IndexController extends BaseController
                                 $bookingList['oriprice'] = $totalOriPrice; //  * $GSTD;
                                 $bookingList['bonus_flag'] = $pdata['bonus_flag']; //$userDetails['bonus_flag'];
                                 $bookingList['subscription_count'] = $userDetails['subscription_count'];
+                                $bookingList['sponsor_type'] = $userDetails['sponsor_type'];
                                 if($userDetails['email'])
                                 {
                                     // added by Manjary - start - remove on live - start
@@ -536,7 +537,8 @@ class IndexController extends BaseController
                                 'ref_mobile'=>$refDetails[0]['ref_mobile'],
                                 'company_name'=>$bookingList['company_role'],
                                 'role'=>$bookingList['role'],
-                                'subscription_end_date'=>$bookingList['subs_end_date']
+                                'subscription_end_date'=>$bookingList['subs_end_date'],
+                                'sponsor_type'=>$bookingList['sponsor_type']
                                 )
                             ));
                         }
@@ -610,7 +612,7 @@ class IndexController extends BaseController
                                         $this->userTable()->updateUser($update,$where);
                                     }
                                     // if subscriber/sponsor - start
-                                    $userDetails=$this->userTable()->getFields(array('user_id'=>$userId),array('user_id','user_name','email','mobile','mobile_country_code','role','subscription_count','subscription_start_date','subscription_end_date','res_state','address','status','company_role','bonus_flag', 'discount_percentage','passwords_count'));                                    
+                                    $userDetails=$this->userTable()->getFields(array('user_id'=>$userId),array('user_id','user_name','email','mobile','mobile_country_code','role','subscription_count','subscription_start_date','subscription_end_date','res_state','address','status','company_role','bonus_flag', 'discount_percentage','passwords_count'. 'sponsor_type'));                                    
                                     $bookingTourDetails=$this->bookingtourdetailsTable()->getFields(array('booking_id'=>$bookingId),  array('discount_percentage','tour_date','no_of_days','no_of_users','expiry_date','sponsered_users','price','booking_tour_id', 'created_at'));
                                     $pdata['bonus_flag'] = false;
                                     if($bookingType == \Admin\Model\Bookings::booking_Buy_Passwords){
@@ -774,6 +776,7 @@ class IndexController extends BaseController
                                     $bookingList['oriprice'] = $totalOriPrice; // * $GSTD;
                                     $bookingList['bonus_flag'] = $pdata['bonus_flag']; //$userDetails['bonus_flag'];
                                     $bookingList['subscription_count'] = $userDetails['subscription_count'];
+                                    $bookingList['sponsor_type'] = $userDetails['sponsor_type'];
                                     if($userDetails['email'])
                                     {
                                         // added by Manjary - start - remove on live - start
@@ -880,7 +883,8 @@ class IndexController extends BaseController
                                 'ref_mobile'=>$refDetails[0]['ref_mobile'],
                                 'company_name'=>$bookingList['company_role'],
                                 'role'=>$bookingList['role'],
-                                'subscription_end_date'=>$bookingList['subs_end_date']
+                                'subscription_end_date'=>$bookingList['subs_end_date'],
+                                'sponsor_type'=>$bookingList['sponsor_type']
                                 )
                             ));
                         }

@@ -4748,23 +4748,4 @@ class IndexController extends BaseController{
         $this->sendPasswordSms("917330781638",array('text'=>$smsmsg));
         return new JsonModel(array('success'=>true, 'message'=>'message sent'));
     }
-
-    public function checkMailAction(){
-        $stream_opts = [
-            "ssl" => [
-                "verify_peer"=>false,
-                "verify_peer_name"=>false,
-            ]
-        ];
-        $bookingList['passwords']=array('pwd1','pwd2');
-        $bookingId = 'test';
-        $html = file_get_contents($this->getBaseUrl() . '/application/booking-pdf?bid=' . $bookingId, false, stream_context_create($stream_opts));
-        //$html = file_get_contents($this->getBaseUrl() . '/application/booking-pdf?suid=0&bid=' . $bookingId, true);
-        $mpdf = new mPDF(['tempDir' => getcwd()."/public/data/temp"]);
-        $mpdf->SetDisplayMode("fullpage");
-        $mpdf->WriteHTML($html);
-        $mpdf->Output(getcwd()."/public/data/susri_booking_".$bookingId.".pdf", "F"); 
-        $bookingList['heading'] = "STT Passwords Purchase Details";
-        $this->emailSTTUserWithAttachment('dt.manjary@gmail.com', 'checking mail delivery', 'mail-stt-user', $bookingList,getcwd()."/public/data/susri_booking_".$bookingId.".pdf"); 
-    }
 }

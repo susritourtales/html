@@ -4751,7 +4751,7 @@ class IndexController extends BaseController{
 
     public function checkMailAction(){
         $bookingList['passwords']=array('pwd1','pwd2');
-        $bookingId = '0000';
+        $bookingId = 'test';
         $html = file_get_contents($this->getBaseUrl() . '/application/booking-pdf?suid=0&bid=' . $bookingId, true);// - removed by Manjary to make local work - use on live
         $mpdf = new mPDF(['tempDir' => getcwd()."/public/data/temp"]);
         $mpdf->SetDisplayMode("fullpage");

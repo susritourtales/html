@@ -29,15 +29,6 @@ return [
                         'action'     => 'paymentResponse',
                     ],
                 ],
-            ],'check-mail' => [
-                'type' => Segment::class,
-                'options' => [
-                    'route'    => '/application/check-mail',
-                    'defaults' => [
-                        'controller' => Controller\IndexController::class,
-                        'action'     => 'checkMail',
-                    ],
-                ],
             ],'application-booking-status' => [
                 'type' => Segment::class,
                 'options' => [

@@ -14,6 +14,8 @@ use Laminas\Db\Sql\Predicate;
 
 use Laminas\Db\TableGateway\TableGateway;
 
+use function PHPUnit\Framework\isNull;
+
 class UserTable extends  BaseTable
 {
     protected $tableGateway;
@@ -197,7 +199,7 @@ class UserTable extends  BaseTable
                          print_r($user);
                             exit;*/
                     $decryptedPassword = $aes->decrypt($user[0]["password"], $user[0]["hash"]);
-
+                    //print_r($decryptedPassword);exit;
                     if ($decryptedPassword == $password) {
                         return $user[0];
                     } else {
@@ -305,6 +307,7 @@ class UserTable extends  BaseTable
                 ->where($where);
 
             $field = array();
+            //echo $sql->getSqlStringForSqlObject($query);exit;
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             foreach ($resultSet as $row) {
                 $field = $row;
@@ -518,6 +521,7 @@ class UserTable extends  BaseTable
         try{
             return $this->update($data,$where);
         }catch (\Exception $e){
+            //print_r($e->getMessage());exit;
             return false;
         }
     }
@@ -535,7 +539,7 @@ class UserTable extends  BaseTable
                 return array("success" => false);
             }
         }catch(\Exception $e){
-                     print_r($e->getMessage());exit;
+            //print_r($e->getMessage());exit;
             return array("success" => false);
         }
     }
@@ -651,7 +655,7 @@ class UserTable extends  BaseTable
                 ->join(array('bt'=>'booking_tour_details'),new \Laminas\Db\Sql\Expression('bt.booking_id=b.booking_id and (b.booking_type='.\Admin\Model\Bookings::booking_by_User . ' or (b.booking_type='.\Admin\Model\Bookings::booking_Subscription . ' and b.payment_status=1) or b.booking_type='.\Admin\Model\Bookings::booking_Sponsored_Subscription . ')'))
             ->group(array('b.user_id'));
             $query = $sql->select()
-                ->columns(array("user_id","mobile","email","res_state","subscription_start_date",
+                ->columns(array("user_id","mobile","email","res_state","subscription_start_date","subscription_end_date","role",
                     "mobile_country_code","user_name","subscription_type"))
                 ->from(array('u' => 'users'))
                 ->join(array('b'=>$bookingList),'b.user_id=u.user_id',array('booking_count','booking_price'))
@@ -706,7 +710,7 @@ class UserTable extends  BaseTable
                 ->group(array('b.user_id'));
 
             $query = $sql->select()
-                ->columns(array("user_id","mobile","email","res_state","subscription_start_date",
+                ->columns(array("user_id","mobile","email","res_state","subscription_start_date","subscription_end_date","role",
                     "mobile_country_code","user_name","subscription_type"))
                 ->from(array('u' => 'users'))
                 ->join(array('b'=>$bookingList),'b.user_id=u.user_id')
@@ -750,12 +754,17 @@ class UserTable extends  BaseTable
             }
             if(array_key_exists('bookings_count',$data))
             {
-                $where->and->like("b.booking_count",'%'.$data['bookings_count']."%");
+                //$where->and->like("b.booking_count",'%'.$data['bookings_count']."%"); 
+                $where->nest()
+                ->like("b.booking_count",'%'.$data['bookings_count']."%")
+                ->or
+                ->isNull("b.booking_count")
+                ->unnest();
             }
             if(array_key_exists('booking_total_payment',$data))
             {
                 $where->and->like("b.booking_price",'%'.$data['booking_total_payment']."%");
-            }
+            } 
 
             $order=array();
             if(array_key_exists('user_name_order',$data))
@@ -826,7 +835,7 @@ class UserTable extends  BaseTable
                 ->join(array('pc'=>'password'),new \Laminas\Db\Sql\Expression('pc.booking_id=bo.booking_id and pc.password_type=0 and bo.booking_type='. \Admin\Model\Bookings::booking_Buy_Passwords . ' and bo.payment_status=' . \Admin\Model\Payments::payment_success),array('ptcount'=>new \Laminas\Db\Sql\Expression('COUNT(`pc`.`id`)')),'left')
                 ->join(array('b'=>$bookingList),'b.user_id=u.user_id',array('booking_count','booking_price'),'left')
                 ->join(array('r'=>'refer'), 'r.user_id=u.user_id',array('ref_by','ref_mobile'),'left')
-               // ->join(array('r'=>$redeemed),'b.user_id=u.user_id',array('redeemed_count'))
+               /* // ->join(array('r'=>$redeemed),'b.user_id=u.user_id',array('redeemed_count')) */
                 ->where($where)
                 ->limit($data['limit'])
                 ->offset($data['offset'])
@@ -1005,6 +1014,319 @@ class UserTable extends  BaseTable
         }
     }
 
+    public function getPromoterProfessionalSummary($userId){
+        try{
+            $sql = $this->getSql();
+            $where=new Where();
+            $where->equalTo('u.user_id',$userId);
+            
+            $promoter=array();
+            $spqry = $sql->select()
+                ->columns(array('sponsors_successful'=>new \Laminas\Db\Sql\Expression('COUNT(`r`.`id`)')))
+                ->from(array('r' => 'refer'))
+                ->where(array('r.ref_id'=> $userId, 'r.sponsor_status'=> \Admin\Model\Refer::sponsor_successful));
+                
+            // echo $sql->getSqlStringForSqlObject($spqry);exit;
+            $spres = $sql->prepareStatementForSqlObject($spqry)->execute();
+            $spresArr = array();
+            foreach($spres as $r){
+                $spresArr[] = $r;
+            }
+            
+            $promoter['sponsors_successful'] = $spresArr[0]['sponsors_successful'];
+            
+            $tpqry = $sql->select()
+                ->columns(array('sponsors_terminated'=>new \Laminas\Db\Sql\Expression('COUNT(`r`.`id`)')))
+                ->from(array('r' => 'refer'))
+                ->where(array('r.ref_id'=> $userId, 'r.sponsor_status'=> \Admin\Model\Refer::sponsor_terminated));
+            $tpres = $sql->prepareStatementForSqlObject($tpqry)->execute();
+            $tpresArr = array();
+            foreach($tpres as $r){
+                $tpresArr[] = $r;
+            }
+            $promoter['sponsors_terminated'] = $tpresArr[0]['sponsors_terminated'];
+
+            $apqry = $sql->select()
+                ->columns(array('sponsors_active'=>new \Laminas\Db\Sql\Expression('COUNT(`r`.`id`)')))
+                ->from(array('r' => 'refer'))
+                ->where(array('r.ref_id'=> $userId, 'r.sponsor_status'=> \Admin\Model\Refer::sponsor_active));
+            //echo $sql->getSqlStringForSqlObject($apqry);exit;
+            $apres = $sql->prepareStatementForSqlObject($apqry)->execute();
+            $apresArr = array();
+            foreach($apres as $r){
+                $apresArr[] = $r;
+            }
+            $promoter['sponsors_active'] = $apresArr[0]['sponsors_active'];
+
+            $pwdqry = $sql->select()
+                ->columns(array('total_passwords'=>new \Laminas\Db\Sql\Expression('SUM(`r`.`pwds_purchased`)')))
+                ->from(array('r' => 'refer'))
+                ->where(array('r.ref_id'=> $userId));
+            // echo $sql->getSqlStringForSqlObject($pwdqry);exit;
+            $pwdres = $sql->prepareStatementForSqlObject($pwdqry)->execute();
+            $pwdresArr = array();
+            foreach($pwdres as $r){
+                $pwdresArr[] = $r;
+            }
+            $promoter['total_passwords'] = $pwdresArr[0]['total_passwords'] == null ? 0 : $pwdresArr[0]['total_passwords'];
+
+            $adqry = $sql->select()
+                ->columns(array('total_due'=>new \Laminas\Db\Sql\Expression('SUM(`pt`.`amount`)')))
+                ->from(array('pt' => 'promoter_transactions'))
+                ->where(array('pt.promoter_id'=> $userId, 'pt.transaction_type'=>\Admin\Model\PromoterTransactions::transaction_due));
+            $adres = $sql->prepareStatementForSqlObject($adqry)->execute();
+            $adresArr = array();
+            foreach($adres as $r){
+                $adresArr[] = $r;
+            }
+
+            $apdqry = $sql->select()
+                ->columns(array('total_paid'=>new \Laminas\Db\Sql\Expression('SUM(`pt`.`amount`)')))
+                ->from(array('pt' => 'promoter_transactions'))
+                ->where(array('pt.promoter_id'=> $userId, 'pt.transaction_type'=>\Admin\Model\PromoterTransactions::transaction_paid));
+            $apdres = $sql->prepareStatementForSqlObject($apdqry)->execute();
+            $apdresArr = array();
+            foreach($apdres as $r){
+                $apdresArr[] = $r;
+            }
+            $promoter['amount_due'] = number_format((double)$adresArr[0]['total_due'] - $apdresArr[0]['total_paid'], 2, '.', '');
+            $promoter['amount_paid'] = number_format((double)is_null($apdresArr[0]['total_paid']) ? 0 : $apdresArr[0]['total_paid'], 2, '.', '');
+            return $promoter;
+        }catch (\Exception $e)
+        {
+            /* print_r($e->getMessage());
+            exit; */
+            return array();
+        }
+    }
+
+    public function getAllPromotersAdmin($data=array('limit'=>10,'offset'=>0)){
+        try{
+            $sql = $this->getSql();
+            $where=new Where();
+            $where->nest()
+                ->equalTo("u.is_promoter",\Admin\Model\User::Is_Promoter)
+                ->or
+                ->equalTo("u.is_promoter",\Admin\Model\User::Is_terminated_Promoter)
+                ->or
+                ->equalTo("u.is_promoter",\Admin\Model\User::Is_resigned_Promoter)
+                ->unnest();
+            /* $where->equalTo('u.is_promoter',\Admin\Model\User::Is_Promoter);
+            $where->or->equalTo('u.is_promoter',\Admin\Model\User::Is_terminated_Promoter);  */
+            $order=array();
+            
+            if(array_key_exists('user_name',$data))
+            {
+                $where->and->like("u.user_name",'%'.$data['user_name']."%");
+            }
+            if(array_key_exists('mobile',$data))
+            {
+                $where->and->like("u.mobile",'%'.$data['mobile']."%");
+            }
+
+            if(array_key_exists('user_name_order',$data))
+            {
+                if($data['user_name_order']==1)
+                {
+                    $order[]='u.user_name asc';
+                }else if($data['user_name_order']==-1)
+                {
+                    $order[]='u.user_name desc';
+                }
+            }
+            if(array_key_exists('mobile_order',$data))
+            {
+                if($data['mobile_order']==1)
+                {
+                    $order[]='u.mobile asc';
+                }else if($data['mobile_order']==-1)
+                {
+                    $order[]='u.mobile desc';
+                }
+            }
+
+            if(!count($order))
+            {
+                $order='u.created_at desc';
+            }
+            
+            $query = $sql->select()
+                ->columns(array("user_id","user_name","mobile","mobile_country_code","subscription_end_date", "is_promoter", "email"))
+                ->from(array('u' => 'users'))
+                ->join(array('pd'=>'promoter_details'), 'pd.user_id=u.user_id',array("state_city" ,"permanent_addr",'bank_name', 'ifsc_code', 'bank_ac_no'),'left')
+                ->where($where)
+                ->limit($data['limit'])
+                ->offset($data['offset'])
+                ->order($order);
+            // echo $sql->getSqlStringForSqlObject($query);exit;
+
+            $result = $sql->prepareStatementForSqlObject($query)->execute();
+            $promoters=array();
+            foreach ($result as $row) {
+                $spqry = $sql->select()
+                    ->columns(array('sponsors_successful'=>new \Laminas\Db\Sql\Expression('COUNT(`r`.`id`)')))
+                    ->from(array('r' => 'refer'))
+                    ->where(array('r.ref_id'=> $row['user_id'], 'r.sponsor_status'=> \Admin\Model\Refer::sponsor_successful));
+                $spres = $sql->prepareStatementForSqlObject($spqry)->execute();
+                $spresArr = array();
+                foreach($spres as $r){
+                    $spresArr[] = $r;
+                }
+                $row['sponsors_successful'] = $spresArr[0]['sponsors_successful'];
+                
+                $tpqry = $sql->select()
+                    ->columns(array('sponsors_terminated'=>new \Laminas\Db\Sql\Expression('COUNT(`r`.`id`)')))
+                    ->from(array('r' => 'refer'))
+                    ->where(array('r.ref_id'=> $row['user_id'], 'r.sponsor_status'=> \Admin\Model\Refer::sponsor_terminated));
+                $tpres = $sql->prepareStatementForSqlObject($tpqry)->execute();
+                $tpresArr = array();
+                foreach($tpres as $r){
+                    $tpresArr[] = $r;
+                }
+                $row['sponsors_terminated'] = $tpresArr[0]['sponsors_terminated'];
+
+                $apqry = $sql->select()
+                    ->columns(array('sponsors_active'=>new \Laminas\Db\Sql\Expression('COUNT(`r`.`id`)')))
+                    ->from(array('r' => 'refer'))
+                    ->where(array('r.ref_id'=> $row['user_id'], 'r.sponsor_status'=> \Admin\Model\Refer::sponsor_active));
+                //echo $sql->getSqlStringForSqlObject($apqry);exit;
+                $apres = $sql->prepareStatementForSqlObject($apqry)->execute();
+                $apresArr = array();
+                foreach($apres as $r){
+                    $apresArr[] = $r;
+                }
+                $row['sponsors_active'] = $apresArr[0]['sponsors_active'];
+
+                $pwdqry = $sql->select()
+                    ->columns(array('total_passwords'=>new \Laminas\Db\Sql\Expression('SUM(`r`.`pwds_purchased`)')))
+                    ->from(array('r' => 'refer'))
+                    ->where(array('r.ref_id'=> $row['user_id']));
+                // echo $sql->getSqlStringForSqlObject($pwdqry);exit;
+                $pwdres = $sql->prepareStatementForSqlObject($pwdqry)->execute();
+                $pwdresArr = array();
+                foreach($pwdres as $r){
+                    $pwdresArr[] = $r;
+                }
+                $row['total_passwords'] = $pwdresArr[0]['total_passwords'];
+
+                $adqry = $sql->select()
+                    ->columns(array('total_due'=>new \Laminas\Db\Sql\Expression('SUM(`pt`.`amount`)')))
+                    ->from(array('pt' => 'promoter_transactions'))
+                    ->where(array('pt.promoter_id'=> $row['user_id'], 'pt.transaction_type'=>\Admin\Model\PromoterTransactions::transaction_due));
+                //echo $sql->getSqlStringForSqlObject($adqry);exit;
+                $adres = $sql->prepareStatementForSqlObject($adqry)->execute();
+                $adresArr = array();
+                foreach($adres as $r){
+                    $adresArr[] = $r;
+                }
+
+                $apdqry = $sql->select()
+                    ->columns(array('total_paid'=>new \Laminas\Db\Sql\Expression('SUM(`pt`.`amount`)')))
+                    ->from(array('pt' => 'promoter_transactions'))
+                    ->where(array('pt.promoter_id'=> $row['user_id'], 'pt.transaction_type'=>\Admin\Model\PromoterTransactions::transaction_paid));
+                //echo $sql->getSqlStringForSqlObject($apdqry);exit;
+                $apdres = $sql->prepareStatementForSqlObject($apdqry)->execute();
+                $apdresArr = array();
+                foreach($apdres as $r){
+                    $apdresArr[] = $r;
+                }
+                
+                $row['amount_due'] = $adresArr[0]['total_due'] ?? 0; 
+                $row['amount_paid'] = $apdresArr[0]['total_paid'] ?? 0;
+                $promoters[] = $row;
+            }
+            if(array_key_exists('sponsors_successful_order',$data)){
+                if($data['sponsors_successful_order']==1)
+                {
+                    $col = array_column( $promoters, "sponsors_successful" );
+                    array_multisort($col, SORT_ASC, $promoters );
+                }else if($data['sponsors_successful_order']==-1){
+                    $col = array_column( $promoters, "sponsors_successful" );
+                    array_multisort($col, SORT_DESC, $promoters );
+                }
+            }
+            if(array_key_exists('sponsors_terminated_order',$data)){
+                if($data['sponsors_terminated_order']==1)
+                {
+                    $col = array_column( $promoters, "sponsors_terminated" );
+                    array_multisort($col, SORT_ASC, $promoters );
+                }else if($data['sponsors_terminated_order']==-1){
+                    $col = array_column( $promoters, "sponsors_terminated" );
+                    array_multisort($col, SORT_DESC, $promoters );
+                }
+            }
+            if(array_key_exists('sponsors_active_order',$data)){
+                if($data['sponsors_active_order']==1)
+                {
+                    $col = array_column( $promoters, "sponsors_active" );
+                    array_multisort($col, SORT_ASC, $promoters );
+                }else if($data['sponsors_active_order']==-1){
+                    $col = array_column( $promoters, "sponsors_active" );
+                    array_multisort($col, SORT_DESC, $promoters );
+                }
+            }
+            if(array_key_exists('amount_due_order',$data)){
+                if($data['amount_due_order']==1)
+                {
+                    $col = array_column( $promoters, "amount_due" );
+                    array_multisort($col, SORT_ASC, $promoters );
+                }else if($data['amount_due_order']==-1){
+                    $col = array_column( $promoters, "amount_due" );
+                    array_multisort($col, SORT_DESC, $promoters );
+                }
+            }
+            if(array_key_exists('amount_paid_order',$data)){
+                if($data['amount_paid_order']==1)
+                {
+                    $col = array_column( $promoters, "amount_paid" );
+                    array_multisort($col, SORT_ASC, $promoters );
+                }else if($data['amount_paid_order']==-1){
+                    $col = array_column( $promoters, "amount_paid" );
+                    array_multisort($col, SORT_DESC, $promoters );
+                }
+            }
+            return $promoters;
+        }catch (\Exception $e)
+        {
+            print_r($e->getMessage());
+            exit;
+            return array();
+        }
+    }
+
+    public function getAllPromotersAdminCount(){
+        try{
+            $sql = $this->getSql();
+            $where=new Where();
+            $where->equalTo('u.is_promoter',\Admin\Model\User::Is_Promoter);            
+            $order=array();
+                    
+            if(!count($order))
+            {
+                $order='u.created_at desc';
+            }
+
+            $query = $sql->select()
+                    ->columns(array('promoters_count'=>new \Laminas\Db\Sql\Expression('COUNT(`u`.`user_id`)')))
+                    ->from(array('u' => 'users'))
+                    ->where($where)
+                    ->order($order);
+                      
+            //echo $sql->getSqlStringForSqlObject($query);exit;
+            $result = $sql->prepareStatementForSqlObject($query)->execute();
+            $promotersCount = array();
+            foreach ($result as $row) {
+                $promotersCount[] = $row;
+            }
+            return $promotersCount;
+        }catch (\Exception $e)
+        {
+            print_r($e->getMessage());
+            exit;
+            // return array();
+        }
+    }
+
     public function getAllSponsorsAdminCount_old($data=array()){
         try{
             $sql = $this->getSql();
@@ -1111,7 +1433,7 @@ class UserTable extends  BaseTable
             $users = array();
             $where=new Where();
             //$where->equalTo('u.user_id', '241');
-            $where->lessThan(new \Laminas\Db\Sql\Expression('DATEDIFF(`u`.`subscription_end_date`,NOW())'),  5); //31);
+            $where->lessThan(new \Laminas\Db\Sql\Expression('DATEDIFF(`u`.`subscription_end_date`,NOW())'), 5); //31);
             $where->and->greaterThan(new \Laminas\Db\Sql\Expression('DATEDIFF(`u`.`subscription_end_date`,NOW())'), 0);
             $where->and->equalTo('u.mobile_country_code', '91');
             $query = $sql->select()

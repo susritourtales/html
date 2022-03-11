@@ -1,0 +1,44 @@
+<div class="sidebar">
+    <div class="side-panel" id="collapsibleNavbar">
+        <?php echo $this->partial('/application/index/left-menu', array(
+            'activeTab'=>\Application\Constants\Constants::Promoter_Parameters
+        )); ?>
+    </div>
+</div>
+<link rel="stylesheet" href="<?php echo $this->basePath()?>/css/vendor/sol.css">
+<link rel="stylesheet" href="<?php echo $this->basePath()?>/css/main.css">
+<script src="<?php echo $this->basePath(); ?>/js/admin/edit-promoter-parameters.js?v=1.2"></script>
+
+<div class="wrapper">
+    <div class="main-panel ">
+        <?php echo $this->partial("/application/index/app-header"); ?>
+
+        <div class="main-container pl-3 p-lg-4">
+            <div class="main-heading mb-3"><a href="<?php echo $this->basePath().'/a_dMin/promoter-parameters'?>"><i class="fa fa-arrow-left mr-2"></i></a> Edit Promoter Parameters </div>
+            <div class="row adding-form">
+                <div class="col-12">
+                    <div class="col-10 mt-3"><label class="text-black-50 text-capitalize">Pwd Ceiling</label>
+                        <input type="text" class="form-control" id="pwd_ceiling" value="<?php echo $pparameters['pwd_ceiling']; ?>"/>
+                    </div>
+                    <!-- <div class="col-10 mt-3"><label class="text-black-50 text-capitalize">Min Pwds to pay</label>
+                        <input type="text" class="form-control" id="min_pay_pwds" value="<?php //echo $pparameters['min_pay_pwds']; ?>"/>
+                    </div> -->
+                    <div class="col-10 mt-3"><label class="text-black-50 text-capitalize">Amt per Pwd</label>
+                        <input type="text" class="form-control" id="amt_per_pwd" value="<?php echo $pparameters['amt_per_pwd']; ?>"/>
+                    </div>
+                    <!-- <div class="col-10 mt-3"><label class="text-black-50 text-capitalize">Redeem cieling</label>
+                        <input type="text" class="form-control" id="redeem_ceiling" value="<?php echo $pparameters['redeem_ceiling']; ?>"/>
+                    </div> -->
+                    <div class="col-10 mt-3"><label class="text-black-50 text-capitalize">Pay after pwds</label>
+                        <input type="text" class="form-control" id="pay_after_pwds" value="<?php echo $pparameters['pay_after_pwds']; ?>"/>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" id="ppid" value="<?php echo $pparameters['id']; ?>">
+
+            <div class="mt-3">
+                <div class="col-sm-9 text-left"> <button type="button" class="btn submit-btn" id="updateParameters">Submit</button></div>
+            </div>
+        </div>
+    </div>
+</div>

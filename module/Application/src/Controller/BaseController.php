@@ -33,6 +33,10 @@ class BaseController extends AbstractActionController
     protected $pricingTable;   // -- Added my Manjary
     protected $sponsorTypesTable;   // -- Added my Manjary
     protected $sponsorPhotoTable;   // -- Added my Manjary
+    protected $promoterDetailsTable;   // -- Added my Manjary
+    protected $promoterTransactionsTable;   // -- Added my Manjary
+    protected $promoterPaymentsTable;   // -- Added my Manjary
+    protected $promoterParametersTable;   // -- Added my Manjary
     protected $upcomingTable;   // -- Added my Manjary
     protected $referTable;   // -- Added my Manjary
     protected $sscTable;   // -- Added my Manjary
@@ -68,7 +72,8 @@ class BaseController extends AbstractActionController
     protected $bannersTable;
     protected $cityTourSlabDaysTable;
     
-    const  token='dG91cmlzbUFwcGxpY2F0aW9u';
+    const token='dG91cmlzbUFwcGxpY2F0aW9u';
+    const apk_version = '1.2.63';
     public function onDispatch(MvcEvent $e)
     {
 
@@ -107,6 +112,15 @@ class BaseController extends AbstractActionController
         }
 
          return true;
+    }
+
+    public  function isApkVersionlatest($vc)
+    {
+        if(!($vc == \Application\Controller\BaseController::apk_version))
+        {
+             return false;
+        }
+        return true;
     }
 
      public function filesUrl()
@@ -468,7 +482,8 @@ class BaseController extends AbstractActionController
 
     public function notifyUser($userDetails){
         if($userDetails['booking_type']==\Admin\Model\Bookings::booking_Sponsorship){
-            $message="Congratulations on converting yourself as a \"Sponsor\".\nWelcome to the Promoting Group of STT.\n\nYou can buy passwords at discounted price and  sell them to interested persons/tourists.\nIt gives you an opportunity to earn simultaneously while serving the tourist.\nPlease go through the e-mail for more details.";
+            $message="Congratulations on registering as Sponsor. You can now buy passwords at discounted price and sell them at profit to the tourists.";
+            /* $message="Congratulations on converting yourself as a \"Sponsor\".\nWelcome to the Promoting Group of STT.\n\nYou can buy passwords at discounted price and  sell them to interested persons/tourists.\nIt gives you an opportunity to earn simultaneously while serving the tourist.\nPlease go through the e-mail for more details."; */
             $nTitle = "Welcome as Sponsor";
         }
         elseif($userDetails['booking_type']==\Admin\Model\Bookings::booking_Subscription|| $userDetails['booking_type']==\Admin\Model\Bookings::booking_Sponsored_Subscription){
@@ -636,11 +651,11 @@ class BaseController extends AbstractActionController
                 $planEndDate = date('Y-m-d',strtotime($pricingDetails['end_date']));
                 $planStartDate = date('Y-m-d',strtotime($pricingDetails['start_date']));
                 //if((!($planStartDate < $today && $planEndDate > $today)) || ($user['role']==\Admin\Model\User::Subscriber_role || $user['role']==\Admin\Model\User::Sponsor_role)){
-                
-                 /**************** commented to obtain renewal amount from promotional plan (instead of base plan) - START *******************/
-            /*    if((!($planStartDate <= $today && $planEndDate >= $today)) || ($user['subscription_count'] != 0 && $user['role']!=\Admin\Model\User::Individual_role)){   */
-                /**************** commented to obtain renewal amount from promotional plan (instead of base plan) - END *******************/
-                if((!($planStartDate <= $today && $planEndDate >= $today))){
+
+            /**************** commented to obtain renewal amount from promotional plan (instead of base plan) - START *******************/
+                  // if((!($planStartDate <= $today && $planEndDate >= $today)) || ($user['subscription_count'] != 0 && $user['role']!=\Admin\Model\User::Individual_role)){
+             /**************** commented to obtain renewal amount from promotional plan (instead of base plan) - END *******************/
+                    if((!($planStartDate <= $today && $planEndDate >= $today))){
                     //$pricingDetails = $this->pricingTable()->getPricingDetails(array('plantype'=>'0'));
                     if($cc == "91")
                         $pricingDetails = $this->pricingTable()->getPricingDetails(array('id'=>'1'));
@@ -649,7 +664,8 @@ class BaseController extends AbstractActionController
 
                     $pricingDetails['oriprice'] = number_format((double)$pricingDetails['price'], 2, '.', '');
                     //$pricingDetails['oriprice'] = $pricingDetails['oriprice'] * (1+($subscriptionDetails['GST']/100));
-                }
+                } 
+           
             }
         }
 
@@ -955,6 +971,85 @@ class BaseController extends AbstractActionController
             }
 
             return $this->sponsorPhotoTable;
+
+        } catch (\Exception $e) {
+
+            return null;
+        } catch (NotFoundExceptionInterface $e) {
+            return null;
+        } catch (ContainerExceptionInterface $e) {
+            return null;
+        }
+    }
+
+    public function promoterDetailsTable()     // -- Added my Manjary
+    {
+        try {
+
+            if ($this->promoterDetailsTable == null) {
+                $this->promoterDetailsTable = $this->getEvent()->getApplication()->getServiceManager()->get("Admin/Model/PromoterDetailsTable");
+            }
+
+            return $this->promoterDetailsTable;
+
+        } catch (\Exception $e) {
+
+            return null;
+        } catch (NotFoundExceptionInterface $e) {
+            return null;
+        } catch (ContainerExceptionInterface $e) {
+            return null;
+        }
+    }
+
+    public function promoterTransactionsTable()     // -- Added my Manjary
+    {
+        try {
+            if ($this->promoterTransactionsTable == null) {
+                $this->promoterTransactionsTable = $this->getEvent()->getApplication()->getServiceManager()->get("Admin/Model/PromoterTransactionsTable");
+            }
+
+            return $this->promoterTransactionsTable;
+
+        } catch (\Exception $e) {
+
+            return null;
+        } catch (NotFoundExceptionInterface $e) {
+            return null;
+        } catch (ContainerExceptionInterface $e) {
+            return null;
+        }
+    }
+
+    public function promoterPaymentsTable()     // -- Added my Manjary
+    {
+        try {
+
+            if ($this->promoterPaymentsTable == null) {
+                $this->promoterPaymentsTable = $this->getEvent()->getApplication()->getServiceManager()->get("Admin/Model/PromoterPaymentsTable");
+            }
+
+            return $this->promoterPaymentsTable;
+
+        } catch (\Exception $e) {
+
+            return null;
+        } catch (NotFoundExceptionInterface $e) {
+            return null;
+        } catch (ContainerExceptionInterface $e) {
+            return null;
+        }
+    }
+
+    public function promoterParametersTable()     // -- Added my Manjary
+    {
+        try {
+
+            if ($this->promoterParametersTable == null) {
+                $this->promoterParametersTable = $this->getEvent()->getApplication()->getServiceManager()->get("Admin/Model/PromoterParametersTable");
+            }
+
+            return $this->promoterParametersTable;
 
         } catch (\Exception $e) {
 
@@ -1482,7 +1577,7 @@ class BaseController extends AbstractActionController
         
     public function logRequest($logString){
         $mY = date("m-Y");
-        $fullPath = "/var/www/html/logs/httplogs/httpRequests-$mY.log";
+        $fullPath = "/var/www/html/public/beta/logs/httplogs/httpRequests-$mY.log";
         $timestamp = "\n\n". date("d-m-Y H:i:s") . " >> \n";
         $myfile = file_put_contents($fullPath, $timestamp. $logString.PHP_EOL , FILE_APPEND | LOCK_EX);
         /* print_r(error_get_last());

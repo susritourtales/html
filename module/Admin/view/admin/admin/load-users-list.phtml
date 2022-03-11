@@ -28,8 +28,21 @@
             $i=$offset;
         }
 
-        foreach ($usersList as $user) { ?>
-            <tr class="position-relative" data-id="<?php echo base64_encode("userDetails=".$user['user_id']); ?>">
+        foreach ($usersList as $user) { 
+            $setColor = "bg-info text-white";
+            if(!is_null($user['subscription_end_date']) && $user['subscription_end_date'] != "0000-00-00"){
+                $today = date('Y-m-d');
+                if($user['subscription_end_date'] < $today)
+                    $setColor = "bg-danger text-white";
+                else{
+                    if((int)$user['role'] == \Admin\Model\User::Individual_role)
+                        $setColor = "bg-info text-white";
+                    else
+                        $setColor = "bg-success text-white";
+                }
+
+            }?>
+            <tr class="position-relative <?php echo $setColor; ?>" data-id="<?php echo base64_encode("userDetails=".$user['user_id']); ?>">
                 <td><?php echo $i+1; ?></td>
                 <td><?php echo $user['user_name']; ?></td>
                 <td><?php echo "+".$user['mobile_country_code'].$user['mobile']; ?></td>

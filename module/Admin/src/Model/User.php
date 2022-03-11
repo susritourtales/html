@@ -31,6 +31,11 @@ class User
     const Is_user_verified=1;
     const Is_user_not_verified=0;
 
+    const Is_Not_Promoter = 0;
+    const Is_Promoter = 1;
+    const Is_terminated_Promoter = 2;
+    const Is_resigned_Promoter = 3;
+
     public function exchangeArray(array $data)
     {
         $this->mobile = !empty($data['mobile']) ? $data['mobile'] : null;

@@ -9,6 +9,8 @@ use Laminas\Db\Sql\Select;
 use Laminas\Db\Sql\Where;
 use Laminas\Db\TableGateway\TableGateway;
 
+use function PHPUnit\Framework\isNull;
+
 class ReferTable extends   BaseTable
 {
     protected $tableGateway;
@@ -47,8 +49,8 @@ class ReferTable extends   BaseTable
                 }
             }
         }catch(\Exception $e){
-            print_r($e->getMessage());
-            exit;
+            /* print_r($e->getMessage());
+            exit; */
             return array("success" => false);
         }
     }
@@ -61,8 +63,7 @@ class ReferTable extends   BaseTable
                 $rm = "";
                 if($data['ref_mobile'])
                     $rm = $data['ref_mobile'];
-                $update = $this->updateRefer(array("ref_by"=>$data['ref_by'], "ref_mobile"=> $rm),array("user_id"=>$data['user_id']));
-                //$update = $this->updateRefer(array("ref_by"=>$data['ref_by']),array("user_id"=>$data['user_id']));
+                $update = $this->updateRefer(array("ref_by"=>$data['ref_by'], "ref_mobile"=> $rm, "ref_id"=>$data['ref_id']),array("user_id"=>$data['user_id']));
                 if($update){
                     return array("success" => true);
                 }else{
@@ -78,8 +79,8 @@ class ReferTable extends   BaseTable
                 }
             }
         }catch(\Exception $e){
-            print_r($e->getMessage());
-            exit;
+            /* print_r($e->getMessage());
+            exit; */
             return array("success" => false);
         }
     }
@@ -94,20 +95,20 @@ class ReferTable extends   BaseTable
             //echo $sql->getSqlStringForSqlObject($query);exit;
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             
-            $states = array();
+            $refers = array();
             foreach($resultSet as $row){
-                $states[] = $row;
+                $refers[] = $row;
             }
             /* if(count($resultSet)){
                 foreach($resultSet as $row){
-                    $states[] = $row;
+                    $refers[] = $row;
                 }
             }else{
-                $states[] = array('id'=>"",'ref_by'=>"",'ref_mobile'=>"",'user_id'=>"");
+                $refers[] = array('id'=>"",'ref_by'=>"",'ref_mobile'=>"",'user_id'=>"");
             } */
             
-            //print_r($states);exit;
-            return $states;
+            //print_r($refers);exit;
+            return $refers;
         }catch(\Exception $e){
             return array();
         }
@@ -118,11 +119,12 @@ class ReferTable extends   BaseTable
         try {
             $sql = $this->getSql();
             $query = $sql->select()
-                ->from(array("s"=>"states"))
+                ->from($this->tableName)  //->from(array("s"=>"states"))
                 ->columns(array("" . $column . ""))
                 ->where($where);
 
             $field = array();
+            //echo $sql->getSqlStringForSqlObject($query);exit;
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             foreach ($resultSet as $row) {
                 $field = $row['' . $column . ''];
@@ -139,6 +141,29 @@ class ReferTable extends   BaseTable
         }
     }
     
+    public function getFields($where, $column)
+    {
+        try {
+            $sql = $this->getSql();
+            $query = $sql->select()
+                ->from($this->tableName)
+                ->columns($column )
+                ->where($where);
+
+            $field = array();
+            $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
+            foreach ($resultSet as $row) {
+                $field = $row;
+            }
+
+             return $field;
+
+        } catch (\Exception $e) {
+
+            return array();
+        }
+    }
+    
     public function updateRefer($data,$where)
     {
         try
@@ -148,6 +173,131 @@ class ReferTable extends   BaseTable
         catch (\Exception $e)
         {
             return false;
+        }
+    }
+
+    public function getTotalPromoterPasswords($promoterId){
+        try
+        {
+            $sql = $this->getSql();
+            $pwdqry = $sql->select()
+                    ->columns(array('total_passwords'=>new \Laminas\Db\Sql\Expression('SUM(`r`.`pwds_purchased`)')))
+                    ->from(array('r' => 'refer'))
+                    ->where(array('r.ref_id'=> $promoterId));
+                // echo $sql->getSqlStringForSqlObject($pwdqry);exit;
+                $pwdres = $sql->prepareStatementForSqlObject($pwdqry)->execute();
+                $pwdresArr = array();
+                foreach($pwdres as $r){
+                    $pwdresArr[] = $r;
+                }
+                return $pwdresArr[0]['total_passwords'];
+        }
+        catch (\Exception $e)
+        {
+            return false;
+        }
+    }
+
+    public function getSponsorsPerfAdmin($data=array('limit'=>10,'offset'=>0)){
+        try{
+            $sql = $this->getSql();
+            $where=new Where();
+            $where->equalTo('r.ref_id',$data['promoterId']);            
+            $order=array();
+            
+            if(array_key_exists('user_name',$data))
+            {
+                $where->and->like("u.user_name",'%'.$data['user_name']."%");
+            }
+            if(array_key_exists('mobile',$data))
+            {
+                $where->and->like("u.mobile",'%'.$data['mobile']."%");
+            }
+
+            if(array_key_exists('user_name_order',$data))
+            {
+                if($data['user_name_order']==1)
+                {
+                    $order[]='u.user_name asc';
+                }else if($data['user_name_order']==-1)
+                {
+                    $order[]='u.user_name desc';
+                }
+            }
+            if(array_key_exists('mobile_order',$data))
+            {
+                if($data['mobile_order']==1)
+                {
+                    $order[]='u.mobile asc';
+                }else if($data['mobile_order']==-1)
+                {
+                    $order[]='u.mobile desc';
+                }
+            }
+
+            if(!count($order))
+            {
+                $order='r.created_at desc';
+            }
+            
+            $query = $sql->select()
+                ->columns(array("user_id","pwds_purchased", "sponsor_status", "disc50"))
+                ->from(array('r' => 'refer'))
+                ->join(array('u'=>'users'), 'u.user_id=r.user_id',array("user_id","user_name","mobile","mobile_country_code","subscription_end_date","is_promoter"),'left')
+                ->where($where)
+                ->limit($data['limit'])
+                ->offset($data['offset'])
+                ->order($order);
+            //echo $sql->getSqlStringForSqlObject($query);exit;
+
+            $result = $sql->prepareStatementForSqlObject($query)->execute();
+            $sponsorsPerf=array();
+            foreach ($result as $row) {
+                $spqry = $sql->select()
+                    ->columns(array('amount_paid'=>new \Laminas\Db\Sql\Expression('SUM(`pt`.`amount`)')))
+                    ->from(array('pt' => 'promoter_transactions'))
+                    ->where(array('pt.sponsor_id'=> $row['user_id'], 'pt.transaction_type'=> \Admin\Model\PromoterTransactions::transaction_paid));
+                $spres = $sql->prepareStatementForSqlObject($spqry)->execute();
+                $spresArr = array();
+                foreach($spres as $r){
+                    $spresArr[] = $r;
+                }
+                $row['amount_paid'] = $spresArr[0]['amount_paid'];
+                $sponsorsPerf[] = $row;
+            }
+            return $sponsorsPerf;
+        }catch (\Exception $e)
+        {
+            /* print_r($e->getMessage());
+            exit; */
+            return array();
+        }
+    }
+
+    public function getSponsorsPerfAdminCount($data=array()){
+        try{
+            $sql = $this->getSql();
+            $where=new Where();
+            $where->equalTo('r.ref_id', $data['promoterId']);            
+                 
+            $query = $sql->select()
+                ->columns(array('sponsors_count'=>new \Laminas\Db\Sql\Expression('COUNT(`r`.`user_id`)')))
+                ->from(array('r' => 'refer'))
+                ->where($where);             
+            // echo $sql->getSqlStringForSqlObject($query);exit;
+
+            $result = $sql->prepareStatementForSqlObject($query)->execute();
+            $sponsorsCount = array();
+            foreach ($result as $row) {
+                $sponsorsCount[] = $row;
+            }
+            //var_dump($sponsorsCount); exit;
+            return $sponsorsCount;
+        }catch (\Exception $e)
+        {
+            print_r($e->getMessage());
+            exit;
+            return array();
         }
     }
 }

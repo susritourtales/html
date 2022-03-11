@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Application\Constants;
-
 
 class Constants
 {
@@ -18,6 +16,9 @@ class Constants
     const Place_Page=9;
     const Pricing_list=10; //const Slab_price_page=10;
     const Users_List=11;
+    const Promoters_List=24;
+    const Promoters_Payments=25;
+    const Promoter_Parameters = 26;
     const Sponsors_List=12;
     const Downloads=13;//const Booking_page=13;
     const Tour_operator_list=22;

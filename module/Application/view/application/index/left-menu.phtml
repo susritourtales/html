@@ -202,8 +202,33 @@ if (!isset($navigation))
                         </span>
                     </div>
                 </a>
-
-
+            </li>
+            <li class="<?php echo ($activeTab==\Application\Constants\Constants::Promoters_List?'active':'')?>">
+                <a href="<?php echo $this->basePath(); ?>/a_dMin/promoters-list">
+                    <div class="d-flex align-items-center">
+                                <span class="text-capitalize">
+                            Promoters Performance
+                        </span>
+                    </div>
+                </a>
+            </li>
+            <li class="<?php echo ($activeTab==\Application\Constants\Constants::Promoters_Payments?'active':'')?>">
+                <a href="<?php echo $this->basePath(); ?>/a_dMin/promoters-payments">
+                    <div class="d-flex align-items-center">
+                                <span class="text-capitalize">
+                            Promoters Payments
+                        </span>
+                    </div>
+                </a>
+            </li>
+            <li class="<?php echo ($activeTab==\Application\Constants\Constants::Promoter_Parameters?'active':'')?>">
+                <a href="<?php echo $this->basePath(); ?>/a_dMin/promoter-parameters">
+                    <div class="d-flex align-items-center">
+                                <span class="text-capitalize">
+                            Promoters Parameters
+                        </span>
+                    </div>
+                </a>
             </li>
             <li class="<?php echo ($activeTab==\Application\Constants\Constants::Sponsors_List?'active':'')?>">
                 <a href="<?php echo $this->basePath(); ?>/a_dMin/sponsors-list">

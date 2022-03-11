@@ -549,6 +549,141 @@ return [
                         'action' => 'editsponsor',
                     ],
                 ],
+            ],  'add-promoter' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/add-promoter',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'add-promoter',
+                    ],
+                ],
+            ], 'promoters-list' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/promoters-list',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'promoters-list',
+                    ],
+                ],
+            ],'admin-sponsors-performance' => [
+                'type' =>Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/sponsors-performance[/:id]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-zA-Z0-9_~\-!@#\$%\^&*\(\)=]*[/]*',
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'sponsors-performance',
+                    ],
+                ],
+            ],'admin-sponsors-transactions' => [
+                'type' =>Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/sponsors-transactions[/:id]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-zA-Z0-9_~\-!@#\$%\^&*\(\)=]*[/]*',
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'sponsors-transactions',
+                    ],
+                ],
+            ],'admin-promoters-payments' => [
+                'type' =>Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/promoters-payments[/:id]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-zA-Z0-9_~\-!@#\$%\^&*\(\)=]*[/]*',
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'promoters-payments',
+                    ],
+                ],
+            ],'admin-pay-promoter' => [
+                'type' =>Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/pay-promoter[/:id]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-zA-Z0-9_~\-!@#\$%\^&*\(\)=]*[/]*',
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'pay-promoter',
+                    ],
+                ],
+            ], 'admin-promoter-parameters' => [
+                'type' =>Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/promoter-parameters[/:id]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-zA-Z0-9_~\-!@#\$%\^&*\(\)=]*[/]*',
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'promoter-parameters',
+                    ],
+                ],
+            ], 'edit-promoter-parameters' => [
+                'type' =>Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/edit-promoter-parameters[/:id]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-zA-Z0-9_~\-!@#\$%\^&*\(\)=]*[/]*',
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'edit-promoter-parameters',
+                    ],
+                ],
+            ], 'admin-sponsor-disc50' => [
+                'type' =>Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/sponsor-disc50[/:id]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-zA-Z0-9_~\-!@#\$%\^&*\(\)=]*[/]*',
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'sponsor-disc50',
+                    ],
+                ],
+            ],'admin-sponsor-terminate' => [
+                'type' =>Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/sponsor-terminate[/:id]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-zA-Z0-9_~\-!@#\$%\^&*\(\)=]*[/]*',
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'sponsor-terminate',
+                    ],
+                ],
+            ],'admin-promoter-terminate' => [
+                'type' =>Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/promoter-terminate[/:id]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-zA-Z0-9_~\-!@#\$%\^&*\(\)=]*[/]*',
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'promoter-terminate',
+                    ],
+                ],
             ],'admin-sponsor-passwords' => [
                 'type' =>Segment::class,
                 'options' => [

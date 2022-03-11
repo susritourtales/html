@@ -2,7 +2,7 @@
 <div class="sidebar">
     <div class="side-panel" id="collapsibleNavbar">
         <?php echo $this->partial('/application/index/left-menu', array(
-            'activeTab'=>\Application\Constants\Constants::Pricing_list
+            'activeTab'=>\Application\Constants\Constants::Promoter_Parameters
         )); ?>
     </div>
 </div>
@@ -12,9 +12,9 @@
         <?php echo $this->partial("/application/index/app-header"); ?>
 
         <div class="main-container p-lg-4" >
-            <div class="d-flex justify-content-between mb-4"> <div class="main-heading">Subscription Parameters</div> </div>
+            <div class="d-flex justify-content-between mb-4"> <div class="main-heading">Promoter Parameters</div> </div>
             <div class="" id="recordsList">
-                <?php echo $this->partial('/admin/admin/load-pricing-list', array('pricingList'=>$pricingList,'totalCount'=>$totalCount,'type'=>'initialize'
+                <?php echo $this->partial('/admin/admin/load-promoter-parameters', array('pparameters'=>$pparameters,'totalCount'=>$totalCount,'type'=>'initialize'
                 )); ?>
 
             </div>
@@ -28,4 +28,4 @@
 </div>
 
 <script src="<?php echo $this->basePath(); ?>/js/pagination.js"></script>
-<script src="<?php echo $this->basePath().'/js/admin/pricing-list.js'?>"></script>
+<script src="<?php echo $this->basePath().'/js/admin/promoter-parameters.js?v=1.0'?>"></script>

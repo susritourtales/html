@@ -257,9 +257,10 @@ class PasswordTable  extends BaseTable
             if($redeemed == "1")             
                 $where->equalTo('b.booking_type',\Admin\Model\Bookings::booking_Buy_Passwords)->equalTo('b.payment_status',\Admin\Model\Payments::payment_success)->equalTo('b.user_id',$data['user_id'])->lessThanOrEqualTo('p.password_first_used_date', date("Y-m-d",strtotime(date("Y-m-d"))))->notEqualTo('password_first_used_date', date("Y-m-d", date("0000-00-00 00:00:00")));
             else if($redeemed == "0")
-                $where->equalTo('b.booking_type',\Admin\Model\Bookings::booking_Buy_Passwords)->equalTo('b.payment_status',\Admin\Model\Payments::payment_success)->equalTo('b.user_id',$data['user_id'])->isNull('password_first_used_date')->equalTo('invalidated',false); 
+                $where->equalTo('b.booking_type',\Admin\Model\Bookings::booking_Buy_Passwords)->equalTo('b.payment_status',\Admin\Model\Payments::payment_success)->equalTo('b.user_id',$data['user_id'])->equalTo('invalidated',false)->equalTo('b.user_id',$data['user_id']);
                // $where->equalTo('b.booking_type',\Admin\Model\Bookings::booking_Buy_Passwords)->equalTo('b.user_id',$data['user_id'])->equalTo('password_first_used_date' ,date("Y-m-d",strtotime(date("0000-00-00 00:00:00")))); 
-
+            
+            
             if($redeemed == "1")
                 $query = $sql->select()
                     ->from($this->tableName)
@@ -279,6 +280,7 @@ class PasswordTable  extends BaseTable
                     "password_first_used_date","user_id", "sold"))
                     ->join(array('b'=>'bookings'),'b.booking_id=p.booking_id',array('booking_id','booking_type'))
                     ->where($where)
+                    ->where('(`password_first_used_date` IS NULL OR `password_first_used_date`="0000-00-00 00:00:00")')
                     ->order(array('created_at asc'))
                     /* ->limit($data['limit'])
                     ->offset($data['offset']) */;
@@ -299,6 +301,7 @@ class PasswordTable  extends BaseTable
                 $passwords[$i]['id'] = $row['id'];
                 $passwords[$i]['created_at'] = $row['created_at'];
                 $passwords[$i]['password_expiry_date'] = $row['password_expiry_date'];
+                $passwords[$i]['password_first_used_date'] = $row['password_first_used_date'];
                 $passwords[$i]['sold'] = $row['sold'];
                 if($redeemed == "1")
                     $passwords[$i]['mobile'] = "+$row[mobile_country_code] $row[mobile]";

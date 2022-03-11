@@ -552,7 +552,17 @@ class IndexController extends BaseController
             return new JsonModel(array('success'=>false,'message'=>$e->getMessage()));
         }
     }
-
+    public function checkMailAction(){
+        $bookingList['passwords']=array('pwd1','pwd2');
+        $bookingId = '0000';
+        $html = file_get_contents($this->getBaseUrl() . '/application/booking-pdf?suid=0&bid=' . $bookingId, true);// - removed by Manjary to make local work - use on live
+        $mpdf = new mPDF(['tempDir' => getcwd()."/public/data/temp"]);
+        $mpdf->SetDisplayMode("fullpage");
+        $mpdf->WriteHTML($html);
+        $mpdf->Output(getcwd()."/public/data/susri_booking_".$bookingId.".pdf", "F"); 
+        $bookingList['heading'] = "STT Passwords Purchase Details";
+        $this->emailSTTUserWithAttachment('dt.manjary@gmail.com', 'checking mail delivery', 'mail-stt-user', $bookingList,getcwd()."/public/data/susri_booking_".$bookingId.".pdf"); 
+    }
     public function paymentGateWayResponseAction_13092021()
     {
         try{

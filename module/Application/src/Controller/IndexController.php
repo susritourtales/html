@@ -899,7 +899,7 @@ class IndexController extends BaseController
         }
     }
 
-    public function chkMailAction(){
+    public function checkMailAction(){
         $bookingList['passwords']=array('pwd1','pwd2');
         $bookingId = '0000';
         $html = file_get_contents($this->getBaseUrl() . '/application/booking-pdf?suid=0&bid=' . $bookingId, true);// - removed by Manjary to make local work - use on live

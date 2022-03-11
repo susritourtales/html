@@ -1630,9 +1630,9 @@ class IndexController extends BaseController{
          {
             return  new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
          }
-         if(!$this->isApkVersionlatest($vc)){
+         /* if(!$this->isApkVersionlatest($vc)){
             return  new JsonModel(array('success'=>false,'message'=>'Please update your app to latest version available on playstore'));
-         }
+         } */
          if($userId=="")
          {
             return new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
@@ -1804,9 +1804,9 @@ class IndexController extends BaseController{
          {
             return  new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
          }
-         if(!$this->isApkVersionlatest($vc)){
+         /* if(!$this->isApkVersionlatest($vc)){
             return  new JsonModel(array('success'=>false,'message'=>'Please update your app to latest version available on playstore'));
-         }
+         } */
          if($userId=="")
          {
             return new JsonModel(array('success'=>false,'message'=>'Invalid Access'));

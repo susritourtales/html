@@ -73,7 +73,7 @@ class BaseController extends AbstractActionController
     protected $cityTourSlabDaysTable;
     
     const token='dG91cmlzbUFwcGxpY2F0aW9u';
-    const apk_version = '1.3.0';
+    const apk_version = '1.2.63';
     public function onDispatch(MvcEvent $e)
     {
 

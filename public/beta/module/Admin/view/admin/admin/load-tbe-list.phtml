@@ -1,0 +1,66 @@
+<?php if(isset($type) && $type =='initialize') { ?>
+<style>
+.table-condensed thead tr th{ color: unset !important;}
+.calign input{text-align: center !important;}
+</style>
+<div class="table-responsive">
+<table class="table table-bordered table-hover table-striped" id="extTable">
+    <thead>
+    <tr>
+        <th>S.no</th>
+        <th data-placeholder="Name" data-input="tbe_name" class="text-center">Name</th>
+        <th data-placeholder="Mobile" data-input="tbe_mobile" class="text-center">Mobile</th>
+        <th data-placeholder="Email" data-input="tbe_email" class="text-center">Email</th>
+        <th data-placeholder="role" data-input="role" class="text-center">Role</th>
+        <th>Action</th>
+    </tr>
+    <?php } ?>
+
+    <?php if(isset($type) && ($type =='initialize' || $type=="search") ) {?>
+    <input type="hidden" class="records" value="<?php echo $totalCount; ?>">
+    <tbody>
+    <?php } ?>
+
+    <?php if(count($tbeList))
+      {
+        $i=0;
+        if(isset($offset))
+        {
+            $i=$offset;
+        }
+
+        foreach ($tbeList as $tbe) { ?>
+            <tr class="position-relative" data-id="<?php echo base64_encode("pid=".$tbe['user_id']);?>">
+                <td><?php echo $i+1; ?></td>
+                <td><?php echo $tbe['tbe_name']; ?></td>
+                <td><?php echo $tbe['tbe_mobile']; ?></td>
+                <td><?php echo $tbe['tbe_email']; ?></td>
+                <td>
+                    <?php 
+                        if($tbe['role'] == 'A')
+                            echo "AE";
+                        else
+                            echo "TBE";
+                            ?>
+                </td>
+                <td><div class="d-flex">
+                    <a class="action-icon" href="<?php echo $this->basePath().'/a_dMin/edit-tbe/'.base64_encode('tbeId='.$tbe['user_id'])?>" >
+                        <img src="<?php echo $this->basePath();?>/img/edit.png" class="img-fluid">
+                    </a>
+                    <div class="action-icon delete-tbe" data-id="<?php echo $tbe['user_id']; ?>">
+                        <img src="<?php echo $this->basePath();?>/img/delete.png" class="img-fluid" >
+                    </div>
+                </div></td>
+            </tr>
+            <?php $i++; } } else { ?>
+        <tr ><td colspan="15">No data</td></tr>
+    <?php  } ?>
+    <?php if(isset($type) && ($type =='initialize' || $type=="search") ) {?>
+
+    </tbody>
+    <?php } ?>
+    <?php if(isset($type) && $type =='initialize') {?>
+
+</table>
+</div>
+<?php } ?>

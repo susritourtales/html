@@ -1,0 +1,62 @@
+
+<?php if(isset($type) && $type =='initialize') { ?>
+<style>
+.table-condensed thead tr th{ color: unset !important;}
+.calign input{text-align: center !important;}
+</style>
+<div class="table-responsive">
+<table class="table table-bordered table-hover table-striped" id="extTable">
+    <thead>
+    <tr>
+        <th>S.no</th>
+        <th data-placeholder="plan name" data-input="plan_name" class="text-center">Plan Name</th>
+        <th data-placeholder="mtc" data-input="mtc" class="text-center">MTC</th>
+        <th data-placeholder="duration" data-input="duration" class="text-center">Duration</th>
+        <th data-placeholder="cost" data-input="cost" class="text-center">Cost</th>
+        <th data-placeholder="active" data-input="active" class="text-center">Active</th>
+        <th>Action</th>
+    </tr>
+    <?php } ?>
+
+    <?php if(isset($type) && ($type =='initialize' || $type=="search") ) {?>
+    <input type="hidden" class="records" value="<?php echo $totalCount; ?>">
+    <tbody>
+    <?php } ?>
+
+    <?php if(count($taPlans))
+      {
+        $i=0;
+        if(isset($offset))
+        {
+            $i=$offset;
+        }
+
+        foreach ($taPlans as $p) { ?>
+            <tr class="position-relative" data-id="<?php echo base64_encode("pid=".$p['id']);?>">
+                <td><?php echo $i+1; ?></td>
+                <td class="text-center"><?php echo $p['plan_name']; ?></td>
+                <td class="text-center"><?php echo $p['mtc']; ?></td>
+                <td class="text-center"><?php echo $p['duration']; ?></td>
+                <td class="text-center"><?php echo $p['cost']; ?></td>
+                <td class="text-center"><?php echo $p['active']; ?></td>
+                <td><div class="d-flex">
+                    <a class="action-icon" href="<?php echo $this->basePath().'/a_dMin/edit-ta-plan/'.base64_encode('planId='.$p['id'])?>" >
+                        <img src="<?php echo $this->basePath();?>/img/edit.png" class="img-fluid">
+                    </a>
+                    <div class="action-icon delete-plan" data-id="<?php echo $p['id']; ?>">
+                        <img src="<?php echo $this->basePath();?>/img/delete.png" class="img-fluid" >
+                    </div>
+                </div></td>
+            </tr>
+            <?php $i++; } } else { ?>
+        <tr ><td class="text-center" colspan="7">No data</td></tr>
+    <?php  } ?>
+    <?php if(isset($type) && ($type =='initialize' || $type=="search") ) {?>
+
+    </tbody>
+    <?php } ?>
+    <?php if(isset($type) && $type =='initialize') {?>
+
+</table>
+</div>
+<?php } ?>

@@ -1,0 +1,51 @@
+<div class="sidebar">
+    <div class="side-panel" id="collapsibleNavbar">
+        <?php echo $this->partial('/application/index/left-menu', array(
+            'mainActiveTab'=>\Application\Constants\Constants::TA_Section,
+            'activeTab'=>\Application\Constants\Constants::TA_Plans
+        )); ?>
+    </div>
+</div>
+<link rel="stylesheet" href="<?php echo $this->basePath()?>/css/main.css">
+<script src="<?php echo $this->basePath(); ?>/js/admin/edit-ta-plan.js"></script>
+
+<div class="wrapper">
+    <div class="main-panel ">
+        <?php echo $this->partial("/application/index/app-header"); ?>
+        <div class="main-container p-lg-4">
+            <div class="main-heading mb-3"><a href="<?php echo $this->basePath().'/a_dMin/ta-plans'?>"><i class="fa fa-arrow-left mr-2"></i></a> Edit TA Plan</div>
+                <div class="row">
+                    <div class="col-12 col-lg-10">
+                        <div class="row adding-form">
+                            <div class="col-12 col-md-6 pt-md-5 mb-4 mt-n1">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <label class="text-black-50">Plan name</label>
+                                        <input type="text" class="form-control" id="planName" value="<?php echo $taPlanDetails['plan_name']; ?>"/>
+                                    </div>
+                                    <div class="col-12" id="state-wrapper"><label class="text-black-50">MTC</label>
+                                        <input type="text" class="form-control" id="mtc" value="<?php echo $taPlanDetails['mtc']; ?>"/>
+                                    </div>
+                                    <div class="col-12"><label class="text-black-50">Cost</label>
+                                        <input type="text" class="form-control" id="cost"  value="<?php echo $taPlanDetails['cost']; ?>"/>
+                                    </div>
+                                    <div class="col-12"><label class="text-black-50">Duration</label>
+                                        <input type="text" class="form-control" id="duration"  value="<?php echo $taPlanDetails['duration']; ?>"/>
+                                    </div>
+                                    <div class="col-12"><label class="text-black-50">Active</label>
+                                    <input type="checkbox" id="active" name="active" value="0" <?php echo ($taPlanDetails['active'])?"checked":''; ?> />
+                                    </div>                                    
+                                </div>
+                                <?php $planId = substr($_SERVER['REQUEST_URI'], strrpos($_SERVER['REQUEST_URI'], "/")+1);  ?>
+                                <div class="mt-3">
+                                    <div class="col-sm-9 text-left"> <button type="button" class="btn submit-btn" id="editTaPlan">Submit</button></div>
+                                    <input type="hidden" id="htpid" value="<?php echo $planId; ?>"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>

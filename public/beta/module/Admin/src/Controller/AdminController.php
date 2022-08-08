@@ -552,7 +552,6 @@ class AdminController extends BaseController
                 }
                 if(!$copyFiles['status'])
                 {
-
                     return new JsonModel(array('success'=>false,'message'=>'unable to update state'));
                 }
             }
@@ -2312,6 +2311,189 @@ class AdminController extends BaseController
 
      }
 
+     public function twisttLoginAction()
+     {
+         if ($this->getRequest()->isXmlHttpRequest())
+         {
+             $request = $this->getRequest()->getPost();
+            // var_dump($request);exit;
+            $userName=$request['user_name'];
+            $password=$request['password'];
+             $user = $this->tbeDetailsTable()->authenticateUser($userName, $password);
+             if(count($user)) // && ($user['role']==\Admin\Model\TbeDetails::Twistt_TA_role || $user['role']==\Admin\Model\TbeDetails::Twistt_TBE_role))
+            {
+                if(ob_get_length())
+                {
+                    ob_end_clean();
+                }
+                session_unset();
+                $this->getAuthDbTable()
+                    ->setTableName('tbe_details')
+                    ->setIdentityColumn("tbe_mobile")
+                    ->setCredentialColumn('user_id')
+                    ->setIdentity($user["tbe_mobile"])
+                    ->setCredential($user['user_id']);
+                $this->getAuthService()
+                    ->setAdapter($this->getAuthDbTable())
+                    ->setStorage($this->getSessionStorage());
+                $this->getSessionManager()->rememberMe(60 * 60 * 24 * 30 * 3);
+                $result = $this->getAuthService()->authenticate();
+
+
+                if ($result->isValid()) {
+                    $resultRow = (array)$this->getAuthDbTable()->getResultRowObject(array('user_id', 'tbe_mobile', "role"));
+                    $tbeResult['tbe_id'] = $resultRow['user_id'];
+                    $tbeResult['tbe_mobile'] = $resultRow['tbe_mobile'];
+                    $tbeResult['tbe_role'] = $resultRow['role'];
+                    $this->getSessionStorage()->write($tbeResult);
+                    $_SESSION['Laminas_Auth']->storage['tuser_name']=$user['tbe_name'];
+                    return new JsonModel(array("success" => true, "message" => "Valid Credentials"));
+                }
+                return new JsonModel(array("success" => false, "message" => "Invalid Credentials", "errorCode" => 4));
+            }else
+            {
+                return new JsonModel(array('success'=>false,'message'=>'invalid credentials'));
+            }
+         }
+     }
+
+     public function twisttseLoginAction()
+     {
+         if ($this->getRequest()->isXmlHttpRequest())
+         {
+             $request = $this->getRequest()->getPost();
+            // var_dump($request);exit;
+            $userName=$request['user_name'];
+            $password=$request['password'];
+             $user = $this->taConsultantDetailsTable()->authenticateUser($userName, $password);
+             if(count($user)) // && ($user['role']==\Admin\Model\TbeDetails::Twistt_TA_role || $user['role']==\Admin\Model\TbeDetails::Twistt_TBE_role))
+            {
+                if(ob_get_length())
+                {
+                    ob_end_clean();
+                }
+                session_unset();
+                $this->getAuthDbTable()
+                    ->setTableName('ta_consultant_details')
+                    ->setIdentityColumn("mobile")
+                    ->setCredentialColumn('id')
+                    ->setIdentity($user["mobile"])
+                    ->setCredential($user['id']);
+                $this->getAuthService()
+                    ->setAdapter($this->getAuthDbTable())
+                    ->setStorage($this->getSessionStorage());
+                $this->getSessionManager()->rememberMe(60 * 60 * 24 * 30 * 3);
+                $result = $this->getAuthService()->authenticate();
+
+
+                if ($result->isValid()) {
+                    $resultRow = (array)$this->getAuthDbTable()->getResultRowObject(array('id', 'mobile'));
+                    $seResult['se_id'] = $resultRow['id'];
+                    $seResult['se_mobile'] = $resultRow['mobile'];
+                    $this->getSessionStorage()->write($seResult);
+                    $_SESSION['Laminas_Auth']->storage['suser_name']=$user['name'];
+                    return new JsonModel(array("success" => true, "message" => "Valid Credentials"));
+                }
+                return new JsonModel(array("success" => false, "message" => "Invalid Credentials", "errorCode" => 4));
+            }else
+            {
+                return new JsonModel(array('success'=>false,'message'=>'invalid credentials'));
+            }
+         }
+     }
+
+     public function twisttLogoutAction()
+    {
+        session_unset();
+        return $this->redirect()->toUrl($this->getBaseUrl()."/twistt");
+    }
+
+    public function twisttseLogoutAction()
+    {
+        session_unset();
+        return $this->redirect()->toUrl($this->getBaseUrl()."/twisttse");
+    }
+
+    public function twisttCpwdAction()
+    {
+        if ($this->getRequest()->isXmlHttpRequest()) {
+            $request = $this->getRequest()->getPost();
+            if(!$this->getLoggedInUserId())
+            {
+                  return new JsonModel(array('success'=>false,'message'=>'Please Login To Change Password'));
+            }
+            $userId=$this->getLoggedInUserId();
+            $currentPassword=$request['current_password'];
+            $newPassword=$request['new_password'];
+            $checkPassword=$this->tbeDetailsTable()->checkPasswordWithUserId($userId,$currentPassword);
+              if(count($checkPassword))
+              {
+                  $aes=new Aes();
+                  $encodeContent = $aes->encrypt($newPassword);
+                  $encodeString = $encodeContent['password'];
+                  $hash = $encodeContent['hash'];
+                  $date = date("Y-m-d H:i:s");
+                  $tbeOldPwdDetails = $this->tbeDetailsTable()->getTbeDetails($userId);
+                  $oldPwdData = array('tbe_id'=>$userId,'old_pwd'=>$tbeOldPwdDetails['pwd'],'old_hash'=>$tbeOldPwdDetails['hash'], 'created_at'=>$date, 'updated_at'=>$date);
+                  $currentPasswordInsert=$this->tbeOldPasswordsTable()->addTbeOldPassword($oldPwdData);
+
+                  if($currentPasswordInsert)
+                   {
+                       $currentPasswordUpdate=$this->tbeDetailsTable()->setTbeDetails(array('pwd'=>$encodeString, 'hash'=>$hash),array('user_id'=>$userId));
+                       return new JsonModel(array('success'=>false,'message'=>'Updated successfully'));
+
+                   }else{
+                       return new JsonModel(array('success'=>false,'message'=>'Something went wrong try again after sometime'));
+
+                   }
+
+              }else{
+                  return new JsonModel(array('success'=>false,'message'=>'current password does not match'));
+
+              }
+        }
+    }
+
+    public function twisttseCpwdAction()
+    {
+        if ($this->getRequest()->isXmlHttpRequest()) {
+            $request = $this->getRequest()->getPost();
+            if(!$this->getLoggedInUserId())
+            {
+                  return new JsonModel(array('success'=>false,'message'=>'Please Login To Change Password'));
+            }
+            $userId=$this->getLoggedInUserId();
+            $currentPassword=$request['current_password'];
+            $newPassword=$request['new_password'];
+            $checkPassword=$this->taConsultantDetailsTable()->checkPasswordWithUserId($userId,$currentPassword);
+              if(count($checkPassword))
+              {
+                  $aes=new Aes();
+                  $encodeContent = $aes->encrypt($newPassword);
+                  $encodeString = $encodeContent['password'];
+                  $hash = $encodeContent['hash'];
+                  $date = date("Y-m-d H:i:s");
+                  $seOldPwdDetails = $this->taConsultantDetailsTable()->getTaConsultantDetails($userId);
+                  $oldPwdData = array('se_id'=>$userId,'old_pwd'=>$seOldPwdDetails['pwd'],'old_hash'=>$seOldPwdDetails['hash'], 'created_at'=>$date, 'updated_at'=>$date);
+                  $currentPasswordInsert=$this->seOldPasswordsTable()->addSeOldPassword($oldPwdData);
+
+                  if($currentPasswordInsert)
+                   {
+                       $currentPasswordUpdate=$this->taConsultantDetailsTable()->setTaConsultantDetails(array('pwd'=>$encodeString, 'hash'=>$hash),array('id'=>$userId));
+                       return new JsonModel(array('success'=>false,'message'=>'Updated successfully'));
+
+                   }else{
+                       return new JsonModel(array('success'=>false,'message'=>'Something went wrong try again after sometime'));
+
+                   }
+
+              }else{
+                  return new JsonModel(array('success'=>false,'message'=>'current password does not match'));
+
+              }
+        }
+    }
+
       public function fileUploadRowAction()
       {
 
@@ -3727,6 +3909,1948 @@ class AdminController extends BaseController
             $view = new ViewModel(array('sponsorTransactions'=>$sponsorTransactions,'totalCount'=>count($sponsorAllTransactions), 'sponsorName'=>$sponsorName));
             $view->setTerminal(true);
             return $view; */
+        }
+    }
+
+    public function taPlansAction()
+    {
+        if(!$this->getLoggedInUserId())
+        {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        
+        $taPlans=$this->taPlansTable()->getTaPlansAdmin();
+        $taAllPlansCount=$this->taPlansTable()->getTaPlansAdmin(null, 1);
+        return new ViewModel(array('taPlans'=>$taPlans,'totalCount'=>$taAllPlansCount));
+    }
+
+    public function loadAllTaPlansAction()
+    {
+        if ($this->getRequest()->isXmlHttpRequest())
+        {
+            $request = $this->getRequest()->getPost();
+
+            $searchData=array('limit'=>10,'offset'=>0);
+            $type=$request['type'];
+            $offset=0;
+            $filterData=$request['filter'];
+            if($filterData)
+            {
+                $filterData=json_decode($filterData,true);
+
+                if(isset($filterData['plan_name']))
+                { 
+                    if(isset($filterData['plan_name']['text']))
+                    { 
+                        $searchData['plan_name']=$filterData['plan_name']['text'];
+                    }
+                    if(isset($filterData['plan_name']['order']) && $filterData['plan_name']['order'])
+                    {
+                        $searchData['plan_name_order']=$filterData['plan_name']['order'];
+                    }
+                }
+                if(isset($filterData['mtc']))
+                {
+                    if(isset($filterData['mtc']['text']))
+                    {
+                        $searchData['mtc']=$filterData['mtc']['text'];
+                    }
+                    if(isset($filterData['mtc']['order']) && $filterData['mtc']['order'])
+                    {
+                        $searchData['mtc_order']=$filterData['mtc']['order'];
+                    }
+                }
+                if(isset($filterData['duration']))
+                {
+                    if(isset($filterData['duration']['text']))
+                    {
+                        $searchData['duration']=$filterData['duration']['text'];
+                    }
+                    if(isset($filterData['duration']['order']) && $filterData['duration']['order'])
+                    {
+                        $searchData['duration_order']=$filterData['duration']['order'];
+                    }
+                }
+                if(isset($filterData['cost']))
+                {
+                    if(isset($filterData['cost']['text']))
+                    {
+                        $searchData['cost']=$filterData['cost']['text'];
+                    }
+                    if(isset($filterData['cost']['order']) && $filterData['cost']['order'])
+                    {
+                        $searchData['cost_order']=$filterData['cost']['order'];
+                    }
+                }
+                if(isset($filterData['active']))
+                {
+                    if(isset($filterData['active']['text']))
+                    {
+                        $searchData['active']=$filterData['active']['text'];
+                    }
+                    if(isset($filterData['active']['order']) && $filterData['active']['order'])
+                    {
+                        $searchData['active_order']=$filterData['active']['order'];
+                    }
+                }
+            }
+
+            if(isset($request['page_number']))
+            {
+                $pageNumber = $request['page_number'];
+                $offset = ($pageNumber * 10 - 10);
+                $limit = 10;
+                $searchData['offset']=$offset;
+                $searchData['limit']=$limit;
+            }
+
+            $totalCount=0;
+            //var_dump($searchData);exit;
+            if($type && $type=='search')
+            {
+                $totalCount=$this->taPlansTable()->getTaPlansAdmin($searchData, 1);
+            }
+            
+            $taPlans=$this->taPlansTable()->getTaPlansAdmin($searchData);
+            $view = new ViewModel(array('taPlans' => $taPlans, 'offset' => $offset,'type'=>$type,'totalCount'=>$totalCount));
+            $view->setTerminal(true);
+            return $view;
+        }
+    }
+
+    public function addTaPlanAction(){
+        if($this->getRequest()->isXmlHttpRequest())
+        {
+            set_time_limit(0);
+            ini_set('mysql.connect_timeout','0');
+            ini_set('max_execution_time', '0');
+            ini_set("memory_limit", "-1");
+            $request = $this->getRequest()->getPost();
+            //print_r($request);exit;
+           
+            $data=array(
+                'plan_name'=> $request['plan_name'],
+                'mtc'=>$request['mtc'],
+                'duration'=>$request['duration'],
+                'cost'=>$request['cost'],
+                'active'=>$request['active'],
+                'status'=> '1');
+
+            $response=$this->taPlansTable()->addTaPlan($data);
+            if($response){
+                $taPlanId=$response['id'];
+                return new JsonModel(array('success'=>true , 'message'=>'added successfully'));
+            }else{
+                return new JsonModel(array('success'=>false,'message'=>'unable to add ta plan'));
+            }
+        }
+        if(!$this->getLoggedInUserId())
+        {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        $taPlans=$this->taPlansTable()->getTaPlansAdmin();
+        $taAllPlansCount=$this->taPlansTable()->getTaPlansAdmin(null, 1);
+        return new ViewModel(array('taPlans'=>$taPlans,'totalCount'=>$taAllPlansCount));
+    }
+
+    public function editTaPlanAction(){
+        $paramId = $this->params()->fromRoute('id', '');
+        if (!$paramId)
+        {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        $upIdString = rtrim($paramId, "=");
+        $upIdString = base64_decode($upIdString);
+        $upIdString = explode("=", $upIdString);
+        $planId = array_key_exists(1, $upIdString) ? $upIdString[1] : 0;
+
+        if($this->getRequest()->isXmlHttpRequest())
+        {
+            set_time_limit(0);
+            ini_set('mysql.connect_timeout','0');
+            ini_set('max_execution_time', '0');
+            ini_set("memory_limit", "-1");
+            $request = $this->getRequest()->getPost();
+            //print_r($request);exit;
+           
+            $data=array(
+                'plan_name'=> $request['plan_name'],
+                'mtc'=>$request['mtc'],
+                'duration'=>$request['duration'],
+                'cost'=>$request['cost'],
+                'active'=>$request['active']);
+
+            $response=$this->taPlansTable()->setTaPlan($data, array('id'=>$planId));
+            if($response){
+                return new JsonModel(array('success'=>true , 'message'=>'updated successfully'));
+            }else{
+                return new JsonModel(array('success'=>false,'message'=>'unable to update ta plan'));
+            }
+        }
+        if(!$this->getLoggedInUserId())
+        {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        $taPlanDetails=$this->taPlansTable()->getTaPlanDetails($planId);
+        return new ViewModel(array('taPlanDetails'=>$taPlanDetails));
+    }
+
+    public function deleteTaPlanAction()
+    {        
+        if ($this->getRequest()->isXmlHttpRequest())
+        {
+            $request = $this->getRequest()->getPost();
+            $planId=$request['plan_id'];
+            $data=array('status'=>0);
+            $response=$this->taPlansTable()->setTaPlan($data,array('id'=>$planId));
+            if($response)
+            {
+                return new JsonModel(array('success'=>true,"message"=>'Deleted successfully'));
+            }else
+            {
+                return new JsonModel(array('success'=>false,"message"=>'unable to delete'));
+            }
+        }
+    }
+
+    public function taPurchasesAction(){
+        if(!$this->getLoggedInUserId())
+        {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        
+        $taPurchases=$this->taPurchasesTable()->getTaPurchasesAdmin();
+        $totalCount=$this->taPurchasesTable()->getTaPurchasesAdmin(null, 1);
+        return new ViewModel(array('taPurchases'=>$taPurchases,'totalCount'=>$totalCount));
+    }
+
+    public function loadTaPurchasesAction(){
+        if ($this->getRequest()->isXmlHttpRequest())
+        {
+            $request = $this->getRequest()->getPost();
+
+            $searchData=array('limit'=>10,'offset'=>0);
+            $type=$request['type'];
+            $offset=0;
+            $filterData=$request['filter'];
+            if($filterData)
+            {
+                $filterData=json_decode($filterData,true);
+
+                if(isset($filterData['ta_name']))
+                {
+                    if(isset($filterData['ta_name']['text']))
+                    {
+                        $searchData['ta_name']=$filterData['ta_name']['text'];
+                    }
+                    if(isset($filterData['ta_name']['order']) && $filterData['ta_name']['order'])
+                    {
+                        $searchData['ta_name_order']=$filterData['ta_name']['order'];
+                    }
+                }
+                if(isset($filterData['dop']))
+                { 
+                    if(isset($filterData['dop']['text']))
+                    { 
+                        $searchData['dop']=$filterData['dop']['text'];
+                    }
+                    if(isset($filterData['dop']['order']) && $filterData['dop']['order'])
+                    {
+                        $searchData['dop_order']=$filterData['dop']['order'];
+                    }
+                }
+                if(isset($filterData['doe']))
+                {
+                    if(isset($filterData['doe']['text']))
+                    {
+                        $searchData['doe']=$filterData['doe']['text'];
+                    }
+                    if(isset($filterData['doe']['order']) && $filterData['doe']['order'])
+                    {
+                        $searchData['doe_order']=$filterData['doe']['order'];
+                    }
+                }
+                if(isset($filterData['upc']))
+                {
+                    if(isset($filterData['upc']['text']))
+                    {
+                        $searchData['upc']=$filterData['upc']['text'];
+                    }
+                    if(isset($filterData['upc']['order']) && $filterData['upc']['order'])
+                    {
+                        $searchData['upc_order']=$filterData['upc']['order'];
+                    }
+                }
+                if(isset($filterData['name']))
+                {
+                    if(isset($filterData['name']['text']))
+                    {
+                        $searchData['name']=$filterData['name']['text'];
+                    }
+                    if(isset($filterData['name']['order']) && $filterData['name']['order'])
+                    {
+                        $searchData['name_order']=$filterData['name']['order'];
+                    }
+                }
+                if(isset($filterData['ta_plan_cost']))
+                {
+                    if(isset($filterData['ta_plan_cost']['text']))
+                    {
+                        $searchData['ta_plan_cost']=$filterData['ta_plan_cost']['text'];
+                    }
+                    if(isset($filterData['ta_plan_cost']['order']) && $filterData['ta_plan_cost']['order'])
+                    {
+                        $searchData['ta_plan_cost_order']=$filterData['ta_plan_cost']['order'];
+                    }
+                }
+                if(isset($filterData['tourists_count']))
+                {
+                    if(isset($filterData['tourists_count']['text']))
+                    {
+                        $searchData['tourists_count']=$filterData['tourists_count']['text'];
+                    }
+                    if(isset($filterData['tourists_count']['order']) && $filterData['tourists_count']['order'])
+                    {
+                        $searchData['tourists_count_order']=$filterData['tourists_count']['order'];
+                    }
+                }
+            }
+
+            if(isset($request['page_number']))
+            {
+                $pageNumber = $request['page_number'];
+                $offset = ($pageNumber * 10 - 10);
+                $limit = 10;
+                $searchData['offset']=$offset;
+                $searchData['limit']=$limit;
+            }
+
+            $totalCount=0;
+            //var_dump($searchData);exit;
+            if($type && $type=='search')
+            {
+                $totalCount=$this->taPurchasesTable()->getTaPurchasesAdmin($searchData, 1);
+            }
+            
+            $taPurchases=$this->taPurchasesTable()->getTaPurchasesAdmin($searchData);
+            $view = new ViewModel(array('taPurchases' => $taPurchases, 'offset' => $offset,'type'=>$type,'totalCount'=>$totalCount));
+            $view->setTerminal(true);
+            return $view;
+        }
+    }
+
+    public function buyPlanAction(){
+        if($this->getRequest()->isXmlHttpRequest())
+        {
+            set_time_limit(0);
+            ini_set('mysql.connect_timeout','0');
+            ini_set('max_execution_time', '0');
+            ini_set("memory_limit", "-1");
+            $request = $this->getRequest()->getPost();
+            //print_r($request);exit;
+            $idsArr = explode(",",$request['ids']);
+            $taid = trim($idsArr[0]);
+            $taConsId = trim($idsArr[1]);
+            $planCost = $request['ta_plan_cost'];
+            $planDetails = $this->taPlansTable()->getTaPlanDetails($request['ta_plan_id']);
+            $dop = date("Y-m-d H:i:s");
+            $noOfDays=$planDetails["validity"];
+            $doe = date('Y-m-d', strtotime(date("y-m-d") . " +  $noOfDays days"));
+            $upc = $request['tac'] ."_". $request['mtc'] ."_". date("Y-m-d");
+
+            $upcExists = $this->taPurchasesTable()->getField(array('upc'=>$upc), 'id');
+            if($upcExists){
+                return new JsonModel(array('success'=>false,'message'=>'Plan already purchased today. Try again tommorrow'));
+            }
+
+            //$taConsId = $request['ta_cons_id'];
+            $pic_counter = 0;
+
+            if(!$taConsId){
+                $taConsLatestDueAmtUpdated = 0;
+            }else{
+                $taConsDetails = $this->taConsultantDetailsTable()->getTaConsultantDetails($taConsId);
+                $validConsMobile = $this->taDetailsTable()->getField(array('id'=>$taid), 'cons_mobile');
+                if($validConsMobile != $taConsDetails['mobile']){
+                    return new JsonModel(array('success'=>false,'message'=>'SE not valid for selected TA'));
+                }
+                $taConsLatestDueAmt = $this->taDetailsTable()->getField(array('id'=>$taid), 'ta_cons_due_amt');
+                $taConsDueAmt =  ((int)$planCost * (int)$taConsDetails['commission']) / 100;
+                $pic_count = $this->taConsultantTransactionsTable()->getPicCount(array("ta_id"=>$taid, "ta_cons_id"=>$taConsId));
+                if($pic_count >= 0){
+                    if($pic_count < $taConsDetails['pic'])
+                        $pic_counter = 1;
+                }
+                if($pic_counter)
+                    $taConsLatestDueAmtUpdated = (int)$taConsLatestDueAmt + $taConsDueAmt;
+                else
+                    $taConsLatestDueAmtUpdated = $taConsDueAmt;
+            }
+            $taUpdateVals = array(
+                'ta_cons_due_amt'=>$taConsLatestDueAmtUpdated,
+                'ta_cons_latest_due_dt'=>$dop,
+                'trigger_payment'=>1);
+            $purchaseData=array(
+                'ta_id'=> $taid,
+                'ta_plan_id'=>$request['ta_plan_id'],
+                'dop'=>$dop,
+                'doe'=>$doe,
+                'upc'=>$upc,  //$request['tac'] ."_". $request['mtc'] ."_". date("Y-m-d"),
+                'ta_cons_id'=>$taConsId,
+                'ta_plan_cost'=>$planCost,
+                'tourists_count'=>$request['mtc'],
+                'status'=> '1',
+                'created_at' => date("Y-m-d H:i:s"),
+                'updated_at' => date("Y-m-d H:i:s"));
+
+            $response = $this->taPurchasesTable()->addTaPurchase($purchaseData);
+            if($response['success'] && $taConsId){
+                // Add Data to ta_cons_transactions_table
+                $purchaseId = $response['id'];
+                
+                if($pic_counter){
+                    $txData = array(
+                        'ta_purchase_id'=>$purchaseId,
+                        'ta_id'=> $taid,
+                        'ta_cons_id'=>$taConsId,
+                        'upc'=>$upc,
+                        'transaction_type'=>\Admin\Model\TaConsultantTransactions::transaction_due,
+                        'transaction_date'=>$dop,
+                        'pic_counter'=>$pic_counter,
+                        'amount'=>$taConsDueAmt,
+                        'created_at' => date("Y-m-d H:i:s"),
+                        'updated_at' => date("Y-m-d H:i:s"));
+                    $txnresp =  $this->taConsultantTransactionsTable()->addTaConsultantTransaction($txData);
+                    if($txnresp['success']){
+                        $cpData = array(
+                            'due_date'=> $dop,
+                            'due_amt'=>$taConsDueAmt,
+                            'ta_id'=>$taid,
+                            'ta_cons_id'=>$taConsId,
+                            'status'=> '0',
+                            'created_at' => date("Y-m-d H:i:s"),
+                            'updated_at' => date("Y-m-d H:i:s"));
+                        $this->taConsPaymentsTable()->setTaPaymentDetails($cpData);
+                        $this->taDetailsTable()->setTaDetails($taUpdateVals, array('id'=>$taid));
+                    }
+                }
+                
+                return new JsonModel(array('success'=>true , 'message'=>'purchase details added successfully'));
+            }else{
+                if(!$taConsId){
+                    if($response['success'])
+                        return new JsonModel(array('success'=>true,'message'=>'purchase details added successfully'));
+                    else
+                        return new JsonModel(array('success'=>false,'message'=>'unable to add purchase details'));
+                }else
+                    return new JsonModel(array('success'=>false,'message'=>'unable to add purchase details'));
+            }
+        }
+        if(!$this->getLoggedInUserId())
+        {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+
+        $tpList=$this->taPlansTable()->getTaPlansAdmin();
+        $seList=$this->taConsultantDetailsTable()->getTaConsAdmin();
+        $taList=$this->taDetailsTable()->getTaListAdmin();
+        return new ViewModel(array('tpList'=>$tpList,'seList'=>$seList, 'taList'=>$taList));
+    }
+
+    public function sePaymentsAction(){
+        if(!$this->getLoggedInUserId())
+        {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        
+        $sePayments = $this->taConsPaymentsTable()->getTaConsPaymentsAdmin();
+        $totalCount = $this->taConsPaymentsTable()->getTaConsPaymentsAdmin(null, 1);
+        return new ViewModel(array('sePayments'=>$sePayments,'totalCount'=>$totalCount));
+    }
+
+    public function loadSePaymentsAction(){
+        if ($this->getRequest()->isXmlHttpRequest())
+        {
+            $request = $this->getRequest()->getPost();
+
+            $searchData=array('limit'=>10,'offset'=>0);
+            $type=$request['type'];
+            $offset=0;
+            $filterData=$request['filter'];
+            if($filterData)
+            {
+                $filterData=json_decode($filterData,true);
+
+                if(isset($filterData['tac']))
+                { 
+                    if(isset($filterData['tac']['text']))
+                    { 
+                        $searchData['tac']=$filterData['tac']['text'];
+                    }
+                    if(isset($filterData['tac']['order']) && $filterData['tac']['order'])
+                    {
+                        $searchData['tac_order']=$filterData['tac']['order'];
+                    }
+                }
+
+                if(isset($filterData['ta_mobile']))
+                { 
+                    if(isset($filterData['ta_mobile']['text']))
+                    { 
+                        $searchData['ta_mobile']=$filterData['ta_mobile']['text'];
+                    }
+                    if(isset($filterData['ta_mobile']['order']) && $filterData['ta_mobile']['order'])
+                    {
+                        $searchData['ta_mobile_order']=$filterData['ta_mobile']['order'];
+                    }
+                }
+                if(isset($filterData['name']))
+                {
+                    if(isset($filterData['name']['text']))
+                    {
+                        $searchData['name']=$filterData['name']['text'];
+                    }
+                    if(isset($filterData['name']['order']) && $filterData['name']['order'])
+                    {
+                        $searchData['name_order']=$filterData['name']['order'];
+                    }
+                }
+                if(isset($filterData['mobile']))
+                {
+                    if(isset($filterData['mobile']['text']))
+                    {
+                        $searchData['mobile']=$filterData['mobile']['text'];
+                    }
+                    if(isset($filterData['mobile']['order']) && $filterData['mobile']['order'])
+                    {
+                        $searchData['mobile_order']=$filterData['mobile']['order'];
+                    }
+                }
+            }
+
+            if(isset($request['page_number']))
+            {
+                $pageNumber = $request['page_number'];
+                $offset = ($pageNumber * 10 - 10);
+                $limit = 10;
+                $searchData['offset']=$offset;
+                $searchData['limit']=$limit;
+            }
+            $totalCount=0;
+            
+            if($type && $type=='search')
+            {
+                $totalCount=$this->taConsPaymentsTable()->getTaConsPaymentsAdmin($searchData, 1);
+            }
+
+            $sePayments=$this->taConsPaymentsTable()->getTaConsPaymentsAdmin($searchData);
+            $view = new ViewModel(array('sePayments' => $sePayments, 'offset' => $offset,'type'=>$type,'totalCount'=>$totalCount));
+            $view->setTerminal(true);
+            return $view;
+            
+        }
+    }
+
+    public function paySeAction(){
+        if(!$this->getLoggedInUserId())
+        {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        if ($this->getRequest()->isXmlHttpRequest())
+        {
+            $request = $this->getRequest()->getPost();
+            $id = $request['id'];
+            $currentDT = date("Y-m-d H:i:s");
+            $pdata = $this->taConsPaymentsTable()->getFields(array("id"=>$id),array('id','due_date', 'due_amt', 'ta_id', 'ta_cons_id', 'status'));
+            //$pdata['id'] = $request['id'];
+            $pdata['paid_amt'] = $request['amt'];
+            $pdata['trans_ref'] = $request['tr'];
+            $pdata['paid_date'] = $currentDT;
+            $pdata['transaction_type'] = \Admin\Model\PromoterTransactions::transaction_paid;
+
+            $response = $this->taConsPaymentsTable()->setTaPaymentDetails($pdata); 
+
+            if($response)
+            {
+                // create sttse transactions array
+                $seBank = $this->taConsultantDetailsTable()->getFields(array('id'=>$pdata['ta_cons_id']), array('ifsc_code', 'bank_ac_no'));
+                $taPay = $this->taDetailsTable()->getFields(array('id'=>$pdata['ta_id']), array('ta_cons_due_amt', 'ta_cons_paid_amt', 'trigger_payment', 'ta_cons_latest_paid_dt'));
+                $transArr = array('ta_cons_id'=>$pdata['ta_cons_id'], 'transaction_type'=>\Admin\Model\PromoterTransactions::transaction_paid, 'ta_id'=>$pdata['ta_id'], 'bank_ac_no'=>$seBank['bank_ac_no'], 'ifsc_code'=>$seBank['ifsc_code'], 'transaction_date'=>$currentDT, 'amount'=>$pdata['paid_amt'], 'transaction_ref'=>$pdata['trans_ref']);
+                // update se transactions table
+                $addConsTrans = $this->taConsultantTransactionsTable()->addTaConsultantTransaction($transArr);
+                if($addConsTrans['success']){ 
+                    $trig = 1;
+                    $detres = $this->taDetailsTable()->setTaDetails(array('ta_cons_due_amt'=> $taPay['ta_cons_due_amt'] - $pdata['paid_amt'], 'ta_cons_latest_due_dt'=>$currentDT, 'ta_cons_paid_amt'=>$taPay['ta_cons_paid_amt'] + $pdata['paid_amt'], 'ta_cons_latest_paid_dt'=>$currentDT), array('id'=>$pdata['ta_id']));
+                    if($detres){
+                        return new JsonModel(array('success'=>true,"message"=>'paid successfully'));
+                    }else{
+                        return new JsonModel(array('success'=>false,"message"=>'unable to process the payment'));
+                    }
+                }else{
+                    return new JsonModel(array('success'=>false,"message"=>'unable to process the payment'));
+                }
+            }else{
+                return new JsonModel(array('success'=>false,"message"=>'unable to process the payment'));
+            }
+        }
+    }
+
+    public function seTasAction()
+    {
+        if(!$this->getLoggedInUserId())
+        {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        
+        $paramId = $this->params()->fromRoute('id', '');
+        if (!$paramId)
+        {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        $userIdString = rtrim($paramId, "=");
+        $userIdString = base64_decode($userIdString);
+        $userIdString = explode("=", $userIdString);
+        $seId = array_key_exists(1, $userIdString) ? $userIdString[1] : 0;
+
+        $cons_mobile = $this->taConsultantDetailsTable()->getField(array('id'=>$seId), 'mobile');
+        $setas=$this->taDetailsTable()->getSETAsAdmin(array('cons_mobile'=>$cons_mobile,'limit'=>10,'offset'=>0));
+        $totalCount=$this->taDetailsTable()->getSETAsAdmin(array('cons_mobile'=>$cons_mobile), 1);
+        $seName=$this->taConsultantDetailsTable()->getField(array('id'=>$seId), 'name');
+        return new ViewModel(array('setas'=>$setas,'totalCount'=>$totalCount, 'seName'=>$seName));
+    }
+
+    public function loadSeTasAction(){
+        if ($this->getRequest()->isXmlHttpRequest())
+        {
+            $request = $this->getRequest()->getPost();  //var_dump($request);exit;          
+            $searchData=array('limit'=>10,'offset'=>0);
+            $type=$request['type'];
+            $offset=0;
+            $filterData=$request['filter'];
+            if($filterData)
+            {
+                $filterData=json_decode($filterData,true);
+                $userIdString = $filterData['uid']['text'];
+                $userIdString = base64_decode($userIdString);
+                $userIdString = explode("=", $userIdString);
+                $seId = array_key_exists(1, $userIdString) ? $userIdString[1] : 0; 
+                //echo $promoterId; exit;
+                $searchData['cons_mobile'] = $this->taConsultantDetailsTable()->getField(array('id'=>$seId), 'mobile');
+
+                if(isset($filterData['ta_name']))
+                { 
+                    if(isset($filterData['ta_name']['text']))
+                    { 
+                        $searchData['ta_name']=$filterData['ta_name']['text'];
+                    }
+                    if(isset($filterData['ta_name']['order']) && $filterData['ta_name']['order'])
+                    {
+                        $searchData['ta_name_order']=$filterData['ta_name']['order'];
+                    }
+                }
+                if(isset($filterData['ta_mobile']))
+                {
+                    if(isset($filterData['ta_mobile']['text']))
+                    {
+                        $searchData['ta_mobile']=$filterData['ta_mobile']['text'];
+                    }
+                    if(isset($filterData['ta_mobile']['order']) && $filterData['ta_mobile']['order'])
+                    {
+                        $searchData['ta_mobile_order']=$filterData['ta_mobile']['order'];
+                    }
+                }
+            }
+
+            if(isset($request['page_number']))
+            {
+                $userIdString = $request['uid'];
+                $userIdString = base64_decode($userIdString);
+                $userIdString = explode("=", $userIdString);
+                $seId = array_key_exists(1, $userIdString) ? $userIdString[1] : 0; 
+                //echo $seId; exit;
+
+                $pageNumber = $request['page_number'];
+                $offset = ($pageNumber * 10 - 10);
+                $limit = 10;
+                $searchData['offset']=$offset;
+                $searchData['limit']=$limit;
+            }
+            $searchData['seId']=$seId;
+            $totalCount=0;
+            
+            if($type && $type=='search')
+            {
+                $totalCount=$this->taDetailsTable()->getSETAsAdmin($searchData, 1);
+            }
+
+            $setas=$this->taDetailsTable()->getSETAsAdmin(array('cons_mobile'=>$cons_mobile,'limit'=>10,'offset'=>0));
+            $seName=$this->taConsultantDetailsTable()->getField(array('id'=>$seId), 'name');
+            $view = new ViewModel(array('setas'=>$setas,'totalCount'=>$totalCount, 'seName'=>$seName, 'offset' => $offset,'type'=>$type));
+            $view->setTerminal(true);
+            return $view;
+        }
+    }
+
+    public function setaTransactionsAction()
+    {
+        if(!$this->getLoggedInUserId())
+        {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        
+        $paramId = $this->params()->fromRoute('id', '');
+        if (!$paramId)
+        {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        $userIdString = rtrim($paramId, "=");
+        $userIdString = base64_decode($userIdString);
+        $userIdString = explode("=", $userIdString);
+        $ta_id = array_key_exists(1, $userIdString) ? $userIdString[1] : 0;
+        if($ta_id){
+            $setaTxns=$this->TaConsultantTransactionsTable()->getTaConsTxAdmin(array('ta_id'=>$ta_id,'limit'=>10,'offset'=>0));
+            $totalCount=$this->TaConsultantTransactionsTable()->getTaConsTxAdmin(array('ta_id'=>$ta_id), 1);
+        }else{
+            return new ViewModel(array('setaTxns'=>array(),'totalCount'=>0, 'taName'=>''));
+        }
+        $taName=$this->taDetailsTable()->getField(array('id'=>$ta_id), 'ta_name');
+        return new ViewModel(array('setaTxns'=>$setaTxns,'totalCount'=>$totalCount, 'taName'=>$taName));
+    }
+
+    public function loadSetaTransactionsAction(){
+        if ($this->getRequest()->isXmlHttpRequest())
+        {
+            $request = $this->getRequest()->getPost();  //var_dump($request);exit;          
+            $searchData=array('limit'=>10,'offset'=>0);
+            $type=$request['type'];
+            $offset=0;
+            $filterData=$request['filter'];
+            if($filterData)
+            {
+                $filterData=json_decode($filterData,true);
+                $userIdString = $filterData['uid']['text'];
+                $userIdString = base64_decode($userIdString);
+                $userIdString = explode("=", $userIdString);
+                $ta_id = array_key_exists(1, $userIdString) ? $userIdString[1] : 0; 
+            }
+
+            if(isset($request['page_number']))
+            {
+                $userIdString = $request['uid'];
+                $userIdString = base64_decode($userIdString);
+                $userIdString = explode("=", $userIdString);
+                $seId = array_key_exists(1, $userIdString) ? $userIdString[1] : 0; 
+                //echo $seId; exit;
+
+                $pageNumber = $request['page_number'];
+                $offset = ($pageNumber * 10 - 10);
+                $limit = 10;
+                $searchData['offset']=$offset;
+                $searchData['limit']=$limit;
+            }
+            $searchData['ta_id']=$ta_id;
+            $totalCount=0;
+            
+            if($type && $type=='search')
+            {
+                $totalCount=$this->TaConsultantTransactionsTable()->getTaConsTxAdmin($searchData, 1);
+            }
+
+            $setaTxns=$this->TaConsultantTransactionsTable()->getTaConsTxAdmin(array('ta_id'=>$ta_id,'limit'=>10,'offset'=>0));
+            $taName=$this->taDetailsTable()->getField(array('id'=>$ta_id), 'ta_name');
+            $view = new ViewModel(array('setas'=>$setas,'totalCount'=>$totalCount, 'ta_name'=>$ta_name, 'offset' => $offset,'type'=>$type));
+            $view->setTerminal(true);
+            return $view;
+        }
+    }
+
+    public function taListAction()
+    {
+        if(!$this->getLoggedInUserId())
+        {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        
+        $taList=$this->taDetailsTable()->getTaListAdmin();
+        $taListCount=($this->taDetailsTable()->getTaListAdmin(null, 1))==array()?0 : ($this->taDetailsTable()->getTaListAdmin(null, 1));
+        return new ViewModel(array('taList'=>$taList,'totalCount'=>$taListCount));
+    }
+
+    public function loadTaListAction()
+    {
+        if ($this->getRequest()->isXmlHttpRequest())
+        {
+            $request = $this->getRequest()->getPost();
+
+            $searchData=array('limit'=>10,'offset'=>0);
+            $type=$request['type'];
+            $offset=0;
+            $filterData=$request['filter'];
+            if($filterData)
+            {
+                $filterData=json_decode($filterData,true);
+
+                if(isset($filterData['ta_name']))
+                { 
+                    if(isset($filterData['ta_name']['text']))
+                    { 
+                        $searchData['ta_name']=$filterData['ta_name']['text'];
+                    }
+                    if(isset($filterData['ta_name']['order']) && $filterData['ta_name']['order'])
+                    {
+                        $searchData['ta_name_order']=$filterData['ta_name']['order'];
+                    }
+                }
+                if(isset($filterData['ta_mobile']))
+                {
+                    if(isset($filterData['ta_mobile']['text']))
+                    {
+                        $searchData['ta_mobile']=$filterData['ta_mobile']['text'];
+                    }
+                    if(isset($filterData['ta_mobile']['order']) && $filterData['ta_mobile']['order'])
+                    {
+                        $searchData['ta_mobile_order']=$filterData['ta_mobile']['order'];
+                    }
+                }
+                if(isset($filterData['ta_email']))
+                {
+                    if(isset($filterData['ta_email']['text']))
+                    {
+                        $searchData['ta_email']=$filterData['ta_email']['text'];
+                    }
+                    if(isset($filterData['ta_email']['order']) && $filterData['ta_email']['order'])
+                    {
+                        $searchData['ta_email_order']=$filterData['ta_email']['order'];
+                    }
+                }
+                if(isset($filterData['ae_name']))
+                { 
+                    if(isset($filterData['ae_name']['text']))
+                    { 
+                        $searchData['ae_name']=$filterData['ae_name']['text'];
+                    }
+                    if(isset($filterData['ae_name']['order']) && $filterData['ae_name']['order'])
+                    {
+                        $searchData['ae_name_order']=$filterData['ae_name']['order'];
+                    }
+                }
+                if(isset($filterData['ae_mobile']))
+                {
+                    if(isset($filterData['ae_mobile']['text']))
+                    {
+                        $searchData['ae_mobile']=$filterData['ae_mobile']['text'];
+                    }
+                    if(isset($filterData['ae_mobile']['order']) && $filterData['ae_mobile']['order'])
+                    {
+                        $searchData['ae_mobile_order']=$filterData['ae_mobile']['order'];
+                    }
+                }
+                if(isset($filterData['ae_email']))
+                {
+                    if(isset($filterData['ae_email']['text']))
+                    {
+                        $searchData['ae_email']=$filterData['ae_email']['text'];
+                    }
+                    if(isset($filterData['ae_email']['order']) && $filterData['ae_email']['order'])
+                    {
+                        $searchData['ae_email_order']=$filterData['ae_email']['order'];
+                    }
+                }
+                if(isset($filterData['cons_mobile']))
+                {
+                    if(isset($filterData['cons_mobile']['text']))
+                    {
+                        $searchData['cons_mobile']=$filterData['cons_mobile']['text'];
+                    }
+                    if(isset($filterData['cons_mobile']['order']) && $filterData['cons_mobile']['order'])
+                    {
+                        $searchData['cons_mobile_order']=$filterData['cons_mobile']['order'];
+                    }
+                }
+                if(isset($filterData['tac']))
+                {
+                    if(isset($filterData['tac']['text']))
+                    {
+                        $searchData['tac']=$filterData['tac']['text'];
+                    }
+                    if(isset($filterData['tac']['order']) && $filterData['tac']['order'])
+                    {
+                        $searchData['tac_order']=$filterData['tac']['order'];
+                    }
+                }
+            }
+
+            if(isset($request['page_number']))
+            {
+                $pageNumber = $request['page_number'];
+                $offset = ($pageNumber * 10 - 10);
+                $limit = 10;
+                $searchData['offset']=$offset;
+                $searchData['limit']=$limit;
+            }
+
+            $totalCount=0;
+            //var_dump($searchData);exit;
+            if($type && $type=='search')
+            {
+                $totalCount=$this->taDetailsTable()->getTaListAdmin($searchData, 1);
+            }
+            
+            $taList=$this->taDetailsTable()->getTaListAdmin($searchData);
+            $view = new ViewModel(array('taList' => $taList, 'offset' => $offset,'type'=>$type,'totalCount'=>$totalCount));
+            $view->setTerminal(true);
+            return $view;
+        }
+    }
+        
+    public function addTaAction(){
+        if($this->getRequest()->isXmlHttpRequest())
+        {
+            set_time_limit(0);
+            ini_set('mysql.connect_timeout','0');
+            ini_set('max_execution_time', '0');
+            ini_set("memory_limit", "-1");
+            $request = $this->getRequest()->getPost();
+            //print_r($request);exit;
+            $tac=$request['tac'];
+            $fileDetails=$request['file_details'];
+
+            $fileDetails=json_decode($fileDetails,true);
+            $fileIds=explode(",",$request['file_Ids']);
+            $uploadFileDetails=array();
+
+            $tac=trim($tac);
+            if($tac=='')
+            {
+                return new JsonModel(array("success" => false, "message" => "Please enter TAC"));
+            }
+
+            $checkTAC=$this->taDetailsTable()->getField(array('tac'=>$tac,'status'=>1),'id');
+            if($checkTAC)  // check for TA Code
+            {
+                return new JsonModel(array("success" => false, "message" => "TAC Already exists"));
+            }
+
+            $chkTaCons = $this->taConsultantDetailsTable()->getField(array("mobile"=>$request['mobile'], "status"=>'1'), "id");
+            if($chkTaCons){
+                return new JsonModel(array('success'=>false,'message'=>'TA cannot be STTSE'));   
+            }
+
+            $chkAE = $this->taConsultantDetailsTable()->getField(array("mobile"=>$request['ae_mobile'], "status"=>'1'), "id");
+            if($chkAE){
+                return new JsonModel(array('success'=>false,'message'=>'AE cannot be STTSE'));
+            }
+
+            //$flagImagePath='';
+            $getFiles=$this->temporaryFiles()->getFiles($fileIds);
+
+            $uploadFiles=array();
+            foreach ($getFiles['images'] as $images)
+            {
+                $uploadFileDetails[] = array(
+                    'file_path' => $images['file_path'],
+                    'file_data_type'=>\Admin\Model\TourismFiles::file_data_type_ta_logo,
+                    'file_extension_type'=>\Admin\Model\TourismFiles::file_extension_type_image,
+                    'file_extension' => $images['file_extension'],
+                    'status'=>1,
+                    'duration'=>0 ,
+                    'file_language_type' => 0,
+                    'hash'=>'',
+                    'file_name' => $images['file_name']
+                );
+                if($images['status']==\Admin\Model\TemporaryFiles::status_file_not_copied)
+                {
+                    $uploadFiles[]=array('old_path'=>$images['file_path'],'new_path'=>$images['file_path'],'id'=>$images['temporary_files_id']);
+                }
+            }
+
+            $copyFiles= $this->copypushFiles($uploadFiles);
+
+            if(count($copyFiles['copied']))
+            {
+                $this->temporaryFiles()->updateCopiedFiles($copyFiles['copied']);
+            }
+            if(!$copyFiles['status'])
+            {
+                return new JsonModel(array('success'=>false,'message'=>'unable to add ta'));
+            }
+           
+            $data=array(
+                'ta_name'=> $request['ta_name'],
+                'ta_mobile'=> $request['ta_mobile'],
+                'ta_email'=> $request['ta_email'],
+                'ae_name'=> $request['ae_name'],
+                'ae_mobile'=> $request['ae_mobile'],
+                'ae_email'=> $request['ae_email'],
+                'cons_mobile'=>$request['cons_mobile'],
+                'tac'=>$request['tac'],
+                'status'=> '1');
+
+            $response=$this->taDetailsTable()->addTa($data);
+            if($response){
+                // add logo file details to tourism files table
+                $taId = $this->taDetailsTable()->getField(array('tac'=>$tac,'status'=>1),'id');        
+                $counter = -1;
+                if(count($uploadFileDetails)) {
+                    foreach ($uploadFileDetails as $details) {
+                        $counter++;
+                        $uploadFileDetails[$counter]['file_data_id'] = $taId;
+                        $uploadFileDetails[$counter]["created_at"] = date("Y-m-d H:i:s");
+                        $uploadFileDetails[$counter]["updated_at"] = date("Y-m-d H:i:s");
+                    }
+                    $this->tourismFilesTable()->addMutipleTourismFiles($uploadFileDetails);
+                }
+                
+                // adding TA as TBE
+                $aes = new Aes();
+                $password = $request['ae_mobile'];
+                $encodeContent = $aes->encrypt($password);
+                $encryptPassword = $encodeContent['password'];
+                $hash = $encodeContent['hash'];
+                
+                $data=array(
+                    'ta_id'=> $taId,
+                    'tbe_name'=> $request['ae_name'],
+                    'tbe_mobile'=> $request['ae_mobile'],
+                    'tbe_email'=> $request['ae_email'],
+                    'role'=> 'A',
+                    'login_id'=> $request['ae_mobile'],
+                    'pwd'=> $encryptPassword,
+                    'hash'=> $hash,
+                    'status' => 1, 'created_at' => date("Y-m-d H:i:s"),
+                    'updated_at' => date("Y-m-d H:i:s"));
+
+                $tberesp=$this->tbeDetailsTable()->addTbe($data);
+                if(!$tberesp){
+                    return new JsonModel(array('success'=>false,'message'=>'unable to add TBE details'));
+                }
+                                               
+                return new JsonModel(array('success'=>true , 'message'=>'added successfully'));
+            }else{
+                return new JsonModel(array('success'=>false,'message'=>'unable to add TA details'));
+            }
+        }
+        if(!$this->getLoggedInUserId())
+        {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        $taList=$this->taDetailsTable()->getTaListAdmin();
+        $taListCount=$this->taDetailsTable()->getTaListAdmin(null, 1);
+        return new ViewModel(array('taList'=>$taList,'totalCount'=>$taListCount));
+    }
+    
+    public function editTaAction(){
+        $paramId = $this->params()->fromRoute('id', '');
+        if (!$paramId)
+        {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        $upIdString = rtrim($paramId, "=");
+        $upIdString = base64_decode($upIdString);
+        $upIdString = explode("=", $upIdString);
+        $taId = array_key_exists(1, $upIdString) ? $upIdString[1] : 0;
+
+        if($this->getRequest()->isXmlHttpRequest())
+        {
+            set_time_limit(0);
+            ini_set('mysql.connect_timeout','0');
+            ini_set('max_execution_time', '0');
+            ini_set("memory_limit", "-1");
+            $request = $this->getRequest()->getPost();
+            //print_r($request);exit;
+            $tac=$request['tac'];
+            $files = $this->getRequest()->getFiles();
+            $fileDetails=$request['file_details'];
+            $validImageFiles=array('png','jpg','jpeg');
+            $fileDetails=json_decode($fileDetails,true);
+            $uploadFileDetails=array();
+            $deletedImages=json_decode($request['deleted_images'],true);
+            $deleteFiles=$deletedImages;
+            $tac=trim($tac);
+            if($tac=='')
+            {
+                return new JsonModel(array("success" => false, "message" => "Please enter TAC"));
+            }
+
+            $checkTAC = $this->taDetailsTable()->getField(array('tac'=>$tac,'status'=>1),'id');
+            if($checkTAC != "" && $checkTAC != $taId)  // check for TA Code
+            {
+                return new JsonModel(array("success" => false, "message" => "TAC Already exists"));
+            }
+
+            $chkTaCons = $this->taConsultantDetailsTable()->getField(array("mobile"=>$request['mobile'], "status"=>'1'), "id");
+            if($chkTaCons){
+                return new JsonModel(array('success'=>false,'message'=>'TA cannot be STTSE'));   
+            }
+            
+            $fileIds=explode(",",$request['file_Ids']);
+
+            $getFiles=$this->temporaryFiles()->getFiles($fileIds);
+            $uploadFiles=array();
+            if(count($getFiles)) {
+                foreach ($getFiles['images'] as $images) {
+                    $uploadFileDetails[] = array(
+                        'file_path' => $images['file_path'],
+                        'file_data_type' => \Admin\Model\TourismFiles::file_data_type_ta_logo,
+                        'file_extension_type' => \Admin\Model\TourismFiles::file_extension_type_image,
+                        'file_extension' => $images['file_extension'],
+                        'status' => 1,
+                        'duration' => 0,
+                        'file_language_type' => 0,
+                        'hash' => '',
+                        'file_name' => $images['file_name']
+                    );
+                    if ($images['status'] == \Admin\Model\TemporaryFiles::status_file_not_copied) {
+                        $uploadFiles[] = array('old_path' => $images['file_path'], 'new_path' => $images['file_path'], 'id' => $images['temporary_files_id']);
+                    }
+                }
+                
+                $copyFiles= $this->copypushFiles($uploadFiles);
+
+                if(count($copyFiles['copied']))
+                {
+                    $this->temporaryFiles()->updateCopiedFiles($copyFiles['copied']);
+                }
+                if(!$copyFiles['status'])
+                {
+                    return new JsonModel(array('success'=>false,'message'=>'unable to update TA'));
+                }
+            }
+
+            $data=array(
+                'ta_name'=> $request['ta_name'],
+                'ta_mobile'=> $request['ta_mobile'],
+                'ta_email'=> $request['ta_email'],
+                'ae_name'=> $request['ae_name'],
+                'ae_mobile'=> $request['ae_mobile'],
+                'ae_email'=> $request['ae_email'],
+                'cons_mobile'=>$request['cons_mobile'],
+                'tac'=>$request['tac']);
+           
+            $response=$this->taDetailsTable()->setTaDetails($data, array('id'=>$taId));
+            if($response){
+                $counter = -1;
+                if(count($uploadFileDetails)) {
+                    foreach ($uploadFileDetails as $details) {
+                        $counter++;
+                        $uploadFileDetails[$counter]['file_data_id'] = $taId;
+                        $uploadFileDetails[$counter]["created_at"] = date("Y-m-d H:i:s");
+                        $uploadFileDetails[$counter]["updated_at"] = date("Y-m-d H:i:s");
+                    }
+                    $this->tourismFilesTable()->addMutipleTourismFiles($uploadFileDetails);
+                }
+                if(count($deleteFiles))
+                {
+                    $this->tourismFilesTable()->deletePlaceFiles($deleteFiles);
+                }
+            
+                // editing TA as TBE
+                $aes = new Aes();
+                $password = $request['ae_mobile'];
+                $encodeContent = $aes->encrypt($password);
+                $encryptPassword = $encodeContent['password'];
+                $hash = $encodeContent['hash'];
+                
+                $data=array(
+                    'ta_id'=> $taId,
+                    'tbe_name'=> $request['ae_name'],
+                    'tbe_mobile'=> $request['ae_mobile'],
+                    'tbe_email'=> $request['ae_email'],
+                    'role'=> 'A',
+                    'login_id'=> $request['ae_mobile'],
+                    'pwd'=> $encryptPassword,
+                    'hash'=> $hash, 'status' => 1, 
+                    'updated_at' => date("Y-m-d H:i:s"));
+
+                $tberesp=$this->tbeDetailsTable()->addTbe($data);
+                if(!$tberesp){
+                    return new JsonModel(array('success'=>false,'message'=>'unable to add TBE details'));
+                }
+
+                return new JsonModel(array('success'=>true , 'message'=>'updated successfully'));
+            }else{
+                return new JsonModel(array('success'=>false,'message'=>'unable to update ta details'));
+            }
+        }else{
+            if(!$this->getLoggedInUserId())
+            {
+                return $this->redirect()->toUrl($this->getBaseUrl());
+            }
+            $taDetails=$this->taDetailsTable()->getTaDetails($taId);
+            $imageFiles=array();
+            $imageCounter=-1;
+            foreach ($taDetails as $tagent)
+            {
+                if($tagent['file_extension_type']==1)
+                {
+                    $imageCounter++;
+                    $imageFiles[$imageCounter]['file_path'] = $tagent['file_path'];
+                    $imageFiles[$imageCounter]['file_language_type'] = $tagent['file_language_type'];
+                    $imageFiles[$imageCounter]['tourism_file_id'] = $tagent['tourism_file_id'];
+                    $imageFiles[$imageCounter]['file_name'] = $tagent['file_name'];
+                }
+            }
+            return new ViewModel(array('taDetails'=>$taDetails,'imageUrl'=>$this->filesUrl(), 'imageFiles'=>$imageFiles));
+        }
+    }
+
+    public function deleteTaAction()
+    {        
+        if ($this->getRequest()->isXmlHttpRequest())
+        {
+            $request = $this->getRequest()->getPost();
+            $taId=$request['ta_id'];
+            $data=array('status'=>0);
+            $response=$this->taDetailsTable()->setTaDetails($data,array('id'=>$taId));
+            if($response)
+            {
+                $this->tourismFilesTable()->updatePlaceFiles(array('status'=>0),array('file_data_id'=>$taId,'file_data_type'=>\Admin\Model\TourismFiles::file_data_type_ta_logo));
+                $this->tbeDetailsTable()->setTbeDetails($data, array('ta_id'=>$taId));
+                return new JsonModel(array('success'=>true,"message"=>'Deleted successfully'));
+            }else
+            {
+                return new JsonModel(array('success'=>false,"message"=>'unable to delete'));
+            }
+        }
+    }
+
+    public function taConsAction()
+    {
+        if(!$this->getLoggedInUserId())
+        {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        
+        $taCons=$this->taConsultantDetailsTable()->getTaConsAdmin();
+        $taConsCount=($this->taConsultantDetailsTable()->getTaConsAdmin(null, 1))==array()?0 : ($this->taConsultantDetailsTable()->getTaConsAdmin(null, 1));
+        return new ViewModel(array('taCons'=>$taCons,'totalCount'=>$taConsCount));
+    }
+
+    public function loadTaConsAction()
+    {
+        if ($this->getRequest()->isXmlHttpRequest())
+        {
+            $request = $this->getRequest()->getPost();
+
+            $searchData=array('limit'=>10,'offset'=>0);
+            $type=$request['type'];
+            $offset=0;
+            $filterData=$request['filter'];
+            if($filterData)
+            {
+                $filterData=json_decode($filterData,true);
+
+                if(isset($filterData['name']))
+                { 
+                    if(isset($filterData['name']['text']))
+                    { 
+                        $searchData['name']=$filterData['name']['text'];
+                    }
+                    if(isset($filterData['name']['order']) && $filterData['name']['order'])
+                    {
+                        $searchData['name_order']=$filterData['name']['order'];
+                    }
+                }
+                if(isset($filterData['mobile']))
+                {
+                    if(isset($filterData['mobile']['text']))
+                    {
+                        $searchData['mobile']=$filterData['mobile']['text'];
+                    }
+                    if(isset($filterData['mobile']['order']) && $filterData['mobile']['order'])
+                    {
+                        $searchData['mobile_order']=$filterData['mobile']['order'];
+                    }
+                }
+                if(isset($filterData['email']))
+                {
+                    if(isset($filterData['email']['text']))
+                    {
+                        $searchData['email']=$filterData['email']['text'];
+                    }
+                    if(isset($filterData['email']['order']) && $filterData['email']['order'])
+                    {
+                        $searchData['email_order']=$filterData['email']['order'];
+                    }
+                }
+                if(isset($filterData['address']))
+                {
+                    if(isset($filterData['address']['text']))
+                    {
+                        $searchData['address']=$filterData['address']['text'];
+                    }
+                    if(isset($filterData['address']['order']) && $filterData['address']['order'])
+                    {
+                        $searchData['address_order']=$filterData['address']['order'];
+                    }
+                }
+                if(isset($filterData['bank_name']))
+                { 
+                    if(isset($filterData['bank_name']['text']))
+                    { 
+                        $searchData['bank_name']=$filterData['bank_name']['text'];
+                    }
+                    if(isset($filterData['bank_name']['order']) && $filterData['bank_name']['order'])
+                    {
+                        $searchData['bank_name_order']=$filterData['bank_name']['order'];
+                    }
+                }
+                if(isset($filterData['ifsc_code']))
+                {
+                    if(isset($filterData['ifsc_code']['text']))
+                    {
+                        $searchData['ifsc_code']=$filterData['ifsc_code']['text'];
+                    }
+                    if(isset($filterData['ifsc_code']['order']) && $filterData['ifsc_code']['order'])
+                    {
+                        $searchData['ifsc_code_order']=$filterData['ifsc_code']['order'];
+                    }
+                }
+                if(isset($filterData['bank_ac_no']))
+                {
+                    if(isset($filterData['bank_ac_no']['text']))
+                    {
+                        $searchData['bank_ac_no']=$filterData['bank_ac_no']['text'];
+                    }
+                    if(isset($filterData['bank_ac_no']['order']) && $filterData['bank_ac_no']['order'])
+                    {
+                        $searchData['bank_ac_no_order']=$filterData['bank_ac_no']['order'];
+                    }
+                }
+                if(isset($filterData['pic']))
+                {
+                    if(isset($filterData['pic']['text']))
+                    {
+                        $searchData['pic']=$filterData['pic']['text'];
+                    }
+                    if(isset($filterData['pic']['order']) && $filterData['pic']['order'])
+                    {
+                        $searchData['pic_order']=$filterData['pic']['order'];
+                    }
+                }
+                if(isset($filterData['commission']))
+                {
+                    if(isset($filterData['commission']['text']))
+                    {
+                        $searchData['commission']=$filterData['commission']['text'];
+                    }
+                    if(isset($filterData['commission']['order']) && $filterData['commission']['order'])
+                    {
+                        $searchData['commission_order']=$filterData['commission']['order'];
+                    }
+                }
+            }
+
+            if(isset($request['page_number']))
+            {
+                $pageNumber = $request['page_number'];
+                $offset = ($pageNumber * 10 - 10);
+                $limit = 10;
+                $searchData['offset']=$offset;
+                $searchData['limit']=$limit;
+            }
+
+            $totalCount=0;
+            //var_dump($searchData);exit;
+            if($type && $type=='search')
+            {
+                $totalCount=$this->taConsultantDetailsTable()->getTaConsAdmin($searchData, 1);
+            }
+            
+            $taCons=$this->taConsultantDetailsTable()->getTaConsAdmin($searchData);
+            $view = new ViewModel(array('taCons' => $taCons, 'offset' => $offset,'type'=>$type,'totalCount'=>$totalCount));
+            $view->setTerminal(true);
+            return $view;
+        }
+    }
+
+    public function getSeNameAction()
+    {
+        if(!$this->getLoggedInUserId())
+        {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        if($this->getRequest()->isXmlHttpRequest())
+        {
+            $request = $this->getRequest()->getPost();
+            $cons_mobile=$request['cons_mobile'];
+            $data=array('status'=>0);
+            $response=$this->taConsultantDetailsTable()->getField(array('mobile'=>$cons_mobile), 'name');
+            if($response)
+            {
+                return new JsonModel(array('success'=>true,"message"=>$response));
+            }else
+            {
+                return new JsonModel(array('success'=>false,"message"=>'unable to find SE'));
+            }
+        }
+    }
+
+    public function addTaSdsAction(){
+        if($this->getRequest()->isXmlHttpRequest())
+        {
+            set_time_limit(0);
+            ini_set('mysql.connect_timeout','0');
+            ini_set('max_execution_time', '0');
+            ini_set("memory_limit", "-1");
+            $request = $this->getRequest()->getPost();
+            //print_r($request);exit;
+           
+            $chkTourists = $this->taSdsTable()->getField(array("tourist_mobile"=>$request['mobile'], "travel_date"=>$request['tdate']), "id");
+            if(!$chkTourists){
+                $sttUserId = $this->userTable()->getField(array("mobile"=>$request['mobile']), "user_id");
+                if($sttUserId){
+                    $role = $this->userTable()->getField(array("user_id"=>$sttUserId), "role");
+                    if($role != \Admin\Model\User::Individual_role){
+                        return new JsonModel(array('success'=>false,'message'=>'Tourist is already subscriber of STT'));
+                    }
+                }
+                $doe = $this->taPurchasesTable()->getField(array('upc'=>$request['upc']), 'doe');
+                $tc = 0;
+                if ($doe >= date("Y-m-d")){
+                    $tc = $this->taPurchasesTable()->getField(array('upc'=>$request['upc']), 'tourists_count');
+                }
+                else{
+                    return new JsonModel(array('success'=>false,'message'=>'upc expired'));
+                }
+                if($tc){
+
+                    $data=array(
+                        'tbe_id'=> $request['tbe_id'],
+                        'role'=> $request['role'],
+                        'tourist_name'=> $request['name'],
+                        'tourist_mobile'=> $request['mobile'],
+                        'mobile_country_code'=>$request['mobile_country_code'],
+                        'travel_date'=> $request['tdate'],
+                        'upc'=> $request['upc'],
+                        'created_at' => date("Y-m-d H:i:s"),
+                        'updated_at' => date("Y-m-d H:i:s"));
+
+                    $response=$this->taSdsTable()->addTaSDS($data);
+                    if($response){
+                        $this->taPurchasesTable()->setTaPurchases(array('tourists_count'=> $tc - 1),array('upc'=> $request['upc']));
+                        //send notification / sms
+                        $subject = "TWISTT notification";
+                        $taName = $this->tbeDetailsTable()->getTaName($request['tbe_id']);
+                        $ntxt = "Congratulations. M/s $taName has sponsored your subscription for 15 days from " . date('d-m-Y', strtotime($request['tdate'])) . ". As a complement, we will be opening the subscription 3 days earlier. That enables you to download the tales of your choice before embarking on the tour. Wish you a happy Tour";
+
+                        if($sttUserId){
+                            $registrationIds = $this->fcmTable()->getDeviceIds($sttUserId);
+                            $notificationDetails = array('notification_data_id'=>$sttUserId,'status' => \Admin\Model\Notification::STATUS_UNREAD, 'notification_recevier_id' => $sttUserId, 'notification_type' => \Admin\Model\Notification::NOTIFICATION_TYPE_BOOKING_NOTIFICATION, 'notification_text' => $ntxt,'created_at'=>date("Y-m-d H:i:s"),'updated_at'=>date("Y-m-d H:i:s"));
+                            $notification = $this->notificationTable()->saveData($notificationDetails);
+                            if ($registrationIds)
+                            {
+                                $notification = new SendFcmNotification();
+                                $notificationSent = $notification->sendPushNotificationToFCMSever($registrationIds, array('message' => $notificationDetails['notification_text'], 'title' => $subject, 'id' => $notificationDetails['notification_data_id'],'type' => $notificationDetails['notification_type']));
+                            }
+                        }
+                        $smsSent = $this->sendBookingSms($request['mobile_country_code'].$request['mobile'],array('text'=>$ntxt));
+
+                        return new JsonModel(array('success'=>true , 'message'=>'added successfully'));
+                    }else{
+                        return new JsonModel(array('success'=>false,'message'=>'unable to add tourist details'));
+                    }
+                }else{
+                    return new JsonModel(array('success'=>false,'message'=>'mtc reached'));
+                }
+            }else{
+                return new JsonModel(array('success'=>false,'message'=>'Tourist already added to SDS'));
+            }
+        }
+        if(!$this->getLoggedInUserId())
+        {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        $taCons=$this->taConsultantDetailsTable()->getTaConsAdmin();
+        $taConsCount=($this->taConsultantDetailsTable()->getTaConsAdmin(null, 1))==array()?0 : ($this->taConsultantDetailsTable()->getTaConsAdmin(null, 1));
+        return new ViewModel(array('taCons'=>$taCons,'totalCount'=>$taConsCount));
+    }
+
+    public function addTaConsAction(){
+        if($this->getRequest()->isXmlHttpRequest())
+        {
+            set_time_limit(0);
+            ini_set('mysql.connect_timeout','0');
+            ini_set('max_execution_time', '0');
+            ini_set("memory_limit", "-1");
+            $request = $this->getRequest()->getPost();
+            //print_r($request);exit;
+            $chkAEs = $this->taDetailsTable()->getField(array("ae_mobile"=>$request['mobile'], "status"=>'1'), "id");
+            if($chkAEs){
+                return new JsonModel(array('success'=>false,'message'=>'STTSE cannot be AE'));
+            }
+
+            $chkTBEs = $this->tbeDetailsTable()->getField(array("tbe_mobile"=>$request['mobile'], "status"=>'1'), "user_id");
+            if(!$chkTBEs){
+                $data=array(
+                    'name'=> $request['name'],
+                    'mobile'=> $request['mobile'],
+                    'email'=> $request['email'],
+                    'address'=> $request['address'],
+                    'bank_name'=> $request['bank_name'],
+                    'ifsc_code'=> $request['ifsc_code'],
+                    'bank_ac_no'=>$request['ban'],
+                    'pic'=>$request['pic'],
+                    'commission'=>$request['commission'], 
+                    'status'=> '1');
+
+                $response=$this->taConsultantDetailsTable()->addTaConsultant($data);
+                if($response){
+                    return new JsonModel(array('success'=>true , 'message'=>'added successfully'));
+                }else{
+                    return new JsonModel(array('success'=>false,'message'=>'unable to add STTSE details'));
+                }
+            }else{
+                return new JsonModel(array('success'=>false,'message'=>'STTSE cannot be TA or TBE'));
+            }
+        }
+        if(!$this->getLoggedInUserId())
+        {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        $taCons=$this->taConsultantDetailsTable()->getTaConsAdmin();
+        $taConsCount=($this->taConsultantDetailsTable()->getTaConsAdmin(null, 1))==array()?0 : ($this->taConsultantDetailsTable()->getTaConsAdmin(null, 1));
+        return new ViewModel(array('taCons'=>$taCons,'totalCount'=>$taConsCount));
+    }
+
+    public function editTaConsAction(){
+        $paramId = $this->params()->fromRoute('id', '');
+        if (!$paramId)
+        {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        $upIdString = rtrim($paramId, "=");
+        $upIdString = base64_decode($upIdString);
+        $upIdString = explode("=", $upIdString);
+        $taId = array_key_exists(1, $upIdString) ? $upIdString[1] : 0;
+
+        if($this->getRequest()->isXmlHttpRequest())
+        {
+            set_time_limit(0);
+            ini_set('mysql.connect_timeout','0');
+            ini_set('max_execution_time', '0');
+            ini_set("memory_limit", "-1");
+            $request = $this->getRequest()->getPost();
+            //print_r($request);exit;
+
+            $chkTBEs = $this->tbeDetailsTable()->getField(array("tbe_mobile"=>$request['mobile'], "status"=>'1'), "user_id");
+            if(!$chkTBEs){
+                $data=array(
+                    'name'=> $request['name'],
+                    'mobile'=> $request['mobile'],
+                    'email'=> $request['email'],
+                    'address'=> $request['address'],
+                    'bank_name'=> $request['bank_name'],
+                    'ifsc_code'=> $request['ifsc_code'],
+                    'bank_ac_no'=>$request['ban'],
+                    'pic'=>$request['pic'],
+                    'commission'=>$request['commission']);
+
+                $response=$this->taConsultantDetailsTable()->setTaConsultantDetails($data, array('id'=>$taId));
+                if($response){
+                    return new JsonModel(array('success'=>true , 'message'=>'updated successfully'));
+                }else{
+                    return new JsonModel(array('success'=>false,'message'=>'unable to update STTSE details'));
+                }
+            }else{
+                return new JsonModel(array('success'=>false,'message'=>'STTSE cannot be TA or TBE'));
+            }
+        }
+        
+        if(!$this->getLoggedInUserId())
+        {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        $tacDetails=$this->taConsultantDetailsTable()->getTaConsultantDetails($taId);
+        return new ViewModel(array('tacDetails'=>$tacDetails));
+    }
+
+    public function deleteTaConsAction()
+    {       
+        if(!$this->getLoggedInUserId())
+        {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        } 
+        if ($this->getRequest()->isXmlHttpRequest())
+        {
+            $request = $this->getRequest()->getPost();
+            $tacId=$request['tac_id'];
+            $data=array('status'=>0);
+            $response=$this->taConsultantDetailsTable()->setTaConsultantDetails($data,array('id'=>$tacId));
+            if($response)
+            {
+                return new JsonModel(array('success'=>true,"message"=>'Deleted successfully'));
+            }else
+            {
+                return new JsonModel(array('success'=>false,"message"=>'unable to delete'));
+            }
+        }
+    }
+
+    public function tbeListAction()
+    {
+        $paramId = $this->params()->fromRoute('id', '');
+        if (!$paramId)
+        {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        $upIdString = rtrim($paramId, "=");
+        $upIdString = base64_decode($upIdString);
+        $upIdString = explode("=", $upIdString);
+        $taId = array_key_exists(1, $upIdString) ? $upIdString[1] : 0;
+
+        if(!$this->getLoggedInUserId())
+        {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        
+        $tbeList=$this->tbeDetailsTable()->getTbeAdmin(array('limit'=>10,'offset'=>0), 0, $taId);
+        $tbeCount=($this->tbeDetailsTable()->getTbeAdmin(array('limit'=>10,'offset'=>0), 1, $taId))==array()?0 : ($this->tbeDetailsTable()->getTbeAdmin(array('limit'=>10,'offset'=>0), 1, $taId));
+        $taName=$this->taDetailsTable()->getField(array('id'=>$taId), 'ta_name');
+        return new ViewModel(array('tbeList'=>$tbeList,'totalCount'=>$tbeCount, 'taName'=>$taName, 'taId'=>$taId));
+    }
+
+    public function loadTbeListAction()
+    {
+        $paramId = $this->params()->fromRoute('id', '');
+        if (!$paramId)
+        {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        $upIdString = rtrim($paramId, "=");
+        $upIdString = base64_decode($upIdString);
+        $upIdString = explode("=", $upIdString);
+        $taId = array_key_exists(1, $upIdString) ? $upIdString[1] : 0;
+
+        if ($this->getRequest()->isXmlHttpRequest())
+        {
+            $request = $this->getRequest()->getPost();
+
+            $searchData=array('limit'=>10,'offset'=>0);
+            $type=$request['type'];
+            $offset=0;
+            $filterData=$request['filter'];
+            if($filterData)
+            {
+                $filterData=json_decode($filterData,true);
+
+                if(isset($filterData['tbe_name']))
+                { 
+                    if(isset($filterData['tbe_name']['text']))
+                    { 
+                        $searchData['tbe_name']=$filterData['tbe_name']['text'];
+                    }
+                    if(isset($filterData['tbe_name']['order']) && $filterData['tbe_name']['order'])
+                    {
+                        $searchData['tbe_name_order']=$filterData['tbe_name']['order'];
+                    }
+                }
+                if(isset($filterData['tbe_mobile']))
+                {
+                    if(isset($filterData['tbe_mobile']['text']))
+                    {
+                        $searchData['tbe_mobile']=$filterData['tbe_mobile']['text'];
+                    }
+                    if(isset($filterData['tbe_mobile']['order']) && $filterData['tbe_mobile']['order'])
+                    {
+                        $searchData['tbe_mobile_order']=$filterData['tbe_mobile']['order'];
+                    }
+                }
+                if(isset($filterData['tbe_email']))
+                {
+                    if(isset($filterData['tbe_email']['text']))
+                    {
+                        $searchData['tbe_email']=$filterData['tbe_email']['text'];
+                    }
+                    if(isset($filterData['tbe_email']['order']) && $filterData['tbe_email']['order'])
+                    {
+                        $searchData['tbe_email_order']=$filterData['tbe_email']['order'];
+                    }
+                }
+                if(isset($filterData['role']))
+                {
+                    if(isset($filterData['role']['text']))
+                    {
+                        $searchData['role']=$filterData['role']['text'];
+                    }
+                    if(isset($filterData['role']['order']) && $filterData['role']['order'])
+                    {
+                        $searchData['role_order']=$filterData['role']['order'];
+                    }
+                }
+            }
+
+            if(isset($request['page_number']))
+            {
+                $pageNumber = $request['page_number'];
+                $offset = ($pageNumber * 10 - 10);
+                $limit = 10;
+                $searchData['offset']=$offset;
+                $searchData['limit']=$limit;
+            }
+
+            $totalCount=0;
+            //var_dump($searchData);exit;
+            if($type && $type=='search')
+            {
+                $totalCount=$this->tbeDetailsTable()->getTbeAdmin($searchData, 1, $taId);
+            }
+            
+            $tbeList=$this->tbeDetailsTable()->getTbeAdmin($searchData, 0, $taId);
+            $taName=$this->taDetailsTable()->getField(array('id'=>$taId), 'ta_name');
+            $view = new ViewModel(array('tbeList' => $tbeList, 'offset' => $offset,'type'=>$type,'totalCount'=>$totalCount, 'taName'=>$taName, 'taId'=>$taId));
+            $view->setTerminal(true);
+            return $view;
+        }
+    }
+
+    public function tbeTouristsAction() {
+        $paramId = $this->params()->fromRoute('id', '');
+        if (!$paramId)
+        {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        $upIdString = rtrim($paramId, "=");
+        $upIdString = base64_decode($upIdString);
+        $upIdString = explode("=", $upIdString);
+        $tbeId = array_key_exists(1, $upIdString) ? $upIdString[1] : 0;
+
+        if(!$this->getLoggedInUserId())
+        {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        $taId = $this->tbeDetailsTable()->getField(array("user_id"=>$tbeId, "status"=>'1'), "ta_id");
+        $tbeList = $this->tbeDetailsTable()->getTasTbeList($taId);
+        $tList = $this->taSdsTable()->getTBETouristsdetails(array('limit'=>10,'offset'=>0), 0, array('tbe_id'=>$tbeId));
+        $totalCount = $this->taSdsTable()->getTBETouristsdetails(array('limit'=>10,'offset'=>0), 1, array('tbe_id'=>$tbeId));
+        $tbeName=$this->tbeDetailsTable()->getField(array("user_id"=>$tbeId), "tbe_name");
+        $pdArr = array('taId'=>$taId,'tbeId'=>$tbeId, 'tbeName'=>$tbeName); 
+        return new ViewModel(array('tList'=>$tList,'totalCount'=>$totalCount, 'tbeList'=>$tbeList, 'pdArr'=>$pdArr));
+    }
+
+    public function loadTbeTouristsAction() {
+        
+        $paramId = $this->params()->fromRoute('id', '');
+        if (!$paramId)
+        {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        $upIdString = rtrim($paramId, "=");
+        $upIdString = base64_decode($upIdString);
+        $upIdString = explode("=", $upIdString);
+        $tbeId = array_key_exists(1, $upIdString) ? $upIdString[1] : 0;
+
+        $taId = $this->tbeDetailsTable()->getField(array("user_id"=>$tbeId, "status"=>'1'), "ta_id");
+
+        if ($this->getRequest()->isXmlHttpRequest())
+        {
+            $request = $this->getRequest()->getPost();
+
+            $searchData=array('limit'=>10,'offset'=>0);
+            $type=$request['type'];
+            $offset=0;
+            $filterData=$request['filter'];
+            if($filterData)
+            {
+                $filterData=json_decode($filterData,true);
+
+                if(isset($filterData['tourist_name']))
+                { 
+                    if(isset($filterData['tourist_name']['text']))
+                    { 
+                        $searchData['tourist_name']=$filterData['tourist_name']['text'];
+                    }
+                    if(isset($filterData['tourist_name']['order']) && $filterData['tourist_name']['order'])
+                    {
+                        $searchData['tourist_name_order']=$filterData['tourist_name']['order'];
+                    }
+                }
+                if(isset($filterData['tourist_mobile']))
+                {
+                    if(isset($filterData['tourist_mobile']['text']))
+                    {
+                        $searchData['tourist_mobile']=$filterData['tourist_mobile']['text'];
+                    }
+                    if(isset($filterData['tourist_mobile']['order']) && $filterData['tourist_mobile']['order'])
+                    {
+                        $searchData['tourist_mobile_order']=$filterData['tourist_mobile']['order'];
+                    }
+                }
+                if(isset($filterData['upc']))
+                {
+                    if(isset($filterData['upc']['text']))
+                    {
+                        $searchData['upc']=$filterData['upc']['text'];
+                    }
+                    if(isset($filterData['upc']['order']) && $filterData['upc']['order'])
+                    {
+                        $searchData['upc_order']=$filterData['upc']['order'];
+                    }
+                }
+                if(isset($filterData['travel_date']))
+                {
+                    if(isset($filterData['travel_date']['text']))
+                    {
+                        $searchData['travel_date']=$filterData['travel_date']['text'];
+                    }
+                    if(isset($filterData['travel_date']['order']) && $filterData['travel_date']['order'])
+                    {
+                        $searchData['travel_date_order']=$filterData['travel_date']['order'];
+                    }
+                }
+            }
+
+            if(isset($request['page_number']))
+            {
+                $pageNumber = $request['page_number'];
+                $offset = ($pageNumber * 10 - 10);
+                $limit = 10;
+                $searchData['offset']=$offset;
+                $searchData['limit']=$limit;
+            }
+
+            $totalCount=0;
+            //var_dump($searchData);exit;
+            if($type && $type=='search')
+            {
+                $totalCount=$this->taSdsTable()->getTBETouristsdetails($searchData, 1, array('tbe_id'=>$tbeId));
+            }
+        }
+        $tList = $this->taSdsTable()->getTBETouristsdetails($searchData, 0, array('tbe_id'=>$tbeId));
+        $tbeName = $this->tbeDetailsTable()->getField(array("user_id"=>$tbeId), "tbe_name");
+        $pdArr = array('taId'=>$taId,'tbeId'=>$tbeId, 'tbeName'=>$tbeName); 
+        $view = new ViewModel(array('tList'=>$tList,'totalCount'=>$totalCount, 'offset' => $offset,'type'=>$type, 'pdArr'=>$pdArr));
+            $view->setTerminal(true);
+            return $view;
+    }
+
+
+    public function addTbeAction(){
+        $taId = '';
+        if($this->getRequest()->isXmlHttpRequest())
+        {
+            set_time_limit(0);
+            ini_set('mysql.connect_timeout','0');
+            ini_set('max_execution_time', '0');
+            ini_set("memory_limit", "-1");
+            $request = $this->getRequest()->getPost();
+            //print_r($request);exit;
+            $taId = $request['ta_id'];
+            $taTbeCount = $this->tbeDetailsTable()->getTasTbeCount($taId);
+            if($taTbeCount >= 10){
+                return new JsonModel(array('success'=>false , 'message'=>'Maximum no. of TBEs added already'));
+            }
+            $chkTaCons = $this->taConsultantDetailsTable()->getField(array("mobile"=>$request['mobile'], "status"=>'1'), "id");
+            if(!$chkTaCons){
+                $chkTA = $this->tbeDetailsTable()->getField(array("tbe_mobile"=>$request['mobile'], "status"=>'1'), "user_id");
+                if(!$chkTA){
+                    $aes = new Aes();
+                    $password = $request['mobile'];
+                    $encodeContent = $aes->encrypt($password);
+                    $encryptPassword = $encodeContent['password'];
+                    $hash = $encodeContent['hash'];
+                    
+                    $data=array(
+                        'ta_id'=> (int)$request['ta_id'],
+                        'tbe_name'=> $request['name'],
+                        'tbe_mobile'=> $request['mobile'],
+                        'tbe_email'=> $request['email'],
+                        'role'=> 'B',
+                        'login_id'=> $request['mobile'],
+                        'pwd'=> $encryptPassword,
+                        'hash'=> $hash,
+                        'status' => 1, 'created_at' => date("Y-m-d H:i:s"),
+                        'updated_at' => date("Y-m-d H:i:s"));
+
+                    $response=$this->tbeDetailsTable()->addTbe($data);
+                    if($response){
+                        return new JsonModel(array('success'=>true , 'message'=>'added successfully'));
+                    }else{
+                        return new JsonModel(array('success'=>false,'message'=>'unable to add TBE details'));
+                    }
+                }else{
+                    return new JsonModel(array('success'=>false,'message'=>'TBE already added under another TA'));
+                }
+            }else{
+                return new JsonModel(array('success'=>false,'message'=>'TBE cannot be STTSE'));
+            }
+        }
+        if(!$this->getLoggedInUserId())
+        {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        $tbeList=$this->tbeDetailsTable()->getTbeAdmin(null, 0, $taId);
+        $tbeCount=($this->tbeDetailsTable()->getTbeAdmin(null, 1, $taId))==array()?0 : ($this->tbeDetailsTable()->getTbeAdmin(null, 1, $taId));
+        $taName=$this->taDetailsTable()->getField(array('id'=>$taId), 'ta_name');
+        return new ViewModel(array('tbeList'=>$tbeList,'totalCount'=>$tbeCount, 'taName'=>$taName, taId=>$taId));
+    }
+
+    public function editTbeAction(){
+        $paramId = $this->params()->fromRoute('id', '');
+        if (!$paramId)
+        {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        $upIdString = rtrim($paramId, "=");
+        $upIdString = base64_decode($upIdString);
+        $upIdString = explode("=", $upIdString);
+        $tbeId = array_key_exists(1, $upIdString) ? $upIdString[1] : 0;
+
+        if($this->getRequest()->isXmlHttpRequest())
+        {
+            set_time_limit(0);
+            ini_set('mysql.connect_timeout','0');
+            ini_set('max_execution_time', '0');
+            ini_set("memory_limit", "-1");
+            $request = $this->getRequest()->getPost();
+            //print_r($request);exit;
+            $chkTaCons = $this->taConsultantDetailsTable()->getField(array("mobile"=>$request['mobile'], "status"=>'1'), "id");
+            if(!$chkTaCons){
+                $chkTA = $this->tbeDetailsTable()->getField(array("tbe_mobile"=>$request['mobile'], "status"=>'1'), "user_id");
+                if(!$chkTA){                
+                    $data=array(
+                        'tbe_name'=> $request['name'],
+                        'tbe_mobile'=> $request['mobile'],
+                        'tbe_email'=> $request['email']
+                        );
+
+                    $response=$this->tbeDetailsTable()->setTbeDetails($data, array('user_id'=>$tbeId));
+                    if($response){
+                        return new JsonModel(array('success'=>true , 'message'=>'updated successfully'));
+                    }else{
+                        return new JsonModel(array('success'=>false,'message'=>'unable to update STTSE details'));
+                    }
+                }else{
+                    return new JsonModel(array('success'=>false,'message'=>'TBE already added under another TA'));
+                }
+            }else{
+                return new JsonModel(array('success'=>false,'message'=>'STTSE cannot be TA or TBE'));
+            }
+        }
+        
+        if(!$this->getLoggedInUserId())
+        {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        $tbeDetails=$this->tbeDetailsTable()->getTbeDetails($tbeId);
+        return new ViewModel(array('tbeDetails'=>$tbeDetails));
+    }
+
+    public function deleteTbeAction()
+    {        
+        if ($this->getRequest()->isXmlHttpRequest())
+        {
+            $request = $this->getRequest()->getPost();
+            $tbeId=$request['tbe_id'];
+            $data=array('status'=>0);
+            $response=$this->tbeDetailsTable()->setTbeDetails($data,array('user_id'=>$tbeId));
+            if($response)
+            {
+                return new JsonModel(array('success'=>true,"message"=>'Deleted successfully'));
+            }else
+            {
+                return new JsonModel(array('success'=>false,"message"=>'unable to delete'));
+            }
         }
     }
 

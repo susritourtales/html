@@ -470,6 +470,9 @@ font-size: 13px;
 #extTable th:first-child {
     min-width: auto;
 }
+#extTable .mw{
+    min-width: auto;
+}
 #listPager li .custom-page-link{
     background: #e5e5e5;
     border: 1px solid #a3a3a3;

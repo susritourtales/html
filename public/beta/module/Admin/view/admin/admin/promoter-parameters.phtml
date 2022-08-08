@@ -2,6 +2,7 @@
 <div class="sidebar">
     <div class="side-panel" id="collapsibleNavbar">
         <?php echo $this->partial('/application/index/left-menu', array(
+            'mainActiveTab'=>\Application\Constants\Constants::Promoter_Section,
             'activeTab'=>\Application\Constants\Constants::Promoter_Parameters
         )); ?>
     </div>

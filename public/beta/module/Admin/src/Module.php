@@ -73,6 +73,28 @@ use Admin\Model\PromoterPayments;  // -- Added my Manjary
 use Admin\Model\PromoterPaymentsTable;  // -- Added my Manjary
 use Admin\Model\PromoterParameters;  // -- Added my Manjary
 use Admin\Model\PromoterParametersTable;  // -- Added my Manjary
+use Admin\Model\TaPlans;  // -- Added my Manjary
+use Admin\Model\TaPlansTable;  // -- Added my Manjary
+use Admin\Model\TaConsultantDetails;  // -- Added my Manjary
+use Admin\Model\TaConsultantDetailsTable;  // -- Added my Manjary
+use Admin\Model\TaConsultantTransactions;  // -- Added my Manjary
+use Admin\Model\TaConsultantTransactionsTable;  // -- Added my Manjary
+use Admin\Model\TaConsPayments;  // -- Added my Manjary
+use Admin\Model\TaConsPaymentsTable;  // -- Added my Manjary
+use Admin\Model\TaDetails;  // -- Added my Manjary
+use Admin\Model\TaDetailsTable;  // -- Added my Manjary
+use Admin\Model\TaPurchases;  // -- Added my Manjary
+use Admin\Model\TaPurchasesTable;  // -- Added my Manjary
+use Admin\Model\TaSds;  // -- Added my Manjary
+use Admin\Model\TaSdsTable;  // -- Added my Manjary
+use Admin\Model\TbeDetails;  // -- Added my Manjary
+use Admin\Model\TbeDetailsTable;  // -- Added my Manjary
+use Admin\Model\TbeOldPasswords;  // -- Added my Manjary
+use Admin\Model\TbeOldPasswordsTable;  // -- Added my Manjary
+use Admin\Model\SeOldPasswords;  // -- Added my Manjary
+use Admin\Model\SeOldPasswordsTable;  // -- Added my Manjary
+use Admin\Model\TwisttOtp;  // -- Added my Manjary
+use Admin\Model\TwisttOtpTable;  // -- Added my Manjary
 use Laminas\Db\ResultSet\ResultSet;
 use Laminas\Db\TableGateway\TableGateway;
 use Laminas\ModuleManager\Feature\ConfigProviderInterface;
@@ -320,6 +342,126 @@ class Module implements ConfigProviderInterface
                     $resultSetPrototype->setArrayObjectPrototype(new PromoterParameters());
                     return new TableGateway('promoter_parameters', $dbAdapter, null, $resultSetPrototype);
                 },
+                "Admin/Model/TaPlansTable" => function ($sm) {    // -- added by Manjary
+                    $tableGateway = $sm->get('TaPlansTableGateway');
+                    $table = new TaPlansTable($tableGateway);
+                    return $table;
+                },
+                'TaPlansTableGateway' => function ($sm)      // -- added by Manjary
+                {
+                    $dbAdapter = $sm->get('Laminas\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new TaPlans());
+                    return new TableGateway('ta_plans', $dbAdapter, null, $resultSetPrototype);
+                },
+                "Admin/Model/TaConsultantDetailsTable" => function ($sm) {    // -- added by Manjary
+                    $tableGateway = $sm->get('TaConsultantDetailsTableGateway');
+                    $table = new TaConsultantDetailsTable($tableGateway);
+                    return $table;
+                },
+                'TaConsultantDetailsTableGateway' => function ($sm)      // -- added by Manjary
+                {
+                    $dbAdapter = $sm->get('Laminas\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new TaConsultantDetails());
+                    return new TableGateway('ta_consultant_details', $dbAdapter, null, $resultSetPrototype);
+                },
+                "Admin/Model/TaConsultantTransactionsTable" => function ($sm) {    // -- added by Manjary
+                    $tableGateway = $sm->get('TaConsultantTransactionsTableGateway');
+                    $table = new TaConsultantTransactionsTable($tableGateway);
+                    return $table;
+                },
+                'TaConsultantTransactionsTableGateway' => function ($sm)      // -- added by Manjary
+                {
+                    $dbAdapter = $sm->get('Laminas\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new TaConsultantTransactions());
+                    return new TableGateway('ta_cons_transactions', $dbAdapter, null, $resultSetPrototype);
+                },
+                "Admin/Model/TaConsPaymentsTable" => function ($sm) {    // -- added by Manjary
+                    $tableGateway = $sm->get('TaConsPaymentsTableGateway');
+                    $table = new TaConsPaymentsTable($tableGateway);
+                    return $table;
+                },
+                'TaConsPaymentsTableGateway' => function ($sm)      // -- added by Manjary
+                {
+                    $dbAdapter = $sm->get('Laminas\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new TaConsPayments());
+                    return new TableGateway('ta_cons_payments', $dbAdapter, null, $resultSetPrototype);
+                },
+                "Admin/Model/TaDetailsTable" => function ($sm) {    // -- added by Manjary
+                    $tableGateway = $sm->get('TaDetailsTableGateway');
+                    $table = new TaDetailsTable($tableGateway);
+                    return $table;
+                },
+                'TaDetailsTableGateway' => function ($sm)      // -- added by Manjary
+                {
+                    $dbAdapter = $sm->get('Laminas\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new TaDetails());
+                    return new TableGateway('ta_details', $dbAdapter, null, $resultSetPrototype);
+                },
+                "Admin/Model/TaPurchasesTable" => function ($sm) {    // -- added by Manjary
+                    $tableGateway = $sm->get('TaPurchasesTableGateway');
+                    $table = new TaPurchasesTable($tableGateway);
+                    return $table;
+                },
+                'TaPurchasesTableGateway' => function ($sm)      // -- added by Manjary
+                {
+                    $dbAdapter = $sm->get('Laminas\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new TaPurchases());
+                    return new TableGateway('ta_purchases', $dbAdapter, null, $resultSetPrototype);
+                },
+                "Admin/Model/TaSdsTable" => function ($sm) {    // -- added by Manjary
+                    $tableGateway = $sm->get('TaSdsTableGateway');
+                    $table = new TaSdsTable($tableGateway);
+                    return $table;
+                },
+                'TaSdsTableGateway' => function ($sm)      // -- added by Manjary
+                {
+                    $dbAdapter = $sm->get('Laminas\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new TaSds());
+                    return new TableGateway('ta_sds', $dbAdapter, null, $resultSetPrototype);
+                },
+                "Admin/Model/TbeDetailsTable" => function ($sm) {    // -- added by Manjary
+                    $tableGateway = $sm->get('TbeDetailsTableGateway');
+                    $table = new TbeDetailsTable($tableGateway);
+                    return $table;
+                },
+                'TbeDetailsTableGateway' => function ($sm)      // -- added by Manjary
+                {
+                    $dbAdapter = $sm->get('Laminas\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new TbeDetails());
+                    return new TableGateway('tbe_details', $dbAdapter, null, $resultSetPrototype);
+                },
+                "Admin/Model/TbeOldPasswordsTable" => function ($sm) {    // -- added by Manjary
+                    $tableGateway = $sm->get('TbeOldPasswordsTableGateway');
+                    $table = new TbeOldPasswordsTable($tableGateway);
+                    return $table;
+                },
+                'TbeOldPasswordsTableGateway' => function ($sm)      // -- added by Manjary
+                {
+                    $dbAdapter = $sm->get('Laminas\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new TbeOldPasswords());
+                    return new TableGateway('tbe_old_passwords', $dbAdapter, null, $resultSetPrototype);
+                },
+                "Admin/Model/SeOldPasswordsTable" => function ($sm) {    // -- added by Manjary
+                    $tableGateway = $sm->get('SeOldPasswordsTableGateway');
+                    $table = new SeOldPasswordsTable($tableGateway);
+                    return $table;
+                },
+                'SeOldPasswordsTableGateway' => function ($sm)      // -- added by Manjary
+                {
+                    $dbAdapter = $sm->get('Laminas\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new SeOldPasswords());
+                    return new TableGateway('se_old_passwords', $dbAdapter, null, $resultSetPrototype);
+                },
                 "Admin/Model/PricingTable" => function ($sm) {    // -- added by Manjary
                     $tableGateway = $sm->get('PricingTableGateway');
                     $table = new PricingTable($tableGateway);
@@ -442,6 +584,17 @@ class Module implements ConfigProviderInterface
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new Otp());
                     return new TableGateway('otp', $dbAdapter, null, $resultSetPrototype);
+                },
+                "Admin/Model/TwisttOtpTable" => function ($sm) {
+                    $tableGateway = $sm->get('TwisttOtpTableGateway');
+                    $table = new TwisttOtpTable($tableGateway);
+                    return $table;
+                },
+                'TwisttOtpTableGateway' => function ($sm) {
+                    $dbAdapter = $sm->get('Laminas\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new TwisttOtp());
+                    return new TableGateway('twistt_otp', $dbAdapter, null, $resultSetPrototype);
                 },"Admin/Model/TemporaryFilesTable" => function ($sm) {
                     $tableGateway = $sm->get('TemporaryFilesTableGateway');
                     $table = new TemporaryFilesTable($tableGateway);

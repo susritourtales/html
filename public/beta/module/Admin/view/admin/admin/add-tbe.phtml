@@ -1,0 +1,51 @@
+<div class="sidebar">
+    <div class="side-panel" id="collapsibleNavbar">
+        <?php echo $this->partial('/application/index/left-menu', array(
+            'mainActiveTab'=>\Application\Constants\Constants::TA_Section,
+            'activeTab'=>\Application\Constants\Constants::TA_Admin
+        )); ?>
+    </div>
+</div>
+<link rel="stylesheet" href="<?php echo $this->basePath()?>/css/main.css">
+<script src="<?php echo $this->basePath(); ?>/js/admin/add-tbe.js?v=1.0"></script>
+
+<div class="wrapper">
+    <div class="main-panel ">
+        <?php echo $this->partial("/application/index/app-header"); ?>
+        <div class="main-container p-lg-4">
+            <div class="main-heading mb-3"><a href="<?php echo $this->basePath().'/a_dMin/tbe-list/' . base64_encode("pid=".$_GET['taid'])?>"><i class="fa fa-arrow-left mr-2"></i></a> Add TBE</div>
+                <div class="row">
+                    <div class="col-12 col-lg-10">
+                        <div class="row adding-form">
+                            <div class="col-12 col-md-6 pt-md-5 mb-4 mt-n1">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <label class="text-black-50">Name</label>
+                                        <input type="text" class="form-control" id="tbeName"/>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="text-black-50">Mobile</label>
+                                        <input type="password" class="form-control mob" id="tbeCMobile"/>
+                                    </div>
+                                    <div class="col-12 pt-3">
+                                        <label class="text-black-50">Confirm Mobile</label>
+                                        <input type="text" class="form-control mob" id="tbeMobile"/>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="text-black-50">Email</label>
+                                        <input type="text" class="form-control" id="tbeEmail"/>
+                                    </div>                              
+                                </div>
+                                <div class="mt-3">
+                                    <div class="col-sm-9 text-left"> <button type="button" class="btn submit-btn" id="addTbe">Submit</button></div>
+                                    <input type="hidden" id="htaid" value="<?php echo base64_encode("pid=".$_GET['taid']); ?>"/>
+                                    <input type="hidden" id="hgtaid" value="<?php echo$_GET['taid']; ?>"/>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

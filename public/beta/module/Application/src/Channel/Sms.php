@@ -17,7 +17,7 @@ class Sms
                 $content = $this->getContentFromTemplate($template, $data);
                 $message = rawurlencode($content);
             }else {
-                $content = $data['text'];
+                $content = $data['data']['text'];
                 $message = $content;
             }
             // Account details

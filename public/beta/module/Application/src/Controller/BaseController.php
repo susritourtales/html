@@ -40,6 +40,17 @@ class BaseController extends AbstractActionController
     protected $upcomingTable;   // -- Added my Manjary
     protected $referTable;   // -- Added my Manjary
     protected $sscTable;   // -- Added my Manjary
+    protected $taPlansTable;   // -- Added my Manjary
+    protected $taConsultantDetailsTable;   // -- Added my Manjary
+    protected $TaConsultantTransactionsTable;   // -- Added my Manjary
+    protected $taConsPaymentsTable;   // -- Added my Manjary
+    protected $taDetailsTable;   // -- Added my Manjary
+    protected $taPurchasesTable;   // -- Added my Manjary
+    protected $taSdsTable;   // -- Added my Manjary
+    protected $tbeDetailsTable;   // -- Added my Manjary
+    protected $tbeOldPasswordsTable;   // -- Added my Manjary
+    protected $seOldPasswordsTable;   // -- Added my Manjary
+    protected $twisttOtpTable;
     protected $downloadedFileInfo;
     protected $temporaryFiles;
     protected $likes;
@@ -133,6 +144,34 @@ class BaseController extends AbstractActionController
             $user = $this->getLoggedInUser();
             if ($user) {
                 return $user['user_id'];
+            } else {
+                return null;
+            }
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    public function getLoggedInTbeId()
+    {
+        try {
+            $user = $this->getLoggedInUser();
+            if ($user) {
+                return $user['tbe_id'];
+            } else {
+                return null;
+            }
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    public function getLoggedInSeId()
+    {
+        try {
+            $user = $this->getLoggedInUser();
+            if ($user) {
+                return $user['se_id'];
             } else {
                 return null;
             }
@@ -1061,6 +1100,206 @@ class BaseController extends AbstractActionController
         }
     }
 
+    public function taPlansTable()     // -- Added my Manjary
+    {
+        try {
+
+            if ($this->taPlansTable == null) {
+                $this->taPlansTable = $this->getEvent()->getApplication()->getServiceManager()->get("Admin/Model/TaPlansTable");
+            }
+
+            return $this->taPlansTable;
+
+        } catch (\Exception $e) {
+
+            return null;
+        } catch (NotFoundExceptionInterface $e) {
+            return null;
+        } catch (ContainerExceptionInterface $e) {
+            return null;
+        }
+    }
+
+    public function taConsultantDetailsTable()     // -- Added my Manjary
+    {
+        try {
+
+            if ($this->taConsultantDetailsTable == null) {
+                $this->taConsultantDetailsTable = $this->getEvent()->getApplication()->getServiceManager()->get("Admin/Model/TaConsultantDetailsTable");
+            }
+
+            return $this->taConsultantDetailsTable;
+
+        } catch (\Exception $e) {
+
+            return null;
+        } catch (NotFoundExceptionInterface $e) {
+            return null;
+        } catch (ContainerExceptionInterface $e) {
+            return null;
+        }
+    }
+
+    public function taConsultantTransactionsTable()     // -- Added my Manjary
+    {
+        try {
+
+            if ($this->taConsultantTransactionsTable == null) {
+                $this->taConsultantTransactionsTable = $this->getEvent()->getApplication()->getServiceManager()->get("Admin/Model/TaConsultantTransactionsTable");
+            }
+
+            return $this->taConsultantTransactionsTable;
+
+        } catch (\Exception $e) {
+
+            return null;
+        } catch (NotFoundExceptionInterface $e) {
+            return null;
+        } catch (ContainerExceptionInterface $e) {
+            return null;
+        }
+    }
+
+    public function taConsPaymentsTable()     // -- Added my Manjary
+    {
+        try {
+
+            if ($this->taConsPaymentsTable == null) {
+                $this->taConsPaymentsTable = $this->getEvent()->getApplication()->getServiceManager()->get("Admin/Model/TaConsPaymentsTable");
+            }
+
+            return $this->taConsPaymentsTable;
+
+        } catch (\Exception $e) {
+
+            return null;
+        } catch (NotFoundExceptionInterface $e) {
+            return null;
+        } catch (ContainerExceptionInterface $e) {
+            return null;
+        }
+    }
+
+    public function taDetailsTable()     // -- Added my Manjary
+    {
+        try {
+
+            if ($this->taDetailsTable == null) {
+                $this->taDetailsTable = $this->getEvent()->getApplication()->getServiceManager()->get("Admin/Model/TaDetailsTable");
+            }
+
+            return $this->taDetailsTable;
+
+        } catch (\Exception $e) {
+
+            return null;
+        } catch (NotFoundExceptionInterface $e) {
+            return null;
+        } catch (ContainerExceptionInterface $e) {
+            return null;
+        }
+    }
+
+    public function taPurchasesTable()     // -- Added my Manjary
+    {
+        try {
+
+            if ($this->taPurchasesTable == null) {
+                $this->taPurchasesTable = $this->getEvent()->getApplication()->getServiceManager()->get("Admin/Model/TaPurchasesTable");
+            }
+
+            return $this->taPurchasesTable;
+
+        } catch (\Exception $e) {
+
+            return null;
+        } catch (NotFoundExceptionInterface $e) {
+            return null;
+        } catch (ContainerExceptionInterface $e) {
+            return null;
+        }
+    }
+
+    public function taSdsTable()     // -- Added my Manjary
+    {
+        try {
+
+            if ($this->taSdsTable == null) {
+                $this->taSdsTable = $this->getEvent()->getApplication()->getServiceManager()->get("Admin/Model/TaSdsTable");
+            }
+
+            return $this->taSdsTable;
+
+        } catch (\Exception $e) {
+
+            return null;
+        } catch (NotFoundExceptionInterface $e) {
+            return null;
+        } catch (ContainerExceptionInterface $e) {
+            return null;
+        }
+    }
+
+    public function tbeDetailsTable()     // -- Added my Manjary
+    {
+        try {
+
+            if ($this->tbeDetailsTable == null) {
+                $this->tbeDetailsTable = $this->getEvent()->getApplication()->getServiceManager()->get("Admin/Model/TbeDetailsTable");
+            }
+
+            return $this->tbeDetailsTable;
+
+        } catch (\Exception $e) {
+
+            return null;
+        } catch (NotFoundExceptionInterface $e) {
+            return null;
+        } catch (ContainerExceptionInterface $e) {
+            return null;
+        }
+    }
+
+    public function tbeOldPasswordsTable()     // -- Added my Manjary
+    {
+        try {
+
+            if ($this->tbeOldPasswordsTable == null) {
+                $this->tbeOldPasswordsTable = $this->getEvent()->getApplication()->getServiceManager()->get("Admin/Model/TbeOldPasswordsTable");
+            }
+
+            return $this->tbeOldPasswordsTable;
+
+        } catch (\Exception $e) {
+
+            return null;
+        } catch (NotFoundExceptionInterface $e) {
+            return null;
+        } catch (ContainerExceptionInterface $e) {
+            return null;
+        }
+    }
+
+    public function seOldPasswordsTable()     // -- Added my Manjary
+    {
+        try {
+
+            if ($this->seOldPasswordsTable == null) {
+                $this->seOldPasswordsTable = $this->getEvent()->getApplication()->getServiceManager()->get("Admin/Model/SeOldPasswordsTable");
+            }
+
+            return $this->seOldPasswordsTable;
+
+        } catch (\Exception $e) {
+
+            return null;
+        } catch (NotFoundExceptionInterface $e) {
+            return null;
+        } catch (ContainerExceptionInterface $e) {
+            return null;
+        }
+    }
+
     public function downloadedFileInfo()
     {
         try {
@@ -1493,6 +1732,24 @@ class BaseController extends AbstractActionController
             }
 
             return $this->otpTable;
+
+        } catch (\Exception $e) {
+            return null;
+        } catch (NotFoundExceptionInterface $e) {
+            return null;
+        } catch (ContainerExceptionInterface $e) {
+            return null;
+        }
+    }
+    public function twisttOtpTable()
+    {
+        try {
+
+            if ($this->twisttOtpTable == null) {
+                $this->twisttOtpTable = $this->getEvent()->getApplication()->getServiceManager()->get("Admin/Model/TwisttOtpTable");
+            }
+
+            return $this->twisttOtpTable;
 
         } catch (\Exception $e) {
             return null;

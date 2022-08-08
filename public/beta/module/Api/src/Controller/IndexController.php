@@ -644,7 +644,70 @@ class IndexController extends BaseController{
          $retVars['offer_end_date'] = date('d-m-y', strtotime($pvariables['end_date']));
          $retVars['offer_price'] = $pvariables['price'];
 
+         // check for short duration subscription
+         /* sds_active = 0 -> no entry in sds table; sds_active = 1 -> upcomig sds; sds_active = 2 -> active sds; */
+         $retVars['sds_active'] = 0; 
+
+        $data['mobile'] = $mobile;
+        $sdsList = $this->taSdsTable()->getTouristSds($data);
+        $today = date('d-m-Y');
+        $today=date_create($today);
+        foreach($sdsList as $sds){
+            $sd = date_create($sds['sds_start_date']);
+            $ed = date_create($sds['sds_end_date']);
+            $diff=date_diff($today,$sd);
+            $sdiff=$diff->format("%R%a");
+            $diff=date_diff($today,$ed);
+            $ediff=$diff->format("%R%a");
+            if ($sdiff <= 0 && $ediff >=0){
+                $retVars['sds_active'] = 2;
+                return new JsonModel($retVars);
+            }else{
+                $retVars['sds_active'] = 1;
+            }
+         }
          return new JsonModel($retVars);
+    }
+
+    public function sdsListAction(){
+        $request = $this->getRequest()->getPost();
+        $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
+
+        if(!$headers->get('Access-Token') || !$this->tokenValidation($headers->get('Access-Token')->getFieldValue()))
+        {
+            return new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
+        }
+        $mobile = $request['mobile'];
+        if($mobile=='' || $mobile==null)
+        {
+            return new JsonModel(array("success"=>false,"message"=>"Mobile number missing"));
+        }
+
+        $limit=$request['limit'];
+           $offset=$request['offset'];
+           
+           if(is_null($limit))
+           {
+               $limit=10;
+           }else{
+               $limit=intval($limit);
+           }
+
+           if(is_null($offset))
+           {
+               $offset=0;
+           }else{
+               $offset=intval($offset);
+           }
+
+          $data['mobile'] = $mobile;
+          $data['offset'] = $offset;
+          $data['limit'] = $limit;
+
+        $sdsList = $this->taSdsTable()->getTouristSds($data);
+        return  new JsonModel(array('success'=>true,'sds'=>$sdsList));
+
     }
 
     public function resendOtpAction()
@@ -3244,8 +3307,32 @@ class IndexController extends BaseController{
             return new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
         }
         $tourType = intval($tourType);
+        $mobile = $this->userTable()->getField(array("user_id"=>$userId), 'mobile');
+         $sds_active = 0; 
+         $data['mobile'] = $mobile;
+         $sdsList = $this->taSdsTable()->getTouristSds($data);
+         $today = date('d-m-Y');
+         $today=date_create($today);
+         $activeCount=0;
+         foreach($sdsList as $sds){
+            $sd = date_create($sds['sds_start_date']);
+            $ed = date_create($sds['sds_end_date']);
+            $diff=date_diff($today,$sd);
+            $sdiff=$diff->format("%R%a");
+            $diff=date_diff($today,$ed);
+            $ediff=$diff->format("%R%a");
+            if ($sdiff <= 0 && $ediff >=0){
+                $sds_active = 2;
+                $activeCount++;
+            }else{
+                $sds_active = 1;
+            }
+         }
+         if($activeCount){
+            $sds_active = 2;
+        }
 
-        if(intval($userType) == \Admin\Model\User::Individual_role){ // -- condition added by Manjary
+        if(intval($userType) == \Admin\Model\User::Individual_role && $sds_active != 2){ // -- condition added by Manjary
             /* if(($password=="" || is_null($password)) && $tourType != \Admin\Model\PlacePrices::tour_type_Spiritual_tour) // - removed by Manjary*/
             if($tourType != \Admin\Model\PlacePrices::tour_type_Spiritual_tour)
             {
@@ -3283,16 +3370,17 @@ class IndexController extends BaseController{
          $userDetails=$this->userTable()->getFields(array('user_id'=>$userId),array('user_id','user_name','email','mobile','mobile_country_code','role','subscription_start_date','subscription_end_date','res_state','address','status','company_role'));
          $userType = $userDetails['role'];
 
-        if(intval($userType) == \Admin\Model\User::Subscriber_role || intval($userType) == \Admin\Model\User::Sponsor_role){  // -- condition added by Manjary  -- 
+        if(intval($userType) == \Admin\Model\User::Subscriber_role || intval($userType) == \Admin\Model\User::Sponsor_role  || $sds_active == 2){  // -- condition added by Manjary  -- 
             if($tourType!=\Admin\Model\PlacePrices::tour_type_Spiritual_tour)
             {
-                // check for subscription validity  // check for no of downloads -  to be developed later
-                $currentDate = date('Y-m-d');
-                $subscriptionEndDate = date('Y-m-d',strtotime($userDetails['subscription_end_date']));
-                if($currentDate > $subscriptionEndDate){
-                    return new JsonModel(array('success'=>false,'message'=>'Subscription expired'));
+                if($sds_active != 2){
+                    // check for subscription validity  // check for no of downloads -  to be developed later
+                    $currentDate = date('Y-m-d');
+                    $subscriptionEndDate = date('Y-m-d',strtotime($userDetails['subscription_end_date']));
+                    if($currentDate > $subscriptionEndDate){
+                        return new JsonModel(array('success'=>false,'message'=>'Subscription expired'));
+                    }
                 }
-                
                 /* $checkPassword=$this->passwordTable()->checkPasswordForBooking(array('booking_id'=>$bookingId,'user_id'=>$userId,'password'=>$bookingPassword,'password_id'=>$passwordId));
                 if(count($checkPassword)==0)
                 {
@@ -3494,7 +3582,7 @@ class IndexController extends BaseController{
         $bookingDetails['user_type']=$downloadPlaces['user_type'];
 
         //if($userType == "2" || $userType == "3"){
-        if(intval($userType) == \Admin\Model\User::Subscriber_role || intval($userType) == \Admin\Model\User::Sponsor_role){
+        if(intval($userType) == \Admin\Model\User::Subscriber_role || intval($userType) == \Admin\Model\User::Sponsor_role  || $sds_active == 2){
             $bookingDetails['tour_date'] = $downloadPlaces['tour_date'];
             $bookingDetails['expiry_date'] = $downloadPlaces['expiry_date'];
         }

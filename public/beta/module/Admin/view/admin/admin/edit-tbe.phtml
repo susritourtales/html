@@ -1,0 +1,48 @@
+<div class="sidebar">
+    <div class="side-panel" id="collapsibleNavbar">
+        <?php echo $this->partial('/application/index/left-menu', array(
+            'mainActiveTab'=>\Application\Constants\Constants::TA_Section,
+            'activeTab'=>\Application\Constants\Constants::TA_Admin
+        )); ?>
+    </div>
+</div>
+<link rel="stylesheet" href="<?php echo $this->basePath()?>/css/main.css">
+<script src="<?php echo $this->basePath(); ?>/js/admin/edit-tbe.js"></script>
+
+<div class="wrapper">
+    <div class="main-panel ">
+        <?php echo $this->partial("/application/index/app-header"); ?>
+        <div class="main-container p-lg-4">
+            <div class="main-heading mb-3"><a href="<?php echo $this->basePath().'/a_dMin/tbe-list/' . base64_encode("pid=".$tbeDetails['ta_id'])?>"><i class="fa fa-arrow-left mr-2"></i></a>Edit TBE</div>
+                <div class="row">
+                    <div class="col-12 col-lg-10">
+                        <div class="row adding-form">
+                            <div class="col-12 col-md-6 pt-md-5 mb-4 mt-n1">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <label class="text-black-50">Name</label>
+                                        <input type="text" class="form-control" id="tbeName" value="<?php echo $tbeDetails['tbe_name']; ?>"/>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="text-black-50">Mobile</label>
+                                        <input type="text" class="form-control" id="tbeMobile" value="<?php echo $tbeDetails['tbe_mobile']; ?>" readonly/>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="text-black-50">Email</label>
+                                        <input type="text" class="form-control" id="tbeEmail" value="<?php echo $tbeDetails['tbe_email']; ?>"/>
+                                    </div> 
+                                </div>
+                                <?php $tbeId = substr($_SERVER['REQUEST_URI'], strrpos($_SERVER['REQUEST_URI'], "/")+1);  ?>
+                                <div class="mt-3">
+                                    <div class="col-sm-9 text-left"> <button type="button" class="btn submit-btn" id="editTbe">Submit</button></div>
+                                    <input type="hidden" id="htbeId" value="<?php echo $tbeId; ?>"/>
+                                    <input type="hidden" id="htaId" value="<?php echo base64_encode("pid=".$tbeDetails['ta_id']); ?>"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>

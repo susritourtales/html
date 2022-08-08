@@ -1,0 +1,52 @@
+<link rel="stylesheet" href="<?php echo $this->basePath();?>/css/twistt.css">
+<link rel="stylesheet" href="<?php echo $this->basePath()?>/css/main.css">
+<div class="container-fluid my-5">
+    <div class="container">  
+    <?php echo $this->partial('/twistt-sidebar', array('activeTab'=>\Application\Constants\Constants::TWISTT_UPC_PAGE, 'id'=>$pdArr['id'], 'userId'=>$pdArr['userId'])); ?>
+        <div class="content bg-white custom-shadow p-4 color-333"> 
+            <div class="bg-light border-radius-10 custom-shadow p-4 color-333">
+                <div class="text-uppercase avant-md pb-3">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-9 my-auto"><h5><?php echo "TBE Performance"; ?></h5></div>
+                        <div class="col-sm-12 col-md-3 text-right">
+                            <?php if($_SESSION['Laminas_Auth']->storage['tbe_role'] == 'A') {?>
+                            <div class="dropdown">
+                                <button class="btn bg-white dropdown-toggle w-100 border" type="button" id="ddtbe" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Select UPC
+                                </button>
+                                <div class="dropdown-menu  w-100" aria-labelledby="dropdownMenuButton">
+                                    <?php if(count($upcList)){ 
+                                        foreach($upcList as $upc){?>
+                                    <a class="dropdown-item" href="<?php echo $this->basePath();?>/twistt-upc/<?php echo base64_encode("id=".$upc['id']); ?>" value="<?php echo $upc['id'] ?>" ><?php echo $upc['upc'] ?></a>
+                                    <?php }} ?>
+                                </div>
+                            </div>
+                            <?php } ?>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white border-radius-10 custom-shadow p-4 color-333 my-3">
+                    <h6 id="hdr" class="font-weight-bold text-uppercase my-3">Tourists Added under <span id="upcName"><?php echo $pdArr['upc']; ?></span></h6>
+                    <div class="" id="recordsList">
+                        <?php echo $this->partial("/load-upc-tourists-list", array('tList'=>$tList,'totalCount'=>$totalCount,'type'=>'initialize', 'id'=>$pdArr['id'])); ?>
+                    </div>
+                    <?php if($totalCount > 10)
+                    {
+                        $paginationCount = ceil($totalCount / 10); ?>
+                        <ul class="pagination float-right" id="listPager"></ul>
+                    <?php } ?>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(".dropdown-item").click(function(){
+        var selText = $(this).text();
+        $(this).parents('.dropdown').find('.dropdown-toggle').html(selText);
+        $('#tbeName').html(selText);
+    });
+</script>
+<script src="<?php echo $this->basePath(); ?>/js/pagination.js"></script>
+<script src="<?php echo $this->basePath().'/js/admin/upc-tourists-list.js?v=1.0'?>"></script>

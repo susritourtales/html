@@ -1,0 +1,63 @@
+
+<?php if(isset($type) && $type =='initialize') { ?>
+<style>
+.table-condensed thead tr th{ color: unset !important;}
+.calign input{text-align: center !important;}
+</style>
+<div class="table-responsive">
+<table class="table table-bordered table-hover table-striped" id="extTable">
+    <thead  class="stt-bg-primary">
+    <tr>
+    <th>S.no</th>
+        <th class="text-center" data-placeholder="Date">Date</th>
+        <th class="text-center" data-placeholder="Amount">Amount</th>
+        <th class="text-center" data-placeholder="Amt Paid"">Amt Paid</th>
+        <th class="text-center" data-placeholder="Amt Due">Amt Due</th>
+        <th class="text-center" data-placeholder="Tran Ref">Tran Ref</th>
+        <th class="text-center" data-placeholder="UPC">UPC</th>
+        <th class="text-center" data-placeholder="TA">TA</th>
+    </tr>
+    <?php } ?>
+
+    <?php if(isset($type) && ($type =='initialize' || $type=="search") ) {?>
+    <input type="hidden" class="records" value="<?php echo $totalCount; ?>">
+    <tbody>
+    <?php } ?>
+    
+    <?php if(count($seData))
+      {
+        $i=0;
+        if(isset($offset))
+        {
+            $i=$offset;
+        }
+
+        foreach ($seData as $st) { 
+          $color = "";
+          if($st['transaction_ref'] != "")
+              $color = "bg-success text-white";
+          if(1==1){ //if(!$st['sr']){?>
+          <tr class="<?php echo $color; ?>">
+              <td><?php echo $i+1; ?></td>
+              <td class="text-center"><?php echo date("d-m-Y",strtotime($st['transaction_date'])); ?></td>
+              <td class="text-center"><?php echo $st['amount']; ?></td>
+              <td class="text-center"><?php echo $st['cpamt']; ?></td>
+              <td class="text-center"><?php echo $st['cdamt']; ?></td>
+              <td class="text-center"><?php echo ($st['transaction_ref'] == "") ? "-" : "Rs " . $st['amount'] . " - " . $st['transaction_ref']; ?></td>
+              <td class="text-center"><?php echo $st['upc']; ?></td>
+              <td class="text-center"><?php echo $st['ta_name']; ?></td>
+          </tr>
+          <?php $i++; } } } else { ?>
+        <tr ><td class="text-center" colspan="10">No data</td></tr>
+    <?php  } ?>
+    <?php if(isset($type) && ($type =='initialize' || $type=="search") ) {?>
+
+    </tbody>
+    <?php } ?>
+    <?php if(isset($type) && $type =='initialize') {?>
+
+</table>
+<?php //echo "id=".$id;?>
+<input type="hidden" id="hid" value="<?php echo base64_encode("id=".$id);?>" />
+</div>
+<?php } ?>

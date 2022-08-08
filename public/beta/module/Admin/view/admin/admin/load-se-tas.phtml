@@ -1,0 +1,46 @@
+
+<?php if(isset($type) && $type =='initialize') { ?>
+<table class="table table-bordered table-hover table-striped" id="table">
+    <thead>
+    <tr>
+        <th>S.no</th>
+        <th data-placeholder="ta name" data-input="ta_name">ta name</th>
+        <th data-placeholder="ta_mobile" data-input="ta_mobile">ta mobile</th>
+        <th data-placeholder="tac" data-input="tac">tac</th>
+        <th data-placeholder="amount paid" data-input="amount_paid">amount paid</th>
+    </tr>
+    <?php } ?>
+
+    <?php if(isset($type) && ($type =='initialize' || $type=="search") ) {?>
+    <input type="hidden" class="records" value="<?php echo $totalCount; ?>">
+    <tbody>
+    <?php } ?>
+
+    <?php if(count($setas))
+      {
+        $i=0;
+        if(isset($offset))
+        {
+            $i=$offset;
+        }
+
+        foreach ($setas as $sp) { ?>
+
+            <tr data-id="<?php echo base64_encode("taid=".$sp['ta_id']); ?>">
+                <td><?php echo $i+1; ?></td>
+                <td><div id="div_<?php echo $sp['ta_id']; ?>"><?php echo $sp['ta_name'];?></div></td>
+                <td><?php echo $sp['ta_mobile']; ?></td>
+                <td class="text-center"><?php echo $sp['tac']; ?></td>
+                <td class="text-center"><?php echo round($sp['amount_paid'],2); ?></td>
+            </tr>
+            <?php $i++; } } else { ?>
+        <tr ><td class="text-center" colspan="8">No data</td></tr>
+    <?php  } ?>
+    <?php if(isset($type) && ($type =='initialize' || $type=="search") ) {?>
+
+    </tbody>
+    <?php } ?>
+    <?php if(isset($type) && $type =='initialize') {?>
+
+</table>
+<?php } ?>

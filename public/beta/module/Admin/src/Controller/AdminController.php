@@ -5393,7 +5393,7 @@ class AdminController extends BaseController
                     'pic'=>$request['pic'],
                     'commission'=>$request['commission'], 
                     'status'=> '1');
-
+                return new JsonModel($data);
                 $response=$this->taConsultantDetailsTable()->addTaConsultant($data);
                 if($response){
                     return new JsonModel(array('success'=>true , 'message'=>'added successfully'));

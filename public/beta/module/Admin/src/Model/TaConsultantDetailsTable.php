@@ -25,6 +25,7 @@ class TaConsultantDetailsTable extends BaseTable
         try {
             return $this->insert($data);
         } catch (\Exception $e) {
+            return $e->getMessage();
             return false;
         }
     }

@@ -5396,6 +5396,7 @@ class AdminController extends BaseController
                 
                 $response=$this->taConsultantDetailsTable()->addTaConsultant($data);
                 if($response){
+                    return new JsonModel(array('success'=>true,'message'=>$response));
                     return new JsonModel(array('success'=>true , 'message'=>'added successfully'));
                 }else{
                     return new JsonModel(array('success'=>false,'message'=>$response));

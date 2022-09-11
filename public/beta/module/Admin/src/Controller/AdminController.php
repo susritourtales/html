@@ -5398,6 +5398,7 @@ class AdminController extends BaseController
                 if($response){
                     return new JsonModel(array('success'=>true , 'message'=>'added successfully'));
                 }else{
+                    return new JsonModel(array('success'=>false,'message'=>$response));
                     return new JsonModel(array('success'=>false,'message'=>'unable to add STTSE details'));
                 }
             }else{

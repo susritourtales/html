@@ -20,7 +20,7 @@ class TaConsultantDetailsTable extends BaseTable
         $this->tableName = array("tc" => "ta_consultant_details");
     }
 
-    public function addTaConsultant(Array $data)
+    public function addTaConsultant($data)
     {
         try {
             return $this->insert($data);

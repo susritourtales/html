@@ -5382,6 +5382,12 @@ class AdminController extends BaseController
 
             $chkTBEs = $this->tbeDetailsTable()->getField(array("tbe_mobile"=>$request['mobile'], "status"=>'1'), "user_id");
             if(!$chkTBEs){
+                $aes = new Aes();
+                $password = $request['mobile'];
+                $encodeContent = $aes->encrypt($password);
+                $encryptPassword = $encodeContent['password'];
+                $hash = $encodeContent['hash'];
+
                 $data=array(
                     'name'=> $request['name'],
                     'mobile'=> $request['mobile'],
@@ -5392,6 +5398,8 @@ class AdminController extends BaseController
                     'bank_ac_no'=>$request['ban'],
                     'pic'=>$request['pic'],
                     'commission'=>$request['commission'], 
+                    'pwd'=> $encryptPassword,
+                    'hash'=> $hash,
                     'status'=> '1');
                 
                 $response=$this->taConsultantDetailsTable()->addTaConsultant($data);

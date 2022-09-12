@@ -39,12 +39,12 @@
                 <td class="text-center"><?php echo $p['duration']; ?></td>
                 <td class="text-center"><?php echo $p['cost']; ?></td>
                 <td class="text-center"><?php echo $p['active']; ?></td>
-                <td><div class="d-flex">
+                <td><div class="d-flex" onclick="event.stopPropagation();">
                     <a class="action-icon" href="<?php echo $this->basePath().'/a_dMin/edit-ta-plan/'.base64_encode('planId='.$p['id'])?>" >
-                        <img src="<?php echo $this->basePath();?>/img/edit.png" class="img-fluid">
+                        <img src="<?php echo $this->basePath();?>/img/edit.png" class="img-fluid" onclick="event.stopPropagation();">
                     </a>
                     <div class="action-icon delete-plan" data-id="<?php echo $p['id']; ?>">
-                        <img src="<?php echo $this->basePath();?>/img/delete.png" class="img-fluid" >
+                        <img src="<?php echo $this->basePath();?>/img/delete.png" class="img-fluid" onclick="event.stopPropagation();">
                     </div>
                 </div></td>
             </tr>

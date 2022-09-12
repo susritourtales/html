@@ -54,19 +54,13 @@ $(document).ready(function () {
             });
         }
     }
-    $('table').on('click', 'tbody tr', function(){
-        let id=$(this).data("id");
-        if(id)
-        {
-            window.location = BASE_URL+'/a_dMin/tbe-tourists/'+id;
-        }
-    });
+
     initPagination();
-    $("body").on("click",".delete-tbe",function () {
+    $("body").on("click",".delete-tbe",function (e) {
         var tbeId=$(this).data("id");
         $(".delete-conform-button").attr("data-id",tbeId);
-
         $("#deleteTBEModal").modal("show");
+        e.stopPropagation();
     }) .on("click",'.delete-conform-button',function () {
         $(this).prop("disabled",true);
         var tbeId = $(this).attr("data-id");
@@ -81,6 +75,12 @@ $(document).ready(function () {
                 $(".delete-conform-button").prop("disabled",true);
             }
         })
+    }).on('click', 'table tbody tr', function(){
+        let id=$(this).data("id");
+        if(id)
+        {
+            window.location = BASE_URL+'/a_dMin/tbe-tourists/'+id;
+        }
     }).on('click', '.fa-sort',  function (){
         $('.fa-sort').removeClass("d-none");
         $('.fa-sort-up').addClass("d-none");

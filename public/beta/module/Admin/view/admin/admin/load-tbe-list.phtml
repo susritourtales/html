@@ -45,10 +45,10 @@
                 </td>
                 <td><div class="d-flex">
                     <a class="action-icon" href="<?php echo $this->basePath().'/a_dMin/edit-tbe/'.base64_encode('tbeId='.$tbe['user_id'])?>" >
-                        <img src="<?php echo $this->basePath();?>/img/edit.png" class="img-fluid">
+                        <img src="<?php echo $this->basePath();?>/img/edit.png" class="img-fluid" onclick="event.stopPropagation();">
                     </a>
                     <div class="action-icon delete-tbe" data-id="<?php echo $tbe['user_id']; ?>">
-                        <img src="<?php echo $this->basePath();?>/img/delete.png" class="img-fluid" >
+                        <img src="<?php echo $this->basePath();?>/img/delete.png" class="img-fluid">
                     </div>
                 </div></td>
             </tr>

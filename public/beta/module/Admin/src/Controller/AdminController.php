@@ -2418,11 +2418,11 @@ class AdminController extends BaseController
     {
         if ($this->getRequest()->isXmlHttpRequest()) {
             $request = $this->getRequest()->getPost();
-            if(!$this->getLoggedInUserId())
+            if(!$this->getLoggedInTbeId())
             {
                   return new JsonModel(array('success'=>false,'message'=>'Please Login To Change Password'));
             }
-            $userId=$this->getLoggedInUserId();
+            $userId=$this->getLoggedInTbeId();
             $currentPassword=$request['current_password'];
             $newPassword=$request['new_password'];
             $checkPassword=$this->tbeDetailsTable()->checkPasswordWithUserId($userId,$currentPassword);
@@ -2458,11 +2458,11 @@ class AdminController extends BaseController
     {
         if ($this->getRequest()->isXmlHttpRequest()) {
             $request = $this->getRequest()->getPost();
-            if(!$this->getLoggedInUserId())
+            if(!$this->getLoggedInSeId())
             {
                   return new JsonModel(array('success'=>false,'message'=>'Please Login To Change Password'));
             }
-            $userId=$this->getLoggedInUserId();
+            $userId=$this->getLoggedInSeId();
             $currentPassword=$request['current_password'];
             $newPassword=$request['new_password'];
             $checkPassword=$this->taConsultantDetailsTable()->checkPasswordWithUserId($userId,$currentPassword);

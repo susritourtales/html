@@ -5810,11 +5810,10 @@ class AdminController extends BaseController
             //print_r($request);exit;
             $chkTaCons = $this->taConsultantDetailsTable()->getField(array("mobile"=>$request['mobile'], "status"=>'1'), "id");
             if(!$chkTaCons){
-                $chkTA = $this->tbeDetailsTable()->getField(array("tbe_mobile"=>$request['mobile'], "status"=>'1'), "user_id");
-                if(!$chkTA){                
+                //$chkTA = $this->tbeDetailsTable()->getField(array("tbe_mobile"=>$request['mobile'], "status"=>'1'), "user_id");
+                /* if(!$chkTA){ */                
                     $data=array(
                         'tbe_name'=> $request['name'],
-                        'tbe_mobile'=> $request['mobile'],
                         'tbe_email'=> $request['email']
                         );
 
@@ -5822,11 +5821,11 @@ class AdminController extends BaseController
                     if($response){
                         return new JsonModel(array('success'=>true , 'message'=>'updated successfully'));
                     }else{
-                        return new JsonModel(array('success'=>false,'message'=>'unable to update STTSE details'));
+                        return new JsonModel(array('success'=>false,'message'=>'unable to update TBE details'));
                     }
-                }else{
+                /* }else{
                     return new JsonModel(array('success'=>false,'message'=>'TBE already added under another TA'));
-                }
+                } */
             }else{
                 return new JsonModel(array('success'=>false,'message'=>'STTSE cannot be TA or TBE'));
             }
@@ -5850,7 +5849,7 @@ class AdminController extends BaseController
             $dataExists = $this->taSdsTable()->getField(array('tbe_id'=>$tbeId), 'id');
             if($dataExists)
                 return new JsonModel(array('success'=>false,"message"=>'unable to delete due to dependent data'));
-                
+
             $response=$this->tbeDetailsTable()->setTbeDetails($data,array('user_id'=>$tbeId));
             if($response)
             {

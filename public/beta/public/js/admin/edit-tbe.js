@@ -22,12 +22,12 @@ $(document).ready(function ()
             messageDisplay("Please enter Mobile");
             return  false;
         }
-        if(tbeEmail == ''){
+        /* if(tbeEmail == ''){
             element.html('submit');
             element.prop('disabled',false);
             messageDisplay("Please enter Email");
             return  false;
-        }
+        } */
                    
         var formData=new FormData();
         var tbeid=$('#htbeId').val();

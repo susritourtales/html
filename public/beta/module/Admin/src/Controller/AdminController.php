@@ -5045,24 +5045,20 @@ class AdminController extends BaseController
                 }
             
                 // editing TA as TBE
-                $aes = new Aes();
+                $tbeId=$this->tbeDetailsTable()->getField(array('tbe_mobile'=>$request['ae_mobile']), 'user_id');
+                /* $aes = new Aes();
                 $password = $request['ae_mobile'];
                 $encodeContent = $aes->encrypt($password);
                 $encryptPassword = $encodeContent['password'];
-                $hash = $encodeContent['hash'];
+                $hash = $encodeContent['hash']; */
                 
                 $data=array(
-                    'ta_id'=> $taId,
                     'tbe_name'=> $request['ae_name'],
-                    'tbe_mobile'=> $request['ae_mobile'],
-                    'tbe_email'=> $request['ae_email'],
-                    'role'=> 'A',
-                    'login_id'=> $request['ae_mobile'],
-                    'pwd'=> $encryptPassword,
-                    'hash'=> $hash, 'status' => 1, 
+                    'tbe_email'=> $request['ae_email'], 
                     'updated_at' => date("Y-m-d H:i:s"));
 
-                $tberesp=$this->tbeDetailsTable()->addTbe($data);
+                // $tberesp=$this->tbeDetailsTable()->addTbe($data);
+                $tberesp=$this->tbeDetailsTable()->setTbeDetails($data, array('user_id'=>$tbeId));
                 if(!$tberesp){
                     return new JsonModel(array('success'=>false,'message'=>'unable to add TBE details'));
                 }
@@ -5851,6 +5847,10 @@ class AdminController extends BaseController
             $request = $this->getRequest()->getPost();
             $tbeId=$request['tbe_id'];
             $data=array('status'=>0);
+            $dataExists = $this->taSdsTable()->getField(array('tbe_id'=>$tbeId), 'id');
+            if($dataExists)
+                return new JsonModel(array('success'=>false,"message"=>'unable to delete due to dependent data'));
+                
             $response=$this->tbeDetailsTable()->setTbeDetails($data,array('user_id'=>$tbeId));
             if($response)
             {

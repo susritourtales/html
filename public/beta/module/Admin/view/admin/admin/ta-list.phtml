@@ -14,7 +14,7 @@
         <?php echo $this->partial("/application/index/app-header"); ?>
 
         <div class="main-container p-lg-4" >
-            <div class="d-flex justify-content-between mb-4"> <div class="main-heading">TA List</div>  <div><a class="text-right px-2" href="<?php echo $this->basePath().'/a_dMin/add-ta'?>"><button type="button" class="btn add-btn">Add TA</button></a><a class="text-right px-2" href="<?php echo $this->basePath().'/a_dMin/buy-plan'?>"><button type="button" class="btn add-btn">Buy Plan</button></a></div></div>
+            <div class="d-flex justify-content-between mb-4"> <div class="main-heading">TA List</div>  <div><a class="text-right px-2" href="<?php echo $this->basePath().'/a_dMin/add-ta'?>"><button type="button" class="btn add-btn">Add TA</button></a><a class="text-right px-2" href="<?php echo $this->basePath().'/a_dMin/buy-plan'?>"><button type="button" class="btn add-btn">Purchase Details</button></a></div></div>
             <div class="" id="recordsList">
                 <?php echo $this->partial('/admin/admin/load-ta-list', array('taList'=>$taList,'totalCount'=>$totalCount,'type'=>'initialize')); ?>
             </div>

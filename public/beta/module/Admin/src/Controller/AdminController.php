@@ -4341,9 +4341,9 @@ class AdminController extends BaseController
                     if($response['success'])
                         return new JsonModel(array('success'=>true,'message'=>'purchase details added successfully'));
                     else
-                        return new JsonModel(array('success'=>false,'message'=>'unable to add purchase details1'));
+                        return new JsonModel(array('success'=>false,'message'=>'unable to add purchase details'));
                 }else
-                    return new JsonModel(array('success'=>false,'message'=>'unable to add purchase details2'));
+                    return new JsonModel(array('success'=>false,'message'=>'unable to add purchase details'));
             }
         }
         if(!$this->getLoggedInUserId())

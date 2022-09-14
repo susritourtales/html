@@ -30,7 +30,7 @@ class TaPurchasesTable extends BaseTable
             }
         }catch(\Exception $e){
 
-            return array("success" => false,"id" =>$e);
+            return array("success" => false,"id" =>$e->getMessage());
         }
     }
     

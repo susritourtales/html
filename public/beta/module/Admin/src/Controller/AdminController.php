@@ -4268,6 +4268,7 @@ class AdminController extends BaseController
 
             if(!$taConsId){
                 $taConsLatestDueAmtUpdated = 0;
+                $taConsId = null;
             }else{
                 $taConsDetails = $this->taConsultantDetailsTable()->getTaConsultantDetails($taConsId);
                 $validConsMobile = $this->taDetailsTable()->getField(array('id'=>$taid), 'cons_mobile');

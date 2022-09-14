@@ -26,11 +26,11 @@ class TaPurchasesTable extends BaseTable
             if($insert){
                 return array("success" => true,"id" => $this->tableGateway->lastInsertValue);
             }else{
-                return array("success" => false);
+                return array("success" => false,"id" =>'error unknown');
             }
         }catch(\Exception $e){
 
-            return array("success" => false);
+            return array("success" => false,"id" =>$e);
         }
     }
     

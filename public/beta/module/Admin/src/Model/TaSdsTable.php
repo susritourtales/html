@@ -148,7 +148,11 @@ class TaSdsTable extends BaseTable
         try{
             $sql = $this->getSql();
             $where=new Where();
-            $where->equalTo(key($warr),array_values($warr)[0]);
+            //$where->equalTo(key($warr),array_values($warr)[0]);
+            foreach($warr as $key => $value) {
+                //echo "$key is at $value";
+                $where->equalTo($key, $value);
+              }
             //$where->equalTo("ts.tbe_id",$tbeId);
 
             if(array_key_exists('tourist_name',$data))
@@ -232,14 +236,14 @@ class TaSdsTable extends BaseTable
             if($gtc){
                 $query = $sql->select()
                         ->columns(array('id', 'tourist_name', 'tourist_mobile', 'travel_date'=>new \Laminas\Db\Sql\Expression('DATE(`ts`.`travel_date`)'), 'upc', 'tbe_id'))
-                        ->join(array('tbd'=>'tbe_details'), 'ts.tbe_id=tbd.user_id',array("tbe_name"),Select::JOIN_LEFT)
+                        ->join(array('tbd'=>'tbe_details'), 'ts.tbe_id=tbd.user_id',array("tbe_name", "role"),Select::JOIN_LEFT)
                         ->from($this->tableName)
                         ->where($where)
                         ->order($order);
             }else{
                 $query = $sql->select()
                         ->columns(array('id', 'tourist_name', 'tourist_mobile', 'travel_date'=>new \Laminas\Db\Sql\Expression('DATE(`ts`.`travel_date`)'), 'upc', 'tbe_id'))
-                        ->join(array('tbd'=>'tbe_details'), 'ts.tbe_id=tbd.user_id',array("tbe_name"),Select::JOIN_LEFT)
+                        ->join(array('tbd'=>'tbe_details'), 'ts.tbe_id=tbd.user_id',array("tbe_name", "role"),Select::JOIN_LEFT)
                         ->from($this->tableName)
                         ->where($where)
                         ->limit($data['limit'])

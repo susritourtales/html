@@ -48,6 +48,7 @@ class BaseController extends AbstractActionController
     protected $taPurchasesTable;   // -- Added my Manjary
     protected $taSdsTable;   // -- Added my Manjary
     protected $tbeDetailsTable;   // -- Added my Manjary
+    protected $tbeLoginTable;   // -- Added my Manjary
     protected $tbeOldPasswordsTable;   // -- Added my Manjary
     protected $seOldPasswordsTable;   // -- Added my Manjary
     protected $twisttOtpTable;
@@ -1249,6 +1250,26 @@ class BaseController extends AbstractActionController
             }
 
             return $this->tbeDetailsTable;
+
+        } catch (\Exception $e) {
+
+            return null;
+        } catch (NotFoundExceptionInterface $e) {
+            return null;
+        } catch (ContainerExceptionInterface $e) {
+            return null;
+        }
+    }
+
+    public function tbeLoginTable()     // -- Added my Manjary
+    {
+        try {
+
+            if ($this->tbeLoginTable == null) {
+                $this->tbeLoginTable = $this->getEvent()->getApplication()->getServiceManager()->get("Admin/Model/TbeLoginTable");
+            }
+
+            return $this->tbeLoginTable;
 
         } catch (\Exception $e) {
 

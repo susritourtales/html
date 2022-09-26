@@ -2,9 +2,7 @@
 
 namespace Admin\Controller;
 
-
-
-
+use Admin\Model\TbeDetails;
 use Application\Constants\Constants;
 use Application\Controller\BaseController;
 use Application\Handler\Aes;
@@ -2319,8 +2317,9 @@ class AdminController extends BaseController
             // var_dump($request);exit;
             $userName=$request['user_name'];
             $password=$request['password'];
-             $user = $this->tbeDetailsTable()->authenticateUser($userName, $password);
-             if(count($user)) // && ($user['role']==\Admin\Model\TbeDetails::Twistt_TA_role || $user['role']==\Admin\Model\TbeDetails::Twistt_TBE_role))
+            $user = $this->tbeLoginTable()->authenticateUser($userName, $password);
+            $tbe_name = $this->tbeDetailsTable()->getField(array('tbe_mobile'=> $userName), 'tbe_name');
+            if(count($user)) // && ($user['role']==\Admin\Model\TbeDetails::Twistt_TA_role || $user['role']==\Admin\Model\TbeDetails::Twistt_TBE_role))
             {
                 if(ob_get_length())
                 {
@@ -2328,6 +2327,18 @@ class AdminController extends BaseController
                 }
                 session_unset();
                 $this->getAuthDbTable()
+                ->setTableName('tbe_login')
+                ->setIdentityColumn("login_id")
+                ->setCredentialColumn('user_id')
+                ->setIdentity($user["login_id"])
+                ->setCredential($user['user_id']);
+            $this->getAuthService()
+                ->setAdapter($this->getAuthDbTable())
+                ->setStorage($this->getSessionStorage());
+            $this->getSessionManager()->rememberMe(60 * 60 * 24 * 30 * 3);
+            $result = $this->getAuthService()->authenticate();
+
+               /*  $this->getAuthDbTable()
                     ->setTableName('tbe_details')
                     ->setIdentityColumn("tbe_mobile")
                     ->setCredentialColumn('user_id')
@@ -2337,16 +2348,16 @@ class AdminController extends BaseController
                     ->setAdapter($this->getAuthDbTable())
                     ->setStorage($this->getSessionStorage());
                 $this->getSessionManager()->rememberMe(60 * 60 * 24 * 30 * 3);
-                $result = $this->getAuthService()->authenticate();
+                $result = $this->getAuthService()->authenticate(); */
 
 
                 if ($result->isValid()) {
-                    $resultRow = (array)$this->getAuthDbTable()->getResultRowObject(array('user_id', 'tbe_mobile', "role"));
+                    $resultRow = (array)$this->getAuthDbTable()->getResultRowObject(array('user_id', 'login_id'));
                     $tbeResult['tbe_id'] = $resultRow['user_id'];
-                    $tbeResult['tbe_mobile'] = $resultRow['tbe_mobile'];
-                    $tbeResult['tbe_role'] = $resultRow['role'];
+                    $tbeResult['tbe_mobile'] = $resultRow['login_id'];
+                    //$tbeResult['tbe_role'] = $resultRow['role'];
                     $this->getSessionStorage()->write($tbeResult);
-                    $_SESSION['Laminas_Auth']->storage['tuser_name']=$user['tbe_name'];
+                    $_SESSION['Laminas_Auth']->storage['tuser_name']=$tbe_name; //$user['tbe_name'];
                     return new JsonModel(array("success" => true, "message" => "Valid Credentials"));
                 }
                 return new JsonModel(array("success" => false, "message" => "Invalid Credentials", "errorCode" => 4));
@@ -2423,9 +2434,10 @@ class AdminController extends BaseController
                   return new JsonModel(array('success'=>false,'message'=>'Please Login To Change Password'));
             }
             $userId=$this->getLoggedInTbeId();
+            $tbeMobile = $this->tbeDetailsTable()->getField(array('user_id'=>$userId), 'tbe_mobile');
             $currentPassword=$request['current_password'];
             $newPassword=$request['new_password'];
-            $checkPassword=$this->tbeDetailsTable()->checkPasswordWithUserId($userId,$currentPassword);
+            $checkPassword=$this->tbeLoginTable()->checkPasswordWithUserId($userId, $currentPassword);
               if(count($checkPassword))
               {
                   $aes=new Aes();
@@ -2433,13 +2445,13 @@ class AdminController extends BaseController
                   $encodeString = $encodeContent['password'];
                   $hash = $encodeContent['hash'];
                   $date = date("Y-m-d H:i:s");
-                  $tbeOldPwdDetails = $this->tbeDetailsTable()->getTbeDetails($userId);
-                  $oldPwdData = array('tbe_id'=>$userId,'old_pwd'=>$tbeOldPwdDetails['pwd'],'old_hash'=>$tbeOldPwdDetails['hash'], 'created_at'=>$date, 'updated_at'=>$date);
+                  $tbeOldPwdDetails = $this->tbeLoginTable()->getLoginDetails($tbeMobile);
+                  $oldPwdData = array('tbe_id'=>$tbeOldPwdDetails['user_id'],'old_pwd'=>$tbeOldPwdDetails['pwd'],'old_hash'=>$tbeOldPwdDetails['hash'], 'created_at'=>$date, 'updated_at'=>$date);
                   $currentPasswordInsert=$this->tbeOldPasswordsTable()->addTbeOldPassword($oldPwdData);
 
                   if($currentPasswordInsert)
                    {
-                       $currentPasswordUpdate=$this->tbeDetailsTable()->setTbeDetails(array('pwd'=>$encodeString, 'hash'=>$hash),array('user_id'=>$userId));
+                       $currentPasswordUpdate=$this->tbeLoginTable()->setTbeLogin(array('pwd'=>$encodeString, 'hash'=>$hash),array('user_id'=>$userId));
                        return new JsonModel(array('success'=>false,'message'=>'Updated successfully'));
 
                    }else{
@@ -4832,7 +4844,7 @@ class AdminController extends BaseController
                 return new JsonModel(array("success" => false, "message" => "TAC Already exists"));
             }
 
-            $chkTaCons = $this->taConsultantDetailsTable()->getField(array("mobile"=>$request['mobile'], "status"=>'1'), "id");
+            $chkTaCons = $this->taConsultantDetailsTable()->getField(array("mobile"=>$request['ta_mobile'], "status"=>'1'), "id");
             if($chkTaCons){
                 return new JsonModel(array('success'=>false,'message'=>'TA cannot be STTSE'));   
             }
@@ -4885,7 +4897,7 @@ class AdminController extends BaseController
                 'ae_email'=> $request['ae_email'],
                 'cons_mobile'=>$request['cons_mobile'],
                 'tac'=>$request['tac'],
-                'status'=> '1');
+                'status'=> \Admin\Model\TbeDetails::TBE_Active);
 
             $response=$this->taDetailsTable()->addTa($data);
             if($response){
@@ -4902,30 +4914,43 @@ class AdminController extends BaseController
                     $this->tourismFilesTable()->addMutipleTourismFiles($uploadFileDetails);
                 }
                 
-                // adding TA as TBE
-                $aes = new Aes();
-                $password = $request['ae_mobile'];
-                $encodeContent = $aes->encrypt($password);
-                $encryptPassword = $encodeContent['password'];
-                $hash = $encodeContent['hash'];
-                
+                // adding TA as TBE                
                 $data=array(
                     'ta_id'=> $taId,
                     'tbe_name'=> $request['ae_name'],
                     'tbe_mobile'=> $request['ae_mobile'],
                     'tbe_email'=> $request['ae_email'],
-                    'role'=> 'A',
-                    'login_id'=> $request['ae_mobile'],
-                    'pwd'=> $encryptPassword,
-                    'hash'=> $hash,
-                    'status' => 1, 'created_at' => date("Y-m-d H:i:s"),
+                    'role'=> \Admin\Model\TbeDetails::Twistt_TA_role,
+                    'active'=>\Admin\Model\TbeDetails::TBE_Enabled,
+                    'status'=>\Admin\Model\TbeDetails::TBE_Active,
+                    'created_at' => date("Y-m-d H:i:s"),
                     'updated_at' => date("Y-m-d H:i:s"));
 
                 $tberesp=$this->tbeDetailsTable()->addTbe($data);
                 if(!$tberesp){
+                    $tbeLoginExists = $this->tbeLoginTable()->getField(array("login_id"=>$request['ae_mobile']), "id");
+                    if(!$tbeLoginExists){
+                        $aes = new Aes();
+                        $password = $request['ae_mobile'];
+                        $encodeContent = $aes->encrypt($password);
+                        $encryptPassword = $encodeContent['password'];
+                        $hash = $encodeContent['hash'];
+                        $tbeId = $this->tbeDetailsTable()->getField(array('tbe_mobile'=>$request['ae_mobile'],'status'=>\Admin\Model\TbeDetails::TBE_Active, 'active'=>\Admin\Model\TbeDetails::TBE_Enabled),'user_id');
+
+                        $ldata = array(
+                            'user_id' => $tbeId,
+                            'login_id'=> $request['ae_mobile'],
+                            'pwd'=> $encryptPassword,
+                            'hash'=> $hash,
+                            'created_at' => date("Y-m-d H:i:s"),
+                            'updated_at' => date("Y-m-d H:i:s")
+                        );
+                        $lresp=$this->tbeLoginTable()->addTbeLogin($ldata);
+                        if(!$lresp)
+                            return new JsonModel(array('success'=>false,'message'=>'unable to add TBE login details'));
+                    }
                     return new JsonModel(array('success'=>false,'message'=>'unable to add TBE details'));
-                }
-                                               
+                }                               
                 return new JsonModel(array('success'=>true , 'message'=>'added successfully'));
             }else{
                 return new JsonModel(array('success'=>false,'message'=>'unable to add TA details'));
@@ -4979,9 +5004,14 @@ class AdminController extends BaseController
                 return new JsonModel(array("success" => false, "message" => "TAC Already exists"));
             }
 
-            $chkTaCons = $this->taConsultantDetailsTable()->getField(array("mobile"=>$request['mobile'], "status"=>'1'), "id");
+            $chkTaCons = $this->taConsultantDetailsTable()->getField(array("mobile"=>$request['ta_mobile'], "status"=>'1'), "id");
             if($chkTaCons){
                 return new JsonModel(array('success'=>false,'message'=>'TA cannot be STTSE'));   
+            }
+
+            $chkAE = $this->taConsultantDetailsTable()->getField(array("mobile"=>$request['ae_mobile'], "status"=>'1'), "id");
+            if($chkAE){
+                return new JsonModel(array('success'=>false,'message'=>'AE cannot be STTSE'));
             }
             
             $fileIds=explode(",",$request['file_Ids']);
@@ -5045,26 +5075,74 @@ class AdminController extends BaseController
                     $this->tourismFilesTable()->deletePlaceFiles($deleteFiles);
                 }
             
-                // editing TA as TBE
-                $tbeId=$this->tbeDetailsTable()->getField(array('tbe_mobile'=>$request['ae_mobile']), 'user_id');
-                /* $aes = new Aes();
-                $password = $request['ae_mobile'];
-                $encodeContent = $aes->encrypt($password);
-                $encryptPassword = $encodeContent['password'];
-                $hash = $encodeContent['hash']; */
+                // Editing TA as TBE
+                $tbeResp=$this->tbeDetailsTable()->getFields(array('ta_id'=>$taId, 'role'=>\Admin\Model\TbeDetails::Twistt_TA_role, 'active'=>\Admin\Model\TbeDetails::TBE_Enabled,'status'=>\Admin\Model\TbeDetails::TBE_Active), array('user_id', 'tbe_mobile'));
+
+                $tbeId = $tbeResp['user_id'];
+                $newMobile = $request['ae_mobile'];
+                $oldMobile = $tbeResp['tbe_mobile'];
+                /* $oldMobile = $this->tbeDetailsTable()->getField(array("user_id"=>$tbeId, 'active'=>\Admin\Model\TbeDetails::TBE_Enabled, "status"=>\Admin\Model\TbeDetails::TBE_Active), "tbe_mobile"); */
+                $newMobileUnderTA = $this->tbeDetailsTable()->getField(array("ta_id"=>$taId, "tbe_mobile"=>$newMobile, "status"=>\Admin\Model\TbeDetails::TBE_Active, 'active'=>\Admin\Model\TbeDetails::TBE_Enabled), "user_id");
                 
-                $data=array(
-                    'tbe_name'=> $request['ae_name'],
-                    'tbe_email'=> $request['ae_email'], 
-                    'updated_at' => date("Y-m-d H:i:s"));
+                if(($newMobile != $oldMobile) && !$newMobileUnderTA){
+                    // disable old mobile number
+                    $updResp=$this->tbeDetailsTable()->setTbeDetails(array('active'=>\Admin\Model\TbeDetails::TBE_Disabled), array("user_id"=>$tbeId));
+                    // add TBE with new mobile number
+                    $taTbeCount = $this->tbeDetailsTable()->getTasTbeCount($taId);
+                    if($taTbeCount >= 10){
+                        return new JsonModel(array('success'=>false , 'message'=>'Maximum no. of TBEs added already'));
+                    }
+                                            
+                    $data=array(
+                        'ta_id'=> $taId,
+                        'tbe_name'=> $request['ae_name'],
+                        'tbe_mobile'=> $request['ae_mobile'],
+                        'tbe_email'=> $request['ae_email'],
+                        'role'=> \Admin\Model\TbeDetails::Twistt_TA_role,
+                        'active'=>\Admin\Model\TbeDetails::TBE_Enabled,
+                        'status'=>\Admin\Model\TbeDetails::TBE_Active, 
+                        'created_at' => date("Y-m-d H:i:s"),
+                        'updated_at' => date("Y-m-d H:i:s"));
 
-                // $tberesp=$this->tbeDetailsTable()->addTbe($data);
-                $tberesp=$this->tbeDetailsTable()->setTbeDetails($data, array('user_id'=>$tbeId));
-                if(!$tberesp){
-                    return new JsonModel(array('success'=>false,'message'=>'unable to add TBE details'));
+                    $response=$this->tbeDetailsTable()->addTbe($data);
+                    if($response){
+                        $tbeLoginExists = $this->tbeLoginTable()->getField(array("login_id"=>$request['mobile']), "id");
+                        if(!$tbeLoginExists){
+                            $aes = new Aes();
+                            $password = $request['ae_mobile'];
+                            $encodeContent = $aes->encrypt($password);
+                            $encryptPassword = $encodeContent['password'];
+                            $hash = $encodeContent['hash'];
+                            $tbeId = $this->tbeDetailsTable()->getField(array('tbe_mobile'=>$request['mobile'],'status'=>\Admin\Model\TbeDetails::TBE_Active, 'active'=>\Admin\Model\TbeDetails::TBE_Enabled),'user_id');
+
+                            $ldata = array(
+                                'user_id' => $tbeId,
+                                'login_id'=> $request['ae_mobile'],
+                                'pwd'=> $encryptPassword,
+                                'hash'=> $hash,
+                                'created_at' => date("Y-m-d H:i:s"),
+                                'updated_at' => date("Y-m-d H:i:s")
+                            );
+                            $lresp=$this->tbeLoginTable()->addTbeLogin($ldata);
+                            if(!$lresp)
+                                return new JsonModel(array('success'=>false,'message'=>'unable to add TBE login details'));
+                        }
+                        return new JsonModel(array('success'=>true , 'message'=>'updated successfully'));
+                    }else{
+                        return new JsonModel(array('success'=>false,'message'=>'unable to update TBE details'));
+                    }
+                }else{
+                    $data=array(
+                        'tbe_name'=> $request['ae_name'],
+                        'tbe_email'=> $request['ae_email'],
+                        'updated_at' => date("Y-m-d H:i:s"));
+
+                    $tberesp=$this->tbeDetailsTable()->setTbeDetails($data, array('user_id'=>$tbeId));
+                    if(!$tberesp){
+                        return new JsonModel(array('success'=>false,'message'=>'unable to add TBE details'));
+                    }
+                    return new JsonModel(array('success'=>true , 'message'=>'updated successfully'));
                 }
-
-                return new JsonModel(array('success'=>true , 'message'=>'updated successfully'));
             }else{
                 return new JsonModel(array('success'=>false,'message'=>'unable to update ta details'));
             }
@@ -5091,7 +5169,7 @@ class AdminController extends BaseController
         }
     }
 
-    public function deleteTaAction()
+    public function deleteTaAction() // -- not used
     {        
         if ($this->getRequest()->isXmlHttpRequest())
         {
@@ -5311,10 +5389,15 @@ class AdminController extends BaseController
                     return new JsonModel(array('success'=>false,'message'=>'upc expired'));
                 }
                 if($tc){
+                    $tacArr = explode("_",$request['upc']);
+                    $tac = $tacArr[0];
+                    $taId = $this->taDetailsTable()->getField(array('tac'=>$tac), 'id');
+                    $tbeMobile = $this->tbeDetailsTable()->getField(array('user_id'=>$request['tbe_id']), 'tbe_mobile');
+                    $tbeResp = $this->tbeDetailsTable()->getFields(array('tbe_mobile'=>$tbeMobile, 'ta_id'=>$taId), array('user_id', 'role'));
 
                     $data=array(
-                        'tbe_id'=> $request['tbe_id'],
-                        'role'=> $request['role'],
+                        'tbe_id'=> $tbeResp['user_id'],
+                        'role'=> $tbeResp['role'],
                         'tourist_name'=> $request['name'],
                         'tourist_mobile'=> $request['mobile'],
                         'mobile_country_code'=>$request['mobile_country_code'],
@@ -5624,7 +5707,7 @@ class AdminController extends BaseController
         {
             return $this->redirect()->toUrl($this->getBaseUrl());
         }
-        $taId = $this->tbeDetailsTable()->getField(array("user_id"=>$tbeId, "status"=>'1'), "ta_id");
+        $taId = $this->tbeDetailsTable()->getField(array("user_id"=>$tbeId, "status"=>\Admin\Model\TbeDetails::TBE_Active, 'active'=>\Admin\Model\TbeDetails::TBE_Enabled), "ta_id");
         $tbeList = $this->tbeDetailsTable()->getTasTbeList($taId);
         $tList = $this->taSdsTable()->getTBETouristsdetails(array('limit'=>10,'offset'=>0), 0, array('tbe_id'=>$tbeId));
         $totalCount = $this->taSdsTable()->getTBETouristsdetails(array('limit'=>10,'offset'=>0), 1, array('tbe_id'=>$tbeId));
@@ -5747,34 +5830,48 @@ class AdminController extends BaseController
             }
             $chkTaCons = $this->taConsultantDetailsTable()->getField(array("mobile"=>$request['mobile'], "status"=>'1'), "id");
             if(!$chkTaCons){
-                $chkTA = $this->tbeDetailsTable()->getField(array("tbe_mobile"=>$request['mobile'], "status"=>'1'), "user_id");
+                $chkTA = $this->tbeDetailsTable()->getField(array("tbe_mobile"=>$request['mobile'], "status"=>\Admin\Model\TbeDetails::TBE_Active, 'active'=>\Admin\Model\TbeDetails::TBE_Enabled, 'ta_id'=>$taId), "user_id");
                 if(!$chkTA){
-                    $aes = new Aes();
-                    $password = $request['mobile'];
-                    $encodeContent = $aes->encrypt($password);
-                    $encryptPassword = $encodeContent['password'];
-                    $hash = $encodeContent['hash'];
-                    
                     $data=array(
-                        'ta_id'=> (int)$request['ta_id'],
+                        'ta_id'=> $taId,
                         'tbe_name'=> $request['name'],
                         'tbe_mobile'=> $request['mobile'],
                         'tbe_email'=> $request['email'],
-                        'role'=> 'B',
-                        'login_id'=> $request['mobile'],
-                        'pwd'=> $encryptPassword,
-                        'hash'=> $hash,
-                        'status' => 1, 'created_at' => date("Y-m-d H:i:s"),
+                        'role'=> \Admin\Model\TbeDetails::Twistt_TBE_role,
+                        'active'=>\Admin\Model\TbeDetails::TBE_Enabled,
+                        'status'=>\Admin\Model\TbeDetails::TBE_Active,
+                        'created_at' => date("Y-m-d H:i:s"),
                         'updated_at' => date("Y-m-d H:i:s"));
 
                     $response=$this->tbeDetailsTable()->addTbe($data);
                     if($response){
+                        $tbeLoginExists = $this->tbeLoginTable()->getField(array("login_id"=>$request['mobile']), "id");
+                        if(!$tbeLoginExists){
+                            $aes = new Aes();
+                            $password = $request['mobile'];
+                            $encodeContent = $aes->encrypt($password);
+                            $encryptPassword = $encodeContent['password'];
+                            $hash = $encodeContent['hash'];
+                            $tbeId = $this->tbeDetailsTable()->getField(array('tbe_mobile'=>$request['mobile'],'status'=>\Admin\Model\TbeDetails::TBE_Active, 'active'=>\Admin\Model\TbeDetails::TBE_Enabled),'user_id');
+
+                            $ldata = array(
+                                'user_id' => $tbeId,
+                                'login_id'=> $request['mobile'],
+                                'pwd'=> $encryptPassword,
+                                'hash'=> $hash,
+                                'created_at' => date("Y-m-d H:i:s"),
+                                'updated_at' => date("Y-m-d H:i:s")
+                            );
+                            $lresp=$this->tbeLoginTable()->addTbeLogin($ldata);
+                            if(!$lresp)
+                                return new JsonModel(array('success'=>false,'message'=>'unable to add TBE login details'));
+                        }
                         return new JsonModel(array('success'=>true , 'message'=>'added successfully'));
                     }else{
                         return new JsonModel(array('success'=>false,'message'=>'unable to add TBE details'));
                     }
                 }else{
-                    return new JsonModel(array('success'=>false,'message'=>'TBE already added under another TA'));
+                    return new JsonModel(array('success'=>false,'message'=>'AE/TBEs added already added under this TA'));
                 }
             }else{
                 return new JsonModel(array('success'=>false,'message'=>'TBE cannot be STTSE'));
@@ -5811,14 +5908,70 @@ class AdminController extends BaseController
             //print_r($request);exit;
             $chkTaCons = $this->taConsultantDetailsTable()->getField(array("mobile"=>$request['mobile'], "status"=>'1'), "id");
             if(!$chkTaCons){
-                //$chkTA = $this->tbeDetailsTable()->getField(array("tbe_mobile"=>$request['mobile'], "status"=>'1'), "user_id");
-                /* if(!$chkTA){ */                
-                    $data=array(
-                        'tbe_name'=> $request['name'],
-                        'tbe_email'=> $request['email']
-                        );
+                // $chkTA = $this->tbeDetailsTable()->getField(array("tbe_mobile"=>$request['mobile'], "status"=>'1'), "user_id");
+                /* if(!$chkTA){ */
+                    $newMobile = $request['mobile'];
+                    $oldMobile = $this->tbeDetailsTable()->getField(array("user_id"=>$tbeId, 'status'=>\Admin\Model\TbeDetails::TBE_Active, 'active'=>\Admin\Model\TbeDetails::TBE_Enabled), "tbe_mobile");
+                    $tbeResp = $this->tbeDetailsTable()->getFields(array("user_id"=>$tbeId, 'status'=>\Admin\Model\TbeDetails::TBE_Active, 'active'=>\Admin\Model\TbeDetails::TBE_Enabled), array("ta_id", "role"));
+                    $taId = $tbeResp["ta_id"];
+                    $role = $tbeResp["role"];
+                    $newMobileUnderTA = $this->tbeDetailsTable()->getField(array("ta_id"=>$taId, "tbe_mobile"=>$newMobile, "status"=>\Admin\Model\TbeDetails::TBE_Active, 'active'=>\Admin\Model\TbeDetails::TBE_Enabled), "user_id");
+                    
+                    if(($newMobile != $oldMobile) && !$newMobileUnderTA){
+                        // disable old mobile number
+                        $this->tbeDetailsTable()->setTbeDetails(array('active'=>\Admin\Model\TbeDetails::TBE_Disabled), array("user_id"=>$tbeId));
+                        // add TBE with new mobile number
+                        $taTbeCount = $this->tbeDetailsTable()->getTasTbeCount($taId);
+                        if($taTbeCount >= 10){
+                            return new JsonModel(array('success'=>false , 'message'=>'Maximum no. of TBEs added already'));
+                        }
+                                                
+                        $data=array(
+                            'ta_id'=> $taId,
+                            'tbe_name'=> $request['name'],
+                            'tbe_mobile'=> $request['mobile'],
+                            'tbe_email'=> $request['email'],
+                            'role'=> $role,
+                            'active'=>\Admin\Model\TbeDetails::TBE_Enabled,
+                            'status'=>\Admin\Model\TbeDetails::TBE_Active,
+                            'created_at' => date("Y-m-d H:i:s"),
+                            'updated_at' => date("Y-m-d H:i:s"));
 
-                    $response=$this->tbeDetailsTable()->setTbeDetails($data, array('user_id'=>$tbeId));
+                        $response=$this->tbeDetailsTable()->addTbe($data);
+                        if($response){
+                            $tbeLoginExists = $this->tbeLoginTable()->getField(array("login_id"=>$request['mobile']), "id");
+                            if(!$tbeLoginExists){
+                                $aes = new Aes();
+                                $password = $request['mobile'];
+                                $encodeContent = $aes->encrypt($password);
+                                $encryptPassword = $encodeContent['password'];
+                                $hash = $encodeContent['hash'];
+                                $tbeId = $this->tbeDetailsTable()->getField(array('tbe_mobile'=>$request['mobile'],'status'=>\Admin\Model\TbeDetails::TBE_Active, 'active'=>\Admin\Model\TbeDetails::TBE_Enabled),'user_id');
+
+                                $ldata = array(
+                                    'user_id' => $tbeId,
+                                    'login_id'=> $request['mobile'],
+                                    'pwd'=> $encryptPassword,
+                                    'hash'=> $hash,
+                                    'created_at' => date("Y-m-d H:i:s"),
+                                    'updated_at' => date("Y-m-d H:i:s")
+                                );
+                                $lresp=$this->tbeLoginTable()->addTbeLogin($ldata);
+                                if(!$lresp)
+                                    return new JsonModel(array('success'=>false,'message'=>'unable to add TBE login details'));
+                            }
+                            return new JsonModel(array('success'=>true , 'message'=>'updated successfully'));
+                        }else{
+                            return new JsonModel(array('success'=>false,'message'=>'unable to update TBE details'));
+                        }
+                    }else{
+                        $data=array(
+                            'tbe_name'=> $request['name'],
+                            'tbe_email'=> $request['email']
+                            );
+
+                        $response=$this->tbeDetailsTable()->setTbeDetails($data, array('user_id'=>$tbeId));
+                    }
                     if($response){
                         return new JsonModel(array('success'=>true , 'message'=>'updated successfully'));
                     }else{
@@ -5838,6 +5991,37 @@ class AdminController extends BaseController
         }
         $tbeDetails=$this->tbeDetailsTable()->getTbeDetails($tbeId);
         return new ViewModel(array('tbeDetails'=>$tbeDetails));
+    }
+
+    public function disableTbeAction()
+    {        
+        if ($this->getRequest()->isXmlHttpRequest())
+        {
+            $request = $this->getRequest()->getPost();
+            $tbeId=$request['id'];
+            $active=$request['aval'];
+            $mobile=$request['mobile'];
+            $data=array('active'=>$active);
+            if($active){
+                $tbeResp = $this->tbeDetailsTable()->getFields(array("tbe_mobile"=>$mobile, "status"=>\Admin\Model\TbeDetails::TBE_Active, 'active'=>\Admin\Model\TbeDetails::TBE_Enabled), array("user_id"));
+                if(count($tbeResp)){
+                    return new JsonModel(array('success'=>true,"message"=>'AE/TBE already active with this number'));
+                }
+                $aeResp = $this->tbeDetailsTable()->getFields(array("tbe_mobile"=>$mobile,"role"=>\Admin\Model\TbeDetails::Twistt_TA_role, "status"=>\Admin\Model\TbeDetails::TBE_Active, 'active'=>\Admin\Model\TbeDetails::TBE_Enabled), array("user_id"));
+                if($aeResp){
+                    return new JsonModel(array('success'=>true,"message"=>'only one AE allowed'));
+                }
+            }
+            
+            $response=$this->tbeDetailsTable()->setTbeDetails($data,array('user_id'=>$tbeId));
+            if($response)
+            {
+                return new JsonModel(array('success'=>true,"message"=>'TBE updated successfully'));
+            }else
+            {
+                return new JsonModel(array('success'=>false,"message"=>'unable to update'));
+            }
+        }
     }
 
     public function deleteTbeAction()

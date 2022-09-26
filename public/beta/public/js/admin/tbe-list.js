@@ -166,4 +166,49 @@ $(document).ready(function () {
             }
         });
     }
+
+    $('input[type=checkbox]').change(function () {
+        var divid = '#div_' + $(this).val();
+        var mblid = '#mbl_' + $(this).val();
+        var confStr = "Are you sure you want to disable ";
+        var cbval = 0;
+        if($(this).is(":checked")){
+            confStr = "Are you sure you want to enable ";
+            cbval = 1;
+        }
+        if(confirm(confStr + $(divid).html() + " ?")){
+            if(ajaxCall!=null)
+            {
+                ajaxCall.abort();
+            }                
+            var formData=new FormData();
+            formData.append('id', $(this).val());
+            formData.append('aval', cbval);
+            formData.append('mobile', $(mblid).html());
+            ajaxCall=  $.ajax({
+                type: "POST",
+                url: BASE_URL+'/admin/admin/disable-tbe',
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function(response)
+                {
+                    if(response.success)
+                    {
+                        messageDisplay(response.message);
+                        setTimeout(function(){
+                            window.location.reload();
+                        },2000);
+
+                    }else{
+                        messageDisplay(response.message);
+                    }
+                },
+                error: function(){}
+            });
+        }
+        else
+            $(this).prop('checked',false)
+    });
 });

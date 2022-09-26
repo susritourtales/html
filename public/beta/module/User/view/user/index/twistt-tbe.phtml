@@ -9,7 +9,7 @@
                     <div class="row">
                         <div class="col-sm-12 col-md-9 my-auto"><h5><?php echo "TBE Performance"; ?></h5></div>
                         <div class="col-sm-12 col-md-3 text-right">
-                            <?php if($_SESSION['Laminas_Auth']->storage['tbe_role'] == 'A') {?>
+                            <?php //if($_SESSION['Laminas_Auth']->storage['tbe_role'] == 'A') {?>
                             <div class="dropdown">
                                 <button class="btn bg-white dropdown-toggle w-100 border" type="button" id="ddtbe" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     Select TBE
@@ -17,11 +17,11 @@
                                 <div class="dropdown-menu  w-100" aria-labelledby="dropdownMenuButton">
                                     <?php if(count($tbeList)){ 
                                         foreach($tbeList as $tbe){?>
-                                    <a class="dropdown-item" href="<?php echo $this->basePath();?>/twistt-tbe/<?php echo base64_encode("id=".$tbe['user_id']); ?>" value="<?php echo $tbe['user_id'] ?>" ><?php echo $tbe['tbe_name'] ?></a>
+                                    <a class="dropdown-item" href="<?php echo $this->basePath();?>/twistt-tbe/<?php echo base64_encode("id=".$tbe['user_id']); ?>" value="<?php echo $tbe['user_id'] ?>" ><?php echo $tbe['tbe_name'] . " - " . $tbe['ta_name'] ?></a>
                                     <?php }} ?>
                                 </div>
                             </div>
-                            <?php } ?>
+                            <?php //} ?>
                         </div>
                     </div>
                 </div>

@@ -121,7 +121,7 @@ class TbeDetailsTable extends BaseTable
             $query = $sql->select()
             ->columns(array('count'=>new \Laminas\Db\Sql\Expression('COUNT(`tb`.`user_id`)')))
                 ->from($this->tableName)
-                ->where(array("tb.ta_id" => $taId));
+                ->where(array("tb.ta_id" => $taId, "active"=>1, "status"=>1));
 
             $field = array();
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
@@ -145,7 +145,8 @@ class TbeDetailsTable extends BaseTable
             $sql = $this->getSql();
             $query = $sql->select()
                 ->from($this->tableName)
-                ->where(array("tb.ta_id" => $taId));
+                ->join(array('tad'=>'ta_details'), 'tad.id=tb.ta_id',array("ta_name"),Select::JOIN_LEFT)
+                ->where(array("tb.ta_id" => $taId, "tb.status"=>1, "tb.active"=>1));
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             $tbeData = array();
             foreach ($resultSet as $row){
@@ -184,7 +185,92 @@ class TbeDetailsTable extends BaseTable
         }
     }
 
-    public function authenticateUser($username, $password='')
+    public function getTasMTbeList($tbeMobile, $taId)
+    {
+        try{
+            $sql = $this->getSql();
+            $query = $sql->select()
+                ->from($this->tableName)
+                ->join(array('tad'=>'ta_details'), 'tad.id=tb.ta_id',array("ta_name"),Select::JOIN_LEFT)
+                ->where(array("tb.tbe_mobile" => $tbeMobile, "tb.ta_id" => $taId, "tb.status"=>1, "tb.active"=>1));
+            $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
+            $tbeData = array();
+            foreach ($resultSet as $row){
+                $tbeData[] = $row;
+            }
+
+            if(count($tbeData)){
+                return $tbeData;
+            }
+
+            return $tbeData;
+
+        }catch (\Exception $e){
+            
+            return array();
+        }
+    }
+
+    public function getMobileTas($tbeMobile)
+    {
+        try{
+            $sql = $this->getSql();
+            $query = $sql->select()
+                ->from($this->tableName)
+                ->join(array('tad'=>'ta_details'), 'tad.id=tb.ta_id',array("ta_name"),Select::JOIN_LEFT)
+                ->where(array("tb.tbe_mobile" => $tbeMobile, "tb.status"=>1, "tb.active"=>1));
+            $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
+            $tbeData = array();
+            foreach ($resultSet as $row){
+                $tbeData[] = $row;
+            }
+
+            if(count($tbeData)){
+                return $tbeData;
+            }
+
+            return $tbeData;
+
+        }catch (\Exception $e){
+            
+            return array();
+        }
+    }
+
+    public function getUPCList($tbeMobile, $taId=null){
+        try{
+            $sql = $this->getSql();
+            $where=new Where();
+            $where->equalTo("tb.tbe_mobile", $tbeMobile);
+            $where->equalTo("tb.ta_id", $taId);
+            $where->equalTo("tb.status", \Admin\Model\TbeDetails::TBE_Active);
+            $where->equalTo("tb.active", \Admin\Model\TbeDetails::TBE_Enabled);
+            $where->and->greaterThan(new \Laminas\Db\Sql\Expression('DATEDIFF(`tp`.`doe`, NOW())'), 0);
+            $where->and->greaterThan('tp.tourists_count', 0);
+            $query = $sql->select()
+                ->columns(array("tbe_name", "tbe_mobile", "ta_id"))
+                ->from($this->tableName)
+                ->join(array('tp'=>'ta_purchases'), 'tp.ta_id=tb.ta_id',array('id', 'upc', 'tourists_count'),Select::JOIN_LEFT)
+                ->where($where);
+            $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
+            $ulData = array();
+            foreach ($resultSet as $row){
+                $ulData[] = $row;
+            }
+
+            if(count($ulData)){
+                return $ulData;
+            }
+
+            return $ulData;
+
+        }catch (\Exception $e){
+            
+            return array();
+        }
+    }
+
+    /* public function authenticateUser($username, $password='')
     {
         try {
 
@@ -216,9 +302,6 @@ class TbeDetailsTable extends BaseTable
                         return array();
                     }
                     $aes = new Aes();
-                     /*echo '<pre>';
-                         print_r($user);
-                            exit;*/
                     $decryptedPassword = $aes->decrypt($user[0]["pwd"], $user[0]["hash"]);
                     //print_r($decryptedPassword);exit;
                     if ($decryptedPassword == $password) {
@@ -277,7 +360,7 @@ class TbeDetailsTable extends BaseTable
 
             return array();
         }
-    }
+    } */
 
     public function getTbeAdmin($data=array('limit'=>10,'offset'=>0), $gtc=0, $taId){
         try{

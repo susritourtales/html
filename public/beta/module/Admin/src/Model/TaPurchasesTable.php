@@ -117,7 +117,7 @@ class TaPurchasesTable extends BaseTable
             return array();
         }
     }
-    public function getUPCList($taId){
+    /* public function getUPCList($taId){
         try{
             $sql = $this->getSql();
             $where=new Where();
@@ -144,7 +144,7 @@ class TaPurchasesTable extends BaseTable
             
             return array();
         }
-    }
+    } */
 
     public function getTaPurchasesAdmin($data=array('limit'=>10,'offset'=>0), $gtc=0){
         try{

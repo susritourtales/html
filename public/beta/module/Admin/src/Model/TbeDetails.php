@@ -17,6 +17,10 @@ class TbeDetails
 
     const Twistt_TA_role='A';
     const Twistt_TBE_role='B';
+    const TBE_Disabled = 0;
+    const TBE_Deleted = 0;
+    const TBE_Enabled = 1;
+    const TBE_Active = 1;
         
     public function exchangeArray(array $data)
     {

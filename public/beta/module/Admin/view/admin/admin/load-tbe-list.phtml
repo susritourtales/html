@@ -2,6 +2,10 @@
 <style>
 .table-condensed thead tr th{ color: unset !important;}
 .calign input{text-align: center !important;}
+a.disabled {
+  pointer-events: none;
+  cursor: default;
+}
 </style>
 <div class="table-responsive">
 <table class="table table-bordered table-hover table-striped" id="extTable">
@@ -12,6 +16,7 @@
         <th data-placeholder="Mobile" data-input="tbe_mobile" class="text-center">Mobile</th>
         <th data-placeholder="Email" data-input="tbe_email" class="text-center">Email</th>
         <th data-placeholder="role" data-input="role" class="text-center">Role</th>
+        <th>Active</th>
         <th>Action</th>
     </tr>
     <?php } ?>
@@ -29,11 +34,14 @@
             $i=$offset;
         }
 
-        foreach ($tbeList as $tbe) { ?>
-            <tr class="position-relative" data-id="<?php echo base64_encode("pid=".$tbe['user_id']);?>">
+        foreach ($tbeList as $tbe) { 
+            $fontColor = "text-success";
+            if($tbe['active'] == \Admin\Model\TbeDetails::TBE_Disabled)
+                $fontColor = "text-primary";?>
+            <tr class="position-relative <?php echo $fontColor; ?>" data-id="<?php echo base64_encode("pid=".$tbe['user_id']);?>">
                 <td><?php echo $i+1; ?></td>
-                <td><?php echo $tbe['tbe_name']; ?></td>
-                <td><?php echo $tbe['tbe_mobile']; ?></td>
+                <td><div id="div_<?php echo $tbe['user_id']; ?>"><?php echo $tbe['tbe_name']; ?></div></td>
+                <td><div id="mbl_<?php echo $tbe['user_id']; ?>"><?php echo $tbe['tbe_mobile']; ?></div></td>
                 <td><?php echo $tbe['tbe_email']; ?></td>
                 <td>
                     <?php 
@@ -43,8 +51,11 @@
                             echo "TBE";
                             ?>
                 </td>
+                <td>
+                    <input type="checkbox" id="tcb_<?php echo $tbe['user_id']; ?>" name="tcb_<?php echo $tbe['user_id']; ?>" value="<?php echo $tbe['user_id']; ?>" <?php echo $tbe['active'] == \Admin\Model\TbeDetails::TBE_Enabled ? "checked" : "" ;?> onclick="event.stopPropagation();">
+                </td>
                 <td><div class="d-flex">
-                    <a class="action-icon" href="<?php echo $this->basePath().'/a_dMin/edit-tbe/'.base64_encode('tbeId='.$tbe['user_id'])?>" >
+                    <a class="action-icon" href="<?php echo $tbe['active'] == \Admin\Model\TbeDetails::TBE_Enabled ? $this->basePath().'/a_dMin/edit-tbe/'.base64_encode('tbeId='.$tbe['user_id']) : "javascript:alert('editing disabled AE/TBE not allowed');" ;?>" >
                         <img src="<?php echo $this->basePath();?>/img/edit.png" class="img-fluid" onclick="event.stopPropagation();">
                     </a>
                     <div class="action-icon delete-tbe" data-id="<?php echo $tbe['user_id']; ?>">

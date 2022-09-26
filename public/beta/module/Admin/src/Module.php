@@ -89,6 +89,8 @@ use Admin\Model\TaSds;  // -- Added my Manjary
 use Admin\Model\TaSdsTable;  // -- Added my Manjary
 use Admin\Model\TbeDetails;  // -- Added my Manjary
 use Admin\Model\TbeDetailsTable;  // -- Added my Manjary
+use Admin\Model\TbeLogin;  // -- Added my Manjary
+use Admin\Model\TbeLoginTable;  // -- Added my Manjary
 use Admin\Model\TbeOldPasswords;  // -- Added my Manjary
 use Admin\Model\TbeOldPasswordsTable;  // -- Added my Manjary
 use Admin\Model\SeOldPasswords;  // -- Added my Manjary
@@ -437,6 +439,18 @@ class Module implements ConfigProviderInterface
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new TbeDetails());
                     return new TableGateway('tbe_details', $dbAdapter, null, $resultSetPrototype);
+                },
+                "Admin/Model/TbeLoginTable" => function ($sm) {    // -- added by Manjary
+                    $tableGateway = $sm->get('TbeLoginTableGateway');
+                    $table = new TbeLoginTable($tableGateway);
+                    return $table;
+                },
+                'TbeLoginTableGateway' => function ($sm)      // -- added by Manjary
+                {
+                    $dbAdapter = $sm->get('Laminas\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new TbeLogin());
+                    return new TableGateway('tbe_login', $dbAdapter, null, $resultSetPrototype);
                 },
                 "Admin/Model/TbeOldPasswordsTable" => function ($sm) {    // -- added by Manjary
                     $tableGateway = $sm->get('TbeOldPasswordsTableGateway');

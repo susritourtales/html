@@ -225,13 +225,19 @@ class IndexController extends BaseController {
             return $this->redirect()->toUrl($this->getBaseUrl());
         }
         $userId = $this->getLoggedInTbeId();
-        $taId = $this->tbeDetailsTable()->getField(array("user_id"=>$userId, "status"=>'1'), "ta_id");
-        $taDetails = $this->taDetailsTable()->getTaDetails($taId);
-        $upcList = $this->taPurchasesTable()->getUPCList($taId);
-        // pull data from TaSdsTable and return
-        
+        /* $taId = $this->tbeDetailsTable()->getField(array("user_id"=>$userId, "status"=>'1'), "ta_id");
+        $taDetails = $this->taDetailsTable()->getTaDetails($taId); */
+        $tbeMobile = $this->tbeDetailsTable()->getField(array("user_id"=>$userId, 'status'=>\Admin\Model\TbeDetails::TBE_Active, 'active'=>\Admin\Model\TbeDetails::TBE_Enabled), "tbe_mobile");
+        $tbeResp = $this->tbeDetailsTable()->getMobileTas($tbeMobile);
+        $upcList = array();
+        foreach($tbeResp as $tbe){
+            $list = $this->tbeDetailsTable()->getUPCList($tbeMobile, $tbe["ta_id"]);
+            $upcList = array_merge($upcList, $list);
+        }
+        //$upcList = $this->tbeDetailsTable()->getUPCList($tbeMobile); //($taId);
         $this->layout()->setVariable('activeTab', \Application\Constants\Constants::MAIN_SITE_TWISTT);
-        return new ViewModel(array('taDetails'=>$taDetails, 'upcList'=>$upcList, 'imageUrl'=>$this->filesUrl(), 'userId'=>$userId));
+        //return new ViewModel(array('taDetails'=>$taDetails, 'upcList'=>$upcList, 'imageUrl'=>$this->filesUrl(), 'userId'=>$userId));
+        return new ViewModel(array('upcList'=>$upcList, 'userId'=>$userId));
     }
 
     public function seHomeAction() {
@@ -479,13 +485,33 @@ class IndexController extends BaseController {
                 $tbeId = $userId;
         }
 
-        $taId = $this->tbeDetailsTable()->getField(array("user_id"=>$userId, "status"=>'1'), "ta_id");
-        $tbeList = $this->tbeDetailsTable()->getTasTbeList($taId);
-        $tList = $this->taSdsTable()->getTBETouristsdetails(array('limit'=>10,'offset'=>0), 0, array('tbe_id'=>$tbeId));
-        $totalCount = $this->taSdsTable()->getTBETouristsdetails(array('limit'=>10,'offset'=>0), 1, array('tbe_id'=>$tbeId));
+        $tbeMobile=$this->tbeDetailsTable()->getField(array("user_id"=>$userId, 'status'=>\Admin\Model\TbeDetails::TBE_Active, 'active'=>\Admin\Model\TbeDetails::TBE_Enabled), "tbe_mobile");
+        //$taId = $this->tbeDetailsTable()->getField(array("user_id"=>$userId, "status"=>\Admin\Model\TbeDetails::TBE_Active, 'active'=>\Admin\Model\TbeDetails::TBE_Enabled), "ta_id");
+        $tbeResp = $this->tbeDetailsTable()->getMobileTas($tbeMobile);
+        //$tbeList = $this->tbeDetailsTable()->getTasTbeList($taId);
+        $tbeList = array();
+        foreach($tbeResp as $tbe){
+            if($tbe['role'] == \Admin\Model\TbeDetails::Twistt_TA_role){
+                $list = $this->tbeDetailsTable()->getTasTbeList($tbe["ta_id"]);
+            }else{
+                $list = $this->tbeDetailsTable()->getTasMTbeList($tbeMobile, $tbe["ta_id"]);
+            }
+            $tbeList = array_merge($tbeList, $list);
+        }
+
+        foreach($tbeList as $tbe){
+            if($tbe['user_id'] == $tbeId){
+                $tmob = $tbe['tbe_mobile'];
+                $taId = $tbe['ta_id'];
+                $ta_name = $tbe['ta_name'];
+            }
+        }
+        
+        $tList = $this->taSdsTable()->getTBETouristsdetails(array('limit'=>10,'offset'=>0), 0, array('tbe_mobile'=>$tmob, 'ta_id'=>$taId));
+        $totalCount = $this->taSdsTable()->getTBETouristsdetails(array('limit'=>10,'offset'=>0), 1, array('tbe_mobile'=>$tmob, 'ta_id'=>$taId));
         $tbeName=$this->tbeDetailsTable()->getField(array("user_id"=>$tbeId), "tbe_name");
         $this->layout()->setVariable('activeTab', \Application\Constants\Constants::MAIN_SITE_TWISTT);
-        $pdArr = array('userId'=>$userId, 'tbeId'=>$tbeId, 'tbeName'=>$tbeName); 
+        $pdArr = array('userId'=>$userId, 'tbeId'=>$tbeId, 'tbeName'=>$tbeName . ' under ' .$ta_name); 
         return new ViewModel(array('tList'=>$tList,'totalCount'=>$totalCount, 'tbeList'=>$tbeList, 'pdArr'=>$pdArr));
     }
 
@@ -495,7 +521,7 @@ class IndexController extends BaseController {
             return $this->redirect()->toUrl($this->getBaseUrl());
         }
         
-        $tbeId = $this->getLoggedInTbeId();
+        $userId = $this->getLoggedInTbeId();
         $paramId = $this->params()->fromRoute('id', '');
         if (!$paramId)
         {
@@ -575,18 +601,20 @@ class IndexController extends BaseController {
 
             $totalCount=0;
             //var_dump($searchData);exit;
+            $tbeResp = $this->tbeDetailsTable()->getFields(array("user_id"=>$tbeId), array("tbe_mobile", "ta_id"));
             if($type && $type=='search')
             {
-                $totalCount=$this->taSdsTable()->getTBETouristsdetails($searchData, 1, array('tbe_id'=>$tbeId));
+                $totalCount=$this->taSdsTable()->getTBETouristsdetails($searchData, 1, array('tbe_mobile'=>$tbeResp['tbe_mobile'], 'ta_id'=>$tbeResp['ta_id']));
             }
-            $tList = $this->taSdsTable()->getTBETouristsdetails($searchData, 0, array('tbe_id'=>$tbeId));
-        }
-        else{
-            $tList = $this->taSdsTable()->getTBETouristsdetails(array('limit'=>10,'offset'=>0), 0, array('tbe_id'=>$tbeId));
-            $totalCount = $this->taSdsTable()->getTBETouristsdetails(array('limit'=>10,'offset'=>0), 1, array('tbe_id'=>$tbeId));
+            $tList = $this->taSdsTable()->getTBETouristsdetails($searchData, 0, array('tbe_mobile'=>$tbeResp['tbe_mobile'], 'ta_id'=>$tbeResp['ta_id']));
+        }else{
+            $tbeResp = $this->tbeDetailsTable()->getFields(array("user_id"=>$userId), array("tbe_mobile", "ta_id"));
+            $tList = $this->taSdsTable()->getTBETouristsdetails(array('limit'=>10,'offset'=>0), 0, array('tbe_mobile'=>$tbeResp['tbe_mobile'], 'ta_id'=>$tbeResp['ta_id']));
+            $totalCount = $this->taSdsTable()->getTBETouristsdetails(array('limit'=>10,'offset'=>0), 1, array('tbe_mobile'=>$tbeResp['tbe_mobile'], 'ta_id'=>$tbeResp['ta_id']));
         }
         $tbeName = $this->tbeDetailsTable()->getField(array("user_id"=>$tbeId), "tbe_name");
-        $pdArr = array('userId'=>$userId, 'tbeId'=>$tbeId, 'tbeName'=>$tbeName); 
+        $ta_name = $this->taDetailsTable()->getField(array('id'=>$tbeResp['ta_id']), 'ta_name');
+        $pdArr = array('userId'=>$userId, 'tbeId'=>$tbeId, 'tbeName'=>$tbeName . ' under ' .$ta_name); 
 
         $this->layout()->setVariable('activeTab', \Application\Constants\Constants::MAIN_SITE_TWISTT);
         return new ViewModel(array('tList'=>$tList,'totalCount'=>$totalCount, 'offset' => $offset,'type'=>$type, 'pdArr'=>$pdArr));
@@ -609,8 +637,18 @@ class IndexController extends BaseController {
             $purchaseId = array_key_exists(1, $userIdString) ? $userIdString[1] : 0;
         }
 
-        $taId = $this->tbeDetailsTable()->getField(array("user_id"=>$userId, "status"=>'1'), "ta_id");
-        $upcList = $this->taPurchasesTable()->getUPCList($taId);
+        //$taId = $this->tbeDetailsTable()->getField(array("user_id"=>$userId, "status"=>'1'), "ta_id");
+        $tbeMobile = $this->tbeDetailsTable()->getField(array("user_id"=>$userId, 'status'=>\Admin\Model\TbeDetails::TBE_Active, 'active'=>\Admin\Model\TbeDetails::TBE_Enabled), "tbe_mobile");
+        $tbeResp = $this->tbeDetailsTable()->getMobileTas($tbeMobile);
+        $upcList = array();
+        foreach($tbeResp as $tbe){
+            if($tbe['role'] == \Admin\Model\TbeDetails::Twistt_TA_role){
+                $list = $this->tbeDetailsTable()->getUPCList($tbeMobile, $tbe["ta_id"]);
+                $upcList = array_merge($upcList, $list);
+            }
+        }
+
+        /* $upcList = $this->tbeDetailsTable()->getUPCList($tbeMobile); */
         if($purchaseId){
             foreach($upcList as $ul){
                 if($ul['id'] == $purchaseId)
@@ -621,7 +659,8 @@ class IndexController extends BaseController {
         }else{
             $upc = $upcList[0]['upc'];
             $purchaseId = $upcList[0]['id'];
-        }
+        } 
+
         $tList = $this->taSdsTable()->getTBETouristsdetails(array('limit'=>10,'offset'=>0), 0, array('upc'=>$upc));
         $totalCount = $this->taSdsTable()->getTBETouristsdetails(array('limit'=>10,'offset'=>0), 1, array('upc'=>$upc));
         $this->layout()->setVariable('activeTab', \Application\Constants\Constants::MAIN_SITE_TWISTT);
@@ -635,7 +674,7 @@ class IndexController extends BaseController {
             return $this->redirect()->toUrl($this->getBaseUrl());
         }
         
-        $tbeId = $this->getLoggedInTbeId();
+        $userId = $this->getLoggedInTbeId();
         $paramId = $this->params()->fromRoute('id', '');
         if (!$paramId)
         {

@@ -426,7 +426,8 @@ class IndexController extends BaseController {
             $encodeString = $encodeContent['password'];
             $hash = $encodeContent['hash'];
             $date = date("Y-m-d H:i:s");
-            $tbeOldPwdDetails = $this->tbeDetailsTable()->getTbeDetails($tbeId);
+            //$tbeOldPwdDetails = $this->tbeDetailsTable()->getTbeDetails($tbeId);
+            $tbeOldPwdDetails = $this->tbeLoginTable()->getLoginDetails($mobile);
             $oldPwdData = array('tbe_id'=>$tbeId,'old_pwd'=>$tbeOldPwdDetails['pwd'],'old_hash'=>$tbeOldPwdDetails['hash'], 'created_at'=>$date, 'updated_at'=>$date);
             $currentPasswordInsert=$this->tbeOldPasswordsTable()->addTbeOldPassword($oldPwdData);
 

@@ -1,8 +1,8 @@
 <div class="sidebar">
     <a href="<?php echo $this->basePath();?>/tbe-home" class="<?php echo ($activeTab==\Application\Constants\Constants::TWISTT_HOME_PAGE?'active':'');?>">TWISTT Dashboard</a>
-    <a href="<?php echo $this->basePath();?>/twistt-tbe/<?php echo base64_encode("id=".$userId); ?>" class="<?php echo ($activeTab==\Application\Constants\Constants::TWISTT_TBE_PAGE?'active':'');?>"> TBE Data </a>
+    <a href="<?php echo $this->basePath();?>/twistt-tbe/<?php echo base64_encode("id=".$userId); ?>" class="<?php echo ($activeTab==\Application\Constants\Constants::TWISTT_TBE_PAGE?'active':'');?>"> Tourist Info </a>
     <?php /* if($_SESSION['Laminas_Auth']->storage['tbe_role'] == 'A') { */?>
-        <a href="<?php echo $this->basePath();?>/twistt-upc/<?php echo base64_encode("id=0"); ?>" class="<?php echo ($activeTab==\Application\Constants\Constants::TWISTT_UPC_PAGE?'active':'');?>"> UPC Data </a>
+        <a href="<?php echo $this->basePath();?>/twistt-upc/<?php echo base64_encode("id=0"); ?>" class="<?php echo ($activeTab==\Application\Constants\Constants::TWISTT_UPC_PAGE?'active':'');?>"> UPC Info </a>
     <?php/*  } */ ?>
     <a href="<?php echo $this->basePath();?>/twistt-password" class="<?php echo ($activeTab==\Application\Constants\Constants::TWISTT_CHANGE_PASSWORD?'active':'');?>">Change Password</a> 
     <a href="<?php echo $this->basePath();?>/a_dMin/twistt-logout">Logout</a>

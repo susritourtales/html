@@ -26,12 +26,19 @@
                     </div>
                 </div>
                 <div class="bg-white border-radius-10 custom-shadow p-4 color-333 my-3">
-                    <h6 id="hdr" class="font-weight-bold text-uppercase my-3">Tourists Added by <span id="tbeName"><?php echo $pdArr['tbeName']; ?></span></h6>
+                    <div class="row">
+                        <div class="col-sm-12 col-md-9">
+                            <h6 id="hdr" class="font-weight-bold text-uppercase my-3">Tourists Added by <span id="tbeName"><?php echo $pdArr['tbeName']; ?></span></h6>
+                        </div>
+                        <div class="col-sm-12 col-md-3 text-center">
+                            <img src="<?php echo $imageUrl.$taDetails[0]['file_path'];?>" height="50" class="mb-sm-2">
+                        </div>
+                    </div>
+                    
                     <div class="" id="recordsList">
                         <?php echo $this->partial("/load-tourists-list", array('tList'=>$tList,'totalCount'=>$totalCount,'type'=>'initialize', 'tbeId'=>$pdArr['tbeId'])); ?>
                     </div>
-                    <?php if($totalCount > 10)
-                    {
+                    <?php if($totalCount > 10){   
                         $paginationCount = ceil($totalCount / 10); ?>
                         <ul class="pagination float-right" id="listPager"></ul>
                     <?php } ?>

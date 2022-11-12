@@ -61,7 +61,12 @@
                                 <div class="dropdown-menu  w-100" aria-labelledby="dropdownMenuButton">
                                     <?php if(count($upcList)){ 
                                         foreach($upcList as $upc){?>
-                                    <a class="dropdown-item" href="#" value="<?php echo $upc['id'] ?>"><?php echo $upc['upc'] ?></a>
+                                    <a class="dropdown-item" href="#" value="<?php echo $upc['id'] ?>">
+                                            <div class="row">
+                                                <div class="col-9"><?php echo $upc['upc'] ?></div>
+                                                <div class="col-3 text-center"><img src="<?php echo $upc['taLogo'];?>" height="25" class="mb-sm-2 px-3"></div>
+                                            </div>
+                                    </a>
                                     <?php }} ?>
                                 </div>
                             </div>
@@ -85,7 +90,10 @@
                             <tbody>
                             <?php foreach($upcList as $upc){ ?>
                                 <tr class="position-relative">
-                                    <td class="text-center"><?php echo $upc['upc']; ?></td>
+                                    <td class="text-center">
+                                        <?php echo $upc['upc'] ?>
+                                        <img src="<?php echo $upc['taLogo'];?>" height="30" class="mb-sm-2 px-3">
+                                    </td>
                                     <td class="text-center"><?php echo $upc['tourists_count']; ?></td>
                                 </tr>
                             <?php } ?>

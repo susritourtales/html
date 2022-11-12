@@ -232,7 +232,14 @@ class IndexController extends BaseController {
         $upcList = array();
         foreach($tbeResp as $tbe){
             $list = $this->tbeDetailsTable()->getUPCList($tbeMobile, $tbe["ta_id"]);
-            $upcList = array_merge($upcList, $list);
+            $taDetails = $this->taDetailsTable()->getTaDetails($tbe["ta_id"]);
+            $ulist = array();
+            foreach($list as $l){
+                $tal['taLogo'] = $this->filesUrl() . $taDetails[0]['file_path'];
+                $l = array_merge($l, $tal);
+                $ulist[] = $l;
+            }
+            $upcList = array_merge($upcList, $ulist);
         }
         //$upcList = $this->tbeDetailsTable()->getUPCList($tbeMobile); //($taId);
         $this->layout()->setVariable('activeTab', \Application\Constants\Constants::MAIN_SITE_TWISTT);
@@ -510,9 +517,10 @@ class IndexController extends BaseController {
         $tList = $this->taSdsTable()->getTBETouristsdetails(array('limit'=>10,'offset'=>0), 0, array('tbe_mobile'=>$tmob, 'ta_id'=>$taId));
         $totalCount = $this->taSdsTable()->getTBETouristsdetails(array('limit'=>10,'offset'=>0), 1, array('tbe_mobile'=>$tmob, 'ta_id'=>$taId));
         $tbeName=$this->tbeDetailsTable()->getField(array("user_id"=>$tbeId), "tbe_name");
+        $taDetails = $this->taDetailsTable()->getTaDetails($taId);
         $this->layout()->setVariable('activeTab', \Application\Constants\Constants::MAIN_SITE_TWISTT);
         $pdArr = array('userId'=>$userId, 'tbeId'=>$tbeId, 'tbeName'=>$tbeName . ' under ' .$ta_name); 
-        return new ViewModel(array('tList'=>$tList,'totalCount'=>$totalCount, 'tbeList'=>$tbeList, 'pdArr'=>$pdArr));
+        return new ViewModel(array('tList'=>$tList,'totalCount'=>$totalCount, 'tbeList'=>$tbeList, 'pdArr'=>$pdArr,'taDetails'=>$taDetails, 'imageUrl'=>$this->filesUrl()));
     }
 
     public function loadTouristsListAction() {

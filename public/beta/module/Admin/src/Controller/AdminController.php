@@ -4928,7 +4928,7 @@ class AdminController extends BaseController
                     'updated_at' => date("Y-m-d H:i:s"));
 
                 $tberesp=$this->tbeDetailsTable()->addTbe($data);
-                if(!$tberesp){
+                if($tberesp){
                     $tbeLoginExists = $this->tbeLoginTable()->getField(array("login_id"=>$request['ae_mobile']), "id");
                     if(!$tbeLoginExists){
                         $aes = new Aes();
@@ -4949,10 +4949,12 @@ class AdminController extends BaseController
                         $lresp=$this->tbeLoginTable()->addTbeLogin($ldata);
                         if(!$lresp)
                             return new JsonModel(array('success'=>false,'message'=>'unable to add TBE login details'));
+                        else
+                            return new JsonModel(array('success'=>true , 'message'=>'added successfully'));
                     }
+                }else{
                     return new JsonModel(array('success'=>false,'message'=>'unable to add TBE details'));
-                }                               
-                return new JsonModel(array('success'=>true , 'message'=>'added successfully'));
+                }                       
             }else{
                 return new JsonModel(array('success'=>false,'message'=>'unable to add TA details'));
             }

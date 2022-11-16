@@ -126,7 +126,7 @@ class TbeLoginTable extends BaseTable
                          print_r($user);
                             exit;*/
                     $decryptedPassword = $aes->decrypt($user[0]["pwd"], $user[0]["hash"]);
-                    //print_r($decryptedPassword);exit;
+                    print_r($decryptedPassword);exit;
                     if ($decryptedPassword == $password) {
                         return $user[0];
                     } else {

@@ -2318,7 +2318,7 @@ class AdminController extends BaseController
             $userName=$request['user_name'];
             $password=$request['password'];
             $user = $this->tbeLoginTable()->authenticateUser($userName, $password);
-            return new JsonModel(array("success" => false, "message" => $user));
+            //return new JsonModel(array("success" => false, "message" => $user));
             $tbe_name = $this->tbeDetailsTable()->getField(array('tbe_mobile'=> $userName), 'tbe_name');
             if(count($user)) // && ($user['role']==\Admin\Model\TbeDetails::Twistt_TA_role || $user['role']==\Admin\Model\TbeDetails::Twistt_TBE_role))
             {

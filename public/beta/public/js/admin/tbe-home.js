@@ -33,7 +33,7 @@ $("#addSds").click(function(){
   var mcc=$.trim($('#tcc').val());
   var mobile=$.trim($('#tMobile').val());
   var td=$.trim($('#tvl_date').val());
-  var upc=$('#ddupc').html();
+  var upc=$('#ddupc').html().trim();
 
   if(tName == ''){
       element.html('submit');
@@ -66,7 +66,7 @@ $("#addSds").click(function(){
       messageDisplay("Please enter tourist travel date");
       return  false;
   }
-  if(upc.trim() == 'Select UPC'){
+  if(upc == 'Select UPC'){
       element.html('submit');
       element.prop('disabled',false);
       messageDisplay("Please select UPC");

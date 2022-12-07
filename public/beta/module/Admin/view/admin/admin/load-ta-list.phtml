@@ -35,7 +35,7 @@
             $i=$offset;
         }
 
-        foreach ($taList as $ta) { print_r($ta)?>
+        foreach ($taList as $ta) {?>
             <tr class="position-relative" data-id="<?php echo base64_encode("pid=".$ta['id']);?>">
                 <td><?php echo $i+1; ?></td>
                 <td class="text-center"><?php echo $ta['ta_name']; ?></td>

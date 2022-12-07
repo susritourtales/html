@@ -35,7 +35,8 @@
             $i=$offset;
         }
 
-        foreach ($taList as $ta) {?>
+        foreach ($taList as $ta) {
+            if($ta['tbeCount']){?>
             <tr class="position-relative" data-id="<?php echo base64_encode("pid=".$ta['id']);?>">
                 <td><?php echo $i+1; ?></td>
                 <td class="text-center"><?php echo $ta['ta_name']; ?></td>
@@ -56,7 +57,7 @@
                     </div> -->
                 </div></td>
             </tr>
-            <?php $i++; } } else { ?>
+            <?php $i++; } } } else { ?>
         <tr ><td class="text-center" colspan="15">No data</td></tr>
     <?php  } ?>
     <?php if(isset($type) && ($type =='initialize' || $type=="search") ) {?>

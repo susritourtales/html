@@ -4685,8 +4685,15 @@ class AdminController extends BaseController
             return $this->redirect()->toUrl($this->getBaseUrl());
         }
         
-        $taList=$this->taDetailsTable()->getTaListAdmin();
+        $talist=$this->taDetailsTable()->getTaListAdmin();
         $taListCount=($this->taDetailsTable()->getTaListAdmin(null, 1))==array()?0 : ($this->taDetailsTable()->getTaListAdmin(null, 1));
+        $taList = array();
+        foreach($talist as $l){
+            $ta['tbeCount']=($this->tbeDetailsTable()->getTbeAdmin(array('limit'=>10,'offset'=>0), 1, $l['id']))==array()?0 : ($this->tbeDetailsTable()->getTbeAdmin(array('limit'=>10,'offset'=>0), 1, $l['id']));
+            $l = array_merge($l, $ta);
+            $taList[] = $l;
+        }
+        
         return new ViewModel(array('taList'=>$taList,'totalCount'=>$taListCount));
     }
 
@@ -4810,7 +4817,13 @@ class AdminController extends BaseController
                 $totalCount=$this->taDetailsTable()->getTaListAdmin($searchData, 1);
             }
             
-            $taList=$this->taDetailsTable()->getTaListAdmin($searchData);
+            $talist=$this->taDetailsTable()->getTaListAdmin($searchData);
+            $taList = array();
+            foreach($talist as $l){
+                $ta['tbeCount']=($this->tbeDetailsTable()->getTbeAdmin(array('limit'=>10,'offset'=>0), 1, $l['id']))==array()?0 : ($this->tbeDetailsTable()->getTbeAdmin(array('limit'=>10,'offset'=>0), 1, $l['id']));
+                $l = array_merge($l, $ta);
+                $taList[] = $l;
+            }
             $view = new ViewModel(array('taList' => $taList, 'offset' => $offset,'type'=>$type,'totalCount'=>$totalCount));
             $view->setTerminal(true);
             return $view;

@@ -430,7 +430,6 @@ class IndexController extends BaseController {
             $tbeOldPwdDetails = $this->tbeLoginTable()->getLoginDetails($mobile);
             $oldPwdData = array('tbe_id'=>$tbeId,'old_pwd'=>$tbeOldPwdDetails['pwd'],'old_hash'=>$tbeOldPwdDetails['hash'], 'created_at'=>$date, 'updated_at'=>$date);
             $currentPasswordInsert=$this->tbeOldPasswordsTable()->addTbeOldPassword($oldPwdData);
-            return new JsonModel(array('success'=>false,'old'=>$oldPwdData));
 
             if($currentPasswordInsert)
             {

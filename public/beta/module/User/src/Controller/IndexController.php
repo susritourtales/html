@@ -438,7 +438,7 @@ class IndexController extends BaseController {
                 if($currentPasswordUpdate)
                     return new JsonModel(array('success'=>true,'message'=>'Password reset successful'));
                 else
-                return new JsonModel(array('success'=>false,'message'=>'Password reset attempt was unsuccessful. Try again later'));
+                return new JsonModel(array('success'=>false,'message'=>$currentPasswordUpdate));
             }else{
                 return new JsonModel(array('success'=>false,'message'=>'Something went wrong. Try again after sometime'));
             }

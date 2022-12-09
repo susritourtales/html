@@ -2453,11 +2453,10 @@ class AdminController extends BaseController
                   if($currentPasswordInsert)
                    {
                        $currentPasswordUpdate=$this->tbeLoginTable()->setTbeLogin(array('pwd'=>$encodeString, 'hash'=>$hash),array('user_id'=>$userId));
-                       return new JsonModel(array('success'=>false,'message'=>'Updated successfully'));
+                       return new JsonModel(array('success'=>true,'message'=>'Updated successfully'));
 
                    }else{
                        return new JsonModel(array('success'=>false,'message'=>'Something went wrong try again after sometime'));
-
                    }
 
               }else{
@@ -2493,7 +2492,7 @@ class AdminController extends BaseController
                   if($currentPasswordInsert)
                    {
                        $currentPasswordUpdate=$this->taConsultantDetailsTable()->setTaConsultantDetails(array('pwd'=>$encodeString, 'hash'=>$hash),array('id'=>$userId));
-                       return new JsonModel(array('success'=>false,'message'=>'Updated successfully'));
+                       return new JsonModel(array('success'=>true,'message'=>'Updated successfully'));
 
                    }else{
                        return new JsonModel(array('success'=>false,'message'=>'Something went wrong try again after sometime'));

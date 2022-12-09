@@ -433,8 +433,9 @@ class IndexController extends BaseController {
 
             if($currentPasswordInsert)
             {
-                $currentPasswordUpdate=$this->tbeDetailsTable()->setTbeDetails(array('pwd'=>$encodeString, 'hash'=>$hash),array('user_id'=>$tbeId));
-                return new JsonModel(array('success'=>true,'message'=>'Password reset successful'));
+                $currentPasswordUpdate=$this->tbeLoginTable()->setTbeLogin(array('pwd'=>$encodeString, 'hash'=>$hash),array('user_id'=>$tbeId));
+               /*  $currentPasswordUpdate=$this->tbeDetailsTable()->setTbeDetails(array('pwd'=>$encodeString, 'hash'=>$hash),array('user_id'=>$tbeId));*/
+                return new JsonModel(array('success'=>true,'message'=>'Password reset successful')); 
 
             }else{
                 return new JsonModel(array('success'=>false,'message'=>'Something went wrong try again after sometime'));

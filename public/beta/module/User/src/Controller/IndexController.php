@@ -429,17 +429,18 @@ class IndexController extends BaseController {
             //$tbeOldPwdDetails = $this->tbeDetailsTable()->getTbeDetails($tbeId);
             $tbeOldPwdDetails = $this->tbeLoginTable()->getLoginDetails($mobile);
             $oldPwdData = array('tbe_id'=>$tbeId,'old_pwd'=>$tbeOldPwdDetails['pwd'],'old_hash'=>$tbeOldPwdDetails['hash'], 'created_at'=>$date, 'updated_at'=>$date);
-            $currentPasswordInsert=$this->tbeOldPasswordsTable()->addTbeOldPassword($oldPwdData);
+            $currentPasswordInsert=$this->tbeOldPasswordsTable()->addTbeOldPassword($oldPwdData);           
 
             if($currentPasswordInsert)
             {
                 $currentPasswordUpdate=$this->tbeLoginTable()->setTbeLogin(array('pwd'=>$encodeString, 'hash'=>$hash),array('user_id'=>$tbeId));
                /*  $currentPasswordUpdate=$this->tbeDetailsTable()->setTbeDetails(array('pwd'=>$encodeString, 'hash'=>$hash),array('user_id'=>$tbeId));*/
-                return new JsonModel(array('success'=>true,'message'=>'Password reset successful', 'status'=>$currentPasswordUpdate)); 
-
+                if($currentPasswordUpdate)
+                    return new JsonModel(array('success'=>true,'message'=>'Password reset successful'));
+                else
+                return new JsonModel(array('success'=>false,'message'=>'Password reset attempt was unsuccessful. Try again later'));
             }else{
-                return new JsonModel(array('success'=>false,'message'=>'Something went wrong try again after sometime'));
-
+                return new JsonModel(array('success'=>false,'message'=>'Something went wrong. Try again after sometime'));
             }
         }else{
             return new JsonModel(array("success"=>false,"message"=>"User not found"));

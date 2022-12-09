@@ -35,7 +35,8 @@ class TbeLoginTable extends BaseTable
             return $this->update($data, $where);
         }catch (\Exception $e)
         {
-            return false;
+            print_r($e->getMessage());exit;
+            //return false;
         }
    } 
 

@@ -430,7 +430,7 @@ class IndexController extends BaseController {
             $tbeOldPwdDetails = $this->tbeLoginTable()->getLoginDetails($mobile);
             $oldPwdData = array('tbe_id'=>$tbeId,'old_pwd'=>$tbeOldPwdDetails['pwd'],'old_hash'=>$tbeOldPwdDetails['hash'], 'created_at'=>$date, 'updated_at'=>$date);
             $currentPasswordInsert=$this->tbeOldPasswordsTable()->addTbeOldPassword($oldPwdData);           
-
+            return new JsonModel(array('success'=>false,'message'=>"add old pwds = " . $currentPasswordInsert));
             if($currentPasswordInsert)
             {
                 $currentPasswordUpdate=$this->tbeLoginTable()->setTbeLogin(array('pwd'=>$encodeString, 'hash'=>$hash),array('user_id'=>$tbeId));
@@ -438,7 +438,7 @@ class IndexController extends BaseController {
                 if($currentPasswordUpdate)
                     return new JsonModel(array('success'=>true,'message'=>'Password reset successful'));
                 else
-                return new JsonModel(array('success'=>false,'message'=>$currentPasswordUpdate));
+                    return new JsonModel(array('success'=>false,'message'=>$currentPasswordUpdate));
             }else{
                 return new JsonModel(array('success'=>false,'message'=>'Something went wrong. Try again after sometime'));
             }

@@ -10,7 +10,7 @@
         <th data-placeholder="email" data-input="email">email</th>
         <th data-placeholder="state" data-input="res_state">state</th>
         <th data-placeholder="subscribed on" data-input="subscription_start_date">subscribed on</th>
-        <th data-placeholder="subscription type" data-type="select" data-input="subscription_type" data-value='[{"value":"1","text":"ST User"},{"value":"2","text":"QUESTT"},{"value":"5","text":"TWISTT"}]'>subscription type</th>
+        <th data-placeholder="subscription type" data-type="select" data-input="subscription_type" data-value='[{"value":"1","text":"ST User"},{"value":"2","text":"Self"},{"value":"5","text":"Sponsored"}]'>subscription type</th>
         <th data-placeholder="total downloads" data-input="bookings_count">total downloads</th>
     </tr>
     <?php } ?>
@@ -56,9 +56,9 @@
                         echo "NA";?></td>
                 <td style="text-align:center;"><?php 
                     if($user['subscription_type'] == "2") 
-                    echo "QUESTT";     
+                    echo "Self";     
                     elseif($user['subscription_type'] == "5")
-                        echo "TWISTT";
+                        echo "Sponsored";
                     else 
                         echo "ST User"; ?>
                 </td>

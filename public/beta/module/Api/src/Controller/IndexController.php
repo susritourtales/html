@@ -3152,7 +3152,7 @@ class IndexController extends BaseController{
             $price = $subscriptionDetails["price"] * (1+($subscriptionDetails['GST']/100));
             $noOfCPs = $subscriptionDetails["no_of_comp_pwds"];
             $noOfUsers = 1;
-            $noOfDays=$subscriptionDetails["subscription_validity"];
+            $noOfDays=$subscriptionDetails["pwd_subscription_validity"];
             $bookingEndDate = date('Y-m-d', strtotime(date("y-m-d") . " +  $noOfDays days"));
             
               /* $sponseredUsers = explode(",",$response[0]['sponsered_users']);

@@ -54,6 +54,7 @@ $(document).ready(function(){
         var pn=$.trim($("#pn").val());
         var p=$.trim($("#p").val());
         var sv=$.trim($("#sv").val());
+        var psv=$.trim($("#psv").val());
         var spv=$.trim($("#spv").val());
         var sd=$.trim($("#sd").val());
         var ed=$.trim($("#ed").val());
@@ -142,6 +143,7 @@ $(document).ready(function(){
         formData.append("pn",pn);
         formData.append("p",p);
         formData.append("sv",sv);
+        formData.append("psv",psv);
         formData.append("spv",spv);
         formData.append("sd",sd);
         formData.append("ed",ed);

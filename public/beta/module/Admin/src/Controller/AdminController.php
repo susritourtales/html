@@ -6383,6 +6383,13 @@ class AdminController extends BaseController
                 //$response=$this->pricingTable()->updatePricingPlan(array('subscription_validity'=>$val), array('id'=>$pid));
                 $data['subscription_validity'] = $val;
             }
+
+            $val=$request['psv'];
+            if(!is_null($val) && $val != ""){
+                //$response=$this->pricingTable()->updatePricingPlan(array('subscription_validity'=>$val), array('id'=>$pid));
+                $data['pwd_subscription_validity'] = $val;
+            }
+
             if($pid != "1"){
                 $val=$request['sd'];
                 if(!is_null($val) && $val != ""){

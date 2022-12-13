@@ -12,6 +12,7 @@
         <th data-placeholder="plan name" data-input="planname" class="calign">plan name</th>
         <th data-placeholder="price" data-input="price" class="calign">price</th>
         <th data-placeholder="sub validity" data-input="subscription_validity">sub validity</th>
+        <th data-placeholder="pwd sub validity" data-input="pwd_subscription_validity">pwd sub validity</th>
         <th data-placeholder="start date" data-input="start_date" class="calign">start date</th>
         <th data-placeholder="end date" data-input="end_date" class="calign">end date</th>
         <th data-placeholder="sponsor pwd val" data-input="sponsor_pwd_validity">sponsor pwd val</th>
@@ -47,7 +48,8 @@
                 <td><?php echo $i+1; ?></td>
                 <td class="text-center"><?php echo $pricing['planname']; ?></td>
                 <td class="text-center"><?php echo $pricing['price']; ?></td>
-                <td class="text-center"><?php echo $pricing['plantype'] == "0" ? $pricing['subscription_validity'] : "NA" ; //$pricing['id'] == "1" ? $pricing['subscription_validity'] : "NA" ; ?></td>
+                <td class="text-center"><?php echo $pricing['plantype'] == "0" ? $pricing['subscription_validity'] : "NA"; //$pricing['id'] == "1" ? $pricing['subscription_validity'] : "NA" ; ?></td>
+                <td class="text-center"><?php echo $pricing['plantype'] == "0" ? $pricing['pwd_subscription_validity'] : "NA"; ?></td>
                 <td class="text-center position-relative">
                     <?php 
                     if(!is_null($pricing['start_date']) && $pricing['start_date'] != "0000-00-00 00:00:00")

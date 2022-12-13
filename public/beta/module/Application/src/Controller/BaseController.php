@@ -634,7 +634,8 @@ class BaseController extends AbstractActionController
             $pricingDetails['no_of_days'] = $variables['no_of_days'];
             $pricingDetails['maxdownloads'] = $variables['maxdownloads'];
             $pricingDetails['maxquantity'] = $variables['maxquantity'];
-            $pricingDetails['subscription_validity'] = $variables['subscription_validity'];
+            //$pricingDetails['subscription_validity'] = $variables['subscription_validity'];
+            $pricingDetails['subscription_validity'] = $variables['pwd_subscription_validity'];
             $pricingDetails['sponsor_bonus_min'] = $variables['sponsor_bonus_min'];
             $pricingDetails['sponsor_comp_pwds'] = $variables['sponsor_comp_pwds'];
             $pricingDetails['sponsor_pwd_validity'] = $variables['sponsor_pwd_validity'];
@@ -721,6 +722,7 @@ class BaseController extends AbstractActionController
             $pricingDetails['maxdownloads'] = $variables['maxdownloads'];
             $pricingDetails['maxquantity'] = $variables['maxquantity'];
             $pricingDetails['subscription_validity'] = $variables['subscription_validity'];
+            $pricingDetails['pwd_subscription_validity'] = $variables['pwd_subscription_validity'];
             $pricingDetails['sponsor_bonus_min'] = $variables['sponsor_bonus_min'];
             $pricingDetails['sponsor_comp_pwds'] = $variables['sponsor_comp_pwds'];
             $pricingDetails['sponsor_pwd_validity'] = $variables['sponsor_pwd_validity'];

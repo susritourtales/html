@@ -482,6 +482,7 @@ class IndexController extends BaseController{
                 'resState'=>$checkUser['res_state'],  // Added by Manjary for STT subscription version
                 'address'=>$checkUser['address'],  // Added by Manjary for STT subscription version
                 'sponsor_type'=>$checkUser['sponsor_type'],    // Added by Manjary for STT subscription version
+                'subscription_type'=>$checkUser['subscription_type'],// Added by Manjary for TWISTT
                 'subscription_end_date'=>$checkUser['subscription_end_date'],  // Added by Manjary 
                 'non_renewal_handled'=>false,   // Added by Manjary
                 'image_path'=>$photoFilePath,  // Added by Manjary for STT 
@@ -527,6 +528,7 @@ class IndexController extends BaseController{
                 'resState'=>$checkUser['res_state'],  // Added by Manjary for STT subscription version
                 'address'=>$checkUser['address'],  // Added by Manjary for STT subscription version
                 'sponsor_type'=>$checkUser['sponsor_type'],    // Added by Manjary for STT subscription version
+                'subscription_type'=>$checkUser['subscription_type'],// Added by Manjary for TWISTT
                 'subscription_end_date'=>$checkUser['subscription_end_date'],  // Added by Manjary 
                 'non_renewal_handled'=>false,   // Added by Manjary
                 'image_path'=>$photoFilePath,  // Added by Manjary for STT 
@@ -662,8 +664,11 @@ class IndexController extends BaseController{
             if ($sdiff <= 0 && $ediff >=0){
                 $retVars['sds_active'] = 2;
                 return new JsonModel($retVars);
+            }elseif ($sdiff <= 0 && $ediff <=0){
+                $retVars['sds_active'] = 0;
             }else{
                 $retVars['sds_active'] = 1;
+                return new JsonModel($retVars);
             }
          }
          return new JsonModel($retVars);
@@ -1022,6 +1027,7 @@ class IndexController extends BaseController{
                    'subscription_end_date'=>$checkUser['subscription_end_date'],
                    'non_renewal_handled'=>false,
                    'sponsor_type'=>$checkUser['sponsor_type'],    // Added by Manjary for STT subscription version
+                   'subscription_type'=>$checkUser['subscription_type'],// Added by Manjary for TWISTT
                    'is_promoter'=>$checkUser['is_promoter']
                );
                
@@ -2847,6 +2853,7 @@ class IndexController extends BaseController{
                 'ref_name'=>$refDetails[0]['ref_by'],
                 'ref_mobile'=>$refDetails[0]['ref_mobile'],
                 'sponsor_type'=>$checkUser['sponsor_type'],
+                'subscription_type'=>$checkUser['subscription_type'],// Added by Manjary for TWISTT
                 'subscription_end_date'=>$checkUser['subscription_end_date'],
                 'image_path'=>$photoFilePath,
                 'non_renewal_handled'=>true,
@@ -3191,12 +3198,12 @@ class IndexController extends BaseController{
             {
                 return new JsonModel(array('success'=>false,'message'=>'Something Wrong'));
             }
-            $subscriptionCount = $this->userTable()->getField(array('user_id'=>$userId),"subscription_count");
-            $subscriptionCount = $subscriptionCount+1;
+            /* $subscriptionCount = $this->userTable()->getField(array('user_id'=>$userId),"subscription_count");
+            $subscriptionCount = $subscriptionCount+1; */
             $updatePassword=$this->passwordTable()->updatePassword(array('user_id'=>$userId,'password_first_used_date'=>$currentDate),array('id'=>$response[0]['id']));
             if($updatePassword){
                 $where=array("user_id"=>$userId);
-                $update=array("role"=>\Admin\Model\User::Subscriber_role, "subscription_type"=>\Admin\Model\Bookings::booking_Sponsored_Subscription, "subscription_start_date"=>date("Y-m-d"), "subscription_end_date"=>$bookingEndDate, "subscription_count"=>$subscriptionCount, "renewed_on"=>date("Y-m-d"));
+                $update=array("role"=>\Admin\Model\User::Subscriber_role, "subscription_type"=>\Admin\Model\Bookings::booking_Sponsored_Subscription, "subscription_start_date"=>date("Y-m-d"), "subscription_end_date"=>$bookingEndDate, "renewed_on"=>date("Y-m-d"));  /* "subscription_count"=>$subscriptionCount, */
                 $this->userTable()->updateUser($update,$where);
             }
             
@@ -3236,6 +3243,7 @@ class IndexController extends BaseController{
                 'resState'=>$checkUser['res_state'],  // Added by Manjary for STT SV
                 'address'=>$checkUser['address'],  // Added by Manjary for STT SV
                 'sponsor_type'=>$checkUser['sponsor_type'],// Added by Manjary for STT SV
+                'subscription_type'=>$checkUser['subscription_type'],// Added by Manjary for TWISTT
                 'image_path'=>$photoFilePath,
                 'subscription_end_date'=>$checkUser['subscription_end_date'],
                 'company_name'=>"",

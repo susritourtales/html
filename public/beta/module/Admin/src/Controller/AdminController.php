@@ -5439,7 +5439,8 @@ class AdminController extends BaseController
                                 $notificationSent = $notification->sendPushNotificationToFCMSever($registrationIds, array('message' => $notificationDetails['notification_text'], 'title' => $subject, 'id' => $notificationDetails['notification_data_id'],'type' => $notificationDetails['notification_type']));
                             }
                         }
-                        $smsSent = $this->sendBookingSms($request['mobile_country_code'].$request['mobile'],array('text'=>$ntxt));
+                        $stxt = 'You%20have%20been%20sponsored%20for%20%26ldquo%3BTWISTT%26rdquo%3B%20-%20Short%20Duration%20Subscription%20of%20the%20App%20%26lsquo%3BSusri%20Tour%20Tales%26rsquo%3B%20by%20'. $taName .'.%0APlease%20install%20the%20App%20from%20Android%20Play%20Store%20link%20-%20https%3A%2F%2Ftx.gl%2Fr%2F95r8n%2F%23AdvdTrack%23';
+                        $smsSent = $this->sendBookingSms($request['mobile_country_code'].$request['mobile'],array('text'=>$stxt));
 
                         return new JsonModel(array('success'=>true , 'message'=>'added successfully'));
                     }else{
@@ -6464,13 +6465,15 @@ class AdminController extends BaseController
             }
 
             $val=$request['at'];
-            if(!is_null($val) && $val != ""){
+            $data['app_text'] = $val;
+            /* if(!is_null($val) && $val != ""){
                 $data['app_text'] = $val;
-            }
+            } */
             $val=$request['wt'];
-            if(!is_null($val) && $val != ""){
+            $data['web_text'] = $val;
+            /* if(!is_null($val) && $val != ""){
                 $data['web_text'] = $val;
-            }
+            } */
             $response=$this->pricingTable()->updatePricingPlan($data, array('id'=>$pid));
            /*  $stringRepresentation= json_encode($data);
             return new JsonModel(array('success'=>false , 'message'=>$stringRepresentation)); */

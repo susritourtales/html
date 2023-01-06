@@ -522,9 +522,9 @@ class BaseController extends AbstractActionController
 
     public function notifyUser($userDetails){
         if($userDetails['booking_type']==\Admin\Model\Bookings::booking_Sponsorship){
-            $message="Congratulations on registering as Sponsor. You can now buy passwords at discounted price and sell them at profit to the tourists.";
+            $message="Congratulations on registering yourself as a TWISTT Sponsor\nWelcome to the Sales Partners Group of STT.\n\nYou can buy TWISTT passwords each at 15% of QUESTT or Annual Subscription Price.\nYou can buy a max of 99 TWISTT passwords in one on-line transaction.\nYou will get 5 free passwords after buying the first 10 passwords.\n\nYou can give/sell them to interested persons/tourists.\nValidity of TWISTT password is one year.\nUsing this password, your friend/tourist becomes a TWISTT Subscriber and enjoy a short duration use of STT for 15 days.\n\nAs you buy more and more passwords, you receive better discount.";
             /* $message="Congratulations on converting yourself as a \"Sponsor\".\nWelcome to the Promoting Group of STT.\n\nYou can buy passwords at discounted price and  sell them to interested persons/tourists.\nIt gives you an opportunity to earn simultaneously while serving the tourist.\nPlease go through the e-mail for more details."; */
-            $nTitle = "Welcome as Sponsor";
+            $nTitle = "Welcome as TWISTT Sponsor";
         }
         elseif($userDetails['booking_type']==\Admin\Model\Bookings::booking_Subscription|| $userDetails['booking_type']==\Admin\Model\Bookings::booking_Sponsored_Subscription){
             //$message="Congratulations on your choice of subscribing to STT. Welcome to Susri Tour Tales.\nSelect, Download and Listen to the tales about the tourist places  of your choice.\nEnjoy your time with STT.\n\nYou can also become a sponsor. For details, see the message  sent to your registered mail Id.";
@@ -627,7 +627,7 @@ class BaseController extends AbstractActionController
         if($cc == "91")
             $variables = $this->pricingTable()->getPricingDetails(array('id'=>'1'));
         else
-            $variables = $this->pricingTable()->getPricingDetails(array('id'=>'2'));
+            $variables = $this->pricingTable()->getPricingDetails(array('id'=>'3'));
 
         if(!empty($variables)){
             $pricingDetails['no_of_comp_pwds'] = $variables['no_of_comp_pwds'];

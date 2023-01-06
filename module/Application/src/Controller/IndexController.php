@@ -486,8 +486,8 @@ class IndexController extends BaseController
                                         $smsMessage = "Congratulations.%0ABy%20purchasing%20ten%20passwords%2C%20you%20have%20become%20eligible%20to%20receive%205%20bonus%20passwords.%20%0A%0AThey%20are%20sent%20to%20your%20registered%20e-mail.";
                                     }else{
                                         $message="Your " . $bookingList['no_of_users'] . " passwords purchased have been sent to your registered mail id. You can also find them in ‘Menu>Password History’ in the App. Use them before one year.";
-                                        /* $message="Your " . $bookingList['no_of_users'] . " passwords purchased have been mailed to your registered mail Id.\nThe passwords are required to be re-deemed before one year.\nPassword  used on one device cannot be re-used on other."; */
-                                        $smsMessage="Your%20" . $bookingList['no_of_users'] . "%20passwords%20have%20been%20mailed%20to%20your%20registered%20mail%20Id.%0APasswords%20are%20required%20to%20be%20re-deemed%20before%20one%20year.";
+                                        /* $message="Your " . $bookingList['no_of_users'] . " passwords purchased have been mailed to your registered mail Id.\nThe passwords are required to be redeemed before one year.\nPassword  used on one device cannot be reused on other."; */
+                                        $smsMessage="Your%20" . $bookingList['no_of_users'] . "%20passwords%20have%20been%20mailed%20to%20your%20registered%20mail%20Id.%0APasswords%20are%20required%20to%20be%20redeemed%20before%20one%20year.";
                                     }
                                     $notificationTitle = "Passwords purchased successfully";
 
@@ -834,8 +834,8 @@ class IndexController extends BaseController
                                         $smsMessage = "Congratulations.%0ABy%20purchasing%20ten%20passwords%2C%20you%20have%20become%20eligible%20to%20receive%205%20bonus%20passwords.%20%0A%0AThey%20are%20sent%20to%20your%20registered%20e-mail.";
                                     }else{
                                         $message="Your " . $bookingList['no_of_users'] . " passwords purchased have been sent to your registered mail id. You can also find them in ‘Menu>Password History’ in the App. Use them before one year."; 
-                                        /* $message="Your " . $bookingList['no_of_users'] . " passwords purchased have been mailed to your registered mail Id.\nThe passwords are required to be re-deemed before one year.\nPassword  used on one device cannot be re-used on other."; */
-                                        $smsMessage="Your%20" . $bookingList['no_of_users'] . "%20passwords%20have%20been%20mailed%20to%20your%20registered%20mail%20Id.%0APasswords%20are%20required%20to%20be%20re-deemed%20before%20one%20year.";
+                                        /* $message="Your " . $bookingList['no_of_users'] . " passwords purchased have been mailed to your registered mail Id.\nThe passwords are required to be redeemed before one year.\nPassword  used on one device cannot be reused on other."; */
+                                        $smsMessage="Your%20" . $bookingList['no_of_users'] . "%20passwords%20have%20been%20mailed%20to%20your%20registered%20mail%20Id.%0APasswords%20are%20required%20to%20be%20redeemed%20before%20one%20year.";
                                     }
                                     $notificationTitle = "Passwords purchased successfully";
                                 }
@@ -855,7 +855,7 @@ class IndexController extends BaseController
                                     if($bookingList['bonus_flag']){
                                         $smsMessage = "Congratulations.%0ABy%20purchasing%20ten%20passwords%2C%20you%20have%20become%20eligible%20to%20receive%205%20bonus%20passwords.%20%0A%0AThey%20are%20sent%20to%20your%20registered%20e-mail.";
                                     }else{
-                                        $smsMessage="Your%20" . $bookingList['no_of_users'] . "%20passwords%20have%20been%20mailed%20to%20your%20registered%20mail%20Id.%0APasswords%20are%20required%20to%20be%20re-deemed%20before%20one%20year.";
+                                        $smsMessage="Your%20" . $bookingList['no_of_users'] . "%20passwords%20have%20been%20mailed%20to%20your%20registered%20mail%20Id.%0APasswords%20are%20required%20to%20be%20redeemed%20before%20one%20year.";
                                     }
                                 } */
                                 if ($registrationIds)
@@ -1297,7 +1297,7 @@ class IndexController extends BaseController
                                     $message="Congratulations on your choice of subscribing to STT.\nWelcome to Susri Tour Tales.\nSelect, Download and Listen to the tales about the tourist places  of your choice.\nEnjoy your time with STT.\n\nYou can also become a sponsor. For details, see the message  sent to your registered mail Id.";
                                 }
                                 elseif($bookingType == \Admin\Model\Bookings::booking_Buy_Passwords){
-                                    $message="Your " . $bookingList['no_of_users'] . " passwords purchased have been mailed to your registered mail Id.\nThe passwords are required to be re-deemed before one year.\nPassword  used on one device cannot be re-used on other.";
+                                    $message="Your " . $bookingList['no_of_users'] . " passwords purchased have been mailed to your registered mail Id.\nThe passwords are required to be redeemed before one year.\nPassword  used on one device cannot be reused on other.";
                                 }
 
                                 $notificationDetails = array('notification_data_id'=>$bookingId ,'status' => \Admin\Model\Notification::STATUS_UNREAD, 'notification_recevier_id' => $userId, 'notification_type' => \Admin\Model\Notification::NOTIFICATION_TYPE_BOOKING_NOTIFICATION, 'notification_text' => $message,'created_at'=>date("Y-m-d H:i:s"),'updated_at'=>date("Y-m-d H:i:s"));
@@ -1310,7 +1310,7 @@ class IndexController extends BaseController
                                     $notificationTitle = "Welcome as Subscriber";
                                 }
                                 elseif($bookingType == \Admin\Model\Bookings::booking_Buy_Passwords){
-                                    $smsMessage="Your " . $bookingList['no_of_users'] . " passwords purchased have been mailed to your registered mail Id.\nThe passwords are required to be re-deemed before one year.\nPassword  used on one device cannot be re-used on other.";
+                                    $smsMessage="Your " . $bookingList['no_of_users'] . " passwords purchased have been mailed to your registered mail Id.\nThe passwords are required to be redeemed before one year.\nPassword  used on one device cannot be reused on other.";
                                     $notificationTitle = "Passwords purchased successfully";
                                 }
                                 if ($registrationIds)

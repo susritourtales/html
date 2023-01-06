@@ -1333,7 +1333,7 @@ abstract class Base
      * OpenSSL CTR Processor
      *
      * PHP's OpenSSL bindings do not operate in continuous mode so we'll wrap around it. Since the keystream
-     * for CTR is the same for both encrypting and decrypting this function is re-used by both Base::encrypt()
+     * for CTR is the same for both encrypting and decrypting this function is reused by both Base::encrypt()
      * and Base::decrypt(). Also, OpenSSL doesn't implement CTR for all of it's symmetric ciphers so this
      * function will emulate CTR with ECB when necessary.
      *
@@ -1428,7 +1428,7 @@ abstract class Base
      * OpenSSL OFB Processor
      *
      * PHP's OpenSSL bindings do not operate in continuous mode so we'll wrap around it. Since the keystream
-     * for OFB is the same for both encrypting and decrypting this function is re-used by both Base::encrypt()
+     * for OFB is the same for both encrypting and decrypting this function is reused by both Base::encrypt()
      * and Base::decrypt().
      *
      * @see self::encrypt()

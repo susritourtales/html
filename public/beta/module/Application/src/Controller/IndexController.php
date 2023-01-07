@@ -234,6 +234,7 @@ class IndexController extends BaseController
     public function paymentGateWayResponseAction()
     {
         try{
+            return new JsonModel(array('success'=>false,'message'=>'1'));
             $details=$this->getRequest()->getPost();
             // print_r($details); exit;
             if(!isset($details['error'])) 

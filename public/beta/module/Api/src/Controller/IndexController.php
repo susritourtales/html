@@ -1003,7 +1003,6 @@ class IndexController extends BaseController{
          if($refData)
             if($refData['ref_id'] != null)
                 $refUpdate = $this->referTable()->addRefer($refData);
-                return  new JsonModel(array('success'=>false,'message'=>'2'));
            if($profileUpdate && $refUpdate['success'])
            {
             return  new JsonModel(array('success'=>false,'message'=>'3'));

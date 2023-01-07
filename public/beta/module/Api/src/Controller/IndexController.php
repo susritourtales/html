@@ -934,7 +934,6 @@ class IndexController extends BaseController{
     }
      public function profileUpdateAction()
      {
-        return  new JsonModel(array('success'=>false,'message'=>'1'));
          $headers = $this->getRequest()->getHeaders();
         $logResult = $this->logRequest($this->getRequest()->toString());
          $request = $this->getRequest()->getPost();

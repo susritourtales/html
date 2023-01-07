@@ -1043,10 +1043,8 @@ class IndexController extends BaseController{
                         }
                     }
                 }
-                return  new JsonModel(array('success'=>false,'message'=>'4'));
                return new JsonModel(array("success"=>true,"message"=>"Profile updated","user"=>$user,'status'=>1));
            }
-           return  new JsonModel(array('success'=>false,'message'=>'5'));
          return new JsonModel(array("success"=>false,"message"=>"Something Went wrong"));
      }
     

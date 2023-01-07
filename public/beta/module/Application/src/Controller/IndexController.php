@@ -251,7 +251,7 @@ class IndexController extends BaseController
                             {
                                 return new JsonModel(array('success'=>true,'message'=>'Payment Done'));
                             }   
-                            $status = 0; //\Admin\Model\Payments::payment_success;
+                            $status = \Admin\Model\Payments::payment_success;
                             $updateData = array('status' => $status, 'payment_response_id' => $details['razorpay_payment_id']);
                             $updateBookingData = array('payment_status' => $status);
                             $paymentRequest = $this->paymentTable()->updatePayment($updateData, array('payment_request_id' => $details['razorpay_order_id']));
@@ -303,7 +303,6 @@ class IndexController extends BaseController
                                 }elseif($bookingType == \Admin\Model\Bookings::booking_Buy_Passwords){
                                     $subedt = $udata['subscription_end_date'];
                                 }
-                                return new JsonModel(array('success'=>false,'message'=>'3'));
                                 // if subscriber/sponsor - start
                                 $userDetails=$this->userTable()->getFields(array('user_id'=>$userId),array('user_id','user_name','email','mobile','mobile_country_code','role','subscription_count','subscription_start_date','subscription_end_date','res_state','address','status','company_role','bonus_flag', 'discount_percentage','passwords_count', 'sponsor_type', 'subscription_type'));
 

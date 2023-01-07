@@ -934,6 +934,7 @@ class IndexController extends BaseController{
     }
      public function profileUpdateAction()
      {
+        return  new JsonModel(array('success'=>false,'message'=>'1'));
          $headers = $this->getRequest()->getHeaders();
         $logResult = $this->logRequest($this->getRequest()->toString());
          $request = $this->getRequest()->getPost();
@@ -1003,9 +1004,10 @@ class IndexController extends BaseController{
          if($refData)
             if($refData['ref_id'] != null)
                 $refUpdate = $this->referTable()->addRefer($refData);
-
+                return  new JsonModel(array('success'=>false,'message'=>'2'));
            if($profileUpdate && $refUpdate['success'])
            {
+            return  new JsonModel(array('success'=>false,'message'=>'3'));
                //$checkUser=$this->userTable()->getUserByUserId($userId);
                $checkUser=$this->userTable()->getFields(array('user_id'=>$userId),array('user_id','user_name','email','mobile','mobile_country_code','role','subscription_start_date','subscription_end_date','res_state','address','status','company_role','sponsor_type','sponsor_reg_date', 'is_promoter'));
                $photoFilePath = $this->sponsorPhotoTable()->getField(array('file_data_id'=>$userId),'file_path');

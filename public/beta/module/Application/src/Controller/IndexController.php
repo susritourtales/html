@@ -234,7 +234,6 @@ class IndexController extends BaseController
     public function paymentGateWayResponseAction()
     {
         try{
-            return new JsonModel(array('success'=>false,'message'=>'1'));
             $details=$this->getRequest()->getPost();
             // print_r($details); exit;
             if(!isset($details['error'])) 
@@ -252,10 +251,11 @@ class IndexController extends BaseController
                             {
                                 return new JsonModel(array('success'=>true,'message'=>'Payment Done'));
                             }   
-                            $status = \Admin\Model\Payments::payment_success;
+                            $status = 0; //\Admin\Model\Payments::payment_success;
                             $updateData = array('status' => $status, 'payment_response_id' => $details['razorpay_payment_id']);
                             $updateBookingData = array('payment_status' => $status);
                             $paymentRequest = $this->paymentTable()->updatePayment($updateData, array('payment_request_id' => $details['razorpay_order_id']));
+                            return new JsonModel(array('success'=>false,'message'=>'2'));
                             if($paymentRequest) //if($status==\Admin\Model\Payments::payment_success)
                             {
                                 $bookingId=$checkPayment[0]['booking_id'];

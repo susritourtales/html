@@ -1029,7 +1029,7 @@ class IndexController extends BaseController{
                    'subscription_type'=>$checkUser['subscription_type'],// Added by Manjary for TWISTT
                    'is_promoter'=>$checkUser['is_promoter']
                );
-            return  new JsonModel(array('success'=>false,'message'=>'3'));
+            
                if(intval($role) == \Admin\Model\User::Sponsor_role){
                     if(intval($checkUser['role']) == \Admin\Model\User::Sponsor_role){
                         if($checkUser['role'] != $roleb4){
@@ -1043,8 +1043,10 @@ class IndexController extends BaseController{
                         }
                     }
                 }
+                return  new JsonModel(array('success'=>false,'message'=>'4'));
                return new JsonModel(array("success"=>true,"message"=>"Profile updated","user"=>$user,'status'=>1));
            }
+           return  new JsonModel(array('success'=>false,'message'=>'5'));
          return new JsonModel(array("success"=>false,"message"=>"Something Went wrong"));
      }
     

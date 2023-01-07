@@ -1005,7 +1005,6 @@ class IndexController extends BaseController{
                 $refUpdate = $this->referTable()->addRefer($refData);
            if($profileUpdate && $refUpdate['success'])
            {
-            return  new JsonModel(array('success'=>false,'message'=>'3'));
                //$checkUser=$this->userTable()->getUserByUserId($userId);
                $checkUser=$this->userTable()->getFields(array('user_id'=>$userId),array('user_id','user_name','email','mobile','mobile_country_code','role','subscription_start_date','subscription_end_date','res_state','address','status','company_role','sponsor_type','sponsor_reg_date', 'is_promoter'));
                $photoFilePath = $this->sponsorPhotoTable()->getField(array('file_data_id'=>$userId),'file_path');
@@ -1030,7 +1029,7 @@ class IndexController extends BaseController{
                    'subscription_type'=>$checkUser['subscription_type'],// Added by Manjary for TWISTT
                    'is_promoter'=>$checkUser['is_promoter']
                );
-               
+            return  new JsonModel(array('success'=>false,'message'=>'3'));
                if(intval($role) == \Admin\Model\User::Sponsor_role){
                     if(intval($checkUser['role']) == \Admin\Model\User::Sponsor_role){
                         if($checkUser['role'] != $roleb4){

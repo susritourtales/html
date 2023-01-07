@@ -447,8 +447,8 @@ class IndexController extends BaseController
                                     elseif($bookingList['booking_type']==\Admin\Model\Bookings::booking_Buy_Passwords)
                                     {
                                         $bookingList['passwords']=$this->bookingsTable()->bookingPasswords($bookingId);
-                                        $html = file_get_contents($this->getBaseUrl() . '/application/booking-pdf?suid=0&bid=' . $bookingId, false, stream_context_create($stream_opts));// added by Manjary - end -- remove on live
-                                        //$html = file_get_contents($this->getBaseUrl() . '/application/booking-pdf?suid=0&bid=' . $bookingId, true);// - removed by Manjary to make local work - use on live
+                                        //$html = file_get_contents($this->getBaseUrl() . '/application/booking-pdf?suid=0&bid=' . $bookingId, false, stream_context_create($stream_opts));// added by Manjary - end -- remove on live
+                                        $html = file_get_contents($this->getBaseUrl() . '/application/booking-pdf?suid=0&bid=' . $bookingId, true);// - removed by Manjary to make local work - use on live
                                         $mpdf = new mPDF(['tempDir' => getcwd()."/public/data/temp"]);
                                         $mpdf->SetDisplayMode("fullpage");
                                         $mpdf->WriteHTML($html);
@@ -686,8 +686,8 @@ class IndexController extends BaseController
                                         elseif($bookingList['booking_type']==\Admin\Model\Bookings::booking_Buy_Passwords)
                                         {
                                             $bookingList['passwords']=$this->bookingsTable()->bookingPasswords($bookingId);
-                                            $html = file_get_contents($this->getBaseUrl() . '/application/booking-pdf?suid=0&bid=' . $bookingId, false, stream_context_create($stream_opts));// added by Manjary - end -- remove on live
-                                            //$html = file_get_contents($this->getBaseUrl() . '/application/booking-pdf?suid=0&bid=' . $bookingId, true);// - removed by Manjary to make local work - use on live
+                                            //$html = file_get_contents($this->getBaseUrl() . '/application/booking-pdf?suid=0&bid=' . $bookingId, false, stream_context_create($stream_opts));// added by Manjary - end -- remove on live
+                                            $html = file_get_contents($this->getBaseUrl() . '/application/booking-pdf?suid=0&bid=' . $bookingId, true);// - removed by Manjary to make local work - use on live
                                             $mpdf = new mPDF(['tempDir' => getcwd()."/public/data/temp"]);
                                             $mpdf->SetDisplayMode("fullpage");
                                             $mpdf->WriteHTML($html);
@@ -782,12 +782,12 @@ class IndexController extends BaseController
                                     if($userDetails['email'])
                                     {
                                         // added by Manjary - start - remove on live - start
-                                        $stream_opts = [
+                                        /* $stream_opts = [
                                             "ssl" => [
                                                 "verify_peer"=>false,
                                                 "verify_peer_name"=>false,
                                             ]
-                                        ]; 
+                                        ];  */
                                         // added by Manjary - end -- remove on live
                                         if($bookingList['booking_type']==\Admin\Model\Bookings::booking_Subscription){
                                             $bookingList['heading'] = "Welcome as STT Subscriber";
@@ -796,9 +796,9 @@ class IndexController extends BaseController
                                         elseif($bookingList['booking_type']==\Admin\Model\Bookings::booking_Buy_Passwords)
                                         {
                                             $bookingList['passwords']=$this->bookingsTable()->bookingPasswords($bookingId);
-                                            $html = file_get_contents($this->getBaseUrl() . '/application/booking-pdf?bid=' . $bookingId, false, stream_context_create($stream_opts)); 
+                                            //$html = file_get_contents($this->getBaseUrl() . '/application/booking-pdf?bid=' . $bookingId, false, stream_context_create($stream_opts)); 
                                             
-                                            //$html = file_get_contents($this->getBaseUrl() . '/application/booking-pdf?suid=0&bid=' . $bookingId, true);// - removed by Manjary to make local work - use on live
+                                            $html = file_get_contents($this->getBaseUrl() . '/application/booking-pdf?suid=0&bid=' . $bookingId, true);// - removed by Manjary to make local work - use on live
                                             $mpdf = new mPDF(['tempDir' => getcwd()."/public/data/temp"]);
                                             $mpdf->SetDisplayMode("fullpage");
                                             $mpdf->WriteHTML($html);

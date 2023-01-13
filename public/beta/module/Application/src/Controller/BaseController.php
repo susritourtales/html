@@ -526,15 +526,17 @@ class BaseController extends AbstractActionController
             /* $message="Congratulations on converting yourself as a \"Sponsor\".\nWelcome to the Promoting Group of STT.\n\nYou can buy passwords at discounted price and  sell them to interested persons/tourists.\nIt gives you an opportunity to earn simultaneously while serving the tourist.\nPlease go through the e-mail for more details."; */
             $nTitle = "Welcome as TWISTT Sponsor";
         }
-        elseif($userDetails['booking_type']==\Admin\Model\Bookings::booking_Subscription|| $userDetails['booking_type']==\Admin\Model\Bookings::booking_Sponsored_Subscription){
+        elseif($userDetails['booking_type']==\Admin\Model\Bookings::booking_Subscription){
             //$message="Congratulations on your choice of subscribing to STT. Welcome to Susri Tour Tales.\nSelect, Download and Listen to the tales about the tourist places  of your choice.\nEnjoy your time with STT.\n\nYou can also become a sponsor. For details, see the message  sent to your registered mail Id.";
             if($userDetails['mobile_country_code'] == "91"){
-                $message="Congratulations on your choice of subscribing to STT.\nWelcome to Susri Tour Tales.\nSelect, Download and Listen to the tales about the tourist places  of your choice.\nEnjoy your time with STT.\n\nYou can also become a sponsor. For details, see the message  sent to your registered mail Id.";
+                $message="Congratulations on your choice of subscribing to STT.\nWelcome to Susri Tour Tales.\nSelect, Download and Listen to the tales about the tourist places of your choice.\nEnjoy your time with STT.\n\nYou can also become a sponsor. For details, see the message  sent to your registered mail Id.";
             } else {
-                $message="Congratulations on your choice of subscribing to STT.\nWelcome to Susri Tour Tales.\nSelect, Download and Listen to the tales about the tourist places  of your choice.\nEnjoy your time with STT.";
+                $message="Congratulations on your choice of subscribing to STT.\nWelcome to Susri Tour Tales.\nSelect, Download and Listen to the tales about the tourist places of your choice.\nEnjoy your time with STT.";
             }
             $nTitle = "Welcome as Subscriber";
-        }        
+        }elseif($userDetails['booking_type']==\Admin\Model\Bookings::booking_Sponsored_Subscription){ 
+            $message="Congratulations. You are sponsored TWISTT subscription for 15 days.\nWelcome to Susri Tour Tales.\nSelect, Download and Listen to the tales about the tourist places of your choice.\nEnjoy your time with STT.";
+        }       
         $notificationDetails = array('notification_data_id'=>$userDetails['user_id'] ,'status' => \Admin\Model\Notification::STATUS_UNREAD, 'notification_recevier_id' => $userDetails['user_id'], 'notification_type' => \Admin\Model\Notification::NOTIFICATION_TYPE_BOOKING_NOTIFICATION, 'notification_text' => $message,'created_at'=>date("Y-m-d H:i:s"),'updated_at'=>date("Y-m-d H:i:s"));
         $registrationIds = $this->fcmTable()->getDeviceIds($userDetails['user_id']);
         $notification = $this->notificationTable()->saveData($notificationDetails);
@@ -548,9 +550,12 @@ class BaseController extends AbstractActionController
         if($userDetails['booking_type']==\Admin\Model\Bookings::booking_Sponsorship){
             $message="Welcome%20to%20Sponsors%27%20Group%20of%20Susri%20Tour%20Tales.%0ABuy%20subscription%20passwords%20at%20discounted%20prices%20and%20sell%20at%20profits.%20%0ASee%20e-mail%20message%20for%20details.";
         }
-        elseif($userDetails['booking_type']==\Admin\Model\Bookings::booking_Subscription || $userDetails['booking_type']==\Admin\Model\Bookings::booking_Sponsored_Subscription){
+        elseif($userDetails['booking_type']==\Admin\Model\Bookings::booking_Subscription){
             $message="Welcome%20to%20Susri%20Tour%20Tales.%0ADownload%20and%20Listen%20to%20the%20tales%20of%20your%20choice.%0A%0ABecome%20a%20sponsor%20and%20earn%20through%20App.%0ASee%20e-mail%20message%20for%20details.";
-        }        
+        }/* elseif($userDetails['booking_type']==\Admin\Model\Bookings::booking_Sponsored_Subscription){ 
+            $taName = ""; // GET SPONSOR NAME   
+            $message="Congratulations. M/s $taName has sponsored your subscription for 15 days from " . date('d-m-Y', strtotime($request['tdate'])) . ". As a complement, we will be opening the subscription 3 days earlier. That enables you to download the tales of your choice before embarking on the tour. Wish you a happy Tour";
+        }  */ 
         $sendSms=array('mobile'=>$userDetails['mobile_country_code'].$userDetails['mobile'],'message'=>$message);
         $this->sendPasswordSms($sendSms['mobile'],array('text'=>$sendSms['message']));
      }

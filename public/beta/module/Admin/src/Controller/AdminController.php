@@ -5393,9 +5393,9 @@ class AdminController extends BaseController
                     $role = $this->userTable()->getField(array("user_id"=>$sttUserId), "role");
                     if($role != \Admin\Model\User::Individual_role){
                         $sed_str = $this->userTable()->getField(array("user_id"=>$sttUserId), "subscription_end_date");
-                        $sed = date('Y-m-d', strtotime($sed_str));
-                        $sds_ed = date('Y-m-d', strtotime($request['tdate'] . " + 12 days"));
-                        $diff = $sds_ed - $sed;
+                        $sed = date_create(date('Y-m-d', strtotime($sed_str)));
+                        $sds_ed = date_create(date('Y-m-d', strtotime($request['tdate'] . " + 12 days")));
+                        $diff = date_diff($sds_ed, $sed);
                         return new JsonModel(array('success'=>false,'message'=>"($sds_ed) - ($sed) = " . strval($diff)));
 
                         if($sds_ed <= $sed){ // if sds end date is within exisitng/running subscription period

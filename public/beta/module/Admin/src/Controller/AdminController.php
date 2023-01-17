@@ -5392,7 +5392,11 @@ class AdminController extends BaseController
                 if($sttUserId){
                     $role = $this->userTable()->getField(array("user_id"=>$sttUserId), "role");
                     if($role != \Admin\Model\User::Individual_role){
-                        return new JsonModel(array('success'=>false,'message'=>'Tourist is already subscriber of STT'));
+                        $sed = $this->userTable()->getField(array("user_id"=>$sttUserId), "subscription_end_date");
+                        $sds_ed = date('Y-m-d', strtotime(date("y-m-d") . " + 12 days"));
+                        if($sds_ed <= $sed){ // if sds end date is within exisitng/running subscription period
+                            return new JsonModel(array('success'=>false,'message'=>'Tourist is already subscriber of STT'));
+                        }
                     }
                 }
                 $doe = $this->taPurchasesTable()->getField(array('upc'=>$request['upc']), 'doe');

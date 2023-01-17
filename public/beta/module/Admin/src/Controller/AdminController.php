@@ -5386,8 +5386,8 @@ class AdminController extends BaseController
             $request = $this->getRequest()->getPost();
             //print_r($request);exit;
            
-            $chkTourists = $this->taSdsTable()->getField(array("tourist_mobile"=>$request['mobile'], "travel_date"=>$request['tdate']), "id");
-            if(!$chkTourists){
+            /* $chkTourists = $this->taSdsTable()->getField(array("tourist_mobile"=>$request['mobile'], "travel_date"=>$request['tdate']), "id");
+            if(!$chkTourists){ */
                 $sttUserId = $this->userTable()->getField(array("mobile"=>$request['mobile']), "user_id");
                 if($sttUserId){
                     $role = $this->userTable()->getField(array("user_id"=>$sttUserId), "role");
@@ -5396,11 +5396,11 @@ class AdminController extends BaseController
                         $sed = date_create($sed_str); //date('Y-m-d', strtotime($sed_str))
                         $sds_ed12 = date('Y-m-d', strtotime($request['tdate'] . " + 12 days"));
                         $sds_ed = date_create($sds_ed12);
-                        $diff = date_diff($sds_ed, $sed);
+                        $diff = date_diff($sed, $sds_ed);
                         $ediff=$diff->format("%R%a");
-                        return new JsonModel(array('success'=>false,'message'=>"($sds_ed) - ($sed_str) = " . $ediff));
+                        //return new JsonModel(array('success'=>false,'message'=>"$sed_str, $sds_ed12 = " . strval($ediff)));
 
-                        if($sds_ed <= $sed){ // if sds end date is within exisitng/running subscription period
+                        if($ediff <= 0){ // if sds end date is within exisitng/running subscription period
                             return new JsonModel(array('success'=>false,'message'=>'Tourist is already subscriber of STT'));
                         }
                     }
@@ -5459,9 +5459,9 @@ class AdminController extends BaseController
                 }else{
                     return new JsonModel(array('success'=>false,'message'=>'mtc reached'));
                 }
-            }else{
+            /* }else{
                 return new JsonModel(array('success'=>false,'message'=>'Tourist already added to SDS'));
-            }
+            } */
         }
         if(!$this->getLoggedInUserId())
         {

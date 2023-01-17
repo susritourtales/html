@@ -5392,8 +5392,12 @@ class AdminController extends BaseController
                 if($sttUserId){
                     $role = $this->userTable()->getField(array("user_id"=>$sttUserId), "role");
                     if($role != \Admin\Model\User::Individual_role){
-                        $sed = $this->userTable()->getField(array("user_id"=>$sttUserId), "subscription_end_date");
-                        $sds_ed = date('Y-m-d', strtotime(date("y-m-d") . " + 12 days"));
+                        $sed_str = $this->userTable()->getField(array("user_id"=>$sttUserId), "subscription_end_date");
+                        $sed = date('Y-m-d', strtotime($sed_str));
+                        $sds_ed = date('Y-m-d', strtotime($request['tdate'] . " + 12 days"));
+                        $diff = $sds_ed - $sed;
+                        return new JsonModel(array('success'=>false,'message'=>$diff));
+                        
                         if($sds_ed <= $sed){ // if sds end date is within exisitng/running subscription period
                             return new JsonModel(array('success'=>false,'message'=>'Tourist is already subscriber of STT'));
                         }

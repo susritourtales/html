@@ -5397,7 +5397,7 @@ class AdminController extends BaseController
                         $sds_ed = date('Y-m-d', strtotime($request['tdate'] . " + 12 days"));
                         $sds_ed_dt = date_create($sds_ed);
                         $diff = date_diff($sds_ed_dt, $sed);
-                        return new JsonModel(array('success'=>false,'message'=>"($sds_ed) - ($sed) = " . strval($diff)));
+                        return new JsonModel(array('success'=>false,'message'=>"($sds_ed) - ($sed) = " . $diff));
 
                         if($sds_ed <= $sed){ // if sds end date is within exisitng/running subscription period
                             return new JsonModel(array('success'=>false,'message'=>'Tourist is already subscriber of STT'));

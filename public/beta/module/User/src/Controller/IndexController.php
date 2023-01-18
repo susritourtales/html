@@ -22,8 +22,16 @@ class IndexController extends BaseController {
         $banners=$this->bannersTable()->getBanners();
         $cityTourList=$this->citiesTable()->getActiveCitiesList(array('limit'=>3,'tour_type'=>\Admin\Model\PlacePrices::tour_type_City_tour,'country_id'=>'','state_id'=>'','offset'=>0));
             /* echo '<pre>';
-            print_r($cityTourList);
-            exit; */
+            print_r($spiritualTourplacesList);
+            echo '</pre>';
+            echo '<pre>';
+            print_r($indiaTourList);
+            echo '</pre>'; 
+            exit;*/
+        $resarr = array_diff($spiritualTourplacesList, $indiaTourList);
+        if(!count($resarr))
+            $indiaTourList=$this->tourismPlacesTable()->getActiveTourismPlacesUser(array('tour_type'=>\Admin\Model\PlacePrices::tour_type_India_tour,'offset'=>3,'limit'=>3));
+            
         $seasonalSpecialslist=$this->seasonalSpecialsTable()->seasonalSpecials(array());
 
         $this->layout()->setVariable('activeTab', \Application\Constants\Constants::MAIN_SITE_HOME_PAGE);

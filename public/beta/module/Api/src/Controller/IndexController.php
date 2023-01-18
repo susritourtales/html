@@ -647,13 +647,16 @@ class IndexController extends BaseController{
          $retVars['offer_price'] = $pvariables['price'];
 
          // check for short duration subscription
-         /* sds_active = 0 -> no entry in sds table; sds_active = 1 -> upcomig sds; sds_active = 2 -> active sds; */
+         /* sds_active = 0 -> no entry in sds table; 
+         sds_active = 1 -> upcomig sds(sds table has entries but sds period is not active - either expired or yet to activate); 
+         sds_active = 2 -> active sds; */
          $retVars['sds_active'] = 0; 
 
         $data['mobile'] = $mobile;
         $sdsList = $this->taSdsTable()->getTouristSds($data);
         $today = date('d-m-Y');
         $today=date_create($today);
+        $activeCount=0;
         foreach($sdsList as $sds){
             $sd = date_create($sds['sds_start_date']);
             $ed = date_create($sds['sds_end_date']);
@@ -663,13 +666,17 @@ class IndexController extends BaseController{
             $ediff=$diff->format("%R%a");
             if ($sdiff <= 0 && $ediff >=0){
                 $retVars['sds_active'] = 2;
-                return new JsonModel($retVars);
+                $activeCount++;
+                //return new JsonModel($retVars);
             }elseif ($sdiff <= 0 && $ediff <=0){
                 $retVars['sds_active'] = 0;
             }else{
                 $retVars['sds_active'] = 1;
-                return new JsonModel($retVars);
+                //return new JsonModel($retVars);
             }
+         }
+         if($activeCount){
+            $retVars['sds_active'] = 2;
          }
          return new JsonModel($retVars);
     }
@@ -3331,13 +3338,15 @@ class IndexController extends BaseController{
             if ($sdiff <= 0 && $ediff >=0){
                 $sds_active = 2;
                 $activeCount++;
+            }elseif ($sdiff <= 0 && $ediff <=0){
+                $sds_active = 0;
             }else{
                 $sds_active = 1;
             }
          }
          if($activeCount){
             $sds_active = 2;
-        }
+         }
 
         if(intval($userType) == \Admin\Model\User::Individual_role && $sds_active != 2){ // -- condition added by Manjary
             /* if(($password=="" || is_null($password)) && $tourType != \Admin\Model\PlacePrices::tour_type_Spiritual_tour) // - removed by Manjary*/

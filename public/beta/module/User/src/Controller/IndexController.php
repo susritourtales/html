@@ -214,6 +214,10 @@ class IndexController extends BaseController {
         $this->layout()->setVariable('activeTab', \Application\Constants\Constants::MAIN_SITE_TWISTT);
         return new ViewModel();
     }
+    public function twisttaeAction() {
+        $this->layout()->setVariable('activeTab', \Application\Constants\Constants::MAIN_SITE_TWISTT);
+        return new ViewModel();
+    }
     public function twisttseAction() {
         $this->layout()->setVariable('activeTab', \Application\Constants\Constants::MAIN_SITE_TWISTT);
         return new ViewModel();

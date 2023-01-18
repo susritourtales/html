@@ -14,7 +14,7 @@
         <!-- Le styles -->
         <?=
                 $this->headLink(['rel' => 'shortcut icon', 'type' => 'image/vnd.microsoft.icon', 'href' => $this->basePath() . '/img/logo.png'])
-                ->prependStylesheet($this->basePath('css/style.css?v=1.4'))
+                ->prependStylesheet($this->basePath('css/style.css?v=1.5'))
                 ->prependStylesheet($this->basePath('css/owl.carousel.min.css'))
                 ->prependStylesheet($this->basePath('css/owl.theme.default.min.css'))
                 ->prependStylesheet($this->basePath('css/bootstrap.min.css'))
@@ -66,22 +66,22 @@
                             Tour Tales Menu
                             </a>
                         </li>
-                        <li class="d-none">
+                        <li><!-- <li class="d-none"> -->
                             <a href="<?php echo $this->basePath(); ?>/twistt" class="<?php echo (isset($activeTab)&&$activeTab==\Application\Constants\Constants::MAIN_SITE_TWISTT?'active':'')?>">
                                 TWISTT
                             </a>
                         </li>
-                        <li>
+                        <!-- <li>
                             <div class="dropdown">
-                                <button class="btn dropdown-toggle btn-outline-0 p-0 <?php echo (isset($activeTab)&&$activeTab==\Application\Constants\Constants::MAIN_SITE_TWISTT?'text-primary':'')?>" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <button class="btn dropdown-toggle btn-outline-0 p-0 <?php //echo (isset($activeTab)&&$activeTab==\Application\Constants\Constants::MAIN_SITE_TWISTT?'text-primary':'')?>" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 TWISTT
                                 </button>
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-                                    <a class="dropdown-item" href="<?php echo $this->basePath(); ?>/twistt">Tour Operator Login</a>
-                                    <a class="dropdown-item" href="<?php echo $this->basePath(); ?>/twisttse">STTSE Login</a>
+                                    <a class="dropdown-item" href="<?php //echo $this->basePath(); ?>/twistt">Tour Operator Login</a>
+                                    <a class="dropdown-item" href="<?php //echo $this->basePath(); ?>/twisttse">STTSE Login</a>
                                 </div>
                             </div>
-                        </li>
+                        </li> -->
                         <li>
                             <a href="<?php echo $this->basePath(); ?>/help" class="<?php echo (isset($activeTab)&&$activeTab==\Application\Constants\Constants::MAIN_SITE_HELP_PAGE?'active':'')?>">
                                 help

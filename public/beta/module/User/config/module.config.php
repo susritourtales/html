@@ -191,7 +191,16 @@ return [
                         'action' => 'twisttse',
                     ],
                 ],
-            ],  'twistt' => [
+            ],  'twisttae' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/twisttae',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'twisttae',
+                    ],
+                ],
+            ], 'twistt' => [
                 'type' => Segment::class,
                 'options' => [
                     'route' => '/twistt',

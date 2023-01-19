@@ -5432,7 +5432,10 @@ class AdminController extends BaseController
                         'updated_at' => date("Y-m-d H:i:s"));
 
                     $response=$this->taSdsTable()->addTaSDS($data);
-                    return new JsonModel(array('success'=>false,'message'=>$response));
+                    if($response['success'])
+                        return new JsonModel(array('success'=>false,'message'=>$response['id']));
+                    else
+                        return new JsonModel(array('success'=>false,'message'=>'db error'));
                     if($response){
                         $this->taPurchasesTable()->setTaPurchases(array('tourists_count'=> $tc - 1),array('upc'=> $request['upc']));
                         //send notification / sms

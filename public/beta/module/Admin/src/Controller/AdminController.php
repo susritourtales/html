@@ -5430,6 +5430,7 @@ class AdminController extends BaseController
                         'upc'=> $request['upc'],
                         'created_at' => date("Y-m-d H:i:s"),
                         'updated_at' => date("Y-m-d H:i:s"));
+                    return new JsonModel(array('success'=>false,'message'=>$data));
 
                     $response=$this->taSdsTable()->addTaSDS($data);
                    
@@ -5455,7 +5456,7 @@ class AdminController extends BaseController
 
                         return new JsonModel(array('success'=>true , 'message'=>'added successfully.'));
                     }else{
-                        return new JsonModel(array('success'=>false,'message'=>'unable to add tourist details' . " -- " . $response['id']));
+                        return new JsonModel(array('success'=>false,'message'=>'unable to add tourist details'));
                     }
                 }else{
                     return new JsonModel(array('success'=>false,'message'=>'mtc reached'));

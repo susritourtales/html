@@ -5430,7 +5430,7 @@ class AdminController extends BaseController
                         'upc'=> $request['upc'],
                         'created_at' => date("Y-m-d H:i:s"),
                         'updated_at' => date("Y-m-d H:i:s"));
-                    return new JsonModel(array('success'=>false,'message'=>$data));
+                    return new JsonModel(array('success'=>false,'message'=>$tbeMobile));
 
                     $response=$this->taSdsTable()->addTaSDS($data);
                    

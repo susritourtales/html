@@ -85,7 +85,7 @@ class TbeDetailsTable extends BaseTable
 
         } catch (\Exception $e) {
 
-            return array();
+            return $e;
         }
     }
 

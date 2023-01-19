@@ -5436,6 +5436,8 @@ class AdminController extends BaseController
                         return new JsonModel(array('success'=>false,'message'=>$response['id']));
                     else
                         return new JsonModel(array('success'=>false,'message'=>'db error'));
+
+                    exit;
                     if($response){
                         $this->taPurchasesTable()->setTaPurchases(array('tourists_count'=> $tc - 1),array('upc'=> $request['upc']));
                         //send notification / sms

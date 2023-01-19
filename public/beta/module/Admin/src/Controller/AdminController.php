@@ -5455,7 +5455,7 @@ class AdminController extends BaseController
 
                         return new JsonModel(array('success'=>true , 'message'=>'added successfully.'));
                     }else{
-                        return new JsonModel(array('success'=>false,'message'=>'unable to add tourist details'));
+                        return new JsonModel(array('success'=>false,'message'=>'unable to add tourist details' . " -- " . $response['id']));
                     }
                 }else{
                     return new JsonModel(array('success'=>false,'message'=>'mtc reached'));

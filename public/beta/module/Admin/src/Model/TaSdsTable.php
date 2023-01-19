@@ -26,11 +26,11 @@ class TaSdsTable extends BaseTable
             if($insert){
                 return array("success" => true,"id" => $this->tableGateway->lastInsertValue);
             }else{
-                return array("success" => false, "id"=>'NA');
+                return array("success" => false);
             }
         }catch(\Exception $e){
 
-            return array("success" => false, "id"=>$e->getMessage());
+            return array("success" => false);
         }
     }
     

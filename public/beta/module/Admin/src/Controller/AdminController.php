@@ -5421,7 +5421,7 @@ class AdminController extends BaseController
                     $tbeResp = $this->tbeDetailsTable()->getFields(array('tbe_mobile'=>$tbeMobile, 'ta_id'=>$taId), array('user_id', 'role'));
 
                     $data=array(
-                        'tbe_id'=> $request['tbe_id'], //$tbeResp['user_id'],
+                        'tbe_id'=> $tbeResp['user_id'],
                         'role'=> $tbeResp['role'],
                         'tourist_name'=> $request['name'],
                         'tourist_mobile'=> $request['mobile'],

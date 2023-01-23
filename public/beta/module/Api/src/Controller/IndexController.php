@@ -657,6 +657,7 @@ class IndexController extends BaseController{
         $today = date('d-m-Y');
         $today=date_create($today);
         $activeCount=0;
+        $sdsEffEndDt='';
         foreach($sdsList as $sds){
             $sd = date_create($sds['sds_start_date']);
             $ed = date_create($sds['sds_end_date']);
@@ -667,6 +668,14 @@ class IndexController extends BaseController{
             if ($sdiff <= 0 && $ediff >=0){
                 $retVars['sds_active'] = 2;
                 $activeCount++;
+                if($sdsEffEndDt == '')
+                    $sdsEffEndDt = $sds['sds_end_date'];
+                else
+                {
+                    $sds_diff=date_diff(date_create($sdsEffEndDt), $ed);
+                    if($sds_diff >= 0)
+                        $sdsEffEndDt = $sds['sds_end_date'];
+                }
                 //return new JsonModel($retVars);
             }elseif ($sdiff <= 0 && $ediff <=0){
                 $retVars['sds_active'] = 0;
@@ -678,6 +687,7 @@ class IndexController extends BaseController{
          if($activeCount){
             $retVars['sds_active'] = 2;
          }
+         $retVars['sds_eff_end_date'] = $sdsEffEndDt;
          return new JsonModel($retVars);
     }
 

@@ -123,7 +123,7 @@ class TaSdsTable extends BaseTable
             }
 
             $field = array();
-            //echo $sql->getSqlStringForSqlObject($query);exit;
+            echo $sql->getSqlStringForSqlObject($query);exit;
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             $sdsData = array();
             foreach ($resultSet as $row){

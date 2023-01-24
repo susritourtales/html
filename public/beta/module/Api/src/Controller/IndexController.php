@@ -658,6 +658,8 @@ class IndexController extends BaseController{
         $today=date_create($today);
         $activeCount=0;
         $sdsEffEndDt='';
+        var_dump($sdsList);
+        exit;
         foreach($sdsList as $sds){
             $sd = date_create($sds['sds_start_date']);
             $ed = date_create($sds['sds_end_date']);

@@ -673,7 +673,8 @@ class IndexController extends BaseController{
                 else
                 {
                     $sds_diff=date_diff(date_create($sdsEffEndDt), $ed);
-                    if($sds_diff >= 0)
+                    $sds_diff_f=$diff->format("%R%a");
+                    if($sds_diff_f >= 0)
                         $sdsEffEndDt = $sds['sds_end_date'];
                 }
                 //return new JsonModel($retVars);

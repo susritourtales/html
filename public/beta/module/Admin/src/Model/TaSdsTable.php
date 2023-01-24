@@ -119,7 +119,8 @@ class TaSdsTable extends BaseTable
                 ->join(array('tbd'=>'tbe_details'), 'ts.tbe_id=tbd.user_id',array("ta_id"),Select::JOIN_LEFT)
                 ->join(array('tad'=>'ta_details'), 'tad.id=tbd.ta_id',array("ta_name"),Select::JOIN_LEFT)
                 ->join(array('tfl'=>$placeFiles),'tfl.file_data_id = tad.id',array('file_path','tourism_file_id','file_extension_type','file_language_type','file_name'),Select::JOIN_LEFT)
-                ->where(array('tourist_mobile'=>$data['mobile']));
+                ->where(array('tourist_mobile'=>$data['mobile']))
+                ->order('id asc');;
             }
 
             $field = array();

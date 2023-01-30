@@ -131,7 +131,7 @@ class TaSdsTable extends BaseTable
                 $temp['id'] = $row['id'];
                 $temp['travel_date'] = date('d-m-Y', strtotime($row['doj']));
                 $temp['sds_start_date'] = date('d-m-Y', strtotime($row['doj'] . " - 3 days"));
-                $temp['sds_end_date'] = date('d-m-Y', strtotime($row['doj'] . " + 12 days"));
+                $temp['sds_end_date'] = date('d-m-Y', strtotime($row['doj'] . " + 15 days"));
                 $temp['ta_name'] = $row['ta_name'];
                 $temp['file_path'] = $row['file_path'];
                 $temp['file_name'] = $row['file_name'];

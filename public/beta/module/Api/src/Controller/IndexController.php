@@ -1004,22 +1004,22 @@ class IndexController extends BaseController{
                 $refData['ref_id'] = $refId;
             }
          }
-         
+
+         //$data['discount_percentage'] = 30;
          if($role)
          {
             $data['role']=$role;
+            if(intval($role) == \Admin\Model\User::Sponsor_role)
+                $data['discount_percentage'] = 85;
          }
 
          if(!count($data))
          {
             return  new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
          }
-         
-         $data['discount_percentage'] = 30;
-         if(intval($role) == \Admin\Model\User::Sponsor_role)
-            $data['discount_percentage'] = 85;
 
          $roleb4 = $this->userTable()->getField(array('user_id'=>$userId), 'role');
+         
          $profileUpdate=$this->userTable()->updateUser($data,array('user_id'=>$userId));
          //var_dump($data); exit;
          //var_dump($refData); exit;

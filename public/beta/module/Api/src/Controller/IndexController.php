@@ -675,7 +675,7 @@ class IndexController extends BaseController{
                 else
                 {
                     $sds_diff=date_diff(date_create($sdsEffEndDt), $ed);
-                    $sds_diff_f=$diff->format("%R%a");
+                    $sds_diff_f=$sds_diff->format("%R%a");
                     if($sds_diff_f >= 0)
                         $sdsEffEndDt = $sds['sds_end_date'];
                 }
@@ -731,7 +731,30 @@ class IndexController extends BaseController{
           $data['limit'] = $limit;
 
         $sdsList = $this->taSdsTable()->getTouristSds($data);
-        return  new JsonModel(array('success'=>true,'sds'=>$sdsList));
+        $today = date('d-m-Y');
+        $today=date_create($today);
+        $sdsEffEndDt='';
+        $sdsRow = array();
+        foreach($sdsList as $sds){
+            $sd = date_create($sds['sds_start_date']);
+            $ed = date_create($sds['sds_end_date']);
+            $diff=date_diff($today,$sd);
+            $sdiff=$diff->format("%R%a");
+            $diff=date_diff($today,$ed);
+            $ediff=$diff->format("%R%a");
+            if ($sdiff <= 0 && $ediff >=0){
+                if($sdsEffEndDt == '')
+                    $sdsEffEndDt = $sds['sds_end_date'];
+                else
+                {
+                    $sds_diff=date_diff(date_create($sdsEffEndDt), $ed);
+                    $sds_diff_f=$sds_diff->format("%R%a");
+                    if($sds_diff_f >= 0)
+                        $sdsRow = $sds;
+                }
+            }
+         }
+        return new JsonModel(array('success'=>true,'sds'=>$sdsRow));
 
     }
 

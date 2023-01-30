@@ -744,7 +744,7 @@ class IndexController extends BaseController{
             $ediff=$diff->format("%R%a");
             if ($sdiff <= 0 && $ediff >=0){
                 if($sdsEffEndDt == '')
-                    $sdsEffEndDt = $sds['sds_end_date'];
+                    $sdsRow[0] = $sds;
                 else
                 {
                     $sds_diff=date_diff(date_create($sdsEffEndDt), $ed);

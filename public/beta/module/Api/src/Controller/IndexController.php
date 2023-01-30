@@ -750,7 +750,7 @@ class IndexController extends BaseController{
                     $sds_diff=date_diff(date_create($sdsEffEndDt), $ed);
                     $sds_diff_f=$sds_diff->format("%R%a");
                     if($sds_diff_f >= 0)
-                        $sdsRow = $sds;
+                        $sdsRow[0] = $sds;
                 }
             }
          }

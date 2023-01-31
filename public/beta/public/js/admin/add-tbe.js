@@ -37,12 +37,12 @@ $(document).ready(function ()
             messageDisplay("Mobile number confirmation do not match");
             return  false;
         }
-        /* if(tbeEmail == ''){
+        if(tbeEmail == ''){
             element.html('submit');
             element.prop('disabled',false);
             messageDisplay("Please enter Email");
             return  false;
-        } */
+        }
                    
         var formData=new FormData();
 

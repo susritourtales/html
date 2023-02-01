@@ -12,12 +12,12 @@ $(document).ready(function(){
             messageDisplay("Please enter registered mobile number");
             return false;
         }else{
-          if (!(/^\d{10}$/.test(mobile))) {
+          if (!(/^\d{10}$/.test(mobile)) && !(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mobile))) {
               element.html('Send Otp');
               element.prop('disabled',false);
-              messageDisplay("Invalid mobile number - must be ten digits");
+              messageDisplay("Please enter valid mobile number or email id");
               return false;
-          } 
+          }
         }
       
       if(ajaxCall!=null)

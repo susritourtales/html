@@ -346,17 +346,34 @@ class IndexController extends BaseController {
         {
             return new JsonModel(array("success"=>false,"message"=>"mobile number is missing"));
         }
+        // to check if the given input is mobile number
         $tbe=$this->tbeDetailsTable()->getFields(array('tbe_mobile'=>$mobile), array('user_id', 'mobile_country_code'));
-        if($tbe){
-            $data=array("tbe_id"=>$tbe['user_id'],"otp_type"=>\Admin\Model\TwisttOtp::FORGOT_OTP,"status"=>\Admin\Model\TwisttOtp::Not_verifed);
-            $update = $this->twisttOtpTable()->updateData(array('status' => \Admin\Model\TwisttOtp::Is_verifed), $data);
-            $otp="1111"; //$this->generateOtp();
-            $insertData=array("tbe_id"=>$tbe['user_id'],"otp_type"=>\Admin\Model\TwisttOtp::FORGOT_OTP,"status"=>\Admin\Model\Otp::Not_verifed,'otp'=>$otp);
-            $this->twisttOtpTable()->insertData($insertData);
-            $response = $this->sendOtpSms($tbe['mobile_country_code'].$mobile, $otp);
-            return  new JsonModel(array('success'=>true,'message'=>'Please enter the otp received'));
+        if($tbe){ // valid mobile numner => sms otp to registered mobile number
+            if($tbe['mobile_country_code'] != "91"){ // if foreign user => ask for email
+                return new JsonModel(array("success"=>false,"message"=>"Please enter the registered email id if you are a foreign user."));
+            }else{ // if Indian user => sms otp
+                $data=array("tbe_id"=>$tbe['user_id'],"otp_type"=>\Admin\Model\TwisttOtp::FORGOT_OTP,"status"=>\Admin\Model\TwisttOtp::Not_verifed);
+                $update = $this->twisttOtpTable()->updateData(array('status' => \Admin\Model\TwisttOtp::Is_verifed), $data);
+                $otp="1111"; //$this->generateOtp();
+                $insertData=array("tbe_id"=>$tbe['user_id'],"otp_type"=>\Admin\Model\TwisttOtp::FORGOT_OTP,"status"=>\Admin\Model\Otp::Not_verifed,'otp'=>$otp);
+                $this->twisttOtpTable()->insertData($insertData);
+                $response = $this->sendOtpSms($tbe['mobile_country_code'].$mobile, $otp);
+                return  new JsonModel(array('success'=>true,'message'=>'Please enter the otp received on your registered mobile number'));
+            }
         }else{
-            return new JsonModel(array("success"=>false,"message"=>"Not a registered mobile number"));
+            // to check if the given input is email id
+            $tbe=$this->tbeDetailsTable()->getFields(array('tbe_email'=>$mobile), array('user_id', 'tbe_email'));
+            if($tbe){ // valid email id => email otp to registered email id
+                $data=array("tbe_id"=>$tbe['user_id'],"otp_type"=>\Admin\Model\TwisttOtp::FORGOT_OTP,"status"=>\Admin\Model\TwisttOtp::Not_verifed);
+                $update = $this->twisttOtpTable()->updateData(array('status' => \Admin\Model\TwisttOtp::Is_verifed), $data);
+                $otp="1111"; //$this->generateOtp();
+                $insertData=array("tbe_id"=>$tbe['user_id'],"otp_type"=>\Admin\Model\TwisttOtp::FORGOT_OTP,"status"=>\Admin\Model\Otp::Not_verifed,'otp'=>$otp);
+                $this->twisttOtpTable()->insertData($insertData);
+                $response = $this->mailSTTUserNoAttachment($tbe['tbe_email'], "OTP to reset password" , 'twistt-user', $otp);
+                return  new JsonModel(array('success'=>true,'message'=>'Please enter the otp received on your registered email id'));
+            }else{ // the given input is neither valid mobile number nor valid email id
+                return new JsonModel(array("success"=>false,"message"=>"Please enter the registered mobile number or email id"));
+            }
         }
     }
 
@@ -369,12 +386,15 @@ class IndexController extends BaseController {
             return new JsonModel(array("success"=>false,"message"=>"Otp not entered"));
         }
         $tbe=$this->tbeDetailsTable()->getFields(array('tbe_mobile'=>$mobile), array('user_id', 'mobile_country_code'));
+        if(!$tbe){
+            $tbe=$this->tbeDetailsTable()->getFields(array('tbe_email'=>$mobile), array('user_id', 'tbe_email'));
+        }
         if($tbe){
             $data=array("otp"=>$otp,"tbe_id"=>$tbe['user_id'],"otp_type"=>\Admin\Model\TwisttOtp::FORGOT_OTP,"status"=>\Admin\Model\TwisttOtp::Not_verifed);
             $verfiy=$this->twisttOtpTable()->verfiy($data);
             if($verfiy){
                 $updateResponse=$this->twisttOtpTable()->updateData(array('status'=>\Admin\Model\Otp::Is_verifed),$data);
-                return new JsonModel(array("success"=>true,"message"=>"Mobile number verified"));
+                return new JsonModel(array("success"=>true,"message"=>"Verification successful"));
             }else{
                 return new JsonModel(array("success"=>false,"message"=>"Invalid Otp"));
             }
@@ -392,15 +412,31 @@ class IndexController extends BaseController {
         }
         $se=$this->taConsultantDetailsTable()->getFields(array('mobile'=>$mobile), array('id', 'mobile_country_code'));
         if($se){
-            $data=array("se_id"=>$se['id'],"otp_type"=>\Admin\Model\TwisttOtp::FORGOT_OTP,"status"=>\Admin\Model\TwisttOtp::Not_verifed);
-            $update = $this->twisttOtpTable()->updateData(array('status' => \Admin\Model\TwisttOtp::Is_verifed), $data);
-            $otp="1111"; //$this->generateOtp();
-            $insertData=array("se_id"=>$se['id'],"otp_type"=>\Admin\Model\TwisttOtp::FORGOT_OTP,"status"=>\Admin\Model\Otp::Not_verifed,'otp'=>$otp);
-            $this->twisttOtpTable()->insertData($insertData);
-            $response = $this->sendOtpSms($se['mobile_country_code'].$mobile, $otp);
-            return  new JsonModel(array('success'=>true,'message'=>'Please enter the otp received'));
+            if($se['mobile_country_code'] != "91"){ // if foreign user => ask for email
+                return new JsonModel(array("success"=>false,"message"=>"Please enter the registered email id if you are a foreign user."));
+            }else{
+                $data=array("se_id"=>$se['id'],"otp_type"=>\Admin\Model\TwisttOtp::FORGOT_OTP,"status"=>\Admin\Model\TwisttOtp::Not_verifed);
+                $update = $this->twisttOtpTable()->updateData(array('status' => \Admin\Model\TwisttOtp::Is_verifed), $data);
+                $otp="1111"; //$this->generateOtp();
+                $insertData=array("se_id"=>$se['id'],"otp_type"=>\Admin\Model\TwisttOtp::FORGOT_OTP,"status"=>\Admin\Model\Otp::Not_verifed,'otp'=>$otp);
+                $this->twisttOtpTable()->insertData($insertData);
+                $response = $this->sendOtpSms($se['mobile_country_code'].$mobile, $otp);
+                return  new JsonModel(array('success'=>true,'message'=>'Please enter the otp received'));
+            }
         }else{
-            return new JsonModel(array("success"=>false,"message"=>"Not a registered mobile number"));
+            // to check if the given input is email id
+            $se=$this->taConsultantDetailsTable()->getFields(array('email'=>$mobile), array('id', 'email'));
+            if($se){ // valid email id => email otp to registered email id
+                $data=array("se_id"=>$se['id'],"otp_type"=>\Admin\Model\TwisttOtp::FORGOT_OTP,"status"=>\Admin\Model\TwisttOtp::Not_verifed);
+                $update = $this->twisttOtpTable()->updateData(array('status' => \Admin\Model\TwisttOtp::Is_verifed), $data);
+                $otp="1111"; //$this->generateOtp();
+                $insertData=array("se_id"=>$se['id'],"otp_type"=>\Admin\Model\TwisttOtp::FORGOT_OTP,"status"=>\Admin\Model\Otp::Not_verifed,'otp'=>$otp);
+                $this->twisttOtpTable()->insertData($insertData);
+                $response = $this->mailSTTUserNoAttachment($se['email'], "OTP to reset password" , 'twistt-user', $otp);
+                return  new JsonModel(array('success'=>true,'message'=>'Please enter the otp received on your registered email id'));
+            }else{ // the given input is neither valid mobile number nor valid email id
+                return new JsonModel(array("success"=>false,"message"=>"Please enter the registered mobile number or email id"));
+            }
         }
     }
 
@@ -413,12 +449,15 @@ class IndexController extends BaseController {
             return new JsonModel(array("success"=>false,"message"=>"Otp not entered"));
         }
         $se=$this->taConsultantDetailsTable()->getFields(array('mobile'=>$mobile), array('id', 'mobile_country_code'));
+        if(!$se){
+            $se=$this->taConsultantDetailsTable()->getFields(array('email'=>$mobile), array('id', 'email'));
+        }
         if($se){
             $data=array("otp"=>$otp,"se_id"=>$se['id'],"otp_type"=>\Admin\Model\TwisttOtp::FORGOT_OTP,"status"=>\Admin\Model\TwisttOtp::Not_verifed);
             $verfiy=$this->twisttOtpTable()->verfiy($data);
             if($verfiy){
                 $updateResponse=$this->twisttOtpTable()->updateData(array('status'=>\Admin\Model\Otp::Is_verifed),$data);
-                return new JsonModel(array("success"=>true,"message"=>"Mobile number verified"));
+                return new JsonModel(array("success"=>true,"message"=>"Verification successful"));
             }else{
                 return new JsonModel(array("success"=>false,"message"=>"Invalid Otp"));
             }

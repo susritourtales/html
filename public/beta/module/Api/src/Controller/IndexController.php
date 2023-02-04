@@ -742,6 +742,8 @@ class IndexController extends BaseController{
             $sdiff=$diff->format("%R%a");
             $diff=date_diff($today,$ed);
             $ediff=$diff->format("%R%a");
+            print_r($sdiff);
+            print_r($ediff);
             if ($sdiff <= 0 && $ediff >=0){
                 print_r($sdsEffEndDt);
                 if($sdsEffEndDt == '')

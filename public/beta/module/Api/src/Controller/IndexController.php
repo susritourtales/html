@@ -742,7 +742,6 @@ class IndexController extends BaseController{
             $sdiff=$diff->format("%R%a");
             $diff=date_diff($today,$ed);
             $ediff=$diff->format("%R%a");
-            print_r($ediff);
             if ($sdiff <= 0 && $ediff >=0){
                 if($sdsEffEndDt == '')
                     $sdsRow[0] = $sds;
@@ -754,6 +753,7 @@ class IndexController extends BaseController{
                         $sdsRow[0] = $sds;
                 }
             }
+            var_dump($sdsRow[0]);
          }
          exit;
         return new JsonModel(array('success'=>true,'sds'=>$sdsRow));

@@ -756,7 +756,6 @@ class IndexController extends BaseController{
                 }
             }
          }
-         exit;
         return new JsonModel(array('success'=>true,'sds'=>$sdsRow));
 
     }

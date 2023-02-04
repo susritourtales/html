@@ -743,6 +743,7 @@ class IndexController extends BaseController{
             $diff=date_diff($today,$ed);
             $ediff=$diff->format("%R%a");
             if ($sdiff <= 0 && $ediff >=0){
+                print_r($sdsEffEndDt);
                 if($sdsEffEndDt == '')
                     $sdsRow[0] = $sds;
                 else

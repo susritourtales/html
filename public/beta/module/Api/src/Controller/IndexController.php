@@ -747,16 +747,17 @@ class IndexController extends BaseController{
             print_r($ediff);
             if ($sdiff <= 0 && $ediff >=0){
                 print_r("if");
-                if($sdsEffEndDt == '')
+                if($sdsEffEndDt == ''){
                     $sdsRow[0] = $sds;
-                else
-                {
+                    $sdsEffEndDt = $sds['sds_end_date'];
+                }else{
                     print_r("else");
                     $sds_diff=date_diff(date_create($sdsEffEndDt), $ed);
                     $sds_diff_f=$sds_diff->format("%R%a");
-                    //print_r($sds_diff_f);
-                    if($sds_diff_f >= 0)
+                    if($sds_diff_f >= 0){
                         $sdsRow[0] = $sds;
+                        $sdsEffEndDt = $sds['sds_end_date'];
+                    }
                 }
             }
          }

@@ -886,6 +886,16 @@ audio{
     width: 100%;
     height: 25px;
 }
+.adtxt{
+    position: absolute;
+    top: 0.1em;
+    left: 0;
+    width: 100%;
+    height: 20px;
+    background-color: #000;
+    color: #fff;
+    opacity: 0.5;
+}
 .ad{
     height:145px;
     background-repeat: no-repeat;
@@ -893,80 +903,80 @@ audio{
     margin-bottom: 0.5em;
 }
 .adlbg1{
-    background-image: url("../img/hmpics/ARAB-WT-80-1-6.jpg") ;
+    background-image: url("../img/hmpics/ARAB-WT-80-1-6-SMALL.jpeg") ;
 }
 .adlbg2{
-    background-image: url("../img/hmpics/BEN-CT-0-3-3.jpg") ;
+    background-image: url("../img/hmpics/BEN-CT-0-3-3-SMALL.jpeg") ;
 }
 .adlbg3{
-    background-image: url("../img/hmpics/GUJ-ST-1-1-3.jpg") ;
+    background-image: url("../img/hmpics/GUJ-ST-1-1-3-SMALL.jpeg") ;
 }
 .adlbg4{
-    background-image: url("../img/hmpics/KAN-FT-0-3-8.jpg") ;
+    background-image: url("../img/hmpics/KAN-FT-0-3-8-SMALL.jpeg") ;
 }
 .adlbg5{
-    background-image: url("../img/hmpics/KOR-CT-0-2-1A.jpg") ;
+    background-image: url("../img/hmpics/KOR-CT-0-2-1A-SMALL.jpeg") ;
 }
 .adlbg6{
-    background-image: url("../img/hmpics/MAL-WT-64-0-0.jpg") ;
+    background-image: url("../img/hmpics/MAL-WT-64-0-0-SMALL.jpeg") ;
 }
 .adlbg7{
-    background-image: url("../img/hmpics/MAR-WT-78-3-1.jpg") ;
+    background-image: url("../img/hmpics/MAR-WT-78-3-1-SMALL.jpeg") ;
 }
 .adlbg8{
-    background-image: url("../img/hmpics/ODI-CT-0-24-9.jpg") ;
+    background-image: url("../img/hmpics/ODI-CT-0-24-9-SMALL.jpeg") ;
 }
 .adlbg9{
     background-image: url("../img/hmpics/PUN-WT-1-1-3.jpg") ;
 }
 .adlbg10{
-    background-image: url("../img/hmpics/SIN-WT-78-0-8.jpg") ;
+    background-image: url("../img/hmpics/SIN-WT-78-0-8-SMALL.jpeg") ;
 }
 .adlbg11{
-    background-image: url("../img/hmpics/TAM-WT-2-1-2.jpg") ;
+    background-image: url("../img/hmpics/TAM-WT-2-1-2-SMALL.jpeg") ;
 }
 .adlbg12{
-    background-image: url("../img/hmpics/TEL-ST-11-2-3.jpg") ;
+    background-image: url("../img/hmpics/TEL-ST-11-2-3-SMALL.jpeg") ;
 }
 .adlbg13{
-    background-image: url("../img/hmpics/URD-CT-0-8-1.jpg") ;
+    background-image: url("../img/hmpics/URD-CT-0-8-1-SMALL.jpeg") ;
 }
 .adrbg1{
-    background-image: url("../img/hmpics/ENG-ST-1-1-1A.jpg") ;
+    background-image: url("../img/hmpics/ENG-ST-1-1-1A-SMALL.jpeg") ;
 }
 .adrbg2{
-    background-image: url("../img/hmpics/HIN-ST-14-1-1A.jpg") ;
+    background-image: url("../img/hmpics/HIN-ST-14-1-1A-SMALL.jpeg") ;
 }
 .adrbg3{
-    background-image: url("../img/hmpics/ENG-CT-0-1-0.jpg") ;
+    background-image: url("../img/hmpics/ENG-CT-0-1-0-SMALL.jpeg") ;
 }
 .adrbg4{
-    background-image: url("../img/hmpics/HIN-CT-0-21-0.jpg") ;
+    background-image: url("../img/hmpics/HIN-CT-0-21-0-SMALL.jpeg") ;
 }
 .adrbg5{
-    background-image: url("../img/hmpics/ENG-SS-0-1-4.jpg") ;
+    background-image: url("../img/hmpics/ENG-SS-0-1-4-SMALL.jpeg") ;
 }
 .adrbg6{
-    background-image: url("../img/hmpics/HIN-CT-0-5-1.jpg") ;
+    background-image: url("../img/hmpics/HIN-CT-0-5-1-SMALL.jpeg") ;
 }
 .adrbg7{
-    background-image: url("../img/hmpics/ENG-WT-10-0-0A.jpg") ;
+    background-image: url("../img/hmpics/ENG-WT-10-0-0A-SMALL.jpeg") ;
 }
 .adrbg8{
-    background-image: url("../img/hmpics/HIN-WT-9-1-0.jpg") ;
+    background-image: url("../img/hmpics/HIN-WT-9-1-0-SMALL.jpeg") ;
 }
 .adrbg9{
-    background-image: url("../img/hmpics/ENG-ST-30-6-1.jpg") ;
+    background-image: url("../img/hmpics/ENG-ST-30-6-1-SMALL.jpeg") ;
 }
 .adrbg10{
-    background-image: url("../img/hmpics/HIN-ST-30-8-1.jpg") ;
+    background-image: url("../img/hmpics/HIN-ST-30-8-1-SMALL.jpeg") ;
 }
 .adrbg11{
-    background-image: url("../img/hmpics/ENG- IT-10-1-7.jpg") ;
+    background-image: url("../img/hmpics/ENG-IT-10-1-7-SMALL.jpeg") ;
 }
 .adrbg12{
-    background-image: url("../img/hmpics/HIN-IT-28-1-2A.jpg") ;
+    background-image: url("../img/hmpics/HIN-IT-28-1-2A-SMALL.jpeg") ;
 }
 .adrbg13{
-    background-image: url("../img/hmpics/ENG-WT-69-0-1.jpg") ;
+    background-image: url("../img/hmpics/ENG-WT-69-0-1-SMALL.jpeg") ;
 }

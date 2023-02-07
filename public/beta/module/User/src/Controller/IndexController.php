@@ -354,7 +354,10 @@ class IndexController extends BaseController {
             }else{ // if Indian user => sms otp
                 $data=array("tbe_id"=>$tbe['user_id'],"otp_type"=>\Admin\Model\TwisttOtp::FORGOT_OTP,"status"=>\Admin\Model\TwisttOtp::Not_verifed);
                 $update = $this->twisttOtpTable()->updateData(array('status' => \Admin\Model\TwisttOtp::Is_verifed), $data);
-                $otp="1111"; //$this->generateOtp();
+                if(strpos($_SERVER[REQUEST_URI], "/beta/public/"))
+                    $otp="1111";
+                else
+                    $otp = $this->generateOtp();
                 $insertData=array("tbe_id"=>$tbe['user_id'],"otp_type"=>\Admin\Model\TwisttOtp::FORGOT_OTP,"status"=>\Admin\Model\Otp::Not_verifed,'otp'=>$otp);
                 $this->twisttOtpTable()->insertData($insertData);
                 $response = $this->sendOtpSms($tbe['mobile_country_code'].$mobile, $otp);
@@ -366,7 +369,10 @@ class IndexController extends BaseController {
             if($tbe){ // valid email id => email otp to registered email id
                 $data=array("tbe_id"=>$tbe['user_id'],"otp_type"=>\Admin\Model\TwisttOtp::FORGOT_OTP,"status"=>\Admin\Model\TwisttOtp::Not_verifed);
                 $update = $this->twisttOtpTable()->updateData(array('status' => \Admin\Model\TwisttOtp::Is_verifed), $data);
-                $otp="1111"; //$this->generateOtp();
+                if(strpos($_SERVER[REQUEST_URI], "/beta/public/"))
+                    $otp="1111";
+                else
+                    $otp = $this->generateOtp();
                 $insertData=array("tbe_id"=>$tbe['user_id'],"otp_type"=>\Admin\Model\TwisttOtp::FORGOT_OTP,"status"=>\Admin\Model\Otp::Not_verifed,'otp'=>$otp);
                 $this->twisttOtpTable()->insertData($insertData);
                 $response = $this->mailSTTUserNoAttachment($tbe['tbe_email'], "OTP to reset password" , 'twistt-user', $otp);
@@ -417,7 +423,10 @@ class IndexController extends BaseController {
             }else{
                 $data=array("se_id"=>$se['id'],"otp_type"=>\Admin\Model\TwisttOtp::FORGOT_OTP,"status"=>\Admin\Model\TwisttOtp::Not_verifed);
                 $update = $this->twisttOtpTable()->updateData(array('status' => \Admin\Model\TwisttOtp::Is_verifed), $data);
-                $otp="1111"; //$this->generateOtp();
+                if(strpos($_SERVER[REQUEST_URI], "/beta/public/"))
+                    $otp="1111";
+                else
+                    $otp = $this->generateOtp();
                 $insertData=array("se_id"=>$se['id'],"otp_type"=>\Admin\Model\TwisttOtp::FORGOT_OTP,"status"=>\Admin\Model\Otp::Not_verifed,'otp'=>$otp);
                 $this->twisttOtpTable()->insertData($insertData);
                 $response = $this->sendOtpSms($se['mobile_country_code'].$mobile, $otp);
@@ -429,7 +438,10 @@ class IndexController extends BaseController {
             if($se){ // valid email id => email otp to registered email id
                 $data=array("se_id"=>$se['id'],"otp_type"=>\Admin\Model\TwisttOtp::FORGOT_OTP,"status"=>\Admin\Model\TwisttOtp::Not_verifed);
                 $update = $this->twisttOtpTable()->updateData(array('status' => \Admin\Model\TwisttOtp::Is_verifed), $data);
-                $otp="1111"; //$this->generateOtp();
+                if(strpos($_SERVER[REQUEST_URI], "/beta/public/"))
+                    $otp="1111";
+                else
+                    $otp = $this->generateOtp();
                 $insertData=array("se_id"=>$se['id'],"otp_type"=>\Admin\Model\TwisttOtp::FORGOT_OTP,"status"=>\Admin\Model\Otp::Not_verifed,'otp'=>$otp);
                 $this->twisttOtpTable()->insertData($insertData);
                 $response = $this->mailSTTUserNoAttachment($se['email'], "OTP to reset password" , 'twistt-user', $otp);

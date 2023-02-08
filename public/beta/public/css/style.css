@@ -980,3 +980,11 @@ audio{
 .adrbg13{
     background-image: url("../img/hmpics/ENG-WT-69-0-1-SMALL.jpeg") ;
 }
+@media only screen and (max-width: 768px) {
+    .ad{
+        height:250px;
+        background-repeat: no-repeat;
+        background-size: 100% 250px;
+        margin-bottom: 0.5em;
+    }
+}

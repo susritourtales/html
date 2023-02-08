@@ -32,7 +32,7 @@ if (!isset($navigation))
                 </a>
             </li>
             <div class="collapse w-100 <?php echo ((isset($mainActiveTab) && $mainActiveTab==\Application\Constants\Constants::Tour_Page?'show':''))?>" id="tourCollapse">
-                <ul class="list-unstyled">
+                <ul class="list-unstyled bg-secondary">
                     <li class="<?php echo ($activeTab==\Application\Constants\Constants::Tour_Page_Spiritual?'active':'');?>">
                         <a  href="<?php echo $this->basePath(); ?>/a_dMin/spiritual-tour-list">
                             <div class="d-flex align-items-center justify-content-between">
@@ -194,6 +194,59 @@ if (!isset($navigation))
 
 
              </li>
+             <li class="<?php echo ((isset($mainActiveTab) && $mainActiveTab==\Application\Constants\Constants::TA_Section?'active':''))?>">
+                <a  href="#taCollapse" data-toggle="collapse" class="custom-collapse <?php echo ((isset($mainActiveTab) && $mainActiveTab==\Application\Constants\Constants::TA_Section?'custom-collapse-open':''))?>">
+                    <div class="d-flex align-items-center justify-content-between">
+
+                                <span class="text-capitalize">
+                            TA Section
+                        </span>
+                        <i class="fas <?php echo (isset($mainActiveTab) && $mainActiveTab==\Application\Constants\Constants::TA_Section?'fa-angle-right':'fa-angle-right')?>"></i>
+                    </div>
+                </a>
+            </li>
+            <div class="collapse w-100 <?php echo ((isset($mainActiveTab) && $mainActiveTab==\Application\Constants\Constants::TA_Section?'show':''))?>" id="taCollapse">
+                <ul class="list-unstyled bg-secondary">
+                    <li class="<?php echo ($activeTab==\Application\Constants\Constants::TA_Plans?'active':'');?>">
+                        <a href="<?php echo $this->basePath(); ?>/a_dMin/ta-plans">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <span class="text-capitalize">TA Plans</span>
+                            </div>
+                        </a>
+
+                    </li>
+                    <li class="<?php echo ($activeTab==\Application\Constants\Constants::TA_Admin?'active':'');?>">
+                        <a  href="<?php echo $this->basePath(); ?>/a_dMin/ta-list">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <span class="text-capitalize">TA Admin</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="<?php echo ($activeTab==\Application\Constants\Constants::TA_Purchases?'active':'');?>">
+                        <a  href="<?php echo $this->basePath(); ?>/a_dMin/ta-purchases">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <span class="text-capitalize">TA Purchases</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="<?php echo ($activeTab==\Application\Constants\Constants::TAC_Performance?'active':'');?>">
+                        <a  href="<?php echo $this->basePath(); ?>/a_dMin/ta-cons">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <span class="text-capitalize">STTSE</span>
+                            </div>
+                        </a>
+
+                    </li>
+                    <li class="<?php echo ($activeTab==\Application\Constants\Constants::TAC_Payments?'active':'');?>">
+                        <a  href="<?php echo $this->basePath(); ?>/a_dMin/se-payments">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <span class="text-capitalize">STTSE Payments</span>
+                            </div>
+                        </a>
+
+                    </li>
+                </ul>
+            </div>
             <li class="<?php echo ($activeTab==\Application\Constants\Constants::Users_List?'active':'')?>">
                 <a href="<?php echo $this->basePath(); ?>/a_dMin/users-list">
                     <div class="d-flex align-items-center">
@@ -203,42 +256,58 @@ if (!isset($navigation))
                     </div>
                 </a>
             </li>
-            <li class="<?php echo ($activeTab==\Application\Constants\Constants::Promoters_List?'active':'')?>">
-                <a href="<?php echo $this->basePath(); ?>/a_dMin/promoters-list">
-                    <div class="d-flex align-items-center">
+            <li class="<?php echo ((isset($mainActiveTab) && $mainActiveTab==\Application\Constants\Constants::Promoter_Section?'active':''))?>">
+                <a  href="#prmCollapse" data-toggle="collapse" class="custom-collapse <?php echo ((isset($mainActiveTab) && $mainActiveTab==\Application\Constants\Constants::Promoter_Section?'custom-collapse-open':''))?>">
+                    <div class="d-flex align-items-center justify-content-between">
+
                                 <span class="text-capitalize">
-                            Promoters Performance
+                            Promoters
                         </span>
+                        <i class="fas <?php echo (isset($mainActiveTab) && $mainActiveTab==\Application\Constants\Constants::Promoter_Section?'fa-angle-right':'fa-angle-right')?>"></i>
                     </div>
                 </a>
             </li>
-            <li class="<?php echo ($activeTab==\Application\Constants\Constants::Promoters_Payments?'active':'')?>">
-                <a href="<?php echo $this->basePath(); ?>/a_dMin/promoters-payments">
-                    <div class="d-flex align-items-center">
-                                <span class="text-capitalize">
-                            Promoters Payments
-                        </span>
-                    </div>
-                </a>
-            </li>
-            <li class="<?php echo ($activeTab==\Application\Constants\Constants::Promoter_Parameters?'active':'')?>">
-                <a href="<?php echo $this->basePath(); ?>/a_dMin/promoter-parameters">
-                    <div class="d-flex align-items-center">
-                                <span class="text-capitalize">
-                            Promoters Parameters
-                        </span>
-                    </div>
-                </a>
-            </li>
+            <div class="collapse w-100 <?php echo ((isset($mainActiveTab) && $mainActiveTab==\Application\Constants\Constants::Promoter_Section?'show':''))?>" id="prmCollapse">
+                <ul class="list-unstyled bg-secondary">
+                    <li class="<?php echo ($activeTab==\Application\Constants\Constants::Promoters_List?'active':'')?>">
+                        <a href="<?php echo $this->basePath(); ?>/a_dMin/promoters-list">
+                            <div class="d-flex align-items-center justify-content-between">
+                                        <span class="text-capitalize">
+                                    Promoters Performance
+                                </span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="<?php echo ($activeTab==\Application\Constants\Constants::Promoters_Payments?'active':'')?>">
+                        <a href="<?php echo $this->basePath(); ?>/a_dMin/promoters-payments">
+                            <div class="d-flex align-items-center justify-content-between">
+                                        <span class="text-capitalize">
+                                    Promoters Payments
+                                </span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="<?php echo ($activeTab==\Application\Constants\Constants::Promoter_Parameters?'active':'')?>">
+                        <a href="<?php echo $this->basePath(); ?>/a_dMin/promoter-parameters">
+                            <div class="d-flex align-items-center justify-content-between">
+                                        <span class="text-capitalize">
+                                    Promoters Parameters
+                                </span>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
             <li class="<?php echo ($activeTab==\Application\Constants\Constants::Sponsors_List?'active':'')?>">
                 <a href="<?php echo $this->basePath(); ?>/a_dMin/sponsors-list">
-                    <div class="d-flex align-items-center">
+                    <div class="d-flex align-items-center justify-content-between">
                                 <span class="text-capitalize">
                             Sponsors
                         </span>
                     </div>
                 </a>
             </li>
+            
             <!-- <li class="<?php //echo ($activeTab==\Application\Constants\Constants::Tour_operator_list?'active':'')?>">
                 <a href="<?php //echo $this->basePath(); ?>/a_dMin/tour-operator-list">
                     <div class="d-flex align-items-center">

@@ -30,6 +30,60 @@ return [
                         'action'     => 'login',
                     ],
                 ],
+            ], 'twistt-login' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route'    => '/a_dMin/twistt-login',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action'     => 'twistt-login',
+                    ],
+                ],
+            ],'twistt-logout' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route'    => '/a_dMin/twistt-logout',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action'     => 'twistt-logout',
+                    ],
+                ],
+            ], 'twisttse-login' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route'    => '/a_dMin/twisttse-login',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action'     => 'twisttse-login',
+                    ],
+                ],
+            ],'twisttse-logout' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route'    => '/a_dMin/twisttse-logout',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action'     => 'twisttse-logout',
+                    ],
+                ],
+            ], 'twistt-cpwd' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route'    => '/a_dMin/twistt-cpwd',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action'     => 'twistt-cpwd',
+                    ],
+                ],
+            ], 'twisttse-cpwd' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route'    => '/a_dMin/twisttse-cpwd',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action'     => 'twisttse-cpwd',
+                    ],
+                ],
             ], 'sendMessage' => [
                 'type' => Literal::class,
                 'options' => [
@@ -549,7 +603,342 @@ return [
                         'action' => 'editsponsor',
                     ],
                 ],
-            ],  'add-promoter' => [
+            ], 'ta-plans' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/ta-plans',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'ta-plans',
+                    ],
+                ],
+            ],'load-all-ta-plans' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/load-all-ta-plans',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'load-all-ta-plans',
+                    ],
+                ],
+            ],'add-ta-plan' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/add-ta-plan',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'add-ta-plan',
+                    ],
+                ],
+            ], 'edit-ta-plan' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/edit-ta-plan[/:id]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-zA-Z0-9_~\-!@#\$%\^&*\(\)=]*[/]*',
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'edit-ta-plan',
+                    ],
+                ],
+            ],'delete-ta-plan' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/delete-ta-plan[/:id]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-zA-Z0-9_~\-!@#\$%\^&*\(\)=]*[/]*',
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'delete-ta-plan',
+                    ],
+                ],
+            ], 'ta-list' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/ta-list',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'ta-list',
+                    ],
+                ],
+            ],'load-ta-list' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/load-ta-list',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'load-ta-list',
+                    ],
+                ],
+            ],'add-ta' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/add-ta',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'add-ta',
+                    ],
+                ],
+            ], 'edit-ta' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/edit-ta[/:id]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-zA-Z0-9_~\-!@#\$%\^&*\(\)=]*[/]*',
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'edit-ta',
+                    ],
+                ],
+            ], 'delete-ta' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/delete-ta[/:id]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-zA-Z0-9_~\-!@#\$%\^&*\(\)=]*[/]*',
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'delete-ta',
+                    ],
+                ],
+            ], 'get-se-name' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/get-se-name',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'get-se-name',
+                    ],
+                ],
+            ],  'buy-plan' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/buy-plan',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'buy-plan',
+                    ],
+                ],
+            ], 'se-payments' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/se-payments',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'se-payments',
+                    ],
+                ],
+            ], 'pay-se' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/pay-se',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'pay-se',
+                    ],
+                ],
+            ], 'tbe-tourists' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/tbe-tourists[/:id]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-zA-Z0-9_~\-!@#\$%\^&*\(\)=]*[/]*',
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'tbe-tourists',
+                    ],
+                ],
+            ],'load-tbe-tourists' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/load-tbe-tourists[/:id]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-zA-Z0-9_~\-!@#\$%\^&*\(\)=]*[/]*',
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'load-tbe-tourists',
+                    ],
+                ],
+            ], 'tbe-list' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/tbe-list[/:id]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-zA-Z0-9_~\-!@#\$%\^&*\(\)=]*[/]*',
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'tbe-list',
+                    ],
+                ],
+            ],'load-tbe-list' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/load-tbe-list[/:id]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-zA-Z0-9_~\-!@#\$%\^&*\(\)=]*[/]*',
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'load-tbe-list',
+                    ],
+                ],
+            ],'add-tbe' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/add-tbe',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'add-tbe',
+                    ],
+                ],
+            ], 'edit-tbe' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/edit-tbe[/:id]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-zA-Z0-9_~\-!@#\$%\^&*\(\)=]*[/]*',
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'edit-tbe',
+                    ],
+                ],
+            ], 'delete-tbe' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/delete-tbe[/:id]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-zA-Z0-9_~\-!@#\$%\^&*\(\)=]*[/]*',
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'delete-tbe',
+                    ],
+                ],
+            ],'ta-cons' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/ta-cons',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'ta-cons',
+                    ],
+                ],
+            ],'load-ta-cons' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/load-ta-cons',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'load-ta-cons',
+                    ],
+                ],
+            ],'add-ta-sds' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/add-ta-sds',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'add-ta-sds',
+                    ],
+                ],
+            ],'add-ta-cons' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/add-ta-cons',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'add-ta-cons',
+                    ],
+                ],
+            ], 'edit-ta-cons' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/edit-ta-cons[/:id]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-zA-Z0-9_~\-!@#\$%\^&*\(\)=]*[/]*',
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'edit-ta-cons',
+                    ],
+                ],
+            ], 'delete-ta-cons' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/delete-ta-cons[/:id]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-zA-Z0-9_~\-!@#\$%\^&*\(\)=]*[/]*',
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'delete-ta-cons',
+                    ],
+                ],
+            ],'admin-se-tas' => [
+                'type' =>Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/se-tas[/:id]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-zA-Z0-9_~\-!@#\$%\^&*\(\)=]*[/]*',
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'se-tas',
+                    ],
+                ],
+            ],'admin-seta-transactions' => [
+                'type' =>Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/seta-transactions[/:id]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-zA-Z0-9_~\-!@#\$%\^&*\(\)=]*[/]*',
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'seta-transactions',
+                    ],
+                ],
+            ],'ta-purchases' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/ta-purchases',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'ta-purchases',
+                    ],
+                ],
+            ],'load-ta-purchases' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/load-ta-purchases',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'load-ta-purchases',
+                    ],
+                ],
+            ],'add-promoter' => [
                 'type' => Segment::class,
                 'options' => [
                     'route' => '/a_dMin/add-promoter',

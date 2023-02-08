@@ -25,7 +25,8 @@ class TourismFiles
     const file_data_type_places=4;
     const file_data_type_seasonal_files=5;
     const file_data_type_sample_files=6;
-    const  file_data_type_itinerary_files=7;
+    const file_data_type_itinerary_files=7;
+    const file_data_type_ta_logo=8;
 
     public function exchangeArray(array $data)
     {

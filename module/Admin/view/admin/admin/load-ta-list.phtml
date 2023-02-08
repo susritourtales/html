@@ -1,0 +1,71 @@
+
+<?php if(isset($type) && $type =='initialize') { ?>
+<style>
+.table-condensed thead tr th{ color: unset !important;}
+.calign input{text-align: center !important;}
+</style>
+<div class="table-responsive">
+<table class="table table-bordered table-hover table-striped" id="extTable">
+    <thead>
+    <tr>
+        <th>S.no</th>
+        <th data-placeholder="TA name" data-input="ta_name" class="text-center">TA Name</th>
+        <th data-placeholder="TA mobile" data-input="ta_mobile" class="text-center">TA Mobile</th>
+        <th data-placeholder="TA email" data-input="ta_email" class="text-center">TA Email</th>
+        <th data-placeholder="AE name" data-input="ae_name" class="text-center">AE Name</th>
+        <th data-placeholder="AE mobile" data-input="ae_mobile" class="text-center">AE Mobile</th>
+        <th data-placeholder="AE email" data-input="ae_email" class="text-center">AE Email</th>
+        <th data-placeholder="cons. name" class="text-center">Cons. Name</th>
+        <th data-placeholder="cons. mobile" data-input="cons_mobile" class="text-center">Cons. Mobile</th>
+        <th data-placeholder="TAC" data-input="tac" class="text-center">TAC</th>
+        <th class="mw">Action</th>
+    </tr>
+    <?php } ?>
+
+    <?php if(isset($type) && ($type =='initialize' || $type=="search") ) {?>
+    <input type="hidden" class="records" value="<?php echo $totalCount; ?>">
+    <tbody>
+    <?php } ?>
+
+    <?php if(count($taList))
+      {
+        $i=0;
+        if(isset($offset))
+        {
+            $i=$offset;
+        }
+
+        foreach ($taList as $ta) {
+            if($ta['tbeCount']){?>
+            <tr class="position-relative" data-id="<?php echo base64_encode("pid=".$ta['id']);?>">
+                <td><?php echo $i+1; ?></td>
+                <td class="text-center"><?php echo $ta['ta_name']; ?></td>
+                <td class="text-center"><?php echo $ta['ta_mobile']; ?></td>
+                <td class="text-center"><?php echo $ta['ta_email']; ?></td>
+                <td class="text-center"><?php echo $ta['ae_name']; ?></td>
+                <td class="text-center"><?php echo $ta['ae_mobile']; ?></td>
+                <td class="text-center"><?php echo $ta['ae_email']; ?></td>
+                <td class="text-center"><?php echo $ta['cons_name']; ?></td>
+                <td class="text-center"><?php echo $ta['cons_mobile']; ?></td>
+                <td class="text-center"><?php echo $ta['tac']; ?></td>
+                <td><div class="d-flex" onclick="event.stopPropagation();">
+                    <a class="action-icon" href="<?php echo $this->basePath().'/a_dMin/edit-ta/'.base64_encode('taId='.$ta['id'])?>" >
+                        <img src="<?php echo $this->basePath();?>/img/edit.png" class="img-fluid" onclick="event.stopPropagation();">
+                    </a>
+                    <!-- <div class="action-icon delete-ta" data-id="<?php echo $ta['id']; ?>">
+                        <img src="<?php echo $this->basePath();?>/img/delete.png" class="img-fluid" onclick="event.stopPropagation();">
+                    </div> -->
+                </div></td>
+            </tr>
+            <?php $i++; } } } else { ?>
+        <tr ><td class="text-center" colspan="15">No data</td></tr>
+    <?php  } ?>
+    <?php if(isset($type) && ($type =='initialize' || $type=="search") ) {?>
+
+    </tbody>
+    <?php } ?>
+    <?php if(isset($type) && $type =='initialize') {?>
+
+</table>
+</div>
+<?php } ?>

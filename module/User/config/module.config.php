@@ -182,7 +182,203 @@ return [
                         'action' => 'help',
                     ],
                 ],
-            ],   'seasonal-specials' => [
+            ],  'twisttse' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/twisttse',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'twisttse',
+                    ],
+                ],
+            ],  'twisttae' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/twisttae',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'twisttae',
+                    ],
+                ],
+            ], 'twistt' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/twistt',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'twistt',
+                    ],
+                ],
+            ], 'tbe-home' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/tbe-home',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'tbe-home',
+                    ],
+                ],
+            ], 'se-home' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/se-home',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'se-home',
+                    ],
+                ],
+            ],'twistt-password' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/twistt-password',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'twistt-password',
+                    ],
+                ],
+            ], 'twisttse-password' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/twisttse-password',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'twisttse-password',
+                    ],
+                ],
+            ], 'twistt-forgot-password' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/twistt-forgot-password',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'twistt-forgot-password',
+                    ],
+                ],
+            ], 'twisttse-forgot-password' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/twisttse-forgot-password',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'twisttse-forgot-password',
+                    ],
+                ],
+            ], 'tfp-send-otp' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/tfp-send-otp',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'tfp-send-otp',
+                    ],
+                ],
+            ], 'tfp-verify-otp' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/tfp-verify-otp',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'tfp-verify-otp',
+                    ],
+                ],
+            ],  'tsfp-send-otp' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/tsfp-send-otp',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'tsfp-send-otp',
+                    ],
+                ],
+            ], 'tsfp-verify-otp' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/tsfp-verify-otp',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'tsfp-verify-otp',
+                    ],
+                ],
+            ], 'twistt-reset-password' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/twistt-reset-password',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'twistt-reset-password',
+                    ],
+                ],
+            ], 'twisttse-reset-password' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/twisttse-reset-password',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'twisttse-reset-password',
+                    ],
+                ],
+            ], 'twistt-tbe' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/twistt-tbe/[:id]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-zA-Z0-9_~\-!@#\$%\^&*\(\)=]*[/]*'
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'twistt-tbe',
+                    ],
+                ],
+            ], 'load-tourists-list' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/load-tourists-list/[:id]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-zA-Z0-9_~\-!@#\$%\^&*\(\)=]*[/]*'
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'load-tourists-list',
+                    ],
+                ],
+            ], 'twistt-upc' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/twistt-upc/[:id]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-zA-Z0-9_~\-!@#\$%\^&*\(\)=]*[/]*'
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'twistt-upc',
+                    ],
+                ],
+            ], 'load-upc-tourists-list' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/load-upc-tourists-list/[:id]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-zA-Z0-9_~\-!@#\$%\^&*\(\)=]*[/]*'
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'load-upc-tourists-list',
+                    ],
+                ],
+            ],  'load-se-data' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/load-se-data',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'load-se-data',
+                    ],
+                ],
+            ], 'seasonal-specials' => [
                 'type' => Segment::class,
                 'options' => [
                     'route' => '/seasonal-specials',

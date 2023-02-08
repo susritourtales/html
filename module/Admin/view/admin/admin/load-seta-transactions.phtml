@@ -1,0 +1,53 @@
+
+<?php if(isset($type) && $type =='initialize') { ?>
+<table class="table table-bordered table-hover table-striped" id="table">
+    <thead>
+    <tr>
+        <th>S.no</th>
+        <th data-placeholder="date" data-input="transaction_date">date</th>
+        <th data-placeholder="amount" data-input="amount">amount</th>
+        <th data-placeholder="total amt paid" data-input="cpamt">amount paid</th>
+        <th data-placeholder="total amt due" data-input="cdamt">amount due</th>
+        <th data-placeholder="tran ref" data-input="transaction_ref">tran ref</th>
+        <th data-placeholder="upc" data-input="upc">upc</th>
+    </tr>
+    <?php } ?>
+
+    <?php if(isset($type) && ($type =='initialize' || $type=="search") ) {?>
+    <input type="hidden" class="records" value="<?php echo $totalCount; ?>">
+    <tbody>
+    <?php } ?>
+
+    <?php if(count($setaTxns))
+      {
+        $i=0;
+        if(isset($offset))
+        {
+            $i=$offset;
+        }
+
+        foreach ($setaTxns as $st) { 
+          $color = "";
+          if($st['transaction_ref'] != "")
+              $color = "bg-success text-white";
+          if(1==1){ //if(!$st['sr']){?>
+          <tr class="<?php echo $color; ?>">
+              <td><?php echo $i+1; ?></td>
+              <td><?php echo date("d-m-Y",strtotime($st['transaction_date'])); ?></td>
+              <td class="text-center"><?php echo $st['amount']; ?></td>
+              <td class="text-center"><?php echo $st['cpamt']; ?></td>
+              <td class="text-center"><?php echo $st['cdamt']; ?></td>
+              <td class="text-center"><?php echo ($st['transaction_ref'] == "") ? "-" : "Rs " . $st['amount'] . " - " . $st['transaction_ref']; ?></td>
+              <td class="text-center"><?php echo $st['upc']; ?></td>
+          </tr>
+          <?php $i++; } } } else { ?>
+        <tr ><td class="text-center" colspan="10">No data</td></tr>
+    <?php  } ?>
+    <?php if(isset($type) && ($type =='initialize' || $type=="search") ) {?>
+
+    </tbody>
+    <?php } ?>
+    <?php if(isset($type) && $type =='initialize') {?>
+
+</table>
+<?php } ?>

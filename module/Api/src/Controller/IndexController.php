@@ -482,6 +482,7 @@ class IndexController extends BaseController{
                 'resState'=>$checkUser['res_state'],  // Added by Manjary for STT subscription version
                 'address'=>$checkUser['address'],  // Added by Manjary for STT subscription version
                 'sponsor_type'=>$checkUser['sponsor_type'],    // Added by Manjary for STT subscription version
+                'subscription_type'=>$checkUser['subscription_type'],// Added by Manjary for TWISTT
                 'subscription_end_date'=>$checkUser['subscription_end_date'],  // Added by Manjary 
                 'non_renewal_handled'=>false,   // Added by Manjary
                 'image_path'=>$photoFilePath,  // Added by Manjary for STT 
@@ -527,6 +528,7 @@ class IndexController extends BaseController{
                 'resState'=>$checkUser['res_state'],  // Added by Manjary for STT subscription version
                 'address'=>$checkUser['address'],  // Added by Manjary for STT subscription version
                 'sponsor_type'=>$checkUser['sponsor_type'],    // Added by Manjary for STT subscription version
+                'subscription_type'=>$checkUser['subscription_type'],// Added by Manjary for TWISTT
                 'subscription_end_date'=>$checkUser['subscription_end_date'],  // Added by Manjary 
                 'non_renewal_handled'=>false,   // Added by Manjary
                 'image_path'=>$photoFilePath,  // Added by Manjary for STT 
@@ -644,7 +646,118 @@ class IndexController extends BaseController{
          $retVars['offer_end_date'] = date('d-m-y', strtotime($pvariables['end_date']));
          $retVars['offer_price'] = $pvariables['price'];
 
+         // check for short duration subscription
+         /* sds_active = 0 -> no entry in sds table; 
+         sds_active = 1 -> upcomig sds(sds table has entries but sds period is not active - either expired or yet to activate); 
+         sds_active = 2 -> active sds; */
+         $retVars['sds_active'] = 0; 
+
+        $data['mobile'] = $mobile;
+        $sdsList = $this->taSdsTable()->getTouristSds($data);
+        $today = date('d-m-Y');
+        $today=date_create($today);
+        $activeCount=0;
+        $sdsEffEndDt='';
+        /* var_dump($sdsList);
+        exit; */
+        foreach($sdsList as $sds){
+            $sd = date_create($sds['sds_start_date']);
+            $ed = date_create($sds['sds_end_date']);
+            $diff=date_diff($today,$sd);
+            $sdiff=$diff->format("%R%a");
+            $diff=date_diff($today,$ed);
+            $ediff=$diff->format("%R%a");
+            if ($sdiff <= 0 && $ediff >=0){
+                $retVars['sds_active'] = 2;
+                $activeCount++;
+                if($sdsEffEndDt == '')
+                    $sdsEffEndDt = $sds['sds_end_date'];
+                else
+                {
+                    $sds_diff=date_diff(date_create($sdsEffEndDt), $ed);
+                    $sds_diff_f=$sds_diff->format("%R%a");
+                    if($sds_diff_f >= 0)
+                        $sdsEffEndDt = $sds['sds_end_date'];
+                }
+                //return new JsonModel($retVars);
+            }elseif ($sdiff <= 0 && $ediff <=0){
+                $retVars['sds_active'] = 0;
+            }else{
+                $retVars['sds_active'] = 1;
+                //return new JsonModel($retVars);
+            }
+         }
+         if($activeCount){
+            $retVars['sds_active'] = 2;
+         }
+         $retVars['sds_eff_end_date'] = $sdsEffEndDt;
          return new JsonModel($retVars);
+    }
+
+    public function sdsListAction(){
+        $request = $this->getRequest()->getPost();
+        $headers = $this->getRequest()->getHeaders();
+        $logResult = $this->logRequest($this->getRequest()->toString());
+
+        if(!$headers->get('Access-Token') || !$this->tokenValidation($headers->get('Access-Token')->getFieldValue()))
+        {
+            return new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
+        }
+        $mobile = $request['mobile'];
+        if($mobile=='' || $mobile==null)
+        {
+            return new JsonModel(array("success"=>false,"message"=>"Mobile number missing"));
+        }
+
+        $limit=$request['limit'];
+           $offset=$request['offset'];
+           
+           if(is_null($limit))
+           {
+               $limit=10;
+           }else{
+               $limit=intval($limit);
+           }
+
+           if(is_null($offset))
+           {
+               $offset=0;
+           }else{
+               $offset=intval($offset);
+           }
+
+          $data['mobile'] = $mobile;
+          $data['offset'] = $offset;
+          $data['limit'] = $limit;
+
+        $sdsList = $this->taSdsTable()->getTouristSds($data);
+        $today = date('d-m-Y');
+        $today=date_create($today);
+        $sdsEffEndDt='';
+        $sdsRow = array();
+        foreach($sdsList as $sds){
+            $sd = date_create($sds['sds_start_date']);
+            $ed = date_create($sds['sds_end_date']);
+            $diff=date_diff($today,$sd);
+            $sdiff=$diff->format("%R%a");
+            $diff=date_diff($today,$ed);
+            $ediff=$diff->format("%R%a");
+            if ($sdiff <= 0 && $ediff >=0){
+                if($sdsEffEndDt == ''){
+                    $sdsRow[0] = $sds;
+                    $sdsEffEndDt = $sds['sds_end_date'];
+                }else{
+                    $sds_diff=date_diff(date_create($sdsEffEndDt), $ed);
+                    $sds_diff_f=$sds_diff->format("%R%a");
+                    if($sds_diff_f >= 0){
+                        $sdsRow[0] = $sds;
+                        $sdsEffEndDt = $sds['sds_end_date'];
+                    }
+                }
+            }
+         }
+        return new JsonModel(array('success'=>true,'sds'=>$sdsRow));
+
     }
 
     public function resendOtpAction()
@@ -682,7 +795,10 @@ class IndexController extends BaseController{
             }
 
             $update = $this->otpTable()->updateData(array('status' => \Admin\Model\Otp::Is_verifed), $data);
-            $otp=$this->generateOtp(); //"1111";
+            if(strpos($_SERVER[REQUEST_URI], "/beta/public/"))
+                $otp="1111";
+            else
+                $otp = $this->generateOtp();
             if($type==\Admin\Model\Otp::LOGIN_OTP)
             {
                 $mobileNumber = $userDetails['mobile_country_code'] . $userDetails['mobile'];
@@ -752,7 +868,10 @@ class IndexController extends BaseController{
              $data=array("user_id"=>$user_id,"otp_type"=>\Admin\Model\Otp::LOGIN_OTP,"status"=>\Admin\Model\Otp::Not_verifed);
 
              $update = $this->otpTable()->updateData(array('status' => \Admin\Model\Otp::Is_verifed), $data);
-             $otp=$this->generateOtp(); //"1111";
+             if(strpos($_SERVER[REQUEST_URI], "/beta/public/"))
+                $otp="1111";
+             else
+                $otp = $this->generateOtp();
              $insertData=array("user_id"=>$user_id,"otp_type"=>\Admin\Model\Otp::LOGIN_OTP,"status"=>\Admin\Model\Otp::Not_verifed,'otp'=>$otp);
              $this->otpTable()->insertData($insertData);
              $response = $this->sendOtpSms($countryCode.$mobileNumber, $otp);
@@ -788,7 +907,10 @@ class IndexController extends BaseController{
 
              $update = $this->otpTable()->updateData(array('status' => \Admin\Model\Otp::Is_verifed), $data);
 
-             $otp=$this->generateOtp(); //"1111";
+             if(strpos($_SERVER[REQUEST_URI], "/beta/public/"))
+                $otp="1111";
+             else
+                $otp = $this->generateOtp();
 
              $insertData=array("user_id"=>$user_id,"otp_type"=>\Admin\Model\Otp::LOGIN_OTP,"status"=>\Admin\Model\Otp::Not_verifed,'otp'=>$otp);
 
@@ -916,18 +1038,22 @@ class IndexController extends BaseController{
                 $refData['ref_id'] = $refId;
             }
          }
-         
+
+         //$data['discount_percentage'] = 30;
          if($role)
          {
             $data['role']=$role;
+            if(intval($role) == \Admin\Model\User::Sponsor_role)
+                $data['discount_percentage'] = 85;
          }
 
          if(!count($data))
          {
             return  new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
          }
-         $data['discount_percentage'] = 30;
+
          $roleb4 = $this->userTable()->getField(array('user_id'=>$userId), 'role');
+         
          $profileUpdate=$this->userTable()->updateUser($data,array('user_id'=>$userId));
          //var_dump($data); exit;
          //var_dump($refData); exit;
@@ -935,7 +1061,6 @@ class IndexController extends BaseController{
          if($refData)
             if($refData['ref_id'] != null)
                 $refUpdate = $this->referTable()->addRefer($refData);
-
            if($profileUpdate && $refUpdate['success'])
            {
                //$checkUser=$this->userTable()->getUserByUserId($userId);
@@ -959,9 +1084,10 @@ class IndexController extends BaseController{
                    'subscription_end_date'=>$checkUser['subscription_end_date'],
                    'non_renewal_handled'=>false,
                    'sponsor_type'=>$checkUser['sponsor_type'],    // Added by Manjary for STT subscription version
+                   'subscription_type'=>$checkUser['subscription_type'],// Added by Manjary for TWISTT
                    'is_promoter'=>$checkUser['is_promoter']
                );
-               
+            
                if(intval($role) == \Admin\Model\User::Sponsor_role){
                     if(intval($checkUser['role']) == \Admin\Model\User::Sponsor_role){
                         if($checkUser['role'] != $roleb4){
@@ -2784,6 +2910,7 @@ class IndexController extends BaseController{
                 'ref_name'=>$refDetails[0]['ref_by'],
                 'ref_mobile'=>$refDetails[0]['ref_mobile'],
                 'sponsor_type'=>$checkUser['sponsor_type'],
+                'subscription_type'=>$checkUser['subscription_type'],// Added by Manjary for TWISTT
                 'subscription_end_date'=>$checkUser['subscription_end_date'],
                 'image_path'=>$photoFilePath,
                 'non_renewal_handled'=>true,
@@ -3089,7 +3216,7 @@ class IndexController extends BaseController{
             $price = $subscriptionDetails["price"] * (1+($subscriptionDetails['GST']/100));
             $noOfCPs = $subscriptionDetails["no_of_comp_pwds"];
             $noOfUsers = 1;
-            $noOfDays=$subscriptionDetails["subscription_validity"];
+            $noOfDays=$subscriptionDetails["pwd_subscription_validity"];
             $bookingEndDate = date('Y-m-d', strtotime(date("y-m-d") . " +  $noOfDays days"));
             
               /* $sponseredUsers = explode(",",$response[0]['sponsered_users']);
@@ -3128,12 +3255,12 @@ class IndexController extends BaseController{
             {
                 return new JsonModel(array('success'=>false,'message'=>'Something Wrong'));
             }
-            $subscriptionCount = $this->userTable()->getField(array('user_id'=>$userId),"subscription_count");
-            $subscriptionCount = $subscriptionCount+1;
+            /* $subscriptionCount = $this->userTable()->getField(array('user_id'=>$userId),"subscription_count");
+            $subscriptionCount = $subscriptionCount+1; */
             $updatePassword=$this->passwordTable()->updatePassword(array('user_id'=>$userId,'password_first_used_date'=>$currentDate),array('id'=>$response[0]['id']));
             if($updatePassword){
                 $where=array("user_id"=>$userId);
-                $update=array("role"=>\Admin\Model\User::Subscriber_role, "subscription_type"=>\Admin\Model\Bookings::booking_Sponsored_Subscription, "subscription_start_date"=>date("Y-m-d"), "subscription_end_date"=>$bookingEndDate, "subscription_count"=>$subscriptionCount, "renewed_on"=>date("Y-m-d"));
+                $update=array("role"=>\Admin\Model\User::Subscriber_role, "subscription_type"=>\Admin\Model\Bookings::booking_Sponsored_Subscription, "subscription_start_date"=>date("Y-m-d"), "subscription_end_date"=>$bookingEndDate, "renewed_on"=>date("Y-m-d"));  /* "subscription_count"=>$subscriptionCount, */
                 $this->userTable()->updateUser($update,$where);
             }
             
@@ -3173,6 +3300,7 @@ class IndexController extends BaseController{
                 'resState'=>$checkUser['res_state'],  // Added by Manjary for STT SV
                 'address'=>$checkUser['address'],  // Added by Manjary for STT SV
                 'sponsor_type'=>$checkUser['sponsor_type'],// Added by Manjary for STT SV
+                'subscription_type'=>$checkUser['subscription_type'],// Added by Manjary for TWISTT
                 'image_path'=>$photoFilePath,
                 'subscription_end_date'=>$checkUser['subscription_end_date'],
                 'company_name'=>"",
@@ -3244,8 +3372,34 @@ class IndexController extends BaseController{
             return new JsonModel(array('success'=>false,'message'=>'Invalid Access'));
         }
         $tourType = intval($tourType);
+        $mobile = $this->userTable()->getField(array("user_id"=>$userId), 'mobile');
+         $sds_active = 0; 
+         $data['mobile'] = $mobile;
+         $sdsList = $this->taSdsTable()->getTouristSds($data);
+         $today = date('d-m-Y');
+         $today=date_create($today);
+         $activeCount=0;
+         foreach($sdsList as $sds){
+            $sd = date_create($sds['sds_start_date']);
+            $ed = date_create($sds['sds_end_date']);
+            $diff=date_diff($today,$sd);
+            $sdiff=$diff->format("%R%a");
+            $diff=date_diff($today,$ed);
+            $ediff=$diff->format("%R%a");
+            if ($sdiff <= 0 && $ediff >=0){
+                $sds_active = 2;
+                $activeCount++;
+            }elseif ($sdiff <= 0 && $ediff <=0){
+                $sds_active = 0;
+            }else{
+                $sds_active = 1;
+            }
+         }
+         if($activeCount){
+            $sds_active = 2;
+         }
 
-        if(intval($userType) == \Admin\Model\User::Individual_role){ // -- condition added by Manjary
+        if(intval($userType) == \Admin\Model\User::Individual_role && $sds_active != 2){ // -- condition added by Manjary
             /* if(($password=="" || is_null($password)) && $tourType != \Admin\Model\PlacePrices::tour_type_Spiritual_tour) // - removed by Manjary*/
             if($tourType != \Admin\Model\PlacePrices::tour_type_Spiritual_tour)
             {
@@ -3283,16 +3437,17 @@ class IndexController extends BaseController{
          $userDetails=$this->userTable()->getFields(array('user_id'=>$userId),array('user_id','user_name','email','mobile','mobile_country_code','role','subscription_start_date','subscription_end_date','res_state','address','status','company_role'));
          $userType = $userDetails['role'];
 
-        if(intval($userType) == \Admin\Model\User::Subscriber_role || intval($userType) == \Admin\Model\User::Sponsor_role){  // -- condition added by Manjary  -- 
+        if(intval($userType) == \Admin\Model\User::Subscriber_role || intval($userType) == \Admin\Model\User::Sponsor_role  || $sds_active == 2){  // -- condition added by Manjary  -- 
             if($tourType!=\Admin\Model\PlacePrices::tour_type_Spiritual_tour)
             {
-                // check for subscription validity  // check for no of downloads -  to be developed later
-                $currentDate = date('Y-m-d');
-                $subscriptionEndDate = date('Y-m-d',strtotime($userDetails['subscription_end_date']));
-                if($currentDate > $subscriptionEndDate){
-                    return new JsonModel(array('success'=>false,'message'=>'Subscription expired'));
+                if($sds_active != 2){
+                    // check for subscription validity  // check for no of downloads -  to be developed later
+                    $currentDate = date('Y-m-d');
+                    $subscriptionEndDate = date('Y-m-d',strtotime($userDetails['subscription_end_date']));
+                    if($currentDate > $subscriptionEndDate){
+                        return new JsonModel(array('success'=>false,'message'=>'Subscription expired'));
+                    }
                 }
-                
                 /* $checkPassword=$this->passwordTable()->checkPasswordForBooking(array('booking_id'=>$bookingId,'user_id'=>$userId,'password'=>$bookingPassword,'password_id'=>$passwordId));
                 if(count($checkPassword)==0)
                 {
@@ -3494,7 +3649,7 @@ class IndexController extends BaseController{
         $bookingDetails['user_type']=$downloadPlaces['user_type'];
 
         //if($userType == "2" || $userType == "3"){
-        if(intval($userType) == \Admin\Model\User::Subscriber_role || intval($userType) == \Admin\Model\User::Sponsor_role){
+        if(intval($userType) == \Admin\Model\User::Subscriber_role || intval($userType) == \Admin\Model\User::Sponsor_role  || $sds_active == 2){
             $bookingDetails['tour_date'] = $downloadPlaces['tour_date'];
             $bookingDetails['expiry_date'] = $downloadPlaces['expiry_date'];
         }

@@ -1,0 +1,60 @@
+<link rel="stylesheet" href="<?php echo $this->basePath()?>/css/main.css">
+<link rel="stylesheet" href="<?php echo $this->basePath();?>/css/twistt.css">
+<link rel="stylesheet" href="<?php echo $this->basePath()?>/css/vendor/sol.css">
+<link rel="stylesheet" href="<?php echo $this->basePath(); ?>/css/vendor/bootstrap-datetimepicker.min.css"/>
+<script src="<?php echo $this->basePath(); ?>/js/vendor/sol.js"></script>
+<script type="text/javascript" src="<?php echo $this->basePath(); ?>/js/vendor/moment.min.js"></script>
+<script type="text/javascript" src="<?php echo $this->basePath(); ?>/js/vendor/bootstrap-datetimepicker.min.js"></script>
+<div class="container-fluid my-5">
+    <div class="container">  
+        <?php echo $this->partial('/twisttse-sidebar', array('activeTab'=>\Application\Constants\Constants::TWISTTSE_HOME_PAGE, 'userId'=>$userId)); ?>
+        <div class="content bg-white custom-shadow p-4 color-333"> 
+            <div class="bg-light border-radius-10 custom-shadow p-4 color-333">
+                <div class="user-page-name text-uppercase avant-md pb-3">
+                    <h5><?php echo "TWISTT Dashboard"; ?></h5>
+                </div>
+                <div class="stt-bg-primary border-radius-10 custom-shadow p-4 color-333">
+                    <h6 class="font-weight-bold text-uppercase">SE Details</h6>
+                    <div class="row">
+                        <div class="col">
+                            <div class="row">
+                                <div class="col-sm-12 col-md-6"><?php echo "Name: " . $seDetails['name']; ?></div>
+                                <div class="col-sm-12 col-md-6"><?php echo "Address: " . $seDetails['address']; ?></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12 col-md-6"><?php echo "Mobile: " . $seDetails['mobile']; ?></div>
+                                <div class="col-sm-12 col-md-6"><?php echo "Email: " . $seDetails['email']; ?></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12 col-md-6"><?php echo "Bank: " . $seDetails['bank_name']; ?></div>
+                                <div class="col-sm-12 col-md-6"><?php echo "IFSC: " . $seDetails['ifsc_code']; ?></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12 col-md-6"><?php echo "Bank A/c: " . $seDetails['bank_ac_no']; ?></div>
+                                <div class="col-sm-12 col-md-6"><?php echo "PIC: " . $seDetails['pic']; ?></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12 col-md-6"><?php echo "Commission: " . $seDetails['commission'] . "%"; ?></div>
+                                <div class="col-sm-12 col-md-6"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white border-radius-10 custom-shadow p-4 color-333 my-3">
+                    <h6 id="hdr" class="font-weight-bold text-uppercase my-3">SE Data</h6>
+                    <div class="" id="recordsList">
+                        <?php echo $this->partial("/load-se-data", array('seData'=>$seData,'totalCount'=>$totalCount,'type'=>'initialize', 'id'=>$pdArr['id'])); ?>
+                    </div>
+                    <?php if($totalCount > 10)
+                    {
+                        $paginationCount = ceil($totalCount / 10); ?>
+                        <ul class="pagination float-right" id="listPager"></ul>
+                    <?php } ?>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script src="<?php echo $this->basePath(); ?>/js/pagination.js"></script>
+<script src="<?php echo $this->basePath().'/js/admin/se-data.js?v=1.0'?>"></script>

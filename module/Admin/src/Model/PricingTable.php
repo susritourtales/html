@@ -111,7 +111,7 @@ class PricingTable extends  BaseTable
             $values=array();
             $where=new Where();
             $query = $sql->select()
-                ->columns(array("id","plantype","planname","price","no_of_comp_pwds","no_of_days","maxdownloads","maxquantity","start_date","end_date","subscription_validity","sponsor_bonus_min","sponsor_comp_pwds","sponsor_pwd_validity","GST","first_rdp","second_rdp","npc_passwords","npc_days","app_text","web_text"))
+                ->columns(array("id","plantype","planname","price","no_of_comp_pwds","no_of_days","maxdownloads","maxquantity","start_date","end_date","subscription_validity","pwd_subscription_validity","sponsor_bonus_min","sponsor_comp_pwds","sponsor_pwd_validity","GST","first_rdp","second_rdp","npc_passwords","npc_days","app_text","web_text"))
                 ->from(array("pt"=>"pricing"))
                 ->where($data);
 
@@ -378,7 +378,7 @@ class PricingTable extends  BaseTable
             $sql = $this->getSql();
             $user = array();
             $query = $sql->select()
-                ->columns(array("id","plantype","planname","price","no_of_comp_pwds","no_of_days","maxdownloads","maxquantity","start_date","end_date","subscription_validity","sponsor_comp_pwds","sponsor_pwd_validity","GST","first_rdp","second_rdp","npc_passwords","npc_days","app_text","web_text"))
+                ->columns(array("id","plantype","planname","price","no_of_comp_pwds","no_of_days","maxdownloads","maxquantity","start_date","end_date","subscription_validity","pwd_subscription_validity","sponsor_comp_pwds","sponsor_pwd_validity","GST","first_rdp","second_rdp","npc_passwords","npc_days","app_text","web_text"))
                 ->from(array('pt' => 'pricing'))
                 ->order('created_at asc');
             $result = $sql->prepareStatementForSqlObject($query)->execute();

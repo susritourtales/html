@@ -40,6 +40,18 @@ class BaseController extends AbstractActionController
     protected $upcomingTable;   // -- Added my Manjary
     protected $referTable;   // -- Added my Manjary
     protected $sscTable;   // -- Added my Manjary
+    protected $taPlansTable;   // -- Added my Manjary
+    protected $taConsultantDetailsTable;   // -- Added my Manjary
+    protected $TaConsultantTransactionsTable;   // -- Added my Manjary
+    protected $taConsPaymentsTable;   // -- Added my Manjary
+    protected $taDetailsTable;   // -- Added my Manjary
+    protected $taPurchasesTable;   // -- Added my Manjary
+    protected $taSdsTable;   // -- Added my Manjary
+    protected $tbeDetailsTable;   // -- Added my Manjary
+    protected $tbeLoginTable;   // -- Added my Manjary
+    protected $tbeOldPasswordsTable;   // -- Added my Manjary
+    protected $seOldPasswordsTable;   // -- Added my Manjary
+    protected $twisttOtpTable;
     protected $downloadedFileInfo;
     protected $temporaryFiles;
     protected $likes;
@@ -133,6 +145,34 @@ class BaseController extends AbstractActionController
             $user = $this->getLoggedInUser();
             if ($user) {
                 return $user['user_id'];
+            } else {
+                return null;
+            }
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    public function getLoggedInTbeId()
+    {
+        try {
+            $user = $this->getLoggedInUser();
+            if ($user) {
+                return $user['tbe_id'];
+            } else {
+                return null;
+            }
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    public function getLoggedInSeId()
+    {
+        try {
+            $user = $this->getLoggedInUser();
+            if ($user) {
+                return $user['se_id'];
             } else {
                 return null;
             }
@@ -482,19 +522,21 @@ class BaseController extends AbstractActionController
 
     public function notifyUser($userDetails){
         if($userDetails['booking_type']==\Admin\Model\Bookings::booking_Sponsorship){
-            $message="Congratulations on registering as Sponsor. You can now buy passwords at discounted price and sell them at profit to the tourists.";
+            $message="Congratulations on registering yourself as a TWISTT Sponsor\nWelcome to the Sales Partners Group of STT.\n\nYou can buy TWISTT passwords each at 15% of QUESTT or Annual Subscription Price.\nYou can buy a max of 99 TWISTT passwords in one on-line transaction.\nYou will get 5 free passwords after buying the first 10 passwords.\n\nYou can give/sell them to interested persons/tourists.\nValidity of TWISTT password is one year.\nUsing this password, your friend/tourist becomes a TWISTT Subscriber and enjoy a short duration use of STT for 15 days.\n\nAs you buy more and more passwords, you receive better discount.";
             /* $message="Congratulations on converting yourself as a \"Sponsor\".\nWelcome to the Promoting Group of STT.\n\nYou can buy passwords at discounted price and  sell them to interested persons/tourists.\nIt gives you an opportunity to earn simultaneously while serving the tourist.\nPlease go through the e-mail for more details."; */
-            $nTitle = "Welcome as Sponsor";
+            $nTitle = "Welcome as TWISTT Sponsor";
         }
-        elseif($userDetails['booking_type']==\Admin\Model\Bookings::booking_Subscription|| $userDetails['booking_type']==\Admin\Model\Bookings::booking_Sponsored_Subscription){
+        elseif($userDetails['booking_type']==\Admin\Model\Bookings::booking_Subscription){
             //$message="Congratulations on your choice of subscribing to STT. Welcome to Susri Tour Tales.\nSelect, Download and Listen to the tales about the tourist places  of your choice.\nEnjoy your time with STT.\n\nYou can also become a sponsor. For details, see the message  sent to your registered mail Id.";
             if($userDetails['mobile_country_code'] == "91"){
-                $message="Congratulations on your choice of subscribing to STT.\nWelcome to Susri Tour Tales.\nSelect, Download and Listen to the tales about the tourist places  of your choice.\nEnjoy your time with STT.\n\nYou can also become a sponsor. For details, see the message  sent to your registered mail Id.";
+                $message="Congratulations on your choice of subscribing to STT.\nWelcome to Susri Tour Tales.\nSelect, Download and Listen to the tales about the tourist places of your choice.\nEnjoy your time with STT.\n\nYou can also become a sponsor. For details, see the message  sent to your registered mail Id.";
             } else {
-                $message="Congratulations on your choice of subscribing to STT.\nWelcome to Susri Tour Tales.\nSelect, Download and Listen to the tales about the tourist places  of your choice.\nEnjoy your time with STT.";
+                $message="Congratulations on your choice of subscribing to STT.\nWelcome to Susri Tour Tales.\nSelect, Download and Listen to the tales about the tourist places of your choice.\nEnjoy your time with STT.";
             }
             $nTitle = "Welcome as Subscriber";
-        }        
+        }elseif($userDetails['booking_type']==\Admin\Model\Bookings::booking_Sponsored_Subscription){ 
+            $message="Congratulations. You are sponsored TWISTT subscription for 15 days.\nWelcome to Susri Tour Tales.\nSelect, Download and Listen to the tales about the tourist places of your choice.\nEnjoy your time with STT.";
+        }       
         $notificationDetails = array('notification_data_id'=>$userDetails['user_id'] ,'status' => \Admin\Model\Notification::STATUS_UNREAD, 'notification_recevier_id' => $userDetails['user_id'], 'notification_type' => \Admin\Model\Notification::NOTIFICATION_TYPE_BOOKING_NOTIFICATION, 'notification_text' => $message,'created_at'=>date("Y-m-d H:i:s"),'updated_at'=>date("Y-m-d H:i:s"));
         $registrationIds = $this->fcmTable()->getDeviceIds($userDetails['user_id']);
         $notification = $this->notificationTable()->saveData($notificationDetails);
@@ -508,9 +550,12 @@ class BaseController extends AbstractActionController
         if($userDetails['booking_type']==\Admin\Model\Bookings::booking_Sponsorship){
             $message="Welcome%20to%20Sponsors%27%20Group%20of%20Susri%20Tour%20Tales.%0ABuy%20subscription%20passwords%20at%20discounted%20prices%20and%20sell%20at%20profits.%20%0ASee%20e-mail%20message%20for%20details.";
         }
-        elseif($userDetails['booking_type']==\Admin\Model\Bookings::booking_Subscription || $userDetails['booking_type']==\Admin\Model\Bookings::booking_Sponsored_Subscription){
+        elseif($userDetails['booking_type']==\Admin\Model\Bookings::booking_Subscription){
             $message="Welcome%20to%20Susri%20Tour%20Tales.%0ADownload%20and%20Listen%20to%20the%20tales%20of%20your%20choice.%0A%0ABecome%20a%20sponsor%20and%20earn%20through%20App.%0ASee%20e-mail%20message%20for%20details.";
-        }        
+        }/* elseif($userDetails['booking_type']==\Admin\Model\Bookings::booking_Sponsored_Subscription){ 
+            $taName = ""; // GET SPONSOR NAME   
+            $message="Congratulations. M/s $taName has sponsored your subscription for 15 days from " . date('d-m-Y', strtotime($request['tdate'])) . ". As a complement, we will be opening the subscription 3 days earlier. That enables you to download the tales of your choice before embarking on the tour. Wish you a happy Tour";
+        }  */ 
         $sendSms=array('mobile'=>$userDetails['mobile_country_code'].$userDetails['mobile'],'message'=>$message);
         $this->sendPasswordSms($sendSms['mobile'],array('text'=>$sendSms['message']));
      }
@@ -587,14 +632,15 @@ class BaseController extends AbstractActionController
         if($cc == "91")
             $variables = $this->pricingTable()->getPricingDetails(array('id'=>'1'));
         else
-            $variables = $this->pricingTable()->getPricingDetails(array('id'=>'2'));
+            $variables = $this->pricingTable()->getPricingDetails(array('id'=>'3'));
 
         if(!empty($variables)){
             $pricingDetails['no_of_comp_pwds'] = $variables['no_of_comp_pwds'];
             $pricingDetails['no_of_days'] = $variables['no_of_days'];
             $pricingDetails['maxdownloads'] = $variables['maxdownloads'];
             $pricingDetails['maxquantity'] = $variables['maxquantity'];
-            $pricingDetails['subscription_validity'] = $variables['subscription_validity'];
+            //$pricingDetails['subscription_validity'] = $variables['subscription_validity'];
+            $pricingDetails['subscription_validity'] = $variables['pwd_subscription_validity'];
             $pricingDetails['sponsor_bonus_min'] = $variables['sponsor_bonus_min'];
             $pricingDetails['sponsor_comp_pwds'] = $variables['sponsor_comp_pwds'];
             $pricingDetails['sponsor_pwd_validity'] = $variables['sponsor_pwd_validity'];
@@ -681,6 +727,7 @@ class BaseController extends AbstractActionController
             $pricingDetails['maxdownloads'] = $variables['maxdownloads'];
             $pricingDetails['maxquantity'] = $variables['maxquantity'];
             $pricingDetails['subscription_validity'] = $variables['subscription_validity'];
+            $pricingDetails['pwd_subscription_validity'] = $variables['pwd_subscription_validity'];
             $pricingDetails['sponsor_bonus_min'] = $variables['sponsor_bonus_min'];
             $pricingDetails['sponsor_comp_pwds'] = $variables['sponsor_comp_pwds'];
             $pricingDetails['sponsor_pwd_validity'] = $variables['sponsor_pwd_validity'];
@@ -1050,6 +1097,226 @@ class BaseController extends AbstractActionController
             }
 
             return $this->promoterParametersTable;
+
+        } catch (\Exception $e) {
+
+            return null;
+        } catch (NotFoundExceptionInterface $e) {
+            return null;
+        } catch (ContainerExceptionInterface $e) {
+            return null;
+        }
+    }
+
+    public function taPlansTable()     // -- Added my Manjary
+    {
+        try {
+
+            if ($this->taPlansTable == null) {
+                $this->taPlansTable = $this->getEvent()->getApplication()->getServiceManager()->get("Admin/Model/TaPlansTable");
+            }
+
+            return $this->taPlansTable;
+
+        } catch (\Exception $e) {
+
+            return null;
+        } catch (NotFoundExceptionInterface $e) {
+            return null;
+        } catch (ContainerExceptionInterface $e) {
+            return null;
+        }
+    }
+
+    public function taConsultantDetailsTable()     // -- Added my Manjary
+    {
+        try {
+
+            if ($this->taConsultantDetailsTable == null) {
+                $this->taConsultantDetailsTable = $this->getEvent()->getApplication()->getServiceManager()->get("Admin/Model/TaConsultantDetailsTable");
+            }
+
+            return $this->taConsultantDetailsTable;
+
+        } catch (\Exception $e) {
+
+            return null;
+        } catch (NotFoundExceptionInterface $e) {
+            return null;
+        } catch (ContainerExceptionInterface $e) {
+            return null;
+        }
+    }
+
+    public function taConsultantTransactionsTable()     // -- Added my Manjary
+    {
+        try {
+
+            if ($this->taConsultantTransactionsTable == null) {
+                $this->taConsultantTransactionsTable = $this->getEvent()->getApplication()->getServiceManager()->get("Admin/Model/TaConsultantTransactionsTable");
+            }
+
+            return $this->taConsultantTransactionsTable;
+
+        } catch (\Exception $e) {
+
+            return null;
+        } catch (NotFoundExceptionInterface $e) {
+            return null;
+        } catch (ContainerExceptionInterface $e) {
+            return null;
+        }
+    }
+
+    public function taConsPaymentsTable()     // -- Added my Manjary
+    {
+        try {
+
+            if ($this->taConsPaymentsTable == null) {
+                $this->taConsPaymentsTable = $this->getEvent()->getApplication()->getServiceManager()->get("Admin/Model/TaConsPaymentsTable");
+            }
+
+            return $this->taConsPaymentsTable;
+
+        } catch (\Exception $e) {
+
+            return null;
+        } catch (NotFoundExceptionInterface $e) {
+            return null;
+        } catch (ContainerExceptionInterface $e) {
+            return null;
+        }
+    }
+
+    public function taDetailsTable()     // -- Added my Manjary
+    {
+        try {
+
+            if ($this->taDetailsTable == null) {
+                $this->taDetailsTable = $this->getEvent()->getApplication()->getServiceManager()->get("Admin/Model/TaDetailsTable");
+            }
+
+            return $this->taDetailsTable;
+
+        } catch (\Exception $e) {
+
+            return null;
+        } catch (NotFoundExceptionInterface $e) {
+            return null;
+        } catch (ContainerExceptionInterface $e) {
+            return null;
+        }
+    }
+
+    public function taPurchasesTable()     // -- Added my Manjary
+    {
+        try {
+
+            if ($this->taPurchasesTable == null) {
+                $this->taPurchasesTable = $this->getEvent()->getApplication()->getServiceManager()->get("Admin/Model/TaPurchasesTable");
+            }
+
+            return $this->taPurchasesTable;
+
+        } catch (\Exception $e) {
+
+            return null;
+        } catch (NotFoundExceptionInterface $e) {
+            return null;
+        } catch (ContainerExceptionInterface $e) {
+            return null;
+        }
+    }
+
+    public function taSdsTable()     // -- Added my Manjary
+    {
+        try {
+
+            if ($this->taSdsTable == null) {
+                $this->taSdsTable = $this->getEvent()->getApplication()->getServiceManager()->get("Admin/Model/TaSdsTable");
+            }
+
+            return $this->taSdsTable;
+
+        } catch (\Exception $e) {
+
+            return null;
+        } catch (NotFoundExceptionInterface $e) {
+            return null;
+        } catch (ContainerExceptionInterface $e) {
+            return null;
+        }
+    }
+
+    public function tbeDetailsTable()     // -- Added my Manjary
+    {
+        try {
+
+            if ($this->tbeDetailsTable == null) {
+                $this->tbeDetailsTable = $this->getEvent()->getApplication()->getServiceManager()->get("Admin/Model/TbeDetailsTable");
+            }
+
+            return $this->tbeDetailsTable;
+
+        } catch (\Exception $e) {
+
+            return null;
+        } catch (NotFoundExceptionInterface $e) {
+            return null;
+        } catch (ContainerExceptionInterface $e) {
+            return null;
+        }
+    }
+
+    public function tbeLoginTable()     // -- Added my Manjary
+    {
+        try {
+
+            if ($this->tbeLoginTable == null) {
+                $this->tbeLoginTable = $this->getEvent()->getApplication()->getServiceManager()->get("Admin/Model/TbeLoginTable");
+            }
+
+            return $this->tbeLoginTable;
+
+        } catch (\Exception $e) {
+
+            return null;
+        } catch (NotFoundExceptionInterface $e) {
+            return null;
+        } catch (ContainerExceptionInterface $e) {
+            return null;
+        }
+    }
+
+    public function tbeOldPasswordsTable()     // -- Added my Manjary
+    {
+        try {
+
+            if ($this->tbeOldPasswordsTable == null) {
+                $this->tbeOldPasswordsTable = $this->getEvent()->getApplication()->getServiceManager()->get("Admin/Model/TbeOldPasswordsTable");
+            }
+
+            return $this->tbeOldPasswordsTable;
+
+        } catch (\Exception $e) {
+
+            return null;
+        } catch (NotFoundExceptionInterface $e) {
+            return null;
+        } catch (ContainerExceptionInterface $e) {
+            return null;
+        }
+    }
+
+    public function seOldPasswordsTable()     // -- Added my Manjary
+    {
+        try {
+
+            if ($this->seOldPasswordsTable == null) {
+                $this->seOldPasswordsTable = $this->getEvent()->getApplication()->getServiceManager()->get("Admin/Model/SeOldPasswordsTable");
+            }
+
+            return $this->seOldPasswordsTable;
 
         } catch (\Exception $e) {
 
@@ -1493,6 +1760,24 @@ class BaseController extends AbstractActionController
             }
 
             return $this->otpTable;
+
+        } catch (\Exception $e) {
+            return null;
+        } catch (NotFoundExceptionInterface $e) {
+            return null;
+        } catch (ContainerExceptionInterface $e) {
+            return null;
+        }
+    }
+    public function twisttOtpTable()
+    {
+        try {
+
+            if ($this->twisttOtpTable == null) {
+                $this->twisttOtpTable = $this->getEvent()->getApplication()->getServiceManager()->get("Admin/Model/TwisttOtpTable");
+            }
+
+            return $this->twisttOtpTable;
 
         } catch (\Exception $e) {
             return null;

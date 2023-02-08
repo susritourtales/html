@@ -109,7 +109,7 @@ class IndexController extends BaseController
                                 }
                             }
 
-                         //echo 'success';
+                         echo 'success';
                          exit;
                      }
                 }
@@ -255,6 +255,7 @@ class IndexController extends BaseController
                             $updateData = array('status' => $status, 'payment_response_id' => $details['razorpay_payment_id']);
                             $updateBookingData = array('payment_status' => $status);
                             $paymentRequest = $this->paymentTable()->updatePayment($updateData, array('payment_request_id' => $details['razorpay_order_id']));
+                            
                             if($paymentRequest) //if($status==\Admin\Model\Payments::payment_success)
                             {
                                 $bookingId=$checkPayment[0]['booking_id'];
@@ -303,7 +304,7 @@ class IndexController extends BaseController
                                     $subedt = $udata['subscription_end_date'];
                                 }
                                 // if subscriber/sponsor - start
-                                $userDetails=$this->userTable()->getFields(array('user_id'=>$userId),array('user_id','user_name','email','mobile','mobile_country_code','role','subscription_count','subscription_start_date','subscription_end_date','res_state','address','status','company_role','bonus_flag', 'discount_percentage','passwords_count', 'sponsor_type'));
+                                $userDetails=$this->userTable()->getFields(array('user_id'=>$userId),array('user_id','user_name','email','mobile','mobile_country_code','role','subscription_count','subscription_start_date','subscription_end_date','res_state','address','status','company_role','bonus_flag', 'discount_percentage','passwords_count', 'sponsor_type', 'subscription_type'));
 
                                 $bookingTourDetails=$this->bookingtourdetailsTable()->getFields(array('booking_id'=>$bookingId),  array('discount_percentage','tour_date','no_of_days','no_of_users','expiry_date','sponsered_users','price','booking_tour_id', 'created_at'));
                                 $pdata['bonus_flag'] = 0; //false;
@@ -429,15 +430,17 @@ class IndexController extends BaseController
                                 $bookingList['bonus_flag'] = $pdata['bonus_flag']; //$userDetails['bonus_flag'];
                                 $bookingList['subscription_count'] = $userDetails['subscription_count'];
                                 $bookingList['sponsor_type'] = $userDetails['sponsor_type'];
+                                $bookingList['subscription_type'] = $userDetails['subscription_type'];
                                 if($userDetails['email'])
                                 {
                                     // added by Manjary - start - remove on live - start
-                                    $stream_opts = [
-                                        "ssl" => [
-                                            "verify_peer"=>false,
-                                            "verify_peer_name"=>false,
-                                        ]
-                                    ]; 
+                                    if(strpos($_SERVER[REQUEST_URI], "/beta/public/")){
+                                        $stream_opts = [
+                                            "ssl" => [
+                                                "verify_peer"=>false,
+                                                "verify_peer_name"=>false,
+                                            ]
+                                        ]; }
                                     // added by Manjary - end -- remove on live
                                     if($bookingList['booking_type']==\Admin\Model\Bookings::booking_Subscription){
                                         $bookingList['heading']  ="Welcome as STT Subscriber";
@@ -446,8 +449,11 @@ class IndexController extends BaseController
                                     elseif($bookingList['booking_type']==\Admin\Model\Bookings::booking_Buy_Passwords)
                                     {
                                         $bookingList['passwords']=$this->bookingsTable()->bookingPasswords($bookingId);
-                                        $html = file_get_contents($this->getBaseUrl() . '/application/booking-pdf?suid=0&bid=' . $bookingId, false, stream_context_create($stream_opts));// added by Manjary - end -- remove on live
-                                        //$html = file_get_contents($this->getBaseUrl() . '/application/booking-pdf?suid=0&bid=' . $bookingId, true);// - removed by Manjary to make local work - use on live
+                                        if(strpos($_SERVER[REQUEST_URI], "/beta/public/")){
+                                            $html = file_get_contents($this->getBaseUrl() . '/application/booking-pdf?suid=0&bid=' . $bookingId, false, stream_context_create($stream_opts));// added by Manjary - end -- remove on live
+                                        }else{
+                                            $html = file_get_contents($this->getBaseUrl() . '/application/booking-pdf?suid=0&bid=' . $bookingId, true);// - removed by Manjary to make local work - use on live
+                                        }
                                         $mpdf = new mPDF(['tempDir' => getcwd()."/public/data/temp"]);
                                         $mpdf->SetDisplayMode("fullpage");
                                         $mpdf->WriteHTML($html);
@@ -466,9 +472,9 @@ class IndexController extends BaseController
                                 if($bookingType == \Admin\Model\Bookings::booking_Subscription){
                                     if($bookingList['subscription_count'] == "1"){
                                         if($bookingList['mobile_country_code'] == "91"){
-                                            $message="Congratulations on your choice of subscribing to STT.\nWelcome to Susri Tour Tales.\nSelect, Download and Listen to the tales about the tourist places  of your choice.\nEnjoy your time with STT.\n\nYou can also become a sponsor. For details, see the message  sent to your registered mail Id.";
+                                            $message="Congratulations on your choice of becoming “QUESTT” Subscriber of STT.\nWelcome to Susri Tour Tales.\nSelect, Download and Listen to the Tales about the Tourist places in the language you prefer.\nEnjoy your time with STT.\n\n***\n\nYou can also help others to become “TWISTT” Subscribers- for Short Duration of 15 days. For details, see the message  sent to your registered mail Id or the Web Site.";
                                         } else {
-                                            $message="Congratulations on your choice of subscribing to STT.\nWelcome to Susri Tour Tales.\nSelect, Download and Listen to the tales about the tourist places  of your choice.\nEnjoy your time with STT.";
+                                            $message="Congratulations on your choice of becoming “QUESTT” Subscriber of STT.\nWelcome to Susri Tour Tales.\nSelect, Download and Listen to the Tales about the Tourist places in the language you prefer.\nEnjoy your time with STT.";
                                         }
                                         $notificationTitle = "Welcome as Subscriber";
                                         $smsMessage="Welcome%20to%20Susri%20Tour%20Tales.%0ADownload%20and%20Listen%20to%20the%20tales%20of%20your%20choice.%0A%0ABecome%20a%20sponsor%20and%20earn%20through%20App.%0ASee%20e-mail%20message%20for%20details.";
@@ -481,11 +487,11 @@ class IndexController extends BaseController
                                 }
                                 elseif($bookingType == \Admin\Model\Bookings::booking_Buy_Passwords){
                                     if($bookingList['bonus_flag']){
-                                        $message ="Congratulations.\nAs you have completed the purchase of first ten passwords you are eligible to receive five bonus passwords. They are sent to your registered e-mail and you can also find them in ‘Menu>Password History’ in the App.";
+                                        $message ="Congratulations.\nAs you have completed the purchase of FIRST 10 TWISTT passwords, you are eligible to receive 5 bonus passwords. They are sent to your registered e-mail and to your Password History Table.";
                                         /* $message = "Congratulations.\nAs you have completed the purchase of first 10 passwords, you are eligible to receive 5 bonus passwords. They are sent to your registered e-mail."; */
                                         $smsMessage = "Congratulations.%0ABy%20purchasing%20ten%20passwords%2C%20you%20have%20become%20eligible%20to%20receive%205%20bonus%20passwords.%20%0A%0AThey%20are%20sent%20to%20your%20registered%20e-mail.";
                                     }else{
-                                        $message="Your " . $bookingList['no_of_users'] . " passwords purchased have been sent to your registered mail id. You can also find them in ‘Menu>Password History’ in the App. Use them before one year.";
+                                        $message="Your " . $bookingList['no_of_users'] . " TWISTT passwords purchased for Short Duration Subscription of 15 days- have been mailed to your registered mail Id. The passwords are also shown in your Password History Table. Passwords are to be redeemed before one year. Password used once cannot be reused again."; 
                                         /* $message="Your " . $bookingList['no_of_users'] . " passwords purchased have been mailed to your registered mail Id.\nThe passwords are required to be redeemed before one year.\nPassword  used on one device cannot be reused on other."; */
                                         $smsMessage="Your%20" . $bookingList['no_of_users'] . "%20passwords%20have%20been%20mailed%20to%20your%20registered%20mail%20Id.%0APasswords%20are%20required%20to%20be%20redeemed%20before%20one%20year.";
                                     }
@@ -538,7 +544,8 @@ class IndexController extends BaseController
                                 'company_name'=>$bookingList['company_role'],
                                 'role'=>$bookingList['role'],
                                 'subscription_end_date'=>$bookingList['subs_end_date'],
-                                'sponsor_type'=>$bookingList['sponsor_type']
+                                'sponsor_type'=>$bookingList['sponsor_type'],
+                                'subscription_type'=>$bookingList['subscription_type']
                                 )
                             ));
                         }
@@ -684,8 +691,8 @@ class IndexController extends BaseController
                                         elseif($bookingList['booking_type']==\Admin\Model\Bookings::booking_Buy_Passwords)
                                         {
                                             $bookingList['passwords']=$this->bookingsTable()->bookingPasswords($bookingId);
-                                            $html = file_get_contents($this->getBaseUrl() . '/application/booking-pdf?suid=0&bid=' . $bookingId, false, stream_context_create($stream_opts));// added by Manjary - end -- remove on live
-                                            //$html = file_get_contents($this->getBaseUrl() . '/application/booking-pdf?suid=0&bid=' . $bookingId, true);// - removed by Manjary to make local work - use on live
+                                            //$html = file_get_contents($this->getBaseUrl() . '/application/booking-pdf?suid=0&bid=' . $bookingId, false, stream_context_create($stream_opts));// added by Manjary - end -- remove on live
+                                            $html = file_get_contents($this->getBaseUrl() . '/application/booking-pdf?suid=0&bid=' . $bookingId, true);// - removed by Manjary to make local work - use on live
                                             $mpdf = new mPDF(['tempDir' => getcwd()."/public/data/temp"]);
                                             $mpdf->SetDisplayMode("fullpage");
                                             $mpdf->WriteHTML($html);
@@ -780,12 +787,12 @@ class IndexController extends BaseController
                                     if($userDetails['email'])
                                     {
                                         // added by Manjary - start - remove on live - start
-                                        $stream_opts = [
+                                        /* $stream_opts = [
                                             "ssl" => [
                                                 "verify_peer"=>false,
                                                 "verify_peer_name"=>false,
                                             ]
-                                        ]; 
+                                        ];  */
                                         // added by Manjary - end -- remove on live
                                         if($bookingList['booking_type']==\Admin\Model\Bookings::booking_Subscription){
                                             $bookingList['heading'] = "Welcome as STT Subscriber";
@@ -794,9 +801,9 @@ class IndexController extends BaseController
                                         elseif($bookingList['booking_type']==\Admin\Model\Bookings::booking_Buy_Passwords)
                                         {
                                             $bookingList['passwords']=$this->bookingsTable()->bookingPasswords($bookingId);
-                                            $html = file_get_contents($this->getBaseUrl() . '/application/booking-pdf?bid=' . $bookingId, false, stream_context_create($stream_opts)); 
+                                            //$html = file_get_contents($this->getBaseUrl() . '/application/booking-pdf?bid=' . $bookingId, false, stream_context_create($stream_opts)); 
                                             
-                                            //$html = file_get_contents($this->getBaseUrl() . '/application/booking-pdf?suid=0&bid=' . $bookingId, true);// - removed by Manjary to make local work - use on live
+                                            $html = file_get_contents($this->getBaseUrl() . '/application/booking-pdf?suid=0&bid=' . $bookingId, true);// - removed by Manjary to make local work - use on live
                                             $mpdf = new mPDF(['tempDir' => getcwd()."/public/data/temp"]);
                                             $mpdf->SetDisplayMode("fullpage");
                                             $mpdf->WriteHTML($html);
@@ -814,9 +821,9 @@ class IndexController extends BaseController
                                 if($bookingType == \Admin\Model\Bookings::booking_Subscription){
                                     if($bookingList['subscription_count'] == "1"){
                                         if($bookingList['mobile_country_code'] == "91"){
-                                            $message="Congratulations on your choice of subscribing to STT.\nWelcome to Susri Tour Tales.\nSelect, Download and Listen to the tales about the tourist places  of your choice.\nEnjoy your time with STT.\n\nYou can also become a sponsor. For details, see the message  sent to your registered mail Id.";
+                                            $message="Congratulations on your choice of becoming “QUESTT” Subscriber of STT.\nWelcome to Susri Tour Tales.\nSelect, Download and Listen to the Tales about the Tourist places in the language you prefer.\nEnjoy your time with STT.\n\n***\n\nYou can also help others to become “TWISTT” Subscribers- for Short Duration of 15 days. For details, see the message  sent to your registered mail Id or the Web Site.";
                                         } else {
-                                            $message="Congratulations on your choice of subscribing to STT.\nWelcome to Susri Tour Tales.\nSelect, Download and Listen to the tales about the tourist places  of your choice.\nEnjoy your time with STT.";
+                                            $message="Congratulations on your choice of becoming “QUESTT” Subscriber of STT.\nWelcome to Susri Tour Tales.\nSelect, Download and Listen to the Tales about the Tourist places in the language you prefer.\nEnjoy your time with STT.";
                                         }
                                         $notificationTitle = "Welcome as Subscriber";
                                         $smsMessage="Welcome%20to%20Susri%20Tour%20Tales.%0ADownload%20and%20Listen%20to%20the%20tales%20of%20your%20choice.%0A%0ABecome%20a%20sponsor%20and%20earn%20through%20App.%0ASee%20e-mail%20message%20for%20details.";
@@ -829,11 +836,11 @@ class IndexController extends BaseController
                                 }
                                 elseif($bookingType == \Admin\Model\Bookings::booking_Buy_Passwords){
                                     if($bookingList['bonus_flag']){
-                                        $message ="Congratulations.\nAs you have completed the purchase of first ten passwords you are eligible to receive five bonus passwords. They are sent to your registered e-mail and you can also find them in ‘Menu>Password History’ in the App.";
+                                        $message ="Congratulations.\nAs you have completed the purchase of FIRST 10 TWISTT passwords, you are eligible to receive 5 bonus passwords. They are sent to your registered e-mail and to your Password History Table";
                                         /* $message = "Congratulations.\nAs you have completed the purchase of first 10 passwords, you are eligible to receive 5 bonus passwords. They are sent to your registered e-mail."; */
                                         $smsMessage = "Congratulations.%0ABy%20purchasing%20ten%20passwords%2C%20you%20have%20become%20eligible%20to%20receive%205%20bonus%20passwords.%20%0A%0AThey%20are%20sent%20to%20your%20registered%20e-mail.";
                                     }else{
-                                        $message="Your " . $bookingList['no_of_users'] . " passwords purchased have been sent to your registered mail id. You can also find them in ‘Menu>Password History’ in the App. Use them before one year."; 
+                                        $message="Your " . $bookingList['no_of_users'] . " TWISTT passwords purchased for Short Duration Subscription of 15 days- have been mailed to your registered mail Id. The passwords are also shown in your Password History Table. Passwords are to be redeemed before one year. Password used once cannot be reused again."; 
                                         /* $message="Your " . $bookingList['no_of_users'] . " passwords purchased have been mailed to your registered mail Id.\nThe passwords are required to be redeemed before one year.\nPassword  used on one device cannot be reused on other."; */
                                         $smsMessage="Your%20" . $bookingList['no_of_users'] . "%20passwords%20have%20been%20mailed%20to%20your%20registered%20mail%20Id.%0APasswords%20are%20required%20to%20be%20redeemed%20before%20one%20year.";
                                     }

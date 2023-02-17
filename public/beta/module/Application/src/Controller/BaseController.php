@@ -85,7 +85,7 @@ class BaseController extends AbstractActionController
     protected $cityTourSlabDaysTable;
     
     const token='dG91cmlzbUFwcGxpY2F0aW9u';
-    const apk_version = '1.2.64';
+    //const apk_version = '1.2.64';
     public function onDispatch(MvcEvent $e)
     {
 
@@ -126,13 +126,33 @@ class BaseController extends AbstractActionController
          return true;
     }
 
+    public function getAndroidVersion()
+    {
+        try {
+            $storeUrl = "https://play.google.com/store/apps/details?id=com.tvisha.susritourtales";
+            $html = file_get_contents($storeUrl);
+            $matches = [];
+            preg_match('/\[\[\[\"\d+\.\d+\.\d+/', $html, $matches);
+            if (empty($matches) || count($matches) > 1) {
+                return null;
+            }
+            return substr(current($matches), 4);
+        }catch (\Exception $e) {
+            return null;
+        }
+    }
+
     public  function isApkVersionlatest($vc)
     {
-        if(!($vc == \Application\Controller\BaseController::apk_version))
-        {
-             return false;
+        //if(!($vc == \Application\Controller\BaseController::apk_version))
+        $resVer = $this->getAndroidVersion();
+        if($resVer){
+            if(!($vc == $resVer['version']))
+            {
+                return false;
+            }
+            return true;
         }
-        return true;
     }
 
      public function filesUrl()

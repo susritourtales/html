@@ -147,7 +147,7 @@ class BaseController extends AbstractActionController
         //if(!($vc == \Application\Controller\BaseController::apk_version))
         $resVer = $this->getAndroidVersion();
         if($resVer){
-            if(!($vc == $resVer['version']))
+            if(!($vc == $resVer))
             {
                 return false;
             }

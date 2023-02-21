@@ -5411,7 +5411,7 @@ class AdminController extends BaseController
                     $tc = $this->taPurchasesTable()->getField(array('upc'=>$request['upc']), 'tourists_count');
                 }
                 else{
-                    return new JsonModel(array('success'=>false,'message'=>'upc expired'));
+                    return new JsonModel(array('success'=>false,'message'=>'plan code expired'));
                 }
                 if($tc){
                     $tacArr = explode("_",$request['upc']);

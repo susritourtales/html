@@ -66,10 +66,10 @@ $("#addSds").click(function(){
       messageDisplay("Please enter tourist travel date");
       return  false;
   }
-  if(upc == 'Select UPC'){
+  if(upc == 'Select Plan Code'){
       element.html('submit');
       element.prop('disabled',false);
-      messageDisplay("Please select UPC");
+      messageDisplay("Please select plan code");
       return  false;
   }
   var formData=new FormData();

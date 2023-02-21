@@ -56,7 +56,7 @@
                             <label class="text-black-50">Select Plan Code</label>
                             <div class="dropdown">
                                 <button class="btn bg-white dropdown-toggle w-100 border" type="button" id="ddupc" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="font-size:90%;height:38px;">
-                                    <?php
+                                    <?php $upcList = array();
                                         if(count($upcList)){
                                             echo $upcList[0]['upc'];
                                         }else{

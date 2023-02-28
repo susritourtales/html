@@ -3409,7 +3409,7 @@ class AdminController extends BaseController
                 }
                 if($sds_active == 2)
                     $user['subscription_type'] = "5";
-                echo $user['mobile'] . " -- " . $sds_active . "<br>";
+                echo $user['mobile'] . " -- " . $sds_active . " -- " . $user['subscription_type'] . "<br>";
             }
         }
         exit;

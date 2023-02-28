@@ -3410,11 +3410,11 @@ class AdminController extends BaseController
                 }
                 if($sds_active == 2)
                     $usersList[$i]['subscription_type'] = "5";
-                echo $user['mobile'] . " -- " . $sds_active . " -- " . $usersList[$i]['subscription_type'] . "<br>";
+                //echo $user['mobile'] . " -- " . $sds_active . " -- " . $usersList[$i]['subscription_type'] . "<br>";
             }
             $i++;
         }
-        exit;
+        //exit;
         return new ViewModel(array('usersList'=>$usersList,'totalCount'=>count($usersListCount)));
     }
 

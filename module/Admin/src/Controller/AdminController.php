@@ -3410,11 +3410,9 @@ class AdminController extends BaseController
                 }
                 if($sds_active == 2)
                     $usersList[$i]['subscription_type'] = "5";
-                //echo $user['mobile'] . " -- " . $sds_active . " -- " . $usersList[$i]['subscription_type'] . "<br>";
             }
             $i++;
         }
-        //exit;
         return new ViewModel(array('usersList'=>$usersList,'totalCount'=>count($usersListCount)));
     }
 
@@ -3512,6 +3510,7 @@ class AdminController extends BaseController
             }
 
             $usersList=$this->userTable()->getAllUsersAdmin($searchData);
+            $i=0;
             foreach ($usersList as $user){
                 if($user['subscription_type'] == null){
                     $sds_active = 0; 
@@ -3540,8 +3539,9 @@ class AdminController extends BaseController
                     $sds_active = 2;
                     }
                     if($sds_active == 2)
-                        $user['subscription_type'] = "5";
+                        $usersList[$i]['subscription_type'] = "5";
                 }
+                $i++;
             }
             $view = new ViewModel(array('usersList' => $usersList, 'offset' => $offset,'type'=>$type,'totalCount'=>$totalCount));
             $view->setTerminal(true);

@@ -254,9 +254,10 @@ class IndexController extends BaseController {
             $upcList = array_merge($upcList, $ulist);
         }
         //$upcList = $this->tbeDetailsTable()->getUPCList($tbeMobile); //($taId);
+        $mccList = $this->countriesTable()->countryCodesList();
         $this->layout()->setVariable('activeTab', \Application\Constants\Constants::MAIN_SITE_TWISTT);
         //return new ViewModel(array('taDetails'=>$taDetails, 'upcList'=>$upcList, 'imageUrl'=>$this->filesUrl(), 'userId'=>$userId));
-        return new ViewModel(array('upcList'=>$upcList, 'userId'=>$userId));
+        return new ViewModel(array('upcList'=>$upcList, 'userId'=>$userId, 'mccList'=>$mccList));
     }
 
     public function seHomeAction() {

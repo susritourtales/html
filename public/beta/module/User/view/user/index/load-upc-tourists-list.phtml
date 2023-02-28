@@ -33,7 +33,7 @@
             <tr class="position-relative">
               <td><?php echo $i+1; ?></td>
               <td class="text-center"><?php echo $tl['tourist_name']; ?></td>
-              <td class="text-center"><?php echo $tl['tourist_mobile']; ?></td>
+              <td class="text-center"><?php echo  "(+".$tl['mobile_country_code'].") ".$tl['tourist_mobile']; ?></td>
               <td class="text-center"><?php echo date('d-m-Y', strtotime($tl['travel_date'])); ?></td>
               <td class="text-center"><?php echo $tl['tbe_name']; ?></td>
             </tr>

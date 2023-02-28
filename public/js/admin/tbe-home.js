@@ -24,13 +24,19 @@ $(".dropdown-item").click(function(){
   $(this).parents('.dropdown').find('.dropdown-toggle').html(selText);
 });
 
+$(".cc-dropdown-item").click(function(){
+    var selText = $(this).text().trim();
+    var cc = selText.substring(selText.lastIndexOf("+"))
+    $(this).parents('.dropdown').find('.dropdown-toggle').html(cc);
+  });
+
 $("#addSds").click(function(){
   var element=$(this);
   element.html('Please wait...');
   element.prop('disabled',true);
 
   var tName=$.trim($('#tName').val());
-  var mcc=$.trim($('#tcc').val());
+  var mcc=$('#tcc').html().trim().substring(1);
   var mobile=$.trim($('#tMobile').val());
   var td=$.trim($('#tvl_date').val());
   var upc=$('#ddupc').html().trim();
@@ -97,6 +103,5 @@ $("#addSds").click(function(){
       }
   });
 });
-
 
 });

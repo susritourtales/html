@@ -236,14 +236,14 @@ class TaSdsTable extends BaseTable
 
             if($gtc){
                 $query = $sql->select()
-                        ->columns(array('id', 'tourist_name', 'tourist_mobile', 'travel_date'=>new \Laminas\Db\Sql\Expression('DATE(`ts`.`travel_date`)'), 'upc', 'tbe_id'))
+                        ->columns(array('id', 'tourist_name', 'mobile_country_code', 'tourist_mobile', 'travel_date'=>new \Laminas\Db\Sql\Expression('DATE(`ts`.`travel_date`)'), 'upc', 'tbe_id'))
                         ->join(array('tbd'=>'tbe_details'), 'ts.tbe_id=tbd.user_id',array("tbe_name", "role"),Select::JOIN_LEFT)
                         ->from($this->tableName)
                         ->where($where)
                         ->order($order);
             }else{
                 $query = $sql->select()
-                        ->columns(array('id', 'tourist_name', 'tourist_mobile', 'travel_date'=>new \Laminas\Db\Sql\Expression('DATE(`ts`.`travel_date`)'), 'upc', 'tbe_id'))
+                        ->columns(array('id', 'tourist_name', 'mobile_country_code', 'tourist_mobile', 'travel_date'=>new \Laminas\Db\Sql\Expression('DATE(`ts`.`travel_date`)'), 'upc', 'tbe_id'))
                         ->join(array('tbd'=>'tbe_details'), 'ts.tbe_id=tbd.user_id',array("tbe_name", "role"),Select::JOIN_LEFT)
                         ->from($this->tableName)
                         ->where($where)

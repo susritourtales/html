@@ -439,6 +439,29 @@ class CountriesTable extends  BaseTable
             return array();
         }
     }
+    public function countryCodesList(){
+        try
+        {
+            $sql = $this->getSql();
+            $query = $sql->select()
+                ->from($this->tableName)
+                ->columns(array("country_name","phone_code"));
+
+            $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
+            $countryCodes = array();
+               $counter=-1;
+            foreach($resultSet as $row){
+                $counter++;
+                $countryCodes[$counter]['country_name'] = ucwords($row['country_name']);
+                $countryCodes[$counter]['phone_code'] = '+'. $row['phone_code'];
+            }
+
+            return $countryCodes;
+        }catch(\Exception $e){
+
+            return array();
+        }
+    }
     public function getFields($data,$columns)
     {
         try

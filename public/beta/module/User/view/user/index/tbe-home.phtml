@@ -4,7 +4,7 @@
 <script src="<?php echo $this->basePath(); ?>/js/vendor/sol.js"></script>
 <script type="text/javascript" src="<?php echo $this->basePath(); ?>/js/vendor/moment.min.js"></script>
 <script type="text/javascript" src="<?php echo $this->basePath(); ?>/js/vendor/bootstrap-datetimepicker.min.js"></script>
-<script src="<?php echo $this->basePath(); ?>/js/admin/tbe-home.js?v=1.3"></script>
+<script src="<?php echo $this->basePath(); ?>/js/admin/tbe-home.js?v=1.4"></script>
 <?php $role = ($_SESSION['Laminas_Auth']->storage['tbe_role'] == 'A')? "Role: AE" : "Role: TBE"; ?>
 <div class="container-fluid my-5">
     <div class="container">  
@@ -42,7 +42,25 @@
                         <div class="col-sm-12 col-md-12 col-lg-6">
                             <label class="text-black-50">Mobile</label>
                             <div class="row">
-                                <div class="col-3"><input type="number" class="form-control" id="tcc" value="91"/></div>
+                                <!-- <div class="col-3"><input type="number" class="form-control" id="tcc" value="91"/></div> -->
+                                <div class="col-3 dropdown">
+                                    <button class="btn bg-white dropdown-toggle w-100 border" type="button" id="tcc" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="font-size:90%;height:38px;">
+                                    <?php
+                                            echo "+91";
+                                    ?>
+                                    </button>
+                                    <div class="dropdown-menu w-100" aria-labelledby="dropdownMenuButton" style="overflow: scroll;max-height: 250px;">
+                                        <?php if(count($mccList)){ 
+                                            foreach($mccList as $mcc){?>
+                                        <a class="cc-dropdown-item" href="#" value="<?php echo $mcc['phone_code'] ?>">
+                                            <div class="row m-0 p-1" style="font-size:80%;">
+                                                <div class="col-7 p-1"><?php echo $mcc['country_name'] ?></div>
+                                                <div class="col-4"><?php echo $mcc['phone_code'] ?></div>
+                                            </div>
+                                        </a>
+                                        <?php }} ?>
+                                    </div>
+                                </div>
                                 <div class="col-9"><input class="form-control" id="tMobile"/></div>
                             </div>
                         </div>
@@ -64,14 +82,14 @@
                                         }
                                    ?>
                                 </button>
-                                <div class="dropdown-menu  w-100" aria-labelledby="dropdownMenuButton">
+                                <div class="dropdown-menu  w-100" aria-labelledby="dropdownMenuButton" style="overflow: scroll;max-height: 250px;">
                                     <?php if(count($upcList)){ 
                                         foreach($upcList as $upc){?>
                                     <a class="dropdown-item" href="#" value="<?php echo $upc['id'] ?>">
-                                            <div class="row">
-                                                <div class="col-9"><?php echo $upc['upc'] ?></div>
-                                                <div class="col-3 text-center"><img src="<?php echo $upc['taLogo'];?>" height="25" class="mb-sm-2 px-3"></div>
-                                            </div>
+                                        <div class="row">
+                                            <div class="col-9"><?php echo $upc['upc'] ?></div>
+                                            <div class="col-3 text-center"><img src="<?php echo $upc['taLogo'];?>" height="25" class="mb-sm-2 px-3"></div>
+                                        </div>
                                     </a>
                                     <?php }} ?>
                                 </div>

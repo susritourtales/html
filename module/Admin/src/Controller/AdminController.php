@@ -3409,8 +3409,8 @@ class AdminController extends BaseController
                 $sds_active = 2;
                 }
                 if($sds_active == 2)
-                    $usersList[i]['subscription_type'] = "5";
-                echo $user['mobile'] . " -- " . $sds_active . " -- " . $usersList[i]['subscription_type'] . "<br>";
+                    $usersList[$i]['subscription_type'] = "5";
+                echo $user['mobile'] . " -- " . $sds_active . " -- " . $usersList[$i]['subscription_type'] . "<br>";
             }
             $i++;
         }

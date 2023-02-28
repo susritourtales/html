@@ -55,12 +55,12 @@
                     else 
                         echo "NA";?></td>
                 <td style="text-align:center;"><?php 
-                    if($user['subscription_type'] == "1" || $user['subscription_type'] == "0")
-                        echo "ST User" . $user['subscription_type'];
                     if($user['subscription_type'] == "2") 
-                        echo "QUESTT" . $user['subscription_type'];     
+                        echo "QUESTT";     
                     elseif($user['subscription_type'] == "5")
-                        echo "TWISTT" . $user['subscription_type']; ?>
+                        echo "TWISTT"; 
+                    else
+                    echo "ST User";?>
                 </td>
                 <td style="text-align:center;"><?php echo $user['booking_count']; ?></td>
             </tr>

@@ -3379,7 +3379,37 @@ class AdminController extends BaseController
         $usersList=$this->userTable()->getAllUsersAdmin();
 
         $usersListCount=$this->userTable()->getAllUsersAdminCount();
-
+        foreach ($usersList as $user){
+            if($user['subscription_type'] == null){
+                $sds_active = 0; 
+                $data['mobile'] = $user['mobile'];
+                $sdsList = $this->taSdsTable()->getTouristSds($data);
+                $today = date('d-m-Y');
+                $today=date_create($today);
+                $activeCount=0;
+                foreach($sdsList as $sds){
+                    $sd = date_create($sds['sds_start_date']);
+                    $ed = date_create($sds['sds_end_date']);
+                    $diff=date_diff($today,$sd);
+                    $sdiff=$diff->format("%R%a");
+                    $diff=date_diff($today,$ed);
+                    $ediff=$diff->format("%R%a");
+                    if ($sdiff <= 0 && $ediff >=0){
+                        $sds_active = 2;
+                        $activeCount++;
+                    }elseif ($sdiff <= 0 && $ediff <=0){
+                        $sds_active = 0;
+                    }else{
+                        $sds_active = 1;
+                    }
+                }
+                if($activeCount){
+                $sds_active = 2;
+                }
+                if($sds_active == 2)
+                    $user['subscription_type'] = "5";
+            }
+        }
 
         return new ViewModel(array('usersList'=>$usersList,'totalCount'=>count($usersListCount)));
     }
@@ -3478,6 +3508,37 @@ class AdminController extends BaseController
             }
 
             $usersList=$this->userTable()->getAllUsersAdmin($searchData);
+            foreach ($usersList as $user){
+                if($user['subscription_type'] == null){
+                    $sds_active = 0; 
+                    $data['mobile'] = $user['mobile'];
+                    $sdsList = $this->taSdsTable()->getTouristSds($data);
+                    $today = date('d-m-Y');
+                    $today=date_create($today);
+                    $activeCount=0;
+                    foreach($sdsList as $sds){
+                        $sd = date_create($sds['sds_start_date']);
+                        $ed = date_create($sds['sds_end_date']);
+                        $diff=date_diff($today,$sd);
+                        $sdiff=$diff->format("%R%a");
+                        $diff=date_diff($today,$ed);
+                        $ediff=$diff->format("%R%a");
+                        if ($sdiff <= 0 && $ediff >=0){
+                            $sds_active = 2;
+                            $activeCount++;
+                        }elseif ($sdiff <= 0 && $ediff <=0){
+                            $sds_active = 0;
+                        }else{
+                            $sds_active = 1;
+                        }
+                    }
+                    if($activeCount){
+                    $sds_active = 2;
+                    }
+                    if($sds_active == 2)
+                        $user['subscription_type'] = "5";
+                }
+            }
             $view = new ViewModel(array('usersList' => $usersList, 'offset' => $offset,'type'=>$type,'totalCount'=>$totalCount));
             $view->setTerminal(true);
             return $view;

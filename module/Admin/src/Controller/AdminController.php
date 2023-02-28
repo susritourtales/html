@@ -3380,8 +3380,8 @@ class AdminController extends BaseController
 
         $usersList=$this->userTable()->getAllUsersAdmin();
         $usersListCount=$this->userTable()->getAllUsersAdminCount();
+        $i=0;
         foreach ($usersList as $user){
-            $i=0;
             if($user['subscription_type'] == null){
                 $sds_active = 0; 
                 $data['mobile'] = $user['mobile'];

@@ -55,7 +55,7 @@
                     else 
                         echo "NA";?></td>
                 <td style="text-align:center;"><?php 
-                    if($user['subscription_type'] == "1")
+                    if($user['subscription_type'] == "1" || $user['subscription_type'] == "0")
                         echo "ST User";
                     if($user['subscription_type'] == "2") 
                         echo "QUESTT";     

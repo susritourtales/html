@@ -3409,9 +3409,10 @@ class AdminController extends BaseController
                 }
                 if($sds_active == 2)
                     $user['subscription_type'] = "5";
+                var_dump($sds_active);
             }
         }
-        var_dump($usersList); exit;
+        exit;
         return new ViewModel(array('usersList'=>$usersList,'totalCount'=>count($usersListCount)));
     }
 

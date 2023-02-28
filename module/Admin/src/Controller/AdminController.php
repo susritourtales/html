@@ -3411,6 +3411,7 @@ class AdminController extends BaseController
                     $user['subscription_type'] = "5";
             }
         }
+        var_dump($usersList); exit;
         return new ViewModel(array('usersList'=>$usersList,'totalCount'=>count($usersListCount)));
     }
 

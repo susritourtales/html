@@ -1,9 +1,5 @@
 
-<?php
-
-use function PHPUnit\Framework\isNull;
-
- if(isset($type) && $type =='initialize') { ?>
+<?php if(isset($type) && $type =='initialize') { ?>
 <div class="table-responsive">
 <table class="table table-bordered table-hover table-striped" id="extTable">
     <thead>
@@ -63,8 +59,6 @@ use function PHPUnit\Framework\isNull;
                     echo "QUESTT";     
                     elseif($user['subscription_type'] == "5")
                         echo "TWISTT";
-                    /* elseif(isNull($user['subscription_type']))
-                        echo "TWIST"; */
                     else 
                         echo "ST User"; ?>
                 </td>

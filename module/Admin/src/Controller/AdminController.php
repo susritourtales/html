@@ -3381,6 +3381,7 @@ class AdminController extends BaseController
         $usersList=$this->userTable()->getAllUsersAdmin();
         $usersListCount=$this->userTable()->getAllUsersAdminCount();
         foreach ($usersList as $user){
+            $i=0;
             if($user['subscription_type'] == null){
                 $sds_active = 0; 
                 $data['mobile'] = $user['mobile'];
@@ -3408,11 +3409,12 @@ class AdminController extends BaseController
                 $sds_active = 2;
                 }
                 if($sds_active == 2)
-                    $user['subscription_type'] = "5";
-                echo $user['mobile'] . " -- " . $sds_active . " -- " . $user['subscription_type'] . "<br>";
+                    $usersList[i]['subscription_type'] = "5";
+                //echo $user['mobile'] . " -- " . $sds_active . " -- " . $user['subscription_type'] . "<br>";
             }
+            $i++;
         }
-        exit;
+        //exit;
         return new ViewModel(array('usersList'=>$usersList,'totalCount'=>count($usersListCount)));
     }
 

@@ -58,14 +58,14 @@ $("#addSds").click(function(){
       element.prop('disabled',false);
       messageDisplay("Please enter tourist mobile number");
       return  false;
-  }else{
+  } /* else{
     if (!(/^\d{10}$/.test(mobile))) {
         element.html('submit');
         element.prop('disabled',false);
         messageDisplay("Invalid mobile number - must be ten digits");
         return false;
-    } 
-  }
+    }  
+  } */
   if(td == ''){
       element.html('submit');
       element.prop('disabled',false);

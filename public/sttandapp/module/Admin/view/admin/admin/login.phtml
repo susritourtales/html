@@ -1,0 +1,107 @@
+<link rel="stylesheet" href="<?php echo $this->basePath(); ?>/css/login.css">
+<script>
+    $(document).ready(function() {
+        $('body').on("click", ".submit-btn", function() {
+            var userName = $("#userName").val();
+            var passsword = $("#password").val();
+            if (userName == '') {
+                messageDisplay("Please enter the username");
+                return false;
+            }
+            if (passsword == '') {
+                messageDisplay("Please Enter password");
+                return false;
+            }
+            postData('/a_dMin/login', {
+                "user_name": userName,
+                "password": passsword
+            }, function(response) {
+
+                if (response.success) {
+                    messageDisplay(response.message);
+                    setTimeout(function() {
+                        window.location.href = BASE_URL + "/a_dMin/places";
+                    }, 2000);
+                } else {
+                    messageDisplay(response.message);
+                }
+            });
+        });
+        $("body").on("keydown", function(e) {
+            if (e.which == 13) {
+                $(".submit-btn").click();
+            }
+        })
+    });
+
+    function postData(url, parameters, callback) {
+        url = BASE_URL + url;
+        //  console.log(parameters);
+        try {
+            $.post(url, parameters, function(data) {
+
+                if (typeof callback == "function") {
+                    callback(data);
+                }
+            });
+        } catch (error) {
+            console.log(error);
+        }
+
+    }
+
+    function messageDisplay(message, timeOut) {
+
+        if ($.trim(timeOut) == "") {
+            timeOut = 2500;
+        }
+        var element = $("#feedbackSection");
+        $("div#feedbackSection span").html(message);
+        if (timeOut == 0) {
+            element.hide();
+            return false;
+        }
+        element.animate({
+            height: 70
+        }, 300).show();
+        if (timeOut != -1) {
+            setTimeout(function() {
+                element.animate({
+                    height: 0
+                }, 300, function() {
+                    element.hide();
+                });
+            }, timeOut);
+        }
+
+
+    }
+</script>
+<div class="module-container">
+    <div class="module-wrapper">
+        <div class="display-table">
+            <div class="display-table-cell">
+                <div class="form-wrapper login-fields">
+                    <div class="d-flex justify-content-center">
+                        <img src="<?php echo $this->basePath(); ?>/img/susri.png" class="logo">
+                    </div>
+                    <div class="d-flex justify-content-center mt-3 mb-3">
+                        <h4 class="login-txt">Login Into your account</h4>
+                    </div>
+
+
+                    <div class="form-group my-3">
+                        <input type="text" placeholder="Username" class="form-control " id="userName">
+                    </div>
+                    <div class="form-group my-3">
+                        <input type="password" placeholder="Password" class="form-control " id="password">
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <button type="button" class="btn submit-btn">Login</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="login-bg"></div>

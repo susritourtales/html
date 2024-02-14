@@ -1,0 +1,53 @@
+<?php if(isset($type) && $type =='initialize') { ?>
+<table class="table table-bordered table-hover table-striped" id="table">
+    <thead>
+    <tr>
+        <th>S.no</th>
+        <th data-placeholder="language" data-input="language">Language</th>
+        <th>Type</th>
+        <th>Action</th>
+    </tr>
+    <?php } ?>
+
+    <?php if(isset($type) && ($type =='initialize' || $type=="search") ) {
+
+        ?>
+    <input type="hidden" class="records" value="<?php echo $totalCount; ?>">
+    <tbody>
+    <?php } ?>
+
+    <?php if(count($languageList))
+    {
+        $i=0;
+        if(isset($offset))
+        {
+            $i=$offset;   
+        }
+
+        foreach ($languageList as $language) : 
+            $encodedID = base64_encode('languageId='.$language['id']);?>
+            <tr>
+                <td><?= $i+1 ?></td>
+                <td><?= $this->escapeHtml($language['language_name']) ?></td>
+                <td><?= $this->escapeHtml($language['language_type']) == '1' ? 'Primary' : 'Preferred' ?></td>
+                <td><div class="d-flex">
+                    <div class="action-icon delete-language"  data-id="<?php echo $encodedID; ?>">
+                        <img src="<?php echo $this->basePath();?>/img/delete.png" class="img-fluid">
+                    </div>
+                </div>
+            </td>
+            </tr>
+        <?php $i++;
+        endforeach;
+    } else
+    { ?>
+        <tr ><td class="text-center" colspan="7">No data</td></tr>
+    <?php  } ?>
+    <?php if(isset($type) && ($type =='initialize' || $type=="search") ) {?>
+
+    </tbody>
+    <?php } ?>
+    <?php if(isset($type) && $type =='initialize') {?>
+
+</table>
+<?php } ?>

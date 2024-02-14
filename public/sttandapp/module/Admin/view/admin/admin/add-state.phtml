@@ -1,0 +1,67 @@
+<div class="sidebar">
+    <div class="side-panel" id="collapsibleNavbar">
+        <?php echo $this->partial('/application/index/left-menu', array(
+            'mainActiveTab' => \Application\Constants\Constants::Tales,
+            'activeTab' => \Application\Constants\Constants::States
+        )); ?>
+    </div>
+</div>
+<link rel="stylesheet" href="<?php echo $this->basePath() ?>/css/main.css">
+<script src="<?php echo $this->basePath() ?>/js/radialIndicator.min.js"></script>
+<script src="<?php echo $this->basePath(); ?>/js/admin/add-state.js"></script>
+<div class="wrapper">
+    <div class="main-panel ">
+        <?php echo $this->partial("/application/index/app-header"); ?>
+        <div class="main-container p-lg-4">
+            <div class="main-heading mb-3"><a href="<?php echo $this->basePath() . '/a_dMin/states' ?>"><i class="fa fa-arrow-left mr-2"></i></a> Add State</div>
+            <div class="row">
+                <div class="col-12 col-lg-10">
+                    <div class="row adding-form">
+                        <div class="col-12 col-md-6 pt-md-5 mb-4 mt-n1">
+                            <div class="row">
+                                <div class="col-12">
+                                    <label class="text-black-50">State</label>
+                                    <input type="text" class="form-control" id="state" />
+                                </div>
+                                <div class="col-12">
+                                    <label class="text-black-50">Description</label>
+                                    <textarea class="form-control" id="description"></textarea>
+                                </div>
+                                <div class="col-12">
+                                    <label class="text-black-50">Image Files</label>
+                                    <div class="position-relative w-100 image-upload-wrapper">
+                                        <input type="file" class="image-upload" name="image-file" multiple title=" ">
+                                        <span class="position-absolute upload_btn"><img class="w-100" src="<?php echo $this->basePath(); ?>/img/upload-img.svg"> </span>
+                                    </div>
+                                    <div class="image-preview-wrapper row">
+                                    </div>
+                                </div>
+                                <div class="mt-3">
+                                    <div class="col-sm-9"> <button type="button" class="btn submit-btn" id="addPlace">Submit</button></div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="mt-3 p-2 col-12">
+                                <div class="text-capitalize heading">Audio</div>
+                                <div class="mt-3 " id="file-upload-wrapper">
+                                    <?php echo $this->partial("/admin/admin/file-upload-row", array('languages' => $languages, 'numberOfrows' => 0, "rowNumber" => 1)); ?>
+
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-sm-10 text-right"> <a class="add-control"><i class="fas fa-plus-circle"></i>Add Audio</a></div>
+                                </div>
+                            </div>
+
+                        </div>
+
+
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>

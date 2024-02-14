@@ -1,0 +1,59 @@
+<div class="sidebar">
+    <div class="side-panel" id="collapsibleNavbar">
+        <?php echo $this->partial('/application/index/left-menu', array(
+            'mainActiveTab' => \Application\Constants\Constants::Tales,
+            'activeTab' => \Application\Constants\Constants::WT
+
+        )); ?>
+    </div>
+</div>
+<link rel="stylesheet" href="<?php echo $this->basePath() ?>/css/vendor/sol.css">
+<link rel="stylesheet" href="<?php echo $this->basePath() ?>/css/main.css">
+<script src="<?php echo $this->basePath(); ?>/js/vendor/sol.js"></script>
+<script src="<?php echo $this->basePath(); ?>/js/admin/add-world-tour.js"></script>
+<div class="wrapper">
+    <div class="main-panel ">
+        <?php echo $this->partial("/application/index/app-header"); ?>
+
+        <div class="main-container p-lg-4">
+            <div class="main-heading mb-3"><a href="<?php echo $this->basePath() . '/a_dMin/world-tour-list' ?>"><i class="fa fa-arrow-left mr-2"></i></a> Add World Tour</div>
+            <div class="row">
+                <div class="col-12 col-lg-10">
+                    <div class="row adding-form">
+                        <div class="col-6">
+                            <div class="col-12 mb-3"><label class="text-black-50">Country</label>
+                                <select class="form-control" id="country">
+                                    <option value="">--select country--</option>
+                                    <?php foreach ($countryList as $country) { ?>
+                                        <option value="<?php echo $country['id']; ?>"><?php echo $country['country_name']; ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                            <div class="col-12 mb-3"><label class="text-black-50">City</label>
+                                <select class="form-control" id="cities">
+                                    <option value=""></option>
+                                </select>
+                            </div>
+                            <div class="col-12 mb-3 "><label class="text-black-50 text-capitalize">place name</label>
+                                <select class="form-control" id="places" name="places">
+                                    <option value=""></option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <div class="tags-container"></div>
+                            </div>
+                            <div class="col-12"><label class="text-black-50">Free</label>
+                                <input class="m-2" type="checkbox" id="free" name="free" value="0" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-2">
+                <div class="row">
+                    <div class="col-sm-12 text-left"> <button type="button" class="btn submit-btn" id="addWorldTour">Submit</button></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

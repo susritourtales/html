@@ -1,0 +1,27 @@
+<?php
+
+$title = 'My languages';
+$this->headTitle($title);
+?>
+<h1><?= $this->escapeHtml($title) ?></h1>
+<p>
+    <a href="<?= $this->url('language', ['action' => 'add']) ?>">Add new language</a>
+</p>
+
+<table class="table">
+<tr>
+    <th>Title</th>
+    <th>Artist</th>
+    <th>&nbsp;</th>
+</tr>
+<?php foreach ($languages as $language) : ?>
+    <tr>
+        <td><?= $this->escapeHtml($language->title) ?></td>
+        <td><?= $this->escapeHtml($language->artist) ?></td>
+        <td>
+            <a href="<?= $this->url('language', ['action' => 'edit', 'id' => $language->id]) ?>">Edit</a>
+            <a href="<?= $this->url('language', ['action' => 'delete', 'id' => $language->id]) ?>">Delete</a>
+        </td>
+    </tr>
+<?php endforeach; ?>
+</table>

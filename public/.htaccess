@@ -1,5 +1,22 @@
 RewriteEngine On
 
+RewriteCond %{HTTPS} off
+RewriteCond %{HTTP_HOST} ^((?!www\.)[^.]+)\.susritourtales\.com$
+RewriteRule ^ https://%1.susritourtales.com%{REQUEST_URI} [NE,L,R]
+
+# redirect no-www to www only main domain, not with subdomain
+RewriteCond %{HTTP_HOST} ^(susritourtales\.com)$ [NC]
+RewriteRule ^ https://www.%1%{REQUEST_URI} [R=301,L]
+
+# redirect http to https all domain
+RewriteCond %{HTTPS} off
+RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+
+
+php_flag display_errors on
+    php_value error_reporting 6143
+
 # The following rule tells Apache that if the requested filename
 # exists, simply serve it.
 RewriteCond %{REQUEST_FILENAME} -s [OR]

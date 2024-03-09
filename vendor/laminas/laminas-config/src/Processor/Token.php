@@ -1,16 +1,19 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-config for the canonical source repository
- * @copyright https://github.com/laminas/laminas-config/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-config/blob/master/LICENSE.md New BSD License
- */
-
 namespace Laminas\Config\Processor;
 
 use Laminas\Config\Config;
 use Laminas\Config\Exception;
 use Traversable;
+
+use function array_keys;
+use function gettype;
+use function is_array;
+use function is_bool;
+use function is_numeric;
+use function is_scalar;
+use function is_string;
+use function strtr;
 
 class Token implements ProcessorInterface
 {
@@ -47,7 +50,7 @@ class Token implements ProcessorInterface
      *
      * @var array
      */
-    protected $map = null;
+    protected $map;
 
     /**
      * Token Processor walks through a Config structure and replaces all
@@ -77,7 +80,7 @@ class Token implements ProcessorInterface
     public function setPrefix($prefix)
     {
         // reset map
-        $this->map = null;
+        $this->map    = null;
         $this->prefix = $prefix;
         return $this;
     }
@@ -97,7 +100,7 @@ class Token implements ProcessorInterface
     public function setSuffix($suffix)
     {
         // reset map
-        $this->map = null;
+        $this->map    = null;
         $this->suffix = $suffix;
 
         return $this;
@@ -224,7 +227,6 @@ class Token implements ProcessorInterface
     /**
      * Process
      *
-     * @param  Config $config
      * @return Config
      * @throws Exception\InvalidArgumentException
      */
@@ -236,7 +238,7 @@ class Token implements ProcessorInterface
     /**
      * Process a single value
      *
-     * @param $value
+     * @param mixed $value
      * @return mixed
      */
     public function processValue($value)
@@ -249,10 +251,8 @@ class Token implements ProcessorInterface
      *
      * @param mixed $value
      * @param array $replacements
-     *
      * @return mixed
-     *
-     * @throws Exception\InvalidArgumentException if the provided value is a read-only {@see Config}
+     * @throws Exception\InvalidArgumentException If the provided value is a read-only {@see Config}.
      */
     protected function doProcess($value, array $replacements)
     {
@@ -262,7 +262,7 @@ class Token implements ProcessorInterface
             }
 
             foreach ($value as $key => $val) {
-                $newKey = $this->processKeys ? $this->doProcess($key, $replacements) : $key;
+                $newKey         = $this->processKeys ? $this->doProcess($key, $replacements) : $key;
                 $value->$newKey = $this->doProcess($val, $replacements);
 
                 // If the processed key differs from the original, remove the original
@@ -275,7 +275,7 @@ class Token implements ProcessorInterface
         }
 
         if ($value instanceof Traversable || is_array($value)) {
-            foreach ($value as & $val) {
+            foreach ($value as &$val) {
                 $val = $this->doProcess($val, $replacements);
             }
 

@@ -1,46 +1,60 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-view for the canonical source repository
- * @copyright https://github.com/laminas/laminas-view/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-view/blob/master/LICENSE.md New BSD License
- */
+declare(strict_types=1);
 
 namespace Laminas\View\Helper\Placeholder\Container;
 
 use ArrayObject;
 use Laminas\View\Exception;
+use ReturnTypeWillChange;
+
+use function array_keys;
+use function array_shift;
+use function array_unshift;
+use function count;
+use function implode;
+use function is_int;
+use function is_scalar;
+use function max;
+use function ob_get_clean;
+use function ob_start;
+use function preg_replace;
+use function str_repeat;
 
 /**
  * Abstract class representing container for placeholder values
+ *
+ * @template TKey of array-key
+ * @template TValue
+ * @extends ArrayObject<TKey, TValue>
  */
 abstract class AbstractContainer extends ArrayObject
 {
     /**
-     * Whether or not to override all contents of placeholder
+     * Whether to override all contents of placeholder
      *
      * @const string
      */
-    const SET = 'SET';
+    public const SET = 'SET';
 
     /**
-     * Whether or not to append contents to placeholder
+     * Whether to append contents to placeholder
      *
      * @const string
      */
-    const APPEND = 'APPEND';
+    public const APPEND = 'APPEND';
 
     /**
-     * Whether or not to prepend contents to placeholder
+     * Whether to prepend contents to placeholder
      *
      * @const string
      */
-    const PREPEND = 'PREPEND';
+    public const PREPEND = 'PREPEND';
 
     /**
      * Key to which to capture content
      *
-     * @var string
+     * @var TKey|null
      */
     protected $captureKey;
 
@@ -54,7 +68,7 @@ abstract class AbstractContainer extends ArrayObject
     /**
      * What type of capture (overwrite (set), append, prepend) to use
      *
-     * @var string
+     * @var string|null
      */
     protected $captureType;
 
@@ -70,14 +84,14 @@ abstract class AbstractContainer extends ArrayObject
      *
      * @var string
      */
-    protected $postfix   = '';
+    protected $postfix = '';
 
     /**
      * What text to prefix the placeholder with when rendering
      *
      * @var string
      */
-    protected $prefix    = '';
+    protected $prefix = '';
 
     /**
      * What string to use between individual items in the placeholder when rendering
@@ -88,6 +102,8 @@ abstract class AbstractContainer extends ArrayObject
 
     /**
      * Constructor - This is needed so that we can attach a class member as the ArrayObject container
+     *
+     * @final
      */
     public function __construct()
     {
@@ -117,7 +133,7 @@ abstract class AbstractContainer extends ArrayObject
             return '';
         }
 
-        $indent = ($indent === null)
+        $indent = $indent === null
             ? $this->getIndent()
             : $this->getWhitespace($indent);
 
@@ -135,11 +151,11 @@ abstract class AbstractContainer extends ArrayObject
      * Start capturing content to push into placeholder
      *
      * @param  string $type How to capture content into placeholder; append, prepend, or set
-     * @param  mixed  $key  Key to which to capture content
-     * @throws Exception\RuntimeException if nested captures detected
+     * @param  TKey $key  Key to which to capture content
+     * @throws Exception\RuntimeException If nested captures detected.
      * @return void
      */
-    public function captureStart($type = AbstractContainer::APPEND, $key = null)
+    public function captureStart($type = self::APPEND, $key = null)
     {
         if ($this->captureLock) {
             throw new Exception\RuntimeException(
@@ -149,8 +165,8 @@ abstract class AbstractContainer extends ArrayObject
 
         $this->captureLock = true;
         $this->captureType = $type;
-        if ((null !== $key) && is_scalar($key)) {
-            $this->captureKey = (string) $key;
+        if (is_scalar($key)) {
+            $this->captureKey = $key;
         }
         ob_start();
     }
@@ -162,12 +178,10 @@ abstract class AbstractContainer extends ArrayObject
      */
     public function captureEnd()
     {
-        $data               = ob_get_clean();
-        $key                = null;
+        $data              = ob_get_clean();
+        $key               = $this->captureKey;
         $this->captureLock = false;
-        if (null !== $this->captureKey) {
-            $key = $this->captureKey;
-        }
+
         switch ($this->captureType) {
             case self::SET:
                 if (null !== $key) {
@@ -204,13 +218,11 @@ abstract class AbstractContainer extends ArrayObject
     /**
      * Get keys
      *
-     * @return array
+     * @return list<TKey>
      */
     public function getKeys()
     {
-        $array = $this->getArrayCopy();
-
-        return array_keys($array);
+        return array_keys($this->getArrayCopy());
     }
 
     /**
@@ -219,11 +231,11 @@ abstract class AbstractContainer extends ArrayObject
      * If single element registered, returns that element; otherwise,
      * serializes to array.
      *
-     * @return mixed
+     * @return TValue|array<TKey, TValue>
      */
     public function getValue()
     {
-        if (1 == count($this)) {
+        if (1 === count($this)) {
             $keys = $this->getKeys();
             $key  = array_shift($keys);
             return $this[$key];
@@ -244,14 +256,14 @@ abstract class AbstractContainer extends ArrayObject
             $indent = str_repeat(' ', $indent);
         }
 
-        return (string) $indent;
+        return $indent;
     }
 
     /**
      * Set a single value
      *
-     * @param  mixed $value
-     * @return void
+     * @param TValue $value
+     * @return $this
      */
     public function set($value)
     {
@@ -263,8 +275,8 @@ abstract class AbstractContainer extends ArrayObject
     /**
      * Prepend a value to the top of the container
      *
-     * @param  mixed $value
-     * @return self
+     * @param TValue $value
+     * @return $this
      */
     public function prepend($value)
     {
@@ -278,9 +290,10 @@ abstract class AbstractContainer extends ArrayObject
     /**
      * Append a value to the end of the container
      *
-     * @param  mixed $value
-     * @return self
+     * @param TValue $value
+     * @return $this
      */
+    #[ReturnTypeWillChange]
     public function append($value)
     {
         parent::append($value);
@@ -307,7 +320,7 @@ abstract class AbstractContainer extends ArrayObject
      * optionally, if a number is passed, it will be the number of spaces
      *
      * @param  string|int $indent
-     * @return self
+     * @return $this
      */
     public function setIndent($indent)
     {
@@ -329,7 +342,7 @@ abstract class AbstractContainer extends ArrayObject
      * Set postfix for __toString() serialization
      *
      * @param  string $postfix
-     * @return self
+     * @return $this
      */
     public function setPostfix($postfix)
     {
@@ -351,7 +364,7 @@ abstract class AbstractContainer extends ArrayObject
      * Set prefix for __toString() serialization
      *
      * @param  string $prefix
-     * @return self
+     * @return $this
      */
     public function setPrefix($prefix)
     {
@@ -375,7 +388,7 @@ abstract class AbstractContainer extends ArrayObject
      * Used to implode elements in container
      *
      * @param  string $separator
-     * @return self
+     * @return $this
      */
     public function setSeparator($separator)
     {

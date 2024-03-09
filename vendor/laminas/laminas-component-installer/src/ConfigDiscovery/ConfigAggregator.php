@@ -1,34 +1,40 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-component-installer for the canonical source repository
- * @copyright https://github.com/laminas/laminas-component-installer/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-component-installer/blob/master/LICENSE.md New BSD License
- */
+declare(strict_types=1);
 
 namespace Laminas\ComponentInstaller\ConfigDiscovery;
 
-class ConfigAggregator extends AbstractDiscovery
+use function preg_quote;
+use function sprintf;
+
+/**
+ * @internal
+ */
+final class ConfigAggregator extends AbstractDiscovery
 {
     /**
      * Configuration file to look for.
      *
-     * @var string
+     * @var non-empty-string
      */
-    protected $configFile = 'config/config.php';
+    protected string $configFile;
 
     /**
      * Expected pattern to match if the configuration file exists.
      *
      * Pattern is set in constructor to ensure PCRE quoting is correct.
      *
-     * @var string
+     * @var non-empty-string
      */
-    protected $expected = '';
+    protected string $expected;
 
-    public function __construct($projectDirectory = '')
+    /**
+     * @param non-empty-string $configFile
+     */
+    public function __construct(string $projectDirectory = '', string $configFile = 'config/config.php')
     {
-        $this->expected = sprintf(
+        $this->configFile = $configFile;
+        $this->expected   = sprintf(
             '/new (?:%s?%s)?ConfigAggregator\(\s*(?:array\(|\[)/s',
             preg_quote('\\'),
             preg_quote('Laminas\ConfigAggregator\\')

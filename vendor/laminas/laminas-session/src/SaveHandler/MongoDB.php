@@ -1,31 +1,27 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-session for the canonical source repository
- * @copyright https://github.com/laminas/laminas-session/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-session/blob/master/LICENSE.md New BSD License
- */
-
 namespace Laminas\Session\SaveHandler;
 
 use Laminas\Session\Exception\InvalidArgumentException;
 use MongoDB\BSON\Binary;
-use MongoDB\BSON\UTCDatetime;
+use MongoDB\BSON\UTCDateTime;
 use MongoDB\Client as MongoClient;
 use MongoDB\Collection as MongoCollection;
+use ReturnTypeWillChange;
+
+use function array_replace;
+use function floor;
+use function ini_get;
+use function microtime;
+use function time;
 
 /**
  * MongoDB session save handler
+ *
+ * @see ReturnTypeWillChange
  */
 class MongoDB implements SaveHandlerInterface
 {
-    /**
-     * MongoClient instance
-     *
-     * @var MongoClient
-     */
-    protected $mongoClient;
-
     /**
      * MongoCollection instance
      *
@@ -49,6 +45,7 @@ class MongoDB implements SaveHandlerInterface
 
     /**
      * MongoDB session save handler options
+     *
      * @var MongoDBOptions
      */
     protected $options;
@@ -57,10 +54,9 @@ class MongoDB implements SaveHandlerInterface
      * Constructor
      *
      * @param MongoClient $mongoClient
-     * @param MongoDBOptions $options
      * @throws InvalidArgumentException
      */
-    public function __construct($mongoClient, MongoDBOptions $options)
+    public function __construct(protected $mongoClient, MongoDBOptions $options)
     {
         if (null === ($database = $options->getDatabase())) {
             throw new InvalidArgumentException('The database option cannot be empty');
@@ -69,8 +65,6 @@ class MongoDB implements SaveHandlerInterface
         if (null === ($collection = $options->getCollection())) {
             throw new InvalidArgumentException('The collection option cannot be empty');
         }
-
-        $this->mongoClient = $mongoClient;
         $this->options = $options;
     }
 
@@ -81,6 +75,7 @@ class MongoDB implements SaveHandlerInterface
      * @param string $name
      * @return bool
      */
+    #[ReturnTypeWillChange]
     public function open($savePath, $name)
     {
         // Note: session save path is not used
@@ -105,6 +100,7 @@ class MongoDB implements SaveHandlerInterface
      *
      * @return bool
      */
+    #[ReturnTypeWillChange]
     public function close()
     {
         return true;
@@ -116,18 +112,19 @@ class MongoDB implements SaveHandlerInterface
      * @param string $id
      * @return string
      */
+    #[ReturnTypeWillChange]
     public function read($id)
     {
         $session = $this->mongoCollection->findOne([
-            '_id' => $id,
+            '_id'                          => $id,
             $this->options->getNameField() => $this->sessionName,
         ]);
 
         if (null !== $session) {
             // check if session has expired if index is not used
             if (! $this->options->useExpireAfterSecondsIndex()) {
-                $timestamp = $session[$this->options->getLifetimeField()];
-                $timestamp += floor(((string)$session[$this->options->getModifiedField()]) / 1000);
+                $timestamp  = $session[$this->options->getLifetimeField()];
+                $timestamp += floor(((string) $session[$this->options->getModifiedField()]) / 1000);
 
                 // session expired
                 if ($timestamp <= time()) {
@@ -148,6 +145,7 @@ class MongoDB implements SaveHandlerInterface
      * @param string $data
      * @return bool
      */
+    #[ReturnTypeWillChange]
     public function write($id, $data)
     {
         $saveOptions = array_replace(
@@ -156,15 +154,15 @@ class MongoDB implements SaveHandlerInterface
         );
 
         $criteria = [
-            '_id' => $id,
+            '_id'                          => $id,
             $this->options->getNameField() => $this->sessionName,
         ];
 
         $newObj = [
             '$set' => [
-                $this->options->getDataField() => new Binary((string)$data, Binary::TYPE_GENERIC),
+                $this->options->getDataField()     => new Binary((string) $data, Binary::TYPE_GENERIC),
                 $this->options->getLifetimeField() => $this->lifetime,
-                $this->options->getModifiedField() => new UTCDatetime(floor(microtime(true) * 1000)),
+                $this->options->getModifiedField() => new UTCDateTime(floor(microtime(true) * 1000)),
             ],
         ];
 
@@ -185,11 +183,12 @@ class MongoDB implements SaveHandlerInterface
      * @param string $id
      * @return bool
      */
+    #[ReturnTypeWillChange]
     public function destroy($id)
     {
         $result = $this->mongoCollection->deleteOne(
             [
-                '_id' => $id,
+                '_id'                          => $id,
                 $this->options->getNameField() => $this->sessionName,
             ],
             $this->options->getSaveOptions()
@@ -208,9 +207,11 @@ class MongoDB implements SaveHandlerInterface
      * efficient.
      *
      * @see http://docs.mongodb.org/manual/tutorial/expire-data/
+     *
      * @param int $maxlifetime
      * @return bool
      */
+    #[ReturnTypeWillChange]
     public function gc($maxlifetime)
     {
         /* Note: unlike DbTableGateway, we do not use the lifetime field in

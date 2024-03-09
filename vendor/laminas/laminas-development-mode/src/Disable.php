@@ -1,39 +1,36 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-development-mode for the canonical source repository
- * @copyright https://github.com/laminas/laminas-development-mode/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-development-mode/blob/master/LICENSE.md New BSD License
- */
+declare(strict_types=1);
 
 namespace Laminas\DevelopmentMode;
 
 use RuntimeException;
 
+use function file_exists;
+use function fwrite;
+use function is_resource;
+use function sprintf;
+use function unlink;
+
+use const PHP_EOL;
+use const STDERR;
+
 class Disable
 {
     use ConfigDiscoveryTrait;
 
-    const DEVEL_CONFIG = 'config/development.config.php';
-    const DEVEL_LOCAL  = 'config/autoload/development.local.php';
+    public const DEVEL_CONFIG = 'config/development.config.php';
+    public const DEVEL_LOCAL  = 'config/autoload/development.local.php';
 
-    /**
-     * @var resource
-     */
+    /** @var resource */
     private $errorStream;
-
-    /**
-     * @param string Path to project.
-     */
-    private $projectDir;
 
     /**
      * @param string $projectDir Location to resolve project from.
      * @param null|resource $errorStream Stream to which to write errors; defaults to STDERR
      */
-    public function __construct($projectDir = '', $errorStream = null)
+    public function __construct(private $projectDir = '', $errorStream = null)
     {
-        $this->projectDir = $projectDir;
         $this->errorStream = is_resource($errorStream) ? $errorStream : STDERR;
     }
 

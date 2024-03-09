@@ -1,14 +1,24 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-view for the canonical source repository
- * @copyright https://github.com/laminas/laminas-view/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-view/blob/master/LICENSE.md New BSD License
- */
+declare(strict_types=1);
 
 namespace Laminas\View;
 
+use ArrayIterator;
 use ArrayObject;
+use ReturnTypeWillChange; // phpcs:ignore
+
+use function call_user_func;
+use function gettype;
+use function is_array;
+use function is_callable;
+use function is_object;
+use function method_exists;
+use function sprintf;
+use function strtolower;
+use function trigger_error;
+
+use const E_USER_NOTICE;
 
 /**
  * Class for Laminas\View\Renderer\PhpRenderer to help enforce private constructs.
@@ -16,6 +26,7 @@ use ArrayObject;
  * @todo       Allow specifying string names for manager, filter chain, variables
  * @todo       Move escaping into variables object
  * @todo       Move strict variables into variables object
+ * @extends ArrayObject<string, mixed>
  */
 class Variables extends ArrayObject
 {
@@ -30,15 +41,15 @@ class Variables extends ArrayObject
     /**
      * Constructor
      *
-     * @param  array $variables
-     * @param  array $options
+     * @param array<string, mixed> $variables
+     * @param array<string, mixed> $options
      */
     public function __construct(array $variables = [], array $options = [])
     {
         parent::__construct(
             $variables,
             ArrayObject::ARRAY_AS_PROPS,
-            'ArrayIterator'
+            ArrayIterator::class
         );
 
         $this->setOptions($options);
@@ -47,7 +58,7 @@ class Variables extends ArrayObject
     /**
      * Configure object
      *
-     * @param  array $options
+     * @param  array<string, mixed> $options
      * @return Variables
      */
     public function setOptions(array $options)
@@ -91,7 +102,7 @@ class Variables extends ArrayObject
     /**
      * Assign many values at once
      *
-     * @param  array|object $spec
+     * @param  array<string, mixed>|object $spec
      * @return Variables
      * @throws Exception\InvalidArgumentException
      */
@@ -125,22 +136,23 @@ class Variables extends ArrayObject
      *
      * Otherwise, returns _escaped_ version of the value.
      *
-     * @param  mixed $key
+     * @param string $offset
      * @return mixed
      */
-    public function offsetGet($key)
+    #[ReturnTypeWillChange]
+    public function offsetGet($offset)
     {
-        if (! $this->offsetExists($key)) {
+        if (! $this->offsetExists($offset)) {
             if ($this->isStrict()) {
                 trigger_error(sprintf(
                     'View variable "%s" does not exist',
-                    $key
+                    $offset
                 ), E_USER_NOTICE);
             }
             return;
         }
 
-        $return = parent::offsetGet($key);
+        $return = parent::offsetGet($offset);
 
         // If we have a closure/functor, invoke it, and return its return value
         if (is_object($return) && is_callable($return)) {

@@ -1,16 +1,33 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-view for the canonical source repository
- * @copyright https://github.com/laminas/laminas-view/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-view/blob/master/LICENSE.md New BSD License
- */
+declare(strict_types=1);
 
 namespace Laminas\View\Helper;
 
 use Laminas\View;
 use Laminas\View\Exception;
+use Laminas\View\Helper\Placeholder\Container\AbstractContainer;
+use Laminas\View\Helper\Placeholder\Container\AbstractStandalone;
 use stdClass;
+
+use function array_shift;
+use function array_unshift;
+use function assert;
+use function count;
+use function implode;
+use function in_array;
+use function is_object;
+use function is_string;
+use function method_exists;
+use function preg_match;
+use function rtrim;
+use function sprintf;
+use function str_replace;
+use function strtolower;
+use function trigger_error;
+
+use const E_USER_WARNING;
+use const PHP_EOL;
 
 /**
  * Laminas\View\Helper\HeadMeta
@@ -18,6 +35,7 @@ use stdClass;
  * @see http://www.w3.org/TR/xhtml1/dtds.html
  *
  * Allows the following 'virtual' methods:
+ *
  * @method HeadMeta appendName($keyValue, $content, $modifiers = array())
  * @method HeadMeta offsetGetName($index, $keyValue, $content, $modifiers = array())
  * @method HeadMeta prependName($keyValue, $content, $modifiers = array())
@@ -34,41 +52,50 @@ use stdClass;
  * @method HeadMeta offsetGetItemprop($index, $keyValue, $content, $modifiers = array())
  * @method HeadMeta prependItemprop($keyValue, $content, $modifiers = array())
  * @method HeadMeta setItemprop($keyValue, $content, $modifiers = array())
+ *
+ * @psalm-type ObjectShape = object{
+ *     type: string,
+ *     content: string,
+ *     modifiers: array<string, mixed>,
+ *     name?: string,
+ *     http-equiv?: string,
+ *     charset?: string,
+ *     property?: string,
+ *     itemprop?: string,
+ * }
+ * @extends AbstractStandalone<int, ObjectShape>
+ * @final
  */
-class HeadMeta extends Placeholder\Container\AbstractStandalone
+class HeadMeta extends AbstractStandalone
 {
     /**
      * Allowed key types
      *
-     * @var array
+     * @var list<string>
      */
     protected $typeKeys = ['name', 'http-equiv', 'charset', 'property', 'itemprop'];
 
     /**
      * Required attributes for meta tag
      *
-     * @var array
+     * @deprecated This property is unused and will be removed in version 3.0
+     *
+     * @var list<string>
      */
     protected $requiredKeys = ['content'];
 
     /**
      * Allowed modifier keys
      *
-     * @var array
+     * @var list<string>
      */
     protected $modifierKeys = ['lang', 'scheme'];
 
-    /**
-     * Constructor
-     *
-     * Set separator to PHP_EOL
-     *
-     */
     public function __construct()
     {
         parent::__construct();
 
-        $this->setSeparator(PHP_EOL);
+        $this->getContainer()->setSeparator(PHP_EOL);
     }
 
     /**
@@ -79,14 +106,14 @@ class HeadMeta extends Placeholder\Container\AbstractStandalone
      * @param  string $keyType
      * @param  array  $modifiers
      * @param  string $placement
-     * @return HeadMeta
+     * @return $this
      */
     public function __invoke(
         $content = null,
         $keyValue = null,
         $keyType = 'name',
         $modifiers = [],
-        $placement = Placeholder\Container\AbstractContainer::APPEND
+        $placement = AbstractContainer::APPEND
     ) {
         if ((null !== $content) && (null !== $keyValue)) {
             $item   = $this->createData($keyType, $keyValue, $content, $modifiers);
@@ -112,21 +139,23 @@ class HeadMeta extends Placeholder\Container\AbstractStandalone
      * @param  string $method
      * @param  array  $args
      * @throws Exception\BadMethodCallException
-     * @return HeadMeta
+     * @return $this
      */
     public function __call($method, $args)
     {
-        if (preg_match(
-            '/^(?P<action>set|(pre|ap)pend|offsetSet)(?P<type>Name|HttpEquiv|Property|Itemprop)$/',
-            $method,
-            $matches
-        )) {
+        if (
+            preg_match(
+                '/^(?P<action>set|(pre|ap)pend|offsetSet)(?P<type>Name|HttpEquiv|Property|Itemprop)$/',
+                $method,
+                $matches
+            )
+        ) {
             $action = $matches['action'];
             $type   = $this->normalizeType($matches['type']);
             $argc   = count($args);
             $index  = null;
 
-            if ('offsetSet' == $action) {
+            if ('offsetSet' === $action) {
                 if (0 < $argc) {
                     $index = array_shift($args);
                     --$argc;
@@ -143,10 +172,12 @@ class HeadMeta extends Placeholder\Container\AbstractStandalone
                 $args[] = [];
             }
 
-            $item  = $this->createData($type, $args[0], $args[1], $args[2]);
+            $item = $this->createData($type, $args[0], $args[1], $args[2]);
 
-            if ('offsetSet' == $action) {
-                return $this->offsetSet($index, $item);
+            if ('offsetSet' === $action) {
+                $this->offsetSet($index, $item);
+
+                return $this;
             }
 
             $this->$action($item);
@@ -165,20 +196,23 @@ class HeadMeta extends Placeholder\Container\AbstractStandalone
      */
     public function toString($indent = null)
     {
-        $indent = (null !== $indent)
-            ? $this->getWhitespace($indent)
-            : $this->getIndent();
+        $container = $this->getContainer();
+        $indent    = null !== $indent
+            ? $container->getWhitespace($indent)
+            : $container->getIndent();
 
         $items = [];
-        $this->getContainer()->ksort();
+        $container->ksort();
 
-        $isHtml5 = $this->view->plugin('doctype')->isHtml5();
+        $doctype = $this->view->plugin('doctype');
+        assert($doctype instanceof Doctype);
+        $isHtml5 = $doctype->isHtml5();
 
         try {
-            foreach ($this as $item) {
+            foreach ($container as $item) {
                 $content = $this->itemToString($item);
 
-                if ($isHtml5 && $item->type == 'charset') {
+                if ($isHtml5 && $item->type === 'charset') {
                     array_unshift($items, $content);
                     continue;
                 }
@@ -190,33 +224,35 @@ class HeadMeta extends Placeholder\Container\AbstractStandalone
             return '';
         }
 
-        return $indent . implode($this->escape($this->getSeparator()) . $indent, $items);
+        return $indent . implode($this->escape($container->getSeparator()) . $indent, $items);
     }
 
     /**
      * Create data item for inserting into stack
      *
+     * @internal This method will become private in version 3.0
+     *
      * @param  string $type
      * @param  string $typeValue
      * @param  string $content
      * @param  array  $modifiers
-     * @return stdClass
+     * @return object
      */
     public function createData($type, $typeValue, $content, array $modifiers)
     {
-        $data            = new stdClass;
-        $data->type      = $type;
-        $data->$type     = $typeValue;
-        $data->content   = $content;
-        $data->modifiers = $modifiers;
-
-        return $data;
+        return (object) [
+            'type'      => $type,
+            $type       => $typeValue,
+            'content'   => $content,
+            'modifiers' => $modifiers,
+        ];
     }
 
     /**
      * Build meta HTML string
      *
-     * @param  stdClass $item
+     * @internal This method will become private in version 3.0
+     *
      * @throws Exception\InvalidArgumentException
      * @return string
      */
@@ -232,8 +268,9 @@ class HeadMeta extends Placeholder\Container\AbstractStandalone
 
         $modifiersString = '';
         foreach ($item->modifiers as $key => $value) {
-            if ($this->view->plugin('doctype')->isHtml5()
-                && $key == 'scheme'
+            if (
+                $this->view->plugin('doctype')->isHtml5()
+                && $key === 'scheme'
             ) {
                 throw new Exception\InvalidArgumentException(
                     'Invalid modifier "scheme" provided; not supported by HTML5'
@@ -247,15 +284,16 @@ class HeadMeta extends Placeholder\Container\AbstractStandalone
 
         $modifiersString = rtrim($modifiersString);
 
-        if ('' != $modifiersString) {
+        if ('' !== $modifiersString) {
             $modifiersString = ' ' . $modifiersString;
         }
 
         if (method_exists($this->view, 'plugin')) {
-            if ($this->view->plugin('doctype')->isHtml5()
-                && $type == 'charset'
+            if (
+                $this->view->plugin('doctype')->isHtml5()
+                && $type === 'charset'
             ) {
-                $tpl = ($this->view->plugin('doctype')->isXhtml())
+                $tpl = $this->view->plugin('doctype')->isXhtml()
                     ? '<meta %s="%s"/>'
                     : '<meta %s="%s">';
             } elseif ($this->view->plugin('doctype')->isXhtml()) {
@@ -275,7 +313,8 @@ class HeadMeta extends Placeholder\Container\AbstractStandalone
             $modifiersString
         );
 
-        if (isset($item->modifiers['conditional'])
+        if (
+            isset($item->modifiers['conditional'])
             && ! empty($item->modifiers['conditional'])
             && is_string($item->modifiers['conditional'])
         ) {
@@ -291,6 +330,8 @@ class HeadMeta extends Placeholder\Container\AbstractStandalone
 
     /**
      * Normalize type attribute of meta
+     *
+     * @internal This method will become private in version 3.0
      *
      * @param  string $type type in CamelCase
      * @throws Exception\DomainException
@@ -318,12 +359,15 @@ class HeadMeta extends Placeholder\Container\AbstractStandalone
     /**
      * Determine if item is valid
      *
-     * @param  stdClass $item
+     * @internal This method will become private in version 3.0
+     *
+     * @param mixed $item
      * @return bool
      */
     protected function isValid($item)
     {
-        if ((! $item instanceof stdClass)
+        if (
+            ! is_object($item)
             || ! isset($item->type)
             || ! isset($item->modifiers)
         ) {
@@ -335,7 +379,8 @@ class HeadMeta extends Placeholder\Container\AbstractStandalone
             return false;
         }
 
-        if (! isset($item->content)
+        if (
+            ! isset($item->content)
             && (! $doctype->isHtml5()
             || (! $doctype->isHtml5() && $item->type !== 'charset'))
         ) {
@@ -343,14 +388,16 @@ class HeadMeta extends Placeholder\Container\AbstractStandalone
         }
 
         // <meta itemprop= ... /> is only supported with doctype html
-        if (! $doctype->isHtml5()
+        if (
+            ! $doctype->isHtml5()
             && $item->type === 'itemprop'
         ) {
             return false;
         }
 
         // <meta property= ... /> is only supported with doctype RDFa
-        if (! $doctype->isRdfa()
+        if (
+            ! $doctype->isRdfa()
             && $item->type === 'property'
         ) {
             return false;
@@ -362,7 +409,7 @@ class HeadMeta extends Placeholder\Container\AbstractStandalone
     /**
      * Append
      *
-     * @param  stdClass $value
+     * @param  object $value
      * @return View\Helper\Placeholder\Container\AbstractContainer
      * @throws Exception\InvalidArgumentException
      */
@@ -380,8 +427,9 @@ class HeadMeta extends Placeholder\Container\AbstractStandalone
     /**
      * OffsetSet
      *
-     * @param  string|int $index
-     * @param  string     $value
+     * @param  int $index
+     * @param  mixed $value
+     * @return void
      * @throws Exception\InvalidArgumentException
      */
     public function offsetSet($index, $value)
@@ -392,30 +440,31 @@ class HeadMeta extends Placeholder\Container\AbstractStandalone
             );
         }
 
-        return $this->getContainer()->offsetSet($index, $value);
+        $this->getContainer()->offsetSet($index, $value);
     }
 
     /**
      * OffsetUnset
      *
-     * @param  string|int $index
+     * @param  int $offset
+     * @return void
      * @throws Exception\InvalidArgumentException
      */
-    public function offsetUnset($index)
+    public function offsetUnset($offset)
     {
-        if (! in_array($index, $this->getContainer()->getKeys())) {
+        if (! in_array($offset, $this->getContainer()->getKeys())) {
             throw new Exception\InvalidArgumentException('Invalid index passed to offsetUnset()');
         }
 
-        return $this->getContainer()->offsetUnset($index);
+        $this->getContainer()->offsetUnset($offset);
     }
 
     /**
      * Prepend
      *
-     * @param  stdClass $value
+     * @param object $value
      * @throws Exception\InvalidArgumentException
-     * @return View\Helper\Placeholder\Container\AbstractContainer
+     * @return AbstractContainer
      */
     public function prepend($value)
     {
@@ -431,9 +480,9 @@ class HeadMeta extends Placeholder\Container\AbstractStandalone
     /**
      * Set
      *
-     * @param  stdClass $value
+     * @param object $value
      * @throws Exception\InvalidArgumentException
-     * @return View\Helper\Placeholder\Container\AbstractContainer
+     * @return AbstractContainer
      */
     public function set($value)
     {
@@ -443,7 +492,7 @@ class HeadMeta extends Placeholder\Container\AbstractStandalone
 
         $container = $this->getContainer();
         foreach ($container->getArrayCopy() as $index => $item) {
-            if ($item->type == $value->type && $item->{$item->type} == $value->{$value->type}) {
+            if ($item->type === $value->type && $item->{$item->type} === $value->{$value->type}) {
                 $this->offsetUnset($index);
             }
         }
@@ -456,17 +505,18 @@ class HeadMeta extends Placeholder\Container\AbstractStandalone
      *
      * Not valid in a non-HTML5 doctype
      *
-     * @param  string $charset
-     * @param  Exception\InvalidArgumentException
-     * @return HeadMeta Provides a fluent interface
+     * @param string $charset
+     * @throws Exception\InvalidArgumentException
+     * @return $this
      */
     public function setCharset($charset)
     {
-        $item = new stdClass;
-        $item->type = 'charset';
-        $item->charset = $charset;
-        $item->content = null;
-        $item->modifiers = [];
+        $item = (object) [
+            'type'      => 'charset',
+            'charset'   => $charset,
+            'content'   => null,
+            'modifiers' => [],
+        ];
 
         if (! $this->isValid($item)) {
             throw new Exception\InvalidArgumentException(

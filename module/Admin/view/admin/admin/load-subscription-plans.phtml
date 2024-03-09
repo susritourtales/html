@@ -1,0 +1,101 @@
+<?php if (isset($type) && $type == 'initialize') { ?>
+    <style>
+        .table-condensed thead tr th {
+            color: unset !important;
+        }
+
+        .calign input {
+            text-align: center !important;
+        }
+    </style>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover table-striped" id="extTable">
+            <thead>
+                <tr>
+                    <th>S.no</th>
+                    <th data-placeholder="plan name" data-input="planname" class="calign">plan name</th>
+                    <th data-placeholder="qsp inr" data-input="qsp_inr" class="calign">qsp inr</th>
+                    <th data-placeholder="qsp usd" data-input="qsp_usd">qsp usd</th>
+                    <th data-placeholder="sqs start date" data-input="sqs_start_date">sqs start date</th>
+                    <th data-placeholder="sqs end date" data-input="sqs_end_date">sqs end date</th>
+                    <th data-placeholder="qrp inr" data-input="qrp_inr" class="calign">qrp inr</th>
+                    <th data-placeholder="qrp usd" data-input="qrp_usd" class="calign">qrp usd</th>
+                    <th data-placeholder="questt duration" data-input="questt_duration">questt duration</th>
+                    <th data-placeholder="twistt duration" data-input="twistt_duration">twistt duration</th>
+                    <th data-placeholder="topp inr" data-input="topp_inr">topp inr</th>
+                    <th data-placeholder="topp usd" data-input="topp_usd">topp usd</th>
+                    <th data-placeholder="stsp inr" data-input="stsp_inr">stsp inr</th>
+                    <th data-placeholder="stsp usd" data-input="stsp_usd">stsp usd</th>
+                    <th data-placeholder="sts start date" data-input="sts_start_date">sts start date</th>
+                    <th data-placeholder="sts end date" data-input="sts_end_date" class="calign">sts end date</th>
+                    <th data-placeholder="tppp inr" data-input="tppp_inr" class="calign">tppp inr</th>
+                    <th data-placeholder="tppp usd" data-input="tppp_usd" class="calign">tppp usd</th>
+                    <th data-placeholder="max pwds" data-input="max_pwds" class="calign">max pwds</th>
+                    <th data-placeholder="dp inr" data-input="dp_inr" class="calign">dp inr</th>
+                    <th data-placeholder="dp usd" data-input="dp_usd" class="calign">dp usd</th>
+                    <th data-placeholder="tax" data-input="tax" class="calign">tax</th>
+                    <th data-placeholder="App Text" data-input="app_text">App Text</th>
+                    <th data-placeholder="Web Text" data-input="web_text">Web Text</th>
+                    <th data-placeholder="cd percentage" data-input="cd_percentage">cd percentage</th>
+                    <th data-placeholder="active" data-input="active">active</th>
+                </tr>
+            <?php } ?>
+
+            <?php if (isset($type) && ($type == 'initialize' || $type == "search")) { ?>
+                <input type="hidden" class="records" value="<?php echo $totalCount; ?>">
+            <tbody>
+            <?php } ?>
+
+            <?php if (count($splansList)) {
+                $i = 0;
+                if (isset($offset)) {
+                    $i = $offset;
+                }
+
+                foreach ($splansList as $pricing) { ?>
+                    <tr class="position-relative" data-id="<?php echo base64_encode("pid=" . $pricing['id']); ?>">
+                        <td><?php echo $i + 1; ?></td>
+                        <td class="text-center"><?php echo $pricing['plan_name']; ?></td>
+                        <td class="text-center"><?php echo $pricing['qsp_inr']; ?></td>
+                        <td class="text-center"><?php echo $pricing['qsp_usd']; ?></td>
+                        <td class="text-center"><?php echo $pricing['sqsp_inr']; ?></td>
+                        <td class="text-center"><?php echo $pricing['sqsp_usd']; ?></td>
+                        <td class="text-center"><?php echo $pricing['sqs_start_date']; ?></td>
+                        <td class="text-center"><?php echo $pricing['sqs_end_date']; ?></td>
+                        <td class="text-center"><?php echo $pricing['qrp_inr']; ?></td>
+                        <td class="text-center"><?php echo $pricing['qrp_usd']; ?></td>
+                        <td class="text-center"><?php echo $pricing['questt_duration']; ?></td>
+                        <td class="text-center"><?php echo $pricing['twistt_duration']; ?></td>
+                        <td class="text-center"><?php echo $pricing['topp_inr']; ?></td>
+                        <td class="text-center"><?php echo $pricing['topp_usd']; ?></td>
+                        <td class="text-center"><?php echo $pricing['stsp_inr']; ?></td>
+                        <td class="text-center"><?php echo $pricing['stsp_usd']; ?></td>
+                        <td class="text-center"><?php echo $pricing['sts_start_date']; ?></td>
+                        <td class="text-center"><?php echo $pricing['sts_end_date']; ?></td>
+                        <td class="text-center"><?php echo $pricing['tppp_inr']; ?></td>
+                        <td class="text-center"><?php echo $pricing['tppp_usd']; ?></td>
+                        <td class="text-center"><?php echo $pricing['max_pwds']; ?></td>
+                        <td class="text-center"><?php echo $pricing['dp_inr']; ?></td>
+                        <td class="text-center"><?php echo $pricing['dp_usd']; ?></td>
+                        <td class="text-center"><?php echo $pricing['tax']; ?></td>
+                        <td><?php echo $pricing['app_text']; ?></td>
+                        <td><?php echo $pricing['web_text']; ?></td>
+                        <td class="text-center"><?php echo $pricing['cd_percentage']; ?></td>
+                        <td class="text-center"><?php echo $pricing['active']; ?><input type="checkbox" id="cba<?= $pricing['id'] ?>" name="cba<?= $pricing['id'] ?>" value="0" <?php $pricing['active'] == "1" ? "checked" : ""; ?>></td>
+                    </tr>
+                <?php $i++;
+                }
+            } else { ?>
+                <tr>
+                    <td class="text-center" colspan="30">No data</td>
+                </tr>
+            <?php  } ?>
+            <?php if (isset($type) && ($type == 'initialize' || $type == "search")) { ?>
+
+            </tbody>
+        <?php } ?>
+        <?php if (isset($type) && $type == 'initialize') { ?>
+
+        </table>
+    </div>
+<?php } ?>

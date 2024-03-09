@@ -1,21 +1,27 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-http for the canonical source repository
- * @copyright https://github.com/laminas/laminas-http/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-http/blob/master/LICENSE.md New BSD License
- */
-
 namespace Laminas\Http\PhpEnvironment;
 
+use Laminas\Http\Header\HeaderInterface;
 use Laminas\Http\Header\MultipleHeaderInterface;
 use Laminas\Http\Response as HttpResponse;
+
+use function call_user_func;
+use function header;
+use function headers_sent;
 
 /**
  * HTTP Response for current PHP environment
  */
 class Response extends HttpResponse
 {
+    /**
+     * @deprecated This property is deprecated, and will be removed
+     *
+     * @var bool
+     */
+    public $headersSent;
+
     /**
      * The current used version
      * (The value will be detected on getVersion)
@@ -24,21 +30,18 @@ class Response extends HttpResponse
      */
     protected $version;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     protected $contentSent = false;
 
-    /**
-     * @var null|callable
-     */
+    /** @var null|callable */
     private $headersSentHandler;
 
     /**
      * Return the HTTP version for this response
      *
-     * @return string
      * @see \Laminas\Http\AbstractMessage::getVersion()
+     *
+     * @return string
      */
     public function getVersion()
     {
@@ -56,7 +59,7 @@ class Response extends HttpResponse
      */
     protected function detectVersion()
     {
-        if (isset($_SERVER['SERVER_PROTOCOL']) && $_SERVER['SERVER_PROTOCOL'] == 'HTTP/1.1') {
+        if (isset($_SERVER['SERVER_PROTOCOL']) && $_SERVER['SERVER_PROTOCOL'] === 'HTTP/1.1') {
             return self::VERSION_11;
         }
 
@@ -102,10 +105,10 @@ class Response extends HttpResponse
             return $this;
         }
 
-        $status  = $this->renderStatusLine();
+        $status = $this->renderStatusLine();
         header($status);
 
-        /** @var \Laminas\Http\Header\HeaderInterface $header */
+        /** @var HeaderInterface $header */
         foreach ($this->getHeaders() as $header) {
             if ($header instanceof MultipleHeaderInterface) {
                 header($header->toString(), false);

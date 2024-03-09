@@ -1,47 +1,38 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-config for the canonical source repository
- * @copyright https://github.com/laminas/laminas-config/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-config/blob/master/LICENSE.md New BSD License
- */
-
 namespace Laminas\Config;
 
-use Interop\Container\ContainerInterface;
+use Interop\Container\Containerinterface;
+use InvalidArgumentException;
 use Laminas\ServiceManager\AbstractFactoryInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Traversable;
 
-/**
- * Class AbstractConfigFactory
- */
+use function array_unshift;
+use function is_array;
+use function is_string;
+use function iterator_to_array;
+use function preg_match;
+
 class AbstractConfigFactory implements AbstractFactoryInterface
 {
-    /**
-     * @var array
-     */
+    /** @var array */
     protected $configs = [];
 
-    /**
-     * @var string[]
-     */
+    /** @var string[] */
     protected $defaultPatterns = [
         '#config[\._-](.*)$#i',
-        '#^(.*)[\\\\\._-]config$#i'
+        '#^(.*)[\\\\\._-]config$#i',
     ];
 
-    /**
-     * @var string[]
-     */
+    /** @var string[] */
     protected $patterns;
 
     /**
      * Determine if we can create a service with name (SM v2)
      *
-     * @param ServiceLocatorInterface $serviceLocator
-     * @param $name
-     * @param $requestedName
+     * @param string $name
+     * @param string $requestedName
      * @return bool
      */
     public function canCreateServiceWithName(ServiceLocatorInterface $serviceLocator, $name, $requestedName)
@@ -52,17 +43,16 @@ class AbstractConfigFactory implements AbstractFactoryInterface
     /**
      * Determine if we can create a service (SM v3)
      *
-     * @param ContainerInterface $container
      * @param string $requestedName
      * @return bool
      */
-    public function canCreate(ContainerInterface $container, $requestedName)
+    public function canCreate(Containerinterface $container, $requestedName)
     {
         if (isset($this->configs[$requestedName])) {
             return true;
         }
 
-        if (! $container->has('Config')) {
+        if (! $container->has('config')) {
             return false;
         }
 
@@ -71,14 +61,13 @@ class AbstractConfigFactory implements AbstractFactoryInterface
             return false;
         }
 
-        $config = $container->get('Config');
+        $config = $container->get('config');
         return isset($config[$key]);
     }
 
     /**
      * Create service with name (SM v2)
      *
-     * @param ServiceLocatorInterface $serviceLocator
      * @param string $name
      * @param string $requestedName
      * @return string|mixed|array
@@ -91,12 +80,11 @@ class AbstractConfigFactory implements AbstractFactoryInterface
     /**
      * Create service with name (SM v3)
      *
-     * @param ContainerInterface $container
      * @param string $requestedName
      * @param array $options
      * @return string|mixed|array
      */
-    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
+    public function __invoke(Containerinterface $container, $requestedName, ?array $options = null)
     {
         if (isset($this->configs[$requestedName])) {
             return $this->configs[$requestedName];
@@ -108,7 +96,7 @@ class AbstractConfigFactory implements AbstractFactoryInterface
             return $this->configs[$key];
         }
 
-        $config = $container->get('Config');
+        $config                        = $container->get('config');
         $this->configs[$requestedName] = $this->configs[$key] = $config[$key];
         return $config[$key];
     }
@@ -155,7 +143,7 @@ class AbstractConfigFactory implements AbstractFactoryInterface
     /**
      * @param array|Traversable $patterns
      * @return self
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function setPatterns($patterns)
     {
@@ -164,7 +152,7 @@ class AbstractConfigFactory implements AbstractFactoryInterface
         }
 
         if (! is_array($patterns)) {
-            throw new \InvalidArgumentException("patterns must be array or Traversable");
+            throw new InvalidArgumentException("patterns must be array or Traversable");
         }
 
         $this->patterns = $patterns;

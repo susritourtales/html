@@ -1,20 +1,21 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-session for the canonical source repository
- * @copyright https://github.com/laminas/laminas-session/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-session/blob/master/LICENSE.md New BSD License
- */
-
 namespace Laminas\Session\Storage;
 
+use ArrayIterator;
 use Laminas\Stdlib\ArrayObject;
+
+use function is_object;
 
 /**
  * Session storage in $_SESSION
  *
  * Replaces the $_SESSION superglobal with an ArrayObject that allows for
  * property access, metadata storage, locking, and immutability.
+ *
+ * @template TKey of array-key
+ * @template TValue
+ * @template-extends ArrayStorage<TKey, TValue>
  */
 class SessionStorage extends ArrayStorage
 {
@@ -28,8 +29,11 @@ class SessionStorage extends ArrayStorage
      * @param int        $flags
      * @param string     $iteratorClass
      */
-    public function __construct($input = null, $flags = ArrayObject::ARRAY_AS_PROPS, $iteratorClass = '\\ArrayIterator')
-    {
+    public function __construct(
+        $input = null,
+        $flags = ArrayObject::ARRAY_AS_PROPS,
+        $iteratorClass = ArrayIterator::class
+    ) {
         $resetSession = true;
         if ((null === $input) && isset($_SESSION)) {
             $input = $_SESSION;
@@ -66,8 +70,8 @@ class SessionStorage extends ArrayStorage
      *
      * Ensures $_SESSION is set to an instance of the object when complete.
      *
-     * @param  array          $array
-     * @return SessionStorage
+     * @param array<TKey, TValue> $array
+     * @return $this
      */
     public function fromArray(array $array)
     {
@@ -82,7 +86,7 @@ class SessionStorage extends ArrayStorage
     /**
      * Mark object as isImmutable
      *
-     * @return SessionStorage
+     * @return $this
      */
     public function markImmutable()
     {
@@ -98,6 +102,6 @@ class SessionStorage extends ArrayStorage
      */
     public function isImmutable()
     {
-        return (isset($this['_IMMUTABLE']) && $this['_IMMUTABLE']);
+        return isset($this['_IMMUTABLE']) && $this['_IMMUTABLE'];
     }
 }

@@ -1,15 +1,24 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-config for the canonical source repository
- * @copyright https://github.com/laminas/laminas-config/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-config/blob/master/LICENSE.md New BSD License
- */
-
 namespace Laminas\Config\Reader;
 
 use Laminas\Config\Exception;
 use XMLReader;
+
+use function array_key_exists;
+use function array_merge;
+use function dirname;
+use function in_array;
+use function is_array;
+use function is_file;
+use function is_readable;
+use function is_string;
+use function restore_error_handler;
+use function set_error_handler;
+use function sprintf;
+
+use const E_WARNING;
+use const LIBXML_XINCLUDE;
 
 /**
  * XML config reader.
@@ -39,13 +48,14 @@ class Xml implements ReaderInterface
         XMLReader::TEXT,
         XMLReader::CDATA,
         XMLReader::WHITESPACE,
-        XMLReader::SIGNIFICANT_WHITESPACE
+        XMLReader::SIGNIFICANT_WHITESPACE,
     ];
 
     /**
      * fromFile(): defined by Reader interface.
      *
      * @see    ReaderInterface::fromFile()
+     *
      * @param  string $filename
      * @return array
      * @throws Exception\RuntimeException
@@ -83,6 +93,7 @@ class Xml implements ReaderInterface
      * fromString(): defined by Reader interface.
      *
      * @see    ReaderInterface::fromString()
+     *
      * @param  string $string
      * @return array|bool
      * @throws Exception\RuntimeException

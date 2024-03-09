@@ -1,19 +1,13 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-mvc for the canonical source repository
- * @copyright https://github.com/laminas/laminas-mvc/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-mvc/blob/master/LICENSE.md New BSD License
- */
-
 namespace Laminas\Mvc\Exception;
 
-final class InvalidMiddlewareException extends RuntimeException
+/**
+ * @deprecated Since 3.2.0
+ */
+class InvalidMiddlewareException extends RuntimeException
 {
-    /**
-     * @var string
-     */
-    private $middlewareName;
+    private ?string $middlewareName = null;
 
     /**
      * @param string $middlewareName
@@ -38,6 +32,6 @@ final class InvalidMiddlewareException extends RuntimeException
      */
     public function toMiddlewareName()
     {
-        return null !== $this->middlewareName ? $this->middlewareName : '';
+        return $this->middlewareName ?? '';
     }
 }

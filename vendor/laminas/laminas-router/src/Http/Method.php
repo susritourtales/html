@@ -1,10 +1,6 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-router for the canonical source repository
- * @copyright https://github.com/laminas/laminas-router/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-router/blob/master/LICENSE.md New BSD License
- */
+declare(strict_types=1);
 
 namespace Laminas\Router\Http;
 
@@ -12,6 +8,14 @@ use Laminas\Router\Exception;
 use Laminas\Stdlib\ArrayUtils;
 use Laminas\Stdlib\RequestInterface as Request;
 use Traversable;
+
+use function array_map;
+use function explode;
+use function in_array;
+use function is_array;
+use function method_exists;
+use function sprintf;
+use function strtoupper;
 
 /**
  * Method route.
@@ -33,6 +37,14 @@ class Method implements RouteInterface
     protected $defaults;
 
     /**
+     * @internal
+     * @deprecated Since 3.9.0 This property will be removed or made private in version 4.0
+     *
+     * @var int|null
+     */
+    public $priority;
+
+    /**
      * Create a new method route.
      *
      * @param  string $verb
@@ -48,7 +60,8 @@ class Method implements RouteInterface
      * factory(): defined by RouteInterface interface.
      *
      * @see    \Laminas\Router\RouteInterface::factory()
-     * @param  array|Traversable $options
+     *
+     * @param  iterable $options
      * @return Method
      * @throws Exception\InvalidArgumentException
      */
@@ -78,13 +91,13 @@ class Method implements RouteInterface
      * match(): defined by RouteInterface interface.
      *
      * @see    \Laminas\Router\RouteInterface::match()
-     * @param  Request $request
+     *
      * @return RouteMatch|null
      */
     public function match(Request $request)
     {
         if (! method_exists($request, 'getMethod')) {
-            return;
+            return null;
         }
 
         $requestVerb = strtoupper($request->getMethod());
@@ -95,13 +108,14 @@ class Method implements RouteInterface
             return new RouteMatch($this->defaults);
         }
 
-        return;
+        return null;
     }
 
     /**
      * assemble(): Defined by RouteInterface interface.
      *
      * @see    \Laminas\Router\RouteInterface::assemble()
+     *
      * @param  array $params
      * @param  array $options
      * @return mixed
@@ -116,6 +130,7 @@ class Method implements RouteInterface
      * getAssembledParams(): defined by RouteInterface interface.
      *
      * @see    RouteInterface::getAssembledParams
+     *
      * @return array
      */
     public function getAssembledParams()

@@ -21,7 +21,7 @@ $(document).ready(function ()
         countryText=countryText.toLowerCase();
         if(countryText=='india') {
             $("#state-wrapper").removeClass('d-none');
-            postData('/admin/admin/get-states',{"country_id":countryId},function(response){
+            postData('/admin/get-states',{"country_id":countryId},function(response){
                 var options='<option value="">--select state--</option>';
                 if(response.success){
                     var list=response.states;
@@ -29,17 +29,13 @@ $(document).ready(function ()
                     {
                         options +='<option value="'+list[s].id+'" data-id="'+list[s].state_id+'">'+list[s].state_name+'</option>'
                     }
-
                     $('#states').html(options);
-
-
                 }
             });
         }else
         {
             $("#state-wrapper").addClass('d-none');
         }
-
     })
         .on("change",".upload-file",function(e){
             var files = e.target.files;
@@ -89,16 +85,13 @@ $(document).ready(function ()
                                 }
                             }
                         }
-
                     });
                     $(".upload-div[data-id='"+rowId+"']").append(`<div class="position-absolute progress" data-id="${rowId}">
                         <div class="progress-bar progress-bar-animate" role="progressbar" style="width: 1%;" aria-valuenow="55" aria-valuemin="0" aria-valuemax="100" data-id="${rowId}">1%</div>
                     </div>`);
                     $('.file_name[data-id="'+rowId+'"]').html(filename);
-
                 };
                 reader.readAsDataURL(file);
-
             });
         })
         .on("change",".image-upload",function(e){
@@ -126,13 +119,7 @@ $(document).ready(function ()
                     imageId++;
                     imageFiles[imageId]=[];
                     imageFiles[imageId].push(file);
-                    //  console.log( $('.file_name[data-id="'+rowId+'"]').length);
-                    //  $('.file_name[data-id="'+rowId+'"]').html(filename);
-
                     uploadFiles['images'][imageId]={"uploaded":false};
-
-
-                    // circle[imageId]  = $('.circlechart').data('radialIndicator');
                     let classId='circlechart_img_'+imageId;
                     $(".image-preview-wrapper").append('<div class="col-sm-4 mt-2 position-relative image-preview overflow-hidden" data-id="'+imageId+'"><div class="position-absolute circlechart '+classId+'" style="width: 100%;height: 100%" data-id="'+imageId+'"></div><img src="'+e.target.result+'" style="width: 100%;height: 100%"><span class="bg-white circle close-icon" data-id="'+imageId+'"><i class="fas fa-times position-absolute " data-id="'+imageId+'" ></i></span></div>');
                     circle[imageId] = radialIndicator('.'+classId,{
@@ -151,7 +138,6 @@ $(document).ready(function ()
                                 circle[fileID].animate((fileID * 100));
                             }
                         }
-
                         if(!progress)
                         {
                             if(response.success)
@@ -176,15 +162,11 @@ $(document).ready(function ()
                     {
                         element.val("");
                     }
-                    //  console.log( $('.file_name[data-id="'+rowId+'"]').length);
-                    //  $('.file_name[data-id="'+rowId+'"]').html(filename);
-
                 };
                 reader.readAsDataURL(file);
             });
 
             setTimeout(function(){
-
                 var height=$(".image-preview-wrapper").height();
                 var parentHeight=$(".image-upload-wrapper").height();
                 console.log(parentHeight,height);
@@ -192,8 +174,6 @@ $(document).ready(function ()
                 {
                     $(".image-upload").css("height",height);
                 }
-
-
             },10);
 
         })
@@ -212,26 +192,20 @@ $(document).ready(function ()
                 delete  imageFiles[id];
             }
         }
-            if(uploadFiles['images'][id] !=undefined) {
-                delete uploadFiles['images'][id]
-            }
-
+        if(uploadFiles['images'][id] !=undefined) {
+            delete uploadFiles['images'][id]
+        }
     }).on("click","#addPlace",function(){
-
         var countryElement=$("#country");
         var stateElement=$("#states");
         var cityElement=$("#city");
-
         var error=false;
-
-
         var element=$(this);
         var countryName=countryElement.val();
         var stateName=stateElement.val();
         var cityName=cityElement.val();
         var description = $.trim($('#description').val());
         var fileDetails=[];
-
         if(countryName=='')
         {
             messageDisplay("Please select country");
@@ -252,37 +226,24 @@ $(document).ready(function ()
             return  false;
         }
         description = $.trim(description);
-
-
-       /* if(description=='')
-        {
-            messageDisplay("Please enter description");
-            return  false;
-        }*/
-
-         let mandatorytotalLanguages=[];
-         let totalLanguages=[];
-         var cityId=$("#cityId").val();
+        let mandatorytotalLanguages=[];
+        let totalLanguages=[];
+        var cityId=$("#cityId").val();
         var imageFileIds=[];
         var fileIds=[];
         uploadClicked=true;
-
         element.html('Please wait...');
-
         element.prop('disabled',true);
-
         for(var k in uploadFiles['images'])
         {
             if(!uploadFiles['images'][k]['uploaded'])
             {
-
                 error=true;
                 break;
             }
             imageFileIds.push(uploadFiles['images'][k]['id']);
             fileIds.push(uploadFiles['images'][k]['id']);
         }
-
         for(var a in uploadFiles['attachment'])
         {
             if(!uploadFiles['attachment'][a]['uploaded'])
@@ -292,7 +253,6 @@ $(document).ready(function ()
             }
             fileIds.push(uploadFiles['attachment'][a]['id']);
         }
-
         if(error)
         {
             return  false;
@@ -306,7 +266,6 @@ $(document).ready(function ()
             var fileName=fileNameElement.val();
             var fileLanguage=fileLanguageElement.val();
             fileName=$.trim(fileName);
-
             if(fileName!="" || mediaFiles[rowId]!=undefined || fileLanguage!=''){
                 if(fileName=="")
                 {
@@ -325,7 +284,6 @@ $(document).ready(function ()
                         error=true;
                         return false;
                     }
-
                     tmp['file_id']=uploadFiles['attachment'][rowId]['id'];
                 }else{
                     if(uploadFiles['attachment'][rowId])
@@ -335,7 +293,6 @@ $(document).ready(function ()
                         tmp['file_id']='';
                     }
                 }
-                //tmp['file_id']=rowId;
                 if(fileLanguage=="")
                 {
                     fileLanguageElement.focus();
@@ -372,23 +329,7 @@ $(document).ready(function ()
         messageDisplay("Please Upload Image Files");
         return false;
     }
-
-   /* if($(".file-uploads").length==0)
-    {
-        messageDisplay("Please Upload Audio Files");
-        return false;
-    }
-
-    if(mandatorytotalLanguages.length!=mandatoryLanguages.length)
-    {
-        messageDisplay("Please Select mandatory languages hindi and english",2000);
-        return false;
-    }*/
-
-
-
         var formData=new FormData();
-
         formData.append("description",description);
         formData.append("country_name",countryName);
         formData.append("state_name",stateName);
@@ -397,21 +338,16 @@ $(document).ready(function ()
         formData.append("file_details",JSON.stringify(fileDetails));
         formData.append("deleted_audio",JSON.stringify(deletedAudio));
         formData.append("deleted_images",JSON.stringify(deletedImages));
-
         formData.append("images",imageFileIds);
         formData.append("file_Ids",fileIds);
-
-
         element.html('Please wait...');
-
         element.prop('disabled',true);
-
         ajaxData('/a_dMin/edit-city',formData,function(response){
             if(response.success)
             {
                 messageDisplay(response.message);
                 setTimeout(function(){
-                    window.location.href=BASE_URL+"/a_dMin/city-list";
+                    window.location.href=BASE_URL+"/a_dMin/cities";
                 },2000);
 
             }else{
@@ -424,7 +360,7 @@ $(document).ready(function ()
     }).on("click",".add-control",function(){
         addedRow++;
         var rowsCount= $(".file-uploads").length;
-        postData('/admin/admin/file-upload-row',{'row_number':addedRow,"rows_count":rowsCount},function(response){
+        postData('/admin/file-upload-row',{'row_number':addedRow,"rows_count":rowsCount},function(response){
 
             $("#file-upload-wrapper").append(response);
         });

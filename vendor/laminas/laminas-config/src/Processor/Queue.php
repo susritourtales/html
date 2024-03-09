@@ -1,11 +1,5 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-config for the canonical source repository
- * @copyright https://github.com/laminas/laminas-config/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-config/blob/master/LICENSE.md New BSD License
- */
-
 namespace Laminas\Config\Processor;
 
 use Laminas\Config\Config;
@@ -17,7 +11,6 @@ class Queue extends PriorityQueue implements ProcessorInterface
     /**
      * Process the whole config structure with each parser in the queue.
      *
-     * @param  Config $config
      * @return Config
      * @throws Exception\InvalidArgumentException
      */
@@ -28,9 +21,11 @@ class Queue extends PriorityQueue implements ProcessorInterface
         }
 
         foreach ($this as $parser) {
-            /** @var $parser ProcessorInterface */
+            /** @var ProcessorInterface $parser */
             $parser->process($config);
         }
+
+        return $config;
     }
 
     /**
@@ -42,7 +37,7 @@ class Queue extends PriorityQueue implements ProcessorInterface
     public function processValue($value)
     {
         foreach ($this as $parser) {
-            /** @var $parser ProcessorInterface */
+            /** @var ProcessorInterface $parser */
             $value = $parser->processValue($value);
         }
 

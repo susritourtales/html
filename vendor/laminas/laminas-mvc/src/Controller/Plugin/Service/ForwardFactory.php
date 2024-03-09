@@ -1,11 +1,5 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-mvc for the canonical source repository
- * @copyright https://github.com/laminas/laminas-mvc/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-mvc/blob/master/LICENSE.md New BSD License
- */
-
 namespace Laminas\Mvc\Controller\Plugin\Service;
 
 use Interop\Container\ContainerInterface;
@@ -26,7 +20,7 @@ class ForwardFactory implements FactoryInterface
         if (! $container->has('ControllerManager')) {
             throw new ServiceNotCreatedException(sprintf(
                 '%s requires that the application service manager contains a "%s" service; none found',
-                __CLASS__,
+                self::class,
                 'ControllerManager'
             ));
         }

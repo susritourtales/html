@@ -52,7 +52,7 @@ class BaseTable
                  $columns = array_keys($columns);
                  $columnsCount = count($columns);
                  $platform = $adapter->getPlatform();
-                 array_filter($columns, function (&$item) use ($platform)
+                 array_walk($columns, function (&$item) use ($platform)
                  {
                      $item = $platform->quoteIdentifier($item);
                  });

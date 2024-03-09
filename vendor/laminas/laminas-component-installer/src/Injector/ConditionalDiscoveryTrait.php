@@ -1,37 +1,31 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-component-installer for the canonical source repository
- * @copyright https://github.com/laminas/laminas-component-installer/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-component-installer/blob/master/LICENSE.md New BSD License
- */
+declare(strict_types=1);
 
 namespace Laminas\ComponentInstaller\Injector;
 
+use Laminas\ComponentInstaller\ConfigDiscovery\DiscoveryInterface;
+
+use function str_replace;
+
+/**
+ * @internal
+ *
+ * @psalm-require-extends AbstractInjector
+ */
 trait ConditionalDiscoveryTrait
 {
-    /**
-     * {@inheritDoc}
-     *
-     * Prepends the package with a `\\` in order to ensure it is fully
-     * qualified, preventing issues in config files that are namespaced.
-     */
-    public function inject($package, $type)
+    public function inject(string $package, int $type): bool
     {
         if (! $this->validConfigAggregatorConfig()) {
             return false;
         }
 
+        /** @psalm-suppress ArgumentTypeCoercion Psalm has issues with trait inheritance and type parsing. */
         return parent::inject('\\' . $package, $type);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * Prepends the package with a `\\` in order to ensure it is fully
-     * qualified, preventing issues in config files that are namespaced.
-     */
-    public function remove($package)
+    public function remove(string $package): bool
     {
         if (! $this->validConfigAggregatorConfig()) {
             return false;
@@ -42,26 +36,31 @@ trait ConditionalDiscoveryTrait
 
     /**
      * Does the config file hold valid ConfigAggregator configuration?
-     *
-     * @return bool
      */
-    private function validConfigAggregatorConfig()
+    private function validConfigAggregatorConfig(): bool
     {
-        $discoveryClass = $this->discoveryClass;
-        $discovery = new $discoveryClass($this->getProjectRoot());
+        $discoveryClass = $this->getDiscoveryClass();
+        $discovery      = new $discoveryClass($this->getProjectRoot(), $this->configFile);
         return $discovery->locate();
     }
 
     /**
      * Calculate the project root from the config file
-     *
-     * @return string
      */
-    private function getProjectRoot()
+    private function getProjectRoot(): string
     {
-        if (static::DEFAULT_CONFIG_FILE === $this->configFile) {
+        $configFile = $this->getConfigFile();
+        if ($this->getDefaultConfigFile() === $configFile) {
             return '';
         }
-        return str_replace('/' . static::DEFAULT_CONFIG_FILE, '', $this->configFile);
+
+        return str_replace('/' . $this->getDefaultConfigFile(), '', $configFile);
     }
+
+    abstract protected function getDefaultConfigFile(): string;
+
+    /**
+     * @return class-string<DiscoveryInterface>
+     */
+    abstract protected function getDiscoveryClass(): string;
 }

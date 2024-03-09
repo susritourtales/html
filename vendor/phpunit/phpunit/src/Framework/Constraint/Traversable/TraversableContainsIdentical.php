@@ -12,18 +12,15 @@ namespace PHPUnit\Framework\Constraint;
 use SplObjectStorage;
 
 /**
- * Constraint that asserts that the Traversable it is applied to contains
- * a given value (using strict comparison).
+ * @no-named-arguments Parameter names are not covered by the backward compatibility promise for PHPUnit
  */
 final class TraversableContainsIdentical extends TraversableContains
 {
     /**
      * Evaluates the constraint for parameter $other. Returns true if the
      * constraint is met, false otherwise.
-     *
-     * @param mixed $other value or object to evaluate
      */
-    protected function matches($other): bool
+    protected function matches(mixed $other): bool
     {
         if ($other instanceof SplObjectStorage) {
             return $other->contains($this->value());

@@ -297,6 +297,7 @@ a:hover {
     color: white;
     padding: 15px 30px;
     display: block;
+    text-decoration: none;
 }
 
 #collapsibleNavbar ul li {
@@ -468,6 +469,9 @@ font-size: 13px;
 }
 
 #extTable th:first-child {
+    min-width: auto;
+}
+#extTable .mw{
     min-width: auto;
 }
 #listPager li .custom-page-link{
@@ -994,4 +998,9 @@ font-size: 13px;
     .status-btn {
         margin-top: 70px;
     }
+}
+.under-construction {
+    font-size: 24px;
+    font-weight: bold;
+    color: #dc3545; /* Bootstrap's danger color */
 }

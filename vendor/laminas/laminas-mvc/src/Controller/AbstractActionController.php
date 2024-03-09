@@ -1,13 +1,8 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-mvc for the canonical source repository
- * @copyright https://github.com/laminas/laminas-mvc/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-mvc/blob/master/LICENSE.md New BSD License
- */
-
 namespace Laminas\Mvc\Controller;
 
+use Laminas\Mvc\Exception\DomainException;
 use Laminas\Mvc\Exception;
 use Laminas\Mvc\MvcEvent;
 use Laminas\View\Model\ViewModel;
@@ -20,7 +15,7 @@ abstract class AbstractActionController extends AbstractController
     /**
      * {@inheritDoc}
      */
-    protected $eventIdentifier = __CLASS__;
+    protected $eventIdentifier = self::class;
 
     /**
      * Default action if none provided
@@ -64,7 +59,7 @@ abstract class AbstractActionController extends AbstractController
              * @todo Determine requirements for when route match is missing.
              *       Potentially allow pulling directly from request metadata?
              */
-            throw new Exception\DomainException('Missing route matches; unsure how to retrieve action');
+            throw new DomainException('Missing route matches; unsure how to retrieve action');
         }
 
         $action = $routeMatch->getParam('action', 'not-found');

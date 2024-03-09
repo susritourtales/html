@@ -1,12 +1,15 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-config for the canonical source repository
- * @copyright https://github.com/laminas/laminas-config/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-config/blob/master/LICENSE.md New BSD License
- */
-
 namespace Laminas\Config\Processor;
+
+use function class_exists;
+use function constant;
+use function defined;
+use function get_defined_constants;
+use function is_string;
+use function preg_match;
+use function strpos;
+use function substr;
 
 class Constant extends Token implements ProcessorInterface
 {
@@ -27,7 +30,6 @@ class Constant extends Token implements ProcessorInterface
      * @param string $suffix Optional suffix
      * @param bool $enableKeyProcessing Whether or not to enable processing of
      *     constant values in configuration keys; defaults to false.
-     * @return \Laminas\Config\Processor\Constant
      */
     public function __construct($userOnly = true, $prefix = '', $suffix = '', $enableKeyProcessing = false)
     {
@@ -71,7 +73,7 @@ class Constant extends Token implements ProcessorInterface
     {
         if ($this->userOnly) {
             $constants = get_defined_constants(true);
-            $constants = isset($constants['user']) ? $constants['user'] : [];
+            $constants = $constants['user'] ?? [];
             $this->setTokens($constants);
         } else {
             $this->setTokens(get_defined_constants());
@@ -80,6 +82,7 @@ class Constant extends Token implements ProcessorInterface
 
     /**
      * Get current token registry.
+     *
      * @return array
      */
     public function getTokens()

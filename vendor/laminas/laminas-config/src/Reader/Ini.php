@@ -1,14 +1,27 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-config for the canonical source repository
- * @copyright https://github.com/laminas/laminas-config/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-config/blob/master/LICENSE.md New BSD License
- */
-
 namespace Laminas\Config\Reader;
 
 use Laminas\Config\Exception;
+
+use function array_merge_recursive;
+use function array_replace_recursive;
+use function array_shift;
+use function dirname;
+use function explode;
+use function is_array;
+use function is_file;
+use function is_readable;
+use function parse_ini_file;
+use function parse_ini_string;
+use function restore_error_handler;
+use function set_error_handler;
+use function sprintf;
+use function strpos;
+
+use const E_WARNING;
+use const INI_SCANNER_NORMAL;
+use const INI_SCANNER_TYPED;
 
 /**
  * INI config reader.
@@ -33,9 +46,20 @@ class Ini implements ReaderInterface
      * Flag which determines whether sections are processed or not.
      *
      * @see https://www.php.net/parse_ini_file
+     *
      * @var bool
      */
     protected $processSections = true;
+
+    /**
+     * Flag which determines whether boolean, null, and integer values should be
+     * returned as their proper types.
+     *
+     * @see https://www.php.net/parse_ini_file
+     *
+     * @var bool
+     */
+    protected $typedMode = false;
 
     /**
      * Set nest separator.
@@ -65,6 +89,7 @@ class Ini implements ReaderInterface
      * values are merged
      *
      * @see https://www.php.net/parse_ini_file
+     *
      * @param bool $processSections
      * @return $this
      */
@@ -80,6 +105,7 @@ class Ini implements ReaderInterface
      * values are merged
      *
      * @see https://www.php.net/parse_ini_file
+     *
      * @return bool
      */
     public function getProcessSections()
@@ -88,9 +114,44 @@ class Ini implements ReaderInterface
     }
 
     /**
+     * Set whether boolean, null, and integer values should be returned as their proper types.
+     * When set to false, all values will be returned as strings.
+     *
+     * @see https://www.php.net/parse_ini_file
+     */
+    public function setTypedMode(bool $typedMode): self
+    {
+        $this->typedMode = $typedMode;
+        return $this;
+    }
+
+    /**
+     * Get whether boolean, null, and integer values should be returned as their proper types.
+     * When set to false, all values will be returned as strings.
+     *
+     * @see https://www.php.net/parse_ini_file
+     */
+    public function getTypedMode(): bool
+    {
+        return $this->typedMode;
+    }
+
+    /**
+     * Get the scanner-mode constant value to be used with the built-in parse_ini_file function.
+     * Either INI_SCANNER_NORMAL or INI_SCANNER_TYPED depending on $typedMode.
+     *
+     * @see https://www.php.net/parse_ini_file
+     */
+    public function getScannerMode(): int
+    {
+        return $this->getTypedMode() ? INI_SCANNER_TYPED : INI_SCANNER_NORMAL;
+    }
+
+    /**
      * fromFile(): defined by Reader interface.
      *
      * @see    ReaderInterface::fromFile()
+     *
      * @param  string $filename
      * @return array
      * @throws Exception\RuntimeException
@@ -115,7 +176,7 @@ class Ini implements ReaderInterface
             },
             E_WARNING
         );
-        $ini = parse_ini_file($filename, $this->getProcessSections());
+        $ini = parse_ini_file($filename, $this->getProcessSections(), $this->getScannerMode());
         restore_error_handler();
 
         return $this->process($ini);
@@ -144,7 +205,7 @@ class Ini implements ReaderInterface
             },
             E_WARNING
         );
-        $ini = parse_ini_string($string, $this->getProcessSections());
+        $ini = parse_ini_string($string, $this->getProcessSections(), $this->getScannerMode());
         restore_error_handler();
 
         return $this->process($ini);
@@ -164,7 +225,7 @@ class Ini implements ReaderInterface
             if (is_array($value)) {
                 if (strpos($section, $this->nestSeparator) !== false) {
                     $sections = explode($this->nestSeparator, $section);
-                    $config = array_merge_recursive($config, $this->buildNestedSection($sections, $value));
+                    $config   = array_merge_recursive($config, $this->buildNestedSection($sections, $value));
                 } else {
                     $config[$section] = $this->processSection($value);
                 }
@@ -191,7 +252,7 @@ class Ini implements ReaderInterface
 
         $nestedSection = [];
 
-        $first = array_shift($sections);
+        $first                 = array_shift($sections);
         $nestedSection[$first] = $this->buildNestedSection($sections, $value);
 
         return $nestedSection;
@@ -220,7 +281,6 @@ class Ini implements ReaderInterface
      * @param  string $key
      * @param  string $value
      * @param  array  $config
-     * @return array
      * @throws Exception\RuntimeException
      */
     protected function processKey($key, $value, array &$config)

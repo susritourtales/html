@@ -9,6 +9,9 @@
  */
 namespace PHPUnit\Framework\Constraint;
 
+/**
+ * @no-named-arguments Parameter names are not covered by the backward compatibility promise for PHPUnit
+ */
 abstract class Operator extends Constraint
 {
     /**
@@ -31,7 +34,7 @@ abstract class Operator extends Constraint
     /**
      * Validates $constraint argument.
      */
-    protected function checkConstraint($constraint): Constraint
+    protected function checkConstraint(mixed $constraint): Constraint
     {
         if (!$constraint instanceof Constraint) {
             return new IsEqual($constraint);

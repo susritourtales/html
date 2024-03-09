@@ -1,11 +1,5 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-mvc for the canonical source repository
- * @copyright https://github.com/laminas/laminas-mvc/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-mvc/blob/master/LICENSE.md New BSD License
- */
-
 namespace Laminas\Mvc\Service;
 
 use Interop\Container\ContainerInterface;
@@ -43,7 +37,7 @@ class HttpDefaultRenderingStrategyFactory implements FactoryInterface
      */
     private function injectLayoutTemplate(DefaultRenderingStrategy $strategy, array $config)
     {
-        $layout = isset($config['layout']) ? $config['layout'] : 'layout/layout';
+        $layout = $config['layout'] ?? 'layout/layout';
         $strategy->setLayoutTemplate($layout);
     }
 }

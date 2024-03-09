@@ -1,21 +1,13 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-mvc for the canonical source repository
- * @copyright https://github.com/laminas/laminas-mvc/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-mvc/blob/master/LICENSE.md New BSD License
- */
-
 namespace Laminas\Mvc\Controller\Plugin;
 
+use Laminas\Mvc\Exception\DomainException;
 use Laminas\Http\Response;
 use Laminas\Mvc\Exception;
 use Laminas\Mvc\InjectApplicationEventInterface;
 use Laminas\Mvc\MvcEvent;
 
-/**
- * @todo       allow specifying status code as a default, or as an option to methods
- */
 class Redirect extends AbstractPlugin
 {
     protected $event;
@@ -36,7 +28,7 @@ class Redirect extends AbstractPlugin
     {
         $controller = $this->getController();
         if (! $controller || ! method_exists($controller, 'plugin')) {
-            throw new Exception\DomainException(
+            throw new DomainException(
                 'Redirect plugin requires a controller that defines the plugin() method'
             );
         }
@@ -91,7 +83,7 @@ class Redirect extends AbstractPlugin
         $event    = $this->getEvent();
         $response = $event->getResponse();
         if (! $response instanceof Response) {
-            throw new Exception\DomainException('Redirect plugin requires event compose a response');
+            throw new DomainException('Redirect plugin requires event compose a response');
         }
         $this->response = $response;
         return $this->response;
@@ -111,7 +103,7 @@ class Redirect extends AbstractPlugin
 
         $controller = $this->getController();
         if (! $controller instanceof InjectApplicationEventInterface) {
-            throw new Exception\DomainException(
+            throw new DomainException(
                 'Redirect plugin requires a controller that implements InjectApplicationEventInterface'
             );
         }

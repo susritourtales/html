@@ -1,14 +1,22 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-config for the canonical source repository
- * @copyright https://github.com/laminas/laminas-config/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-config/blob/master/LICENSE.md New BSD License
- */
-
 namespace Laminas\Config\Reader;
 
 use Laminas\Config\Exception;
+
+use function array_replace_recursive;
+use function dirname;
+use function file_get_contents;
+use function is_array;
+use function is_file;
+use function is_readable;
+use function json_decode;
+use function json_last_error;
+use function json_last_error_msg;
+use function sprintf;
+use function trim;
+
+use const JSON_ERROR_NONE;
 
 /**
  * JSON config reader.
@@ -26,6 +34,7 @@ class Json implements ReaderInterface
      * fromFile(): defined by Reader interface.
      *
      * @see    ReaderInterface::fromFile()
+     *
      * @param  string $filename
      * @return array
      * @throws Exception\RuntimeException
@@ -50,6 +59,7 @@ class Json implements ReaderInterface
      * fromString(): defined by Reader interface.
      *
      * @see    ReaderInterface::fromString()
+     *
      * @param  string $string
      * @return array|bool
      * @throws Exception\RuntimeException
@@ -101,7 +111,7 @@ class Json implements ReaderInterface
      *
      * @param string $data
      * @return array
-     * @throws Exception\RuntimeException for any decoding errors.
+     * @throws Exception\RuntimeException For any decoding errors.
      */
     private function decode($data)
     {

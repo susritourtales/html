@@ -1,27 +1,50 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-router for the canonical source repository
- * @copyright https://github.com/laminas/laminas-router/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-router/blob/master/LICENSE.md New BSD License
- */
+declare(strict_types=1);
 
 namespace Laminas\Router\Http;
 
 use Laminas\Router\Exception;
 use Laminas\Stdlib\ArrayUtils;
 use Laminas\Stdlib\RequestInterface as Request;
+use Laminas\Uri\UriInterface;
 use Traversable;
+
+use function array_merge;
+use function count;
+use function is_array;
+use function method_exists;
+use function preg_match;
+use function preg_quote;
+use function sprintf;
+use function strlen;
 
 /**
  * Hostname route.
+ *
+ * Note: the following type is recursive, but Psalm doesn't understand array shape recursion (yet). For now, we only
+ *       represented recursion of the 'optional' part type to 1 level, to ease analysis.
+ *
+ * @psalm-type Parts = list<
+ *     array{
+ *      'literal',
+ *      string,
+ *      string|null
+ *     }|array{
+ *      'parameter',
+ *      string
+ *     }|array{
+ *      'optional',
+ *      list<array{'literal', string, string|null}|array{'parameter', string}|array{'optional', array}>
+ *     }
+ * >
  */
 class Hostname implements RouteInterface
 {
     /**
      * Parts of the route.
      *
-     * @var array
+     * @var Parts
      */
     protected $parts;
 
@@ -49,9 +72,17 @@ class Hostname implements RouteInterface
     /**
      * List of assembled parameters.
      *
-     * @var array
+     * @var list<string>
      */
     protected $assembledParams = [];
+
+    /**
+     * @internal
+     * @deprecated Since 3.9.0 This property will be removed or made private in version 4.0
+     *
+     * @var int|null
+     */
+    public $priority;
 
     /**
      * Create a new hostname route.
@@ -71,7 +102,8 @@ class Hostname implements RouteInterface
      * factory(): defined by RouteInterface interface.
      *
      * @see    \Laminas\Router\RouteInterface::factory()
-     * @param  array|Traversable $options
+     *
+     * @param  iterable $options
      * @return Hostname
      * @throws Exception\InvalidArgumentException
      */
@@ -105,7 +137,7 @@ class Hostname implements RouteInterface
      * Parse a route definition.
      *
      * @param  string $def
-     * @return array
+     * @return Parts
      * @throws Exception\RuntimeException
      */
     protected function parseRouteDefinition($def)
@@ -117,7 +149,7 @@ class Hostname implements RouteInterface
         $level      = 0;
 
         while ($currentPos < $length) {
-            if (! preg_match('(\G(?P<literal>[a-z0-9-.]*)(?P<token>[:{\[\]]|$))', $def, $matches, 0, $currentPos)) {
+            if (! preg_match('(\G(?P<literal>[a-z0-9-.]*)(?P<token>[:\[\]]|$))', $def, $matches, 0, $currentPos)) {
                 throw new Exception\RuntimeException('Matched hostname literal contains a disallowed character');
             }
 
@@ -128,25 +160,27 @@ class Hostname implements RouteInterface
             }
 
             if ($matches['token'] === ':') {
-                if (! preg_match(
-                    '(\G(?P<name>[^:.{\[\]]+)(?:{(?P<delimiters>[^}]+)})?:?)',
-                    $def,
-                    $matches,
-                    0,
-                    $currentPos
-                )) {
+                if (
+                    ! preg_match(
+                        '(\G(?P<name>[^:.{\[\]]+)(?:{(?P<delimiters>[^}]+)})?:?)',
+                        $def,
+                        $matches,
+                        0,
+                        $currentPos
+                    )
+                ) {
                     throw new Exception\RuntimeException('Found empty parameter name');
                 }
 
                 $levelParts[$level][] = [
                     'parameter',
                     $matches['name'],
-                    isset($matches['delimiters']) ? $matches['delimiters'] : null
+                    $matches['delimiters'] ?? null,
                 ];
 
                 $currentPos += strlen($matches[0]);
             } elseif ($matches['token'] === '[') {
-                $levelParts[$level][] = ['optional', []];
+                $levelParts[$level][]   = ['optional', []];
                 $levelParts[$level + 1] = &$levelParts[$level][count($levelParts[$level]) - 1][1];
 
                 $level++;
@@ -172,9 +206,9 @@ class Hostname implements RouteInterface
     /**
      * Build the matching regex from parsed parts.
      *
-     * @param  array   $parts
-     * @param  array   $constraints
-     * @param  int $groupIndex
+     * @param Parts $parts
+     * @param array $constraints
+     * @param int   $groupIndex
      * @return string
      * @throws Exception\RuntimeException
      */
@@ -214,9 +248,9 @@ class Hostname implements RouteInterface
     /**
      * Build host.
      *
-     * @param  array   $parts
-     * @param  array   $mergedParams
-     * @param  bool    $isOptional
+     * @param Parts                 $parts
+     * @param array<string, string> $mergedParams
+     * @param bool                  $isOptional
      * @return string
      * @throws Exception\RuntimeException
      * @throws Exception\InvalidArgumentException
@@ -242,7 +276,8 @@ class Hostname implements RouteInterface
                         }
 
                         return '';
-                    } elseif (! $isOptional
+                    } elseif (
+                        ! $isOptional
                         || ! isset($this->defaults[$part[1]])
                         || $this->defaults[$part[1]] !== $mergedParams[$part[1]]
                     ) {
@@ -277,22 +312,23 @@ class Hostname implements RouteInterface
      * match(): defined by RouteInterface interface.
      *
      * @see    \Laminas\Router\RouteInterface::match()
-     * @param  Request $request
+     *
      * @return RouteMatch|null
      */
     public function match(Request $request)
     {
         if (! method_exists($request, 'getUri')) {
-            return;
+            return null;
         }
 
+        /** @var UriInterface $uri */
         $uri  = $request->getUri();
-        $host = $uri->getHost();
+        $host = $uri->getHost() ?? '';
 
         $result = preg_match('(^' . $this->regex . '$)', $host, $matches);
 
         if (! $result) {
-            return;
+            return null;
         }
 
         $params = [];
@@ -310,6 +346,7 @@ class Hostname implements RouteInterface
      * assemble(): Defined by RouteInterface interface.
      *
      * @see    \Laminas\Router\RouteInterface::assemble()
+     *
      * @param  array $params
      * @param  array $options
      * @return mixed
@@ -336,7 +373,8 @@ class Hostname implements RouteInterface
      * getAssembledParams(): defined by RouteInterface interface.
      *
      * @see    RouteInterface::getAssembledParams
-     * @return array
+     *
+     * @return list<string>
      */
     public function getAssembledParams()
     {

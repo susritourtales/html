@@ -1,11 +1,5 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-mvc for the canonical source repository
- * @copyright https://github.com/laminas/laminas-mvc/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-mvc/blob/master/LICENSE.md New BSD License
- */
-
 namespace Laminas\Mvc\Service;
 
 use Interop\Container\ContainerInterface;
@@ -70,16 +64,12 @@ class ServiceManagerConfig extends Config
      */
     public function __construct(array $config = [])
     {
-        $this->config['factories']['ServiceManager'] = function ($container) {
-            return $container;
-        };
+        $this->config['factories']['ServiceManager'] = static fn($container) => $container;
 
-        $this->config['factories']['SharedEventManager'] = function () {
-            return new SharedEventManager();
-        };
+        $this->config['factories']['SharedEventManager'] = static fn(): SharedEventManager => new SharedEventManager();
 
         $this->config['initializers'] = ArrayUtils::merge($this->config['initializers'], [
-            'EventManagerAwareInitializer' => function ($first, $second) {
+            'EventManagerAwareInitializer' => static function ($first, $second) : void {
                 if ($first instanceof ContainerInterface) {
                     $container = $first;
                     $instance = $second;
@@ -87,20 +77,16 @@ class ServiceManagerConfig extends Config
                     $container = $second;
                     $instance = $first;
                 }
-
                 if (! $instance instanceof EventManagerAwareInterface) {
                     return;
                 }
-
                 $eventManager = $instance->getEventManager();
-
                 // If the instance has an EM WITH an SEM composed, do nothing.
                 if ($eventManager instanceof EventManagerInterface
                     && $eventManager->getSharedManager() instanceof SharedEventManagerInterface
                 ) {
                     return;
                 }
-
                 $instance->setEventManager($container->get('EventManager'));
             },
         ]);
@@ -123,35 +109,6 @@ class ServiceManagerConfig extends Config
     public function configureServiceManager(ServiceManager $services)
     {
         $this->config['services'][ServiceManager::class] = $services;
-
-        /*
-        printf("Configuration prior to configuring servicemanager:\n");
-        foreach ($this->config as $type => $list) {
-            switch ($type) {
-                case 'aliases':
-                case 'delegators':
-                case 'factories':
-                case 'invokables':
-                case 'lazy_services':
-                case 'services':
-                case 'shared':
-                    foreach (array_keys($list) as $name) {
-                        printf("    %s (%s)\n", $name, $type);
-                    }
-                    break;
-
-                case 'initializers':
-                case 'abstract_factories':
-                    foreach ($list as $callable) {
-                        printf("    %s (%s)\n", (is_object($callable) ? get_class($callable) : $callable), $type);
-                    }
-                    break;
-
-                default:
-                    break;
-            }
-        }
-         */
 
         // This is invoked as part of the bootstrapping process, and requires
         // the ability to override services.

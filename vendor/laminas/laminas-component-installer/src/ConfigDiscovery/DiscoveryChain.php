@@ -1,50 +1,42 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-component-installer for the canonical source repository
- * @copyright https://github.com/laminas/laminas-component-installer/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-component-installer/blob/master/LICENSE.md New BSD License
- */
+declare(strict_types=1);
 
 namespace Laminas\ComponentInstaller\ConfigDiscovery;
 
 use Laminas\ComponentInstaller\Collection;
 
-class DiscoveryChain implements DiscoveryInterface, DiscoveryChainInterface
+/**
+ * @internal
+ */
+final class DiscoveryChain implements DiscoveryChainInterface
 {
     /**
      * Discovery Collection
      *
-     * @var Collection
+     * @var Collection<string,DiscoveryInterface>
      */
-    protected $chain;
+    protected Collection $chain;
 
     /**
-     * Constructor
-     *
      * Optionally specify project directory; $configFile will be relative to
      * this value.
      *
-     * @param mixed  $discovery
-     * @param string $projectDirectory
+     * @param array<string,class-string<DiscoveryInterface>> $discovery
      */
-    public function __construct($discovery, $projectDirectory = '')
+    public function __construct(array $discovery, string $projectDirectory = '')
     {
-        $this->chain = Collection::create($discovery)
-            // Create a discovery class for the dicovery type
-            ->map(function ($discoveryClass) use ($projectDirectory) {
-                return new $discoveryClass($projectDirectory);
-            })
+        $this->chain = (new Collection($discovery))
+            // Create a discovery class for the discovery type
+            ->map(static fn(string $discoveryClass) => new $discoveryClass($projectDirectory))
             // Use only those where we can locate a corresponding config file
-            ->filter(function ($discovery) {
-                return $discovery->locate();
-            });
+            ->filter(static fn(DiscoveryInterface $discovery) => $discovery->locate());
     }
 
     /**
      * {@inheritDoc}
      */
-    public function locate()
+    public function locate(): bool
     {
         return $this->chain->count() > 0;
     }
@@ -52,8 +44,8 @@ class DiscoveryChain implements DiscoveryInterface, DiscoveryChainInterface
     /**
      * {@inheritDoc}
      */
-    public function discoveryExists($name)
+    public function discoveryExists(string $name): bool
     {
-        return $this->chain->offsetExists($name);
+        return $this->chain->has($name);
     }
 }

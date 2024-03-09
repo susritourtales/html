@@ -13,34 +13,29 @@ $(document).ready(function ()
 {
     addedRow=$(".file-uploads:last").data("id");
     imageId=$(".image-preview:last").data("id");
-
     $("body").on("change","#country",function(){
         var countryId=$(this).val();
-
         var countryText=$('#country option:selected').text();
         countryText=countryText.toLowerCase();
         var options='<option value="">--select city--</option>';
-
         $("#cities").html(options);
         if(countryText=='india') {
             $("#state-wrapper").removeClass('d-none');
-            postData('/admin/admin/get-states', {"country_id": countryId}, function (response) {
+            postData('admin/get-states', {"country_id": countryId}, function (response) {
                 var options = '<option value="">--select state--</option>';
                 if (response.success) {
                     var list = response.states;
                     for (var s = 0; s < list.length; s++) {
                         options += '<option value="' + list[s].id + '" data-id="' + list[s].state_id + '">' + list[s].state_name + '</option>'
                     }
-
                     $('#states').html(options);
                     $(".state-wrapper").removeClass("hidden");
-
                 }
             });
         }else
         {
             $("#state-wrapper").addClass('d-none');
-            postData('/admin/admin/get-cities',{"country_id":countryId},function(response){
+            postData('admin/get-cities',{"country_id":countryId},function(response){
                 if(response.success)
                 {
                     var list=response.cities;
@@ -48,17 +43,15 @@ $(document).ready(function ()
                     {
                         options +='<option value="'+list[s].id+'">'+list[s].city_name+'</option>'
                     }
-
                     $('#cities').html(options);
                 }
             });
         }
-
     }).on("change","#states",function(){
         var stateId=$(this).val();
         var countryId=$("#country").val();
         $(".city-wrapper").removeClass("hidden");
-        postData('/admin/admin/get-cities',{"state_id":stateId,"country_id":countryId},function(response){
+        postData('admin/get-cities',{"state_id":stateId,"country_id":countryId},function(response){
             var options='<option value="">--select city--</option>';
             if(response.success)
             {
@@ -67,7 +60,6 @@ $(document).ready(function ()
                 {
                     options +='<option value="'+list[s].id+'">'+list[s].city_name+'</option>'
                 }
-
                 $('#cities').html(options);
             }
         });
@@ -76,17 +68,14 @@ $(document).ready(function ()
         var files = e.target.files;
         var rowId=$(this).data("id");
         $.each(files, function (i, file) {
-
             var reader = new FileReader();
             reader.onload = function (e)
             {
                 console.log(files);
-
                 var FileType = files[i].type;
                 var filename = files[i].name;
                 var fileExtension = FileType.substr((FileType.lastIndexOf('/') + 1));
                 var Extension = fileExtension.toLowerCase();
-
                 if ($.inArray(Extension, mediaFilesacceptedExtensions) === -1)
                 {
                     files=[];
@@ -101,9 +90,7 @@ $(document).ready(function ()
                 mediaFiles[rowId].push(file);
                 console.log( $('.file_name[data-id="'+rowId+'"]').length);
                 uploadFiles['attachment'][rowId]={"uploaded":false};
-
                 filesData.ajaxCall(2,file,rowId,function(progress,fileID,response){
-
                     $(".progress-bar[data-id='"+fileID+"']").css("width",'100%').text('100%');
                     if(!progress)
                     {
@@ -123,10 +110,8 @@ $(document).ready(function ()
 
                 });
                 $(".upload-div[data-id='"+rowId+"']").append(`<div class="position-absolute progress" data-id="${rowId}">
-                        <div class="progress-bar progress-bar-animate" role="progressbar" style="width: 1%;" aria-valuenow="55" aria-valuemin="0" aria-valuemax="100" data-id="${rowId}">1%</div>
-                    </div>`);
+                        <div class="progress-bar progress-bar-animate" role="progressbar" style="width: 1%;" aria-valuenow="55" aria-valuemin="0" aria-valuemax="100" data-id="${rowId}">1%</div></div>`);
                 $('.file_name[data-id="'+rowId+'"]').html(filename);
-
             };
             reader.readAsDataURL(file);
 
@@ -135,18 +120,15 @@ $(document).ready(function ()
         .on("change",".image-upload",function(e){
         var files = e.target.files;
         var element=$(this);
-
         var incerement=0;
         $.each(files, function (i, file){
             var reader = new FileReader();
-
             reader.onload = function (e)
             {
                 var FileType = files[i].type;
                 var filename = files[i].name;
                 var fileExtension = FileType.substr((FileType.lastIndexOf('/') + 1));
                 var Extension = fileExtension.toLowerCase();
-
                 if ($.inArray(Extension, imageacceptedExtensions) === -1)
                 {
                     files=[];
@@ -157,13 +139,7 @@ $(document).ready(function ()
                 imageId++;
                 imageFiles[imageId]=[];
                 imageFiles[imageId].push(file);
-                //  console.log( $('.file_name[data-id="'+rowId+'"]').length);
-                //  $('.file_name[data-id="'+rowId+'"]').html(filename);
-
                 uploadFiles['images'][imageId]={"uploaded":false};
-
-
-                // circle[imageId]  = $('.circlechart').data('radialIndicator');
                 let classId='circlechart_img_'+imageId;
                 $(".image-preview-wrapper").append('<div class="col-sm-4 mt-2 position-relative image-preview overflow-hidden" data-id="'+imageId+'"><div class="position-absolute circlechart '+classId+'" style="width: 100%;height: 100%" data-id="'+imageId+'"></div><img src="'+e.target.result+'" style="width: 100%;height: 100%"><span class="bg-white circle close-icon" data-id="'+imageId+'"><i class="fas fa-times position-absolute " data-id="'+imageId+'" ></i></span></div>');
                 circle[imageId] = radialIndicator('.'+classId,{
@@ -182,7 +158,6 @@ $(document).ready(function ()
                             circle[fileID].animate((fileID * 100));
                         }
                     }
-
                     if(!progress)
                     {
                         if(response.success)
@@ -202,20 +177,15 @@ $(document).ready(function ()
                         }
                     }
                 });
-
                 if(files.length == incerement)
                 {
                     element.val("");
                 }
-                //  console.log( $('.file_name[data-id="'+rowId+'"]').length);
-                //  $('.file_name[data-id="'+rowId+'"]').html(filename);
-
             };
             reader.readAsDataURL(file);
         });
 
         setTimeout(function(){
-
             var height=$(".image-preview-wrapper").height();
             var parentHeight=$(".image-upload-wrapper").height();
             console.log(parentHeight,height);
@@ -223,15 +193,12 @@ $(document).ready(function ()
             {
                 $(".image-upload").css("height",height);
             }
-
-
         },10);
 
     })
         .on("click",".close-icon",function () {
         var id=$(this).data("id");
         var edit=$(this).data("edit");
-
         if(edit)
         {
             $(".image-preview[data-id='"+id+"']").remove();
@@ -248,18 +215,14 @@ $(document).ready(function ()
             {
                 delete uploadFiles['images'][id]
             }
-
     }).on("click","#addPlace",function(){
-
-         var element=$(this);
+        var element=$(this);
         var countryElement=$("#country");
         var stateElement=$("#states");
         var cityElement=$("#cities");
         var error=false;
         var countryText=$('#country option:selected').text();
-
         var placeElement=$("#place-name");
-
         var cityId=cityElement.val();
         var stateId=stateElement.val();
         var countryId=countryElement.val();
@@ -292,21 +255,11 @@ $(document).ready(function ()
             messageDisplay("Please enter description");
             return  false;
         }
-        /*if(imageFiles.length==0)
-        {
-            messageDisplay("please select image files");
-            error=true;
-            return false;
-        }*/
-
-
         var imageFileIds=[];
         var fileIds=[];
         uploadClicked=true;
         element.html('Please wait...');
-
         element.prop('disabled',true);
-
         for(var k in uploadFiles['images'])
         {
             if(!uploadFiles['images'][k]['uploaded'])
@@ -321,20 +274,15 @@ $(document).ready(function ()
         {
             if(!uploadFiles['attachment'][a]['uploaded'])
             {
-
                 error=true;
                 break;
             }
             fileIds.push(uploadFiles['attachment'][a]['id']);
         }
-
         if(error)
         {
-
             return  false;
         }
-
-
         let mandatorytotalLanguages=[];
         let totalLanguages=[];
         var placeId=$("#placeId").val();
@@ -347,7 +295,6 @@ $(document).ready(function ()
             var fileName=fileNameElement.val();
             var fileLanguage=fileLanguageElement.val();
             fileName=$.trim(fileName);
-
             if(fileName!="" || mediaFiles[rowId]!=undefined || fileLanguage!=''){
                 if(fileName=="")
                 {
@@ -358,15 +305,12 @@ $(document).ready(function ()
                 }
                 tmp['file_name']=fileName;
                 if(editId==undefined) {
-
                     if(mediaFiles[rowId] == undefined)
                     {
-
                         messageDisplay("Please upload files");
                         error=true;
                         return false;
                     }
-
                     tmp['file_id']=uploadFiles['attachment'][rowId]['id'];
                 }else{
                     if(uploadFiles['attachment'][rowId])
@@ -376,7 +320,6 @@ $(document).ready(function ()
                         tmp['file_id']='';
                     }
                 }
-                //tmp['file_id']=rowId;
                 if(fileLanguage=="")
                 {
                     fileLanguageElement.focus();
@@ -407,26 +350,22 @@ $(document).ready(function ()
             element.prop('disabled',false);
             return false;
         }
-
         if($(".image-preview").length==0)
         {
             messageDisplay("Please Upload Image Files");
             return false;
         }
-
         if($(".file-uploads").length==0)
         {
             messageDisplay("Please Upload Audio Files");
             return false;
         }
-
         if(mandatorytotalLanguages.length!=mandatoryLanguages.length)
         {
             uploadClicked=false;
             messageDisplay("Please Select mandatory languages hindi and english",2000);
             return false;
         }
-
         var formData=new FormData();
         formData.append("country_id",countryId);
         formData.append("state_id",stateId);
@@ -439,17 +378,13 @@ $(document).ready(function ()
         formData.append("deleted_images",JSON.stringify(deletedImages));
         formData.append("images",imageFileIds);
         formData.append("file_Ids",fileIds);
-
-
-
         ajaxData('/a_dMin/edit-place',formData,function(response){
             if(response.success)
             {
                 messageDisplay(response.message);
                 setTimeout(function(){
-                    window.location.href=BASE_URL+'/a_dMin/places-list';
+                    window.location.href=BASE_URL+'/a_dMin/places';
                 },2000);
-
             }else{
                 element.prop('disabled',false);
                 element.html('Submit');
@@ -458,26 +393,21 @@ $(document).ready(function ()
     }).on("click",".add-control",function(){
         addedRow++;
         var rowsCount= $(".file-uploads").length;
-        postData('/admin/admin/file-upload-row',{'row_number':addedRow,"rows_count":rowsCount},function(response){
-
+        postData('/admin/file-upload-row',{'row_number':addedRow,"rows_count":rowsCount},function(response){
             $("#file-upload-wrapper").append(response);
         });
     }).on("click",".remove-control",function(){
         var id=$(this).data("id");
-
         if(mediaFiles[id]!=undefined)
         {
             delete mediaFiles[id];
         }
         var rowElement=$(".file-uploads[data-id='"+id+"']");
-
         var editId=rowElement.data("edit");
-
         if(editId!=undefined)
         {
             deletedAudio.push(editId);
         }
-
         rowElement.remove();
         if(uploadFiles['attachment'][id]!=undefined)
         {

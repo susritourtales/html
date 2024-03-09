@@ -1,10 +1,6 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-authentication for the canonical source repository
- * @copyright https://github.com/laminas/laminas-authentication/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-authentication/blob/master/LICENSE.md New BSD License
- */
+declare(strict_types=1);
 
 namespace Laminas\Authentication\Adapter;
 
@@ -12,6 +8,9 @@ use Exception;
 use Laminas\Authentication\Exception\InvalidArgumentException;
 use Laminas\Authentication\Exception\RuntimeException;
 use Laminas\Authentication\Result;
+
+use function call_user_func;
+use function is_callable;
 
 /**
  * Authentication Adapter authenticates using callback function.
@@ -21,13 +20,11 @@ use Laminas\Authentication\Result;
  */
 class Callback extends AbstractAdapter
 {
-    /**
-     * @var callable
-     */
+    /** @var callable(mixed, mixed): mixed|false */
     protected $callback;
 
     /**
-     * @param callable $callback The authentication callback
+     * @param callable(mixed, mixed): mixed|false $callback The authentication callback
      */
     public function __construct($callback = null)
     {
@@ -65,7 +62,7 @@ class Callback extends AbstractAdapter
     /**
      * Gets the value of callback.
      *
-     * @return null|callable
+     * @return null|(callable(mixed, mixed): mixed|false)
      */
     public function getCallback()
     {
@@ -75,8 +72,9 @@ class Callback extends AbstractAdapter
     /**
      * Sets the value of callback.
      *
-     * @param  callable $callback the callback
+     * @param callable(mixed, mixed): mixed|false $callback the callback
      * @throws InvalidArgumentException
+     * @return void
      */
     public function setCallback($callback)
     {

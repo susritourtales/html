@@ -15,16 +15,23 @@
         "forum": "https://discourse.laminas.dev"
     },
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "platform": {
+            "php": "8.1.99"
+        },
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
     },
     "require": {
-        "php": "^5.6 || ^7.0",
-        "laminas/laminas-zendframework-bridge": "^1.0"
+        "php": "~8.1.0 || ~8.2.0 || ~8.3.0"
     },
     "require-dev": {
-        "laminas/laminas-coding-standard": "~1.0.0",
-        "mikey179/vfsstream": "^1.6.5",
-        "phpunit/phpunit": "^5.7.27 || ^6.5.8 || ^7.1.5"
+        "laminas/laminas-coding-standard": "~2.5.0",
+        "mikey179/vfsstream": "^1.6.11",
+        "phpunit/phpunit": "^10.4.2",
+        "psalm/plugin-phpunit": "^0.18.4",
+        "vimeo/psalm": "^5.15.0"
     },
     "autoload": {
         "psr-4": {
@@ -49,7 +56,7 @@
         "test": "phpunit --colors=always",
         "test-coverage": "phpunit --colors=always --coverage-clover clover.xml"
     },
-    "replace": {
-        "zfcampus/zf-development-mode": "^3.2.0"
+    "conflict": {
+        "zfcampus/zf-development-mode": "*"
     }
 }

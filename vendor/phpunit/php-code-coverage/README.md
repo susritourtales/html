@@ -3,6 +3,7 @@
 [![Latest Stable Version](https://poser.pugx.org/phpunit/php-code-coverage/v/stable.png)](https://packagist.org/packages/phpunit/php-code-coverage)
 [![CI Status](https://github.com/sebastianbergmann/php-code-coverage/workflows/CI/badge.svg)](https://github.com/sebastianbergmann/php-code-coverage/actions)
 [![Type Coverage](https://shepherd.dev/github/sebastianbergmann/php-code-coverage/coverage.svg)](https://shepherd.dev/github/sebastianbergmann/php-code-coverage)
+[![codecov](https://codecov.io/gh/sebastianbergmann/php-code-coverage/branch/main/graph/badge.svg)](https://codecov.io/gh/sebastianbergmann/php-code-coverage)
 
 Provides collection, processing, and rendering functionality for PHP code coverage information.
 
@@ -23,12 +24,25 @@ composer require --dev phpunit/php-code-coverage
 ## Usage
 
 ```php
-<?php
+<?php declare(strict_types=1);
+use SebastianBergmann\CodeCoverage\Filter;
+use SebastianBergmann\CodeCoverage\Driver\Selector;
 use SebastianBergmann\CodeCoverage\CodeCoverage;
+use SebastianBergmann\CodeCoverage\Report\Html\Facade as HtmlReport;
 
-$coverage = new CodeCoverage;
+$filter = new Filter;
 
-$coverage->filter()->includeDirectory('/path/to/src');
+$filter->includeFiles(
+    [
+        '/path/to/file.php',
+        '/path/to/another_file.php',
+    ]
+);
+
+$coverage = new CodeCoverage(
+    (new Selector)->forLineCoverage($filter),
+    $filter
+);
 
 $coverage->start('<name of test>');
 
@@ -36,10 +50,6 @@ $coverage->start('<name of test>');
 
 $coverage->stop();
 
-$writer = new \SebastianBergmann\CodeCoverage\Report\Clover;
-$writer->process($coverage, '/tmp/clover.xml');
 
-$writer = new \SebastianBergmann\CodeCoverage\Report\Html\Facade;
-$writer->process($coverage, '/tmp/code-coverage-report');
+(new HtmlReport)->process($coverage, '/tmp/code-coverage-report');
 ```
-

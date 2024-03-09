@@ -1,34 +1,35 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-mvc for the canonical source repository
- * @copyright https://github.com/laminas/laminas-mvc/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-mvc/blob/master/LICENSE.md New BSD License
- */
-
 namespace Laminas\Mvc;
 
+use Throwable;
+use Exception;
 use Interop\Container\ContainerInterface;
 use Interop\Http\ServerMiddleware\MiddlewareInterface;
 use Laminas\EventManager\AbstractListenerAggregate;
 use Laminas\EventManager\EventManagerInterface;
 use Laminas\Mvc\Controller\MiddlewareController;
 use Laminas\Mvc\Exception\InvalidMiddlewareException;
-use Laminas\Mvc\Exception\ReachedFinalHandlerException;
 use Laminas\Psr7Bridge\Psr7Response;
-use Laminas\Router\RouteMatch;
-use Laminas\Stratigility\Delegate\CallableDelegateDecorator;
 use Laminas\Stratigility\MiddlewarePipe;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
-use Psr\Http\Message\ServerRequestInterface as PsrServerRequestInterface;
 
+use function sprintf;
+use function trigger_error;
+
+use const E_USER_DEPRECATED;
+
+/**
+ * @deprecated Since 3.2.0
+ */
 class MiddlewareListener extends AbstractListenerAggregate
 {
     /**
      * Attach listeners to an event manager
      *
      * @param  EventManagerInterface $events
+     * @param  int                   $priority
      * @return void
      */
     public function attach(EventManagerInterface $events, $priority = 1)
@@ -39,7 +40,6 @@ class MiddlewareListener extends AbstractListenerAggregate
     /**
      * Listen to the "dispatch" event
      *
-     * @param  MvcEvent $event
      * @return mixed
      */
     public function onDispatch(MvcEvent $event)
@@ -53,6 +53,12 @@ class MiddlewareListener extends AbstractListenerAggregate
         if (false === $middleware) {
             return;
         }
+
+        trigger_error(sprintf(
+            'Dispatching middleware with %s is deprecated since 3.2.0;'
+            . ' please use the laminas/laminas-mvc-middleware package instead',
+            self::class
+        ), E_USER_DEPRECATED);
 
         $request        = $event->getRequest();
         $application    = $event->getApplication();
@@ -87,9 +93,7 @@ class MiddlewareListener extends AbstractListenerAggregate
                 $application->getServiceManager()->get('EventManager'),
                 $event
             ))->dispatch($request, $response);
-        } catch (\Throwable $ex) {
-            $caughtException = $ex;
-        } catch (\Exception $ex) {  // @TODO clean up once PHP 7 requirement is enforced
+        } catch (Throwable $ex) {
             $caughtException = $ex;
         }
 
@@ -120,9 +124,6 @@ class MiddlewareListener extends AbstractListenerAggregate
     /**
      * Create a middleware pipe from the array spec given.
      *
-     * @param ContainerInterface $serviceLocator
-     * @param ResponseInterface $responsePrototype
-     * @param array $middlewaresToBePiped
      * @return MiddlewarePipe
      * @throws InvalidMiddlewareException
      */
@@ -138,7 +139,7 @@ class MiddlewareListener extends AbstractListenerAggregate
                 throw InvalidMiddlewareException::fromNull();
             }
 
-            $middlewareName = is_string($middlewareToBePiped) ? $middlewareToBePiped : get_class($middlewareToBePiped);
+            $middlewareName = is_string($middlewareToBePiped) ? $middlewareToBePiped : $middlewareToBePiped::class;
 
             if (is_string($middlewareToBePiped) && $serviceLocator->has($middlewareToBePiped)) {
                 $middlewareToBePiped = $serviceLocator->get($middlewareToBePiped);
@@ -157,9 +158,6 @@ class MiddlewareListener extends AbstractListenerAggregate
      *
      * @param  string $type
      * @param  string $middlewareName
-     * @param  MvcEvent $event
-     * @param  Application $application
-     * @param  \Exception $exception
      * @return mixed
      */
     protected function marshalInvalidMiddleware(
@@ -167,7 +165,7 @@ class MiddlewareListener extends AbstractListenerAggregate
         $middlewareName,
         MvcEvent $event,
         Application $application,
-        \Exception $exception = null
+        Exception $exception = null
     ) {
         $event->setName(MvcEvent::EVENT_DISPATCH_ERROR);
         $event->setError($type);

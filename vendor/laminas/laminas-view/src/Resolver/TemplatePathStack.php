@@ -1,26 +1,56 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-view for the canonical source repository
- * @copyright https://github.com/laminas/laminas-view/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-view/blob/master/LICENSE.md New BSD License
- */
+declare(strict_types=1);
 
 namespace Laminas\View\Resolver;
 
+use Laminas\Stdlib\ArrayUtils;
 use Laminas\Stdlib\SplStack;
 use Laminas\View\Exception;
 use Laminas\View\Renderer\RendererInterface as Renderer;
+use Laminas\View\Stream;
 use SplFileInfo;
 use Traversable;
 
+use function array_change_key_case;
+use function count;
+use function file_exists;
+use function get_debug_type;
+use function gettype;
+use function in_array;
+use function ini_get;
+use function is_array;
+use function is_string;
+use function ltrim;
+use function pathinfo;
+use function preg_match;
+use function rtrim;
+use function sprintf;
+use function stream_get_wrappers;
+use function stream_wrapper_register;
+use function strpos;
+
+use const DIRECTORY_SEPARATOR;
+use const PATHINFO_EXTENSION;
+
 /**
  * Resolves view scripts based on a stack of paths
+ *
+ * @psalm-type PathStack = SplStack<string>
+ * @psalm-type Options = array{
+ *     lfi_protection?: bool,
+ *     script_paths?: list<string>,
+ *     default_suffix?: string,
+ *     use_stream_wrapper?: bool,
+ * }
+ * @final
  */
 class TemplatePathStack implements ResolverInterface
 {
-    const FAILURE_NO_PATHS  = 'TemplatePathStack_Failure_No_Paths';
-    const FAILURE_NOT_FOUND = 'TemplatePathStack_Failure_Not_Found';
+    /** @deprecated */
+    public const FAILURE_NO_PATHS = 'TemplatePathStack_Failure_No_Paths';
+    /** @deprecated */
+    public const FAILURE_NOT_FOUND = 'TemplatePathStack_Failure_Not_Found';
 
     /**
      * Default suffix to use
@@ -31,13 +61,13 @@ class TemplatePathStack implements ResolverInterface
      */
     protected $defaultSuffix = 'phtml';
 
-    /**
-     * @var SplStack
-     */
+    /** @var PathStack */
     protected $paths;
 
     /**
      * Reason for last lookup failure
+     *
+     * @deprecated This property will be removed in v3.0 of this component.
      *
      * @var false|string
      */
@@ -45,33 +75,44 @@ class TemplatePathStack implements ResolverInterface
 
     /**
      * Flag indicating whether or not LFI protection for rendering view scripts is enabled
+     *
      * @var bool
      */
     protected $lfiProtectionOn = true;
 
     /**@+
      * Flags used to determine if a stream wrapper should be used for enabling short tags
-     * @var bool
      */
-    protected $useViewStream    = false;
-    protected $useStreamWrapper = false;
-    /**@-*/
 
     /**
-     * Constructor
+     * @deprecated Stream wrapper functionality will be removed in version 3.0 of this component
      *
-     * @param  null|array|Traversable $options
+     * @var bool
      */
+    protected $useViewStream = false;
+    /**
+     * @deprecated Stream wrapper functionality will be removed in version 3.0 of this component
+     *
+     * @var bool
+     */
+    protected $useStreamWrapper = false;
+
+    /**@-*/
+
+    /** @param  null|Options|Traversable<string, mixed> $options */
     public function __construct($options = null)
     {
         $this->useViewStream = (bool) ini_get('short_open_tag');
         if ($this->useViewStream) {
             if (! in_array('laminas.view', stream_get_wrappers())) {
-                stream_wrapper_register('laminas.view', 'Laminas\View\Stream');
+                /** @psalm-suppress DeprecatedClass */
+                stream_wrapper_register('laminas.view', Stream::class);
             }
         }
 
-        $this->paths = new SplStack;
+        /** @psalm-var PathStack $paths */
+        $paths       = new SplStack();
+        $this->paths = $paths;
         if (null !== $options) {
             $this->setOptions($options);
         }
@@ -80,36 +121,37 @@ class TemplatePathStack implements ResolverInterface
     /**
      * Configure object
      *
-     * @param  array|Traversable $options
+     * @param  Options|Traversable<string, mixed> $options
      * @return void
      * @throws Exception\InvalidArgumentException
      */
     public function setOptions($options)
     {
+        /** @psalm-suppress DocblockTypeContradiction */
         if (! is_array($options) && ! $options instanceof Traversable) {
             throw new Exception\InvalidArgumentException(sprintf(
                 'Expected array or Traversable object; received "%s"',
-                (is_object($options) ? get_class($options) : gettype($options))
+                get_debug_type($options),
             ));
         }
 
-        foreach ($options as $key => $value) {
-            switch (strtolower($key)) {
-                case 'lfi_protection':
-                    $this->setLfiProtection($value);
-                    break;
-                case 'script_paths':
-                    $this->addPaths($value);
-                    break;
-                case 'use_stream_wrapper':
-                    $this->setUseStreamWrapper($value);
-                    break;
-                case 'default_suffix':
-                    $this->setDefaultSuffix($value);
-                    break;
-                default:
-                    break;
-            }
+        $options = $options instanceof Traversable ? ArrayUtils::iteratorToArray($options) : $options;
+        $options = array_change_key_case($options);
+
+        if (isset($options['lfi_protection'])) {
+            $this->setLfiProtection($options['lfi_protection']);
+        }
+
+        if (isset($options['script_paths'])) {
+            $this->addPaths($options['script_paths']);
+        }
+
+        if (isset($options['use_stream_wrapper'])) {
+            $this->setUseStreamWrapper($options['use_stream_wrapper']);
+        }
+
+        if (isset($options['default_suffix'])) {
+            $this->setDefaultSuffix($options['default_suffix']);
         }
     }
 
@@ -117,7 +159,7 @@ class TemplatePathStack implements ResolverInterface
      * Set default file suffix
      *
      * @param  string $defaultSuffix
-     * @return TemplatePathStack
+     * @return $this
      */
     public function setDefaultSuffix($defaultSuffix)
     {
@@ -139,8 +181,8 @@ class TemplatePathStack implements ResolverInterface
     /**
      * Add many paths to the stack at once
      *
-     * @param  array $paths
-     * @return TemplatePathStack
+     * @param  list<string> $paths
+     * @return $this
      */
     public function addPaths(array $paths)
     {
@@ -151,9 +193,9 @@ class TemplatePathStack implements ResolverInterface
     }
 
     /**
-     * Rest the path stack to the paths provided
+     * Reset the path stack to the paths provided
      *
-     * @param  SplStack|array $paths
+     * @param  PathStack|list<string> $paths
      * @return TemplatePathStack
      * @throws Exception\InvalidArgumentException
      */
@@ -161,16 +203,21 @@ class TemplatePathStack implements ResolverInterface
     {
         if ($paths instanceof SplStack) {
             $this->paths = $paths;
-        } elseif (is_array($paths)) {
-            $this->clearPaths();
-            $this->addPaths($paths);
-        } else {
-            throw new Exception\InvalidArgumentException(
-                "Invalid argument provided for \$paths, expecting either an array or SplStack object"
-            );
+
+            return $this;
         }
 
-        return $this;
+        /** @psalm-suppress RedundantConditionGivenDocblockType */
+        if (is_array($paths)) {
+            $this->clearPaths();
+            $this->addPaths($paths);
+
+            return $this;
+        }
+
+        throw new Exception\InvalidArgumentException(
+            "Invalid argument provided for \$paths, expecting either an array or SplStack object"
+        );
     }
 
     /**
@@ -181,8 +228,8 @@ class TemplatePathStack implements ResolverInterface
      */
     public static function normalizePath($path)
     {
-        $path = rtrim($path, '/');
-        $path = rtrim($path, '\\');
+        $path  = rtrim($path, '/');
+        $path  = rtrim($path, '\\');
         $path .= DIRECTORY_SEPARATOR;
         return $path;
     }
@@ -191,7 +238,7 @@ class TemplatePathStack implements ResolverInterface
      * Add a single path to the stack
      *
      * @param  string $path
-     * @return TemplatePathStack
+     * @return $this
      * @throws Exception\InvalidArgumentException
      */
     public function addPath($path)
@@ -202,7 +249,7 @@ class TemplatePathStack implements ResolverInterface
                 gettype($path)
             ));
         }
-        $this->paths[] = static::normalizePath($path);
+        $this->paths->push(static::normalizePath($path));
         return $this;
     }
 
@@ -213,13 +260,15 @@ class TemplatePathStack implements ResolverInterface
      */
     public function clearPaths()
     {
-        $this->paths = new SplStack;
+        /** @psalm-var PathStack $paths */
+        $paths       = new SplStack();
+        $this->paths = $paths;
     }
 
     /**
      * Returns stack of paths
      *
-     * @return SplStack
+     * @return PathStack
      */
     public function getPaths()
     {
@@ -251,6 +300,8 @@ class TemplatePathStack implements ResolverInterface
     /**
      * Set flag indicating if stream wrapper should be used if short_open_tag is off
      *
+     * @deprecated will be removed in version 3
+     *
      * @param  bool $flag
      * @return TemplatePathStack
      */
@@ -266,22 +317,23 @@ class TemplatePathStack implements ResolverInterface
      * Returns true if the use_stream_wrapper flag is set, and if short_open_tag
      * is disabled.
      *
+     * @deprecated will be removed in version 3
+     *
      * @return bool
      */
     public function useStreamWrapper()
     {
-        return ($this->useViewStream && $this->useStreamWrapper);
+        return $this->useViewStream && $this->useStreamWrapper;
     }
 
     /**
      * Retrieve the filesystem path to a view script
      *
      * @param  string $name
-     * @param  null|Renderer $renderer
      * @return string
      * @throws Exception\DomainException
      */
-    public function resolve($name, Renderer $renderer = null)
+    public function resolve($name, ?Renderer $renderer = null)
     {
         $this->lastLookupFailure = false;
 
@@ -293,12 +345,13 @@ class TemplatePathStack implements ResolverInterface
 
         if (! count($this->paths)) {
             $this->lastLookupFailure = static::FAILURE_NO_PATHS;
+            // @TODO In version 3, this should become an exception
             return false;
         }
 
         // Ensure we have the expected file extension
         $defaultSuffix = $this->getDefaultSuffix();
-        if (pathinfo($name, PATHINFO_EXTENSION) == '') {
+        if (pathinfo($name, PATHINFO_EXTENSION) === '') {
             $name .= '.' . $defaultSuffix;
         }
 
@@ -313,6 +366,7 @@ class TemplatePathStack implements ResolverInterface
                         break;
                     }
                 }
+                /** @psalm-suppress DeprecatedMethod */
                 if ($this->useStreamWrapper()) {
                     // If using a stream wrapper, prepend the spec to the path
                     $filePath = 'laminas.view://' . $filePath;
@@ -322,11 +376,15 @@ class TemplatePathStack implements ResolverInterface
         }
 
         $this->lastLookupFailure = static::FAILURE_NOT_FOUND;
+        // @TODO This should become an exception in v3.0
         return false;
     }
 
     /**
      * Get the last lookup failure message, if any
+     *
+     * @deprecated In version 3.0, this resolver will throw exceptions instead of
+     *             incorrectly returning false from resolve()
      *
      * @return false|string
      */

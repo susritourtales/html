@@ -29,11 +29,6 @@ $(document).ready(function () {
                 currentPage: 1,
                 onPageClick: function (pageNumber)
                 {
-                    // jQuery("#recordsList").html('loading...');
-                    // .load(BASE_URL + "/admin/admin/load-country-list?page_number=" + pageNumber);
-                    /* postData("/admin/tours/load-city-tour-list",{"page_number":pageNumber},function(response){
-                     jQuery("#recordsList").html(response);
-                     });*/
                     if (ajaxCall != null) {
                         ajaxCall.abort();
                     }
@@ -43,7 +38,7 @@ $(document).ready(function () {
                     formData.append('page_number', pageNumber);
                     ajaxCall = $.ajax({
                         type: "POST",
-                        url: BASE_URL + '/admin/tours/load-world-tour-list',
+                        url: BASE_URL + '/admin/load-world-tour-list',
                         data: formData,
                         cache: false,
                         contentType: false,
@@ -62,23 +57,22 @@ $(document).ready(function () {
     }
     initPagination();
     $("body").on("click",".delete-place",function () {
-        var priceId=$(this).data("id");
+        var taleId=$(this).data("id");
         var placeId=$(this).data("place");
-        $(".delete-conform-button").attr("data-id",priceId).attr("data-place",placeId);
-
-        $("#deletePlaceModal").modal("show");
-    }) .on("click",'.delete-conform-button',function () {
+        $(".delete-conform-button").attr("data-id",taleId).attr("data-place",placeId);
+        $("#deleteEntityModal").modal("show");
+    }).on("click",'.delete-conform-button',function(){
         $(this).prop("disabled",true);
-        var priceId = $(this).attr("data-id");
+        var taleId = $(this).attr("data-id");
         var placeId = $(this).attr("data-place");
-        postData("/admin/tours/delete-tour-price", {price_id:priceId,place_id:placeId},function (response){
+        postData("/admin/delete-tour-tale", {tale_id:taleId,place_id:placeId},function (response){
             var jsonRespnse = parseJsonData(response);
             messageDisplay(jsonRespnse.message);
-            if(jsonRespnse.success) {
+            if(jsonRespnse.success){
                 setTimeout(function(){
                     window.location.reload();
                 },2000);
-            }else {
+            }else{
                 $(".delete-conform-button").prop("disabled",true);
             }
         })
@@ -150,7 +144,7 @@ $(document).ready(function () {
         formData.append('type','search');
         ajaxCall=  $.ajax({
             type: "POST",
-            url: BASE_URL+'/admin/tours/load-world-tour-list',
+            url: BASE_URL+'/admin/load-world-tour-list',
             data: formData,
             cache: false,
             contentType: false,

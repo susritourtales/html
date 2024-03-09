@@ -1,6 +1,3 @@
-
-
-
 $(document).ready(function () {
      var filter={};
     var ajaxCall=null;
@@ -12,7 +9,6 @@ $(document).ready(function () {
                 <div class="arrows">
                     <i class="fas fa-sort" data-id="${data.input}"></i>
                     <i class="fas fa-sort-down d-none" data-id="${data.input}"></i>
-                    
                     <i class="fas fa-sort-up d-none" data-id="${data.input}"></i>
                 </div>
             </div>`;
@@ -24,7 +20,6 @@ $(document).ready(function () {
       {
           $("#listPager").html('');
           var items = parseInt($(".records").val());
-
           if(items>10) {
               $('.pagination').pagination({
                   items: items,
@@ -40,13 +35,12 @@ $(document).ready(function () {
                       formData.append('page_number', pageNumber);
                       ajaxCall = $.ajax({
                           type: "POST",
-                          url: BASE_URL + '/admin/admin/load-places-list',
+                          url: BASE_URL + '/admin/load-places-list',
                           data: formData,
                           cache: false,
                           contentType: false,
                           processData: false,
                           success: function (data) {
-
                               ajaxCall = null;
                               $("tbody").html(data);
                           },
@@ -58,41 +52,38 @@ $(document).ready(function () {
           }
       }
     initPagination()
-    $("body").on("click",".delete-place",function(){
-        var placeId=$(this).data("id");
-        $(".delete-conform-button").attr("data-id",placeId);
-        $("#deletePlaceModal").modal("show");
-    }).on("click",'.delete-conform-button',function (){
-        $(this).prop("disabled",true);
-        var placeId = $(this).attr("data-id");
-        postData("/admin/admin/delete-place", {place_id:placeId},function (response) {
-            var jsonRespnse = parseJsonData(response);
-            messageDisplay(jsonRespnse.message);
-            if(jsonRespnse.success) {
-                setTimeout(function(){
-                    window.location.reload();
-                },2000);
-            }else {
-                $(".delete-conform-button").prop("disabled",true);
-            }
-        })
-    }).on('click', '.fa-sort',  function (){
+    $("body").on("click", ".delete-place", function() {
+		var id = $(this).data("id");
+		$(".delete-conform-button").attr("data-id", id);
+		$("#deleteEntityModal").modal("show");
+	}).on("click", '.delete-conform-button', function() {
+		$(this).prop("disabled", true);
+		var id = $(this).attr("data-id");
+		postData("/admin/delete-place", {'id': id}, function(response) {
+			var jsonRespnse = parseJsonData(response);
+			messageDisplay(jsonRespnse.message);
+			if (jsonRespnse.success) {
+				setTimeout(function() {
+					window.location.href = BASE_URL + "/a_dMin/places";
+				}, 3000);
+			} else {
+				$(".delete-conform-button").prop("disabled", true);
+			}
+		})
+	}).on('click', '.fa-sort',  function (){
         $('.fa-sort').removeClass("d-none");
         $('.fa-sort-up').addClass("d-none");
         $('.fa-sort-down').addClass("d-none");
         let dataId=$(this).data("id");
-                 for(var keys in filter)
-                 {
-
-                     if(keys!=dataId)
-                     {
-                         filter[keys]['order']="";
-                     }else{
-
-                         filter[keys]['order']=1;
-                     }
-                 }
-
+        for(var keys in filter)
+        {
+            if(keys!=dataId)
+            {
+                filter[keys]['order']="";
+            }else{
+                filter[keys]['order']=1;
+            }
+        }
         $(this).addClass('d-none');
         $(this).parent(".arrows").find('.fa-sort-up').removeClass('d-none');
         filterData();
@@ -102,10 +93,8 @@ $(document).ready(function () {
         let dataId=$(this).data("id");
         for(let keys in filter)
         {
-
             if(keys!=dataId)
             {
-
                 filter[keys]['order']="";
             }else{
                 filter[keys]['order']=-1;
@@ -113,7 +102,6 @@ $(document).ready(function () {
         }
         $(this).parent(".arrows").find('.fa-sort-down').removeClass('d-none');
         filterData();
-
     }).on('click', '.fa-sort-down',function(){
         $(this).addClass('d-none');
         let dataId=$(this).data("id");
@@ -144,7 +132,7 @@ $(document).ready(function () {
           formData.append('type','search');
           ajaxCall=  $.ajax({
               type: "POST",
-              url: BASE_URL+'/admin/admin/load-places-list',
+              url: BASE_URL+'/admin/load-places-list',
               data: formData,
               cache: false,
               contentType: false,

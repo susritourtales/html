@@ -1,8 +1,15 @@
 <?php
+use Laminas\Mvc\Application;
+use Laminas\Stdlib\ArrayUtils;
 
-use Zend\Mvc\Application;
-use Zend\Stdlib\ArrayUtils;
-  ob_start();
+/**
+ * Display all errors when APPLICATION_ENV is development.
+ */
+if ($_SERVER['APPLICATION_ENV'] === 'development') {
+    error_reporting(E_ALL);
+    ini_set("display_errors", '1');
+}
+
 /**
  * This makes our life easier when dealing with paths. Everything is relative
  * to the application root now.
@@ -26,7 +33,7 @@ if (! class_exists(Application::class)) {
         "Unable to load application.\n"
         . "- Type `composer install` if you are developing locally.\n"
         . "- Type `vagrant ssh -c 'composer install'` if you are using Vagrant.\n"
-        . "- Type `docker-compose run zf composer install` if you are using Docker.\n"
+        . "- Type `docker-compose run laminas composer install` if you are using Docker.\n"
     );
 }
 
@@ -38,3 +45,4 @@ if (file_exists(__DIR__ . '/../config/development.config.php')) {
 
 // Run the application!
 Application::init($appConfig)->run();
+?>

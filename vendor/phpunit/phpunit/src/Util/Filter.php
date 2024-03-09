@@ -15,9 +15,9 @@ use function in_array;
 use function is_file;
 use function realpath;
 use function sprintf;
-use function strpos;
+use function str_starts_with;
 use PHPUnit\Framework\Exception;
-use PHPUnit\Framework\SyntheticError;
+use PHPUnit\Framework\PhptAssertionFailedError;
 use Throwable;
 
 /**
@@ -28,20 +28,20 @@ final class Filter
     /**
      * @throws Exception
      */
-    public static function getFilteredStacktrace(Throwable $t): string
+    public static function getFilteredStacktrace(Throwable $t, bool $unwrap = true): string
     {
         $filteredStacktrace = '';
 
-        if ($t instanceof SyntheticError) {
-            $eTrace = $t->getSyntheticTrace();
-            $eFile  = $t->getSyntheticFile();
-            $eLine  = $t->getSyntheticLine();
+        if ($t instanceof PhptAssertionFailedError) {
+            $eTrace = $t->syntheticTrace();
+            $eFile  = $t->syntheticFile();
+            $eLine  = $t->syntheticLine();
         } elseif ($t instanceof Exception) {
             $eTrace = $t->getSerializableTrace();
             $eFile  = $t->getFile();
             $eLine  = $t->getLine();
         } else {
-            if ($t->getPrevious()) {
+            if ($unwrap && $t->getPrevious()) {
                 $t = $t->getPrevious();
             }
 
@@ -53,7 +53,7 @@ final class Filter
         if (!self::frameExists($eTrace, $eFile, $eLine)) {
             array_unshift(
                 $eTrace,
-                ['file' => $eFile, 'line' => $eLine]
+                ['file' => $eFile, 'line' => $eLine],
             );
         }
 
@@ -65,7 +65,7 @@ final class Filter
                 $filteredStacktrace .= sprintf(
                     "%s:%s\n",
                     $frame['file'],
-                    $frame['line'] ?? '?'
+                    $frame['line'] ?? '?',
                 );
             }
         }
@@ -73,17 +73,14 @@ final class Filter
         return $filteredStacktrace;
     }
 
-    /**
-     * @param false|string $prefix
-     */
-    private static function shouldPrintFrame(array $frame, $prefix, ExcludeList $excludeList): bool
+    private static function shouldPrintFrame(array $frame, false|string $prefix, ExcludeList $excludeList): bool
     {
         if (!isset($frame['file'])) {
             return false;
         }
 
         $file              = $frame['file'];
-        $fileIsNotPrefixed = $prefix === false || strpos($file, $prefix) !== 0;
+        $fileIsNotPrefixed = $prefix === false || !str_starts_with($file, $prefix);
 
         // @see https://github.com/sebastianbergmann/phpunit/issues/4033
         if (isset($GLOBALS['_SERVER']['SCRIPT_NAME'])) {

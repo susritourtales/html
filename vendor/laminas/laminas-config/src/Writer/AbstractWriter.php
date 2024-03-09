@@ -1,16 +1,19 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-config for the canonical source repository
- * @copyright https://github.com/laminas/laminas-config/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-config/blob/master/LICENSE.md New BSD License
- */
-
 namespace Laminas\Config\Writer;
 
 use Laminas\Config\Exception;
 use Laminas\Stdlib\ArrayUtils;
 use Traversable;
+
+use function file_put_contents;
+use function is_array;
+use function restore_error_handler;
+use function set_error_handler;
+use function sprintf;
+
+use const E_WARNING;
+use const LOCK_EX;
 
 abstract class AbstractWriter implements WriterInterface
 {
@@ -18,6 +21,7 @@ abstract class AbstractWriter implements WriterInterface
      * toFile(): defined by Writer interface.
      *
      * @see    WriterInterface::toFile()
+     *
      * @param  string  $filename
      * @param  mixed   $config
      * @param  bool $exclusiveLock
@@ -60,6 +64,7 @@ abstract class AbstractWriter implements WriterInterface
      * toString(): defined by Writer interface.
      *
      * @see    WriterInterface::toString()
+     *
      * @param  mixed   $config
      * @return string
      * @throws Exception\InvalidArgumentException

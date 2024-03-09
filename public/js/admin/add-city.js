@@ -12,14 +12,11 @@ $(document).ready(function ()
 {
     $("body").on("change","#country",function(){
         var countryId=$(this).val();
-
-
         var countryText=$('#country option:selected').text();
         countryText=countryText.toLowerCase();
-
         if(countryText=='india') {
             $("#state-wrapper").removeClass('d-none');
-            postData('/admin/admin/get-states',{"country_id":countryId},function(response){
+            postData('/admin/get-states',{"country_id":countryId},function(response){
                 var options='<option value="">--select state--</option>';
                 if(response.success){
                     var list=response.states;
@@ -27,17 +24,13 @@ $(document).ready(function ()
                     {
                         options +='<option value="'+list[s].id+'" data-id="'+list[s].state_id+'">'+list[s].state_name+'</option>'
                     }
-
                     $('#states').html(options);
-
-
                 }
             });
         }else
         {
             $("#state-wrapper").addClass('d-none');
         }
-
     })
         .on("change",".upload-file",function(e){
             var files = e.target.files;
@@ -53,7 +46,6 @@ $(document).ready(function ()
                     var filename = files[i].name;
                     var fileExtension = FileType.substr((FileType.lastIndexOf('/') + 1));
                     var Extension = fileExtension.toLowerCase();
-
                     if ($.inArray(Extension, mediaFilesacceptedExtensions) === -1)
                     {
                         files=[];
@@ -61,20 +53,16 @@ $(document).ready(function ()
                         messageDisplay("Invalid File");
                         return false;
                     }
-
-
                     if(mediaFiles[rowId]==undefined)
                     {
                         mediaFiles[rowId]=[];
                     }
-
                     incerement++;
                     totalFilesCount++;
                     mediaFiles[rowId]=[];
                     mediaFiles[rowId].push(file);
                     uploadFiles['attachment'][rowId]={"uploaded":false};
                     filesData.ajaxCall(2,file,rowId,function(progress,fileID,response){
-
                         $(".progress-bar[data-id='"+fileID+"']").css("width",'100%').text('100%');
                         if(!progress)
                         {
@@ -91,13 +79,11 @@ $(document).ready(function ()
                                 }
                             }
                         }
-
                     });
                     $(".upload-div[data-id='"+rowId+"']").append(`<div class="position-absolute progress" data-id="${rowId}">
                         <div class="progress-bar progress-bar-animate" role="progressbar" style="width: 1%;" aria-valuenow="55" aria-valuemin="0" aria-valuemax="100" data-id="${rowId}">1%</div>
                     </div>`);
                     $('.file_name[data-id="'+rowId+'"]').html(filename);
-
                     if(files.length == incerement)
                     {
                         element.val("");
@@ -110,19 +96,16 @@ $(document).ready(function ()
         .on("change",".image-upload",function(e){
             var files = e.target.files;
             var element=$(this);
-
             var incerement=0;
             $.each(files, function (i, file)
             {
                 var reader = new FileReader();
-
                 reader.onload = function (e)
                 {
                     var FileType = files[i].type;
                     var filename = files[i].name;
                     var fileExtension = FileType.substr((FileType.lastIndexOf('/') + 1));
                     var Extension = fileExtension.toLowerCase();
-
                     if ($.inArray(Extension, imageacceptedExtensions) === -1)
                     {
                         files=[];
@@ -136,18 +119,13 @@ $(document).ready(function ()
                     imageFiles[imageId].push(file);
                     uploadFiles['images'][imageId]={"uploaded":false};
 
-
-                    // circle[imageId]  = $('.circlechart').data('radialIndicator');
-
                     filesData.ajaxCall(1,file,imageId,function(progress,fileID,response)
                     {
-
                         console.log( circle[fileID]);
                         if(progress)
                         {
                             circle[fileID].animate((fileID*100));
                         }
-
                         if(!progress)
                         {
                             if(response.success)
@@ -172,8 +150,6 @@ $(document).ready(function ()
                     {
                         element.val("");
                     }
-                    //  console.log( $('.file_name[data-id="'+rowId+'"]').length);
-                    //  $('.file_name[data-id="'+rowId+'"]').html(filename);
                     let classId='circlechart_img_'+imageId;
                     $(".image-preview-wrapper").append('<div class="col-sm-4 mt-2 position-relative image-preview overflow-hidden" data-id="'+imageId+'"><div class="position-absolute circlechart '+classId+'" style="width: 100%;height: 100%" data-id="'+imageId+'"></div><img src="'+e.target.result+'" style="width: 100%;height: 100%"><span class="bg-white circle close-icon" data-id="'+imageId+'"><i class="fas fa-times position-absolute " data-id="'+imageId+'" ></i></span></div>');
                     circle[imageId] = radialIndicator('.'+classId,{
@@ -188,7 +164,6 @@ $(document).ready(function ()
                 };
                 reader.readAsDataURL(file);
             });
-
             setTimeout(function(){
 
                 /* var height=$(".image-preview-wrapper").height();
@@ -199,7 +174,6 @@ $(document).ready(function ()
                      $(".image-upload").css("height",height);
                  }
      */
-
             },10);
 
         })
@@ -262,14 +236,7 @@ $(document).ready(function ()
             messageDisplay("Please enter city name");
             return  false;
         }
-             description = $.trim(description);
-
-
-       /* if(description=='')
-        {
-            messageDisplay("Please enter description");
-            return  false;
-        }*/
+        description = $.trim(description);
         if(imageFiles.length==0)
          {
          messageDisplay("please select image files");
@@ -300,12 +267,10 @@ $(document).ready(function ()
             }
             fileIds.push(uploadFiles['attachment'][a]['id']);
         }
-
         if(error)
         {
             return  false;
         }
-
         let mandatorytotalLanguages=[];
         let totalLanguages=[];
         $(".file-uploads").each(function(){
@@ -352,31 +317,15 @@ $(document).ready(function ()
                 {
                     totalLanguages.push(fileLanguage);
                 }
-
                 tmp['lanaguage']=fileLanguage;
                 fileDetails.push(tmp);
             }
         });
-
-
         if(error)
         {
             return false;
         }
-       /* if(mandatorytotalLanguages.length!=mandatoryLanguages.length)
-        {
-            messageDisplay("Please Select mandatory languages hindi and english",2000);
-            return false;
-        }
-
-        if(jQuery.isEmptyObject(imageFiles))
-        {
-            messageDisplay("Please Upload Image Files");
-            return false;
-        }*/
-
         var formData=new FormData();
-
         formData.append("description",description);
         formData.append("country_name",countryName);
         formData.append("state_name",stateName);
@@ -385,13 +334,12 @@ $(document).ready(function ()
         formData.append("images",imageFileIds);
         formData.append("file_Ids",fileIds);
 
-
         ajaxData('/a_dMin/add-city',formData,function(response){
             if(response.success)
             {
                 messageDisplay(response.message);
                 setTimeout(function(){
-                    window.location.href=BASE_URL+"/a_dMin/city-list";
+                    window.location.href=BASE_URL+"/a_dMin/cities";
                 },2000);
 
             }else{
@@ -404,7 +352,7 @@ $(document).ready(function ()
     }).on("click",".add-control",function(){
         addedRow++;
         var rowsCount= $(".file-uploads").length;
-        postData('/admin/admin/file-upload-row',{'row_number':addedRow,"rows_count":rowsCount},function(response){
+        postData('/admin/file-upload-row',{'row_number':addedRow,"rows_count":rowsCount},function(response){
 
             $("#file-upload-wrapper").append(response);
         });
@@ -422,4 +370,3 @@ $(document).ready(function ()
         $(".file-uploads[data-id='"+id+"']").remove();
     });
 });
-

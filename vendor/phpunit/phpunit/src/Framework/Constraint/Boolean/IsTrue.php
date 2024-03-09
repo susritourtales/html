@@ -10,7 +10,7 @@
 namespace PHPUnit\Framework\Constraint;
 
 /**
- * Constraint that accepts true.
+ * @no-named-arguments Parameter names are not covered by the backward compatibility promise for PHPUnit
  */
 final class IsTrue extends Constraint
 {
@@ -25,10 +25,8 @@ final class IsTrue extends Constraint
     /**
      * Evaluates the constraint for parameter $other. Returns true if the
      * constraint is met, false otherwise.
-     *
-     * @param mixed $other value or object to evaluate
      */
-    protected function matches($other): bool
+    protected function matches(mixed $other): bool
     {
         return $other === true;
     }

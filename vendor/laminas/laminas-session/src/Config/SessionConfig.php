@@ -1,21 +1,64 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-session for the canonical source repository
- * @copyright https://github.com/laminas/laminas-session/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-session/blob/master/LICENSE.md New BSD License
- */
-
 namespace Laminas\Session\Config;
 
 use Laminas\Session\Exception;
 use SessionHandlerInterface;
+
+use function array_merge;
+use function array_search;
+use function array_shift;
+use function class_exists;
+use function explode;
+use function hash_algos;
+use function implode;
+use function in_array;
+use function ini_get;
+use function ini_set;
+use function is_a;
+use function is_numeric;
+use function is_string;
+use function ob_get_clean;
+use function ob_start;
+use function preg_match;
+use function preg_split;
+use function restore_error_handler;
+use function session_set_save_handler;
+use function session_start;
+use function session_status;
+use function session_write_close;
+use function set_error_handler;
+use function sprintf;
+use function str_contains;
+use function strtolower;
+use function trigger_error;
+use function trim;
+
+use const E_USER_DEPRECATED;
+use const E_WARNING;
+use const INFO_MODULES;
+use const PHP_SESSION_ACTIVE;
+use const PHP_VERSION_ID;
 
 /**
  * Session configuration proxying to session INI options
  */
 class SessionConfig extends StandardConfig
 {
+    /**
+     * @internal
+     *
+     * @var callable
+     */
+    public static $phpinfo = 'phpinfo';
+
+    /**
+     * @internal
+     *
+     * @var callable
+     */
+    public static $sessionModuleName = 'session_module_name';
+
     /**
      * List of known PHP save handlers.
      *
@@ -25,20 +68,20 @@ class SessionConfig extends StandardConfig
 
     /**
      * Used with {@link handleError()}; stores PHP error code
+     *
      * @var int
      */
-    protected $phpErrorCode    = false;
+    protected $phpErrorCode = false;
 
     /**
      * Used with {@link handleError()}; stores PHP error message
+     *
      * @var string
      */
     protected $phpErrorMessage = false;
 
-    /**
-     * @var int Default number of seconds to make session sticky, when rememberMe() is called
-     */
-    protected $rememberMeSeconds = 1209600; // 2 weeks
+    /** @var int Default number of seconds to make session sticky, when rememberMe() is called */
+    protected $rememberMeSeconds = 1_209_600; // 2 weeks
 
     /**
      * Name of the save handler currently in use. This will either be a PHP
@@ -49,14 +92,10 @@ class SessionConfig extends StandardConfig
      */
     protected $saveHandler;
 
-    /**
-     * @var string session.serialize_handler
-     */
+    /** @var string session.serialize_handler */
     protected $serializeHandler;
 
-    /**
-     * @var array Valid cache limiters (per session.cache_limiter)
-     */
+    /** @var array Valid cache limiters (per session.cache_limiter) */
     protected $validCacheLimiters = [
         '',
         'nocache',
@@ -65,27 +104,21 @@ class SessionConfig extends StandardConfig
         'private_no_expire',
     ];
 
-    /**
-     * @var array Valid hash bits per character (per session.hash_bits_per_character)
-     */
+    /** @var array Valid hash bits per character (per session.hash_bits_per_character) */
     protected $validHashBitsPerCharacters = [
         4,
         5,
         6,
     ];
 
-    /**
-     * @var array Valid sid bits per character (per session.sid_bits_per_character)
-     */
+    /** @var array Valid sid bits per character (per session.sid_bits_per_character) */
     protected $validSidBitsPerCharacters = [
         4,
         5,
         6,
     ];
 
-    /**
-     * @var array Valid hash functions (per session.hash_function)
-     */
+    /** @var array Valid hash functions (per session.hash_function) */
     protected $validHashFunctions;
 
     /**
@@ -139,7 +172,7 @@ class SessionConfig extends StandardConfig
         }
 
         $sessionRequiresRestart = false;
-        if (session_status() == PHP_SESSION_ACTIVE) {
+        if (session_status() === PHP_SESSION_ACTIVE) {
             session_write_close();
             $sessionRequiresRestart = true;
         }
@@ -168,26 +201,23 @@ class SessionConfig extends StandardConfig
      */
     public function getStorageOption($storageOption)
     {
-        switch ($storageOption) {
-            case 'remember_me_seconds':
-                // No remote storage option; just return the current value
-                return $this->rememberMeSeconds;
-            case 'url_rewriter_tags':
-                return ini_get('url_rewriter.tags');
+        return match ($storageOption) {
+             // No remote storage option; just return the current value
+            'remember_me_seconds' => $this->rememberMeSeconds,
+
+            'url_rewriter_tags' => ini_get('url_rewriter.tags'),
+
             // The following all need a transformation on the retrieved value;
             // however they use the same key naming scheme
-            case 'use_cookies':
-            case 'use_only_cookies':
-            case 'use_trans_sid':
-            case 'cookie_httponly':
-                return (bool) ini_get('session.' . $storageOption);
-            case 'save_handler':
-                // Save handlers must be treated differently due to changes
-                // introduced in PHP 7.2.
-                return $this->saveHandler ?: session_module_name();
-            default:
-                return ini_get('session.' . $storageOption);
-        }
+            'use_cookies',
+            'use_only_cookies',
+            'use_trans_sid',
+            'cookie_httponly' => (bool) ini_get('session.' . $storageOption),
+
+            'save_handler' => $this->saveHandler ?: $this->sessionModuleName(),
+
+            default => ini_get('session.' . $storageOption),
+        };
     }
 
     /**
@@ -214,7 +244,7 @@ class SessionConfig extends StandardConfig
      */
     public function setPhpSaveHandler($phpSaveHandler)
     {
-        $this->saveHandler = $this->performSaveHandlerUpdate($phpSaveHandler);
+        $this->saveHandler             = $this->performSaveHandlerUpdate($phpSaveHandler);
         $this->options['save_handler'] = $this->saveHandler;
         return $this;
     }
@@ -224,7 +254,7 @@ class SessionConfig extends StandardConfig
      *
      * @param  string $savePath
      * @return SessionConfig
-     * @throws Exception\InvalidArgumentException on invalid path
+     * @throws Exception\InvalidArgumentException On invalid path.
      */
     public function setSavePath($savePath)
     {
@@ -263,7 +293,7 @@ class SessionConfig extends StandardConfig
     /**
      * Set cache limiter
      *
-     * @param $cacheLimiter
+     * @param string $cacheLimiter
      * @return SessionConfig
      * @throws Exception\InvalidArgumentException
      */
@@ -281,6 +311,8 @@ class SessionConfig extends StandardConfig
     /**
      * Set session.hash_function
      *
+     * @deprecated removed in PHP 7.1
+     *
      * @param  string|int $hashFunction
      * @return SessionConfig
      * @throws Exception\InvalidArgumentException
@@ -291,7 +323,7 @@ class SessionConfig extends StandardConfig
             trigger_error('session.hash_function is removed starting with PHP 7.1', E_USER_DEPRECATED);
         }
 
-        $hashFunction = (string) $hashFunction;
+        $hashFunction       = (string) $hashFunction;
         $validHashFunctions = $this->getHashFunctions();
         if (! in_array($hashFunction, $validHashFunctions, true)) {
             throw new Exception\InvalidArgumentException('Invalid hash function provided');
@@ -305,6 +337,8 @@ class SessionConfig extends StandardConfig
     /**
      * Set session.hash_bits_per_character
      *
+     * @deprecated removed in PHP 7.1
+     *
      * @param  int $hashBitsPerCharacter
      * @return SessionConfig
      * @throws Exception\InvalidArgumentException
@@ -315,7 +349,8 @@ class SessionConfig extends StandardConfig
             trigger_error('session.hash_bits_per_character is removed starting with PHP 7.1', E_USER_DEPRECATED);
         }
 
-        if (! is_numeric($hashBitsPerCharacter)
+        if (
+            ! is_numeric($hashBitsPerCharacter)
             || ! in_array($hashBitsPerCharacter, $this->validHashBitsPerCharacters)
         ) {
             throw new Exception\InvalidArgumentException('Invalid hash bits per character provided');
@@ -336,7 +371,8 @@ class SessionConfig extends StandardConfig
      */
     public function setSidBitsPerCharacter($sidBitsPerCharacter)
     {
-        if (! is_numeric($sidBitsPerCharacter)
+        if (
+            ! is_numeric($sidBitsPerCharacter)
             || ! in_array($sidBitsPerCharacter, $this->validSidBitsPerCharacters)
         ) {
             throw new Exception\InvalidArgumentException('Invalid sid bits per character provided');
@@ -344,7 +380,7 @@ class SessionConfig extends StandardConfig
 
         $sidBitsPerCharacter = (int) $sidBitsPerCharacter;
         $this->setOption('sid_bits_per_character', $sidBitsPerCharacter);
-        ini_set('session.sid_bits_per_character', $sidBitsPerCharacter);
+        ini_set('session.sid_bits_per_character', (string) $sidBitsPerCharacter);
         return $this;
     }
 
@@ -406,7 +442,7 @@ class SessionConfig extends StandardConfig
 
         $content = array_shift($matches);
 
-        $handlers = false !== strpos($content, '</td>')
+        $handlers = str_contains($content, '</td>')
             ? $this->parseSaveHandlersFromHtml($content)
             : $this->parseSaveHandlersFromPlainText($content);
 
@@ -436,12 +472,12 @@ class SessionConfig extends StandardConfig
      *
      * @param string|SessionHandlerInterface $phpSaveHandler
      * @return string
-     * @throws Exception\InvalidArgumentException if an error occurs when
+     * @throws Exception\InvalidArgumentException If an error occurs when
      *     setting a PHP session save handler module.
-     * @throws Exception\InvalidArgumentException if the $phpSaveHandler
+     * @throws Exception\InvalidArgumentException If the $phpSaveHandler
      *     is a string that does not represent a class implementing
      *     SessionHandlerInterface.
-     * @throws Exception\InvalidArgumentException if $phpSaveHandler is
+     * @throws Exception\InvalidArgumentException If $phpSaveHandler is
      *     a non-string value that does not implement SessionHandlerInterface.
      */
     private function performSaveHandlerUpdate($phpSaveHandler)
@@ -452,7 +488,7 @@ class SessionConfig extends StandardConfig
             if (in_array($phpSaveHandler, $knownHandlers, true)) {
                 $phpSaveHandler = strtolower($phpSaveHandler);
                 set_error_handler([$this, 'handleError']);
-                session_module_name($phpSaveHandler);
+                $this->sessionModuleName($phpSaveHandler);
                 restore_error_handler();
                 if ($this->phpErrorCode >= E_WARNING) {
                     throw new Exception\InvalidArgumentException(sprintf(
@@ -465,7 +501,8 @@ class SessionConfig extends StandardConfig
                 return $phpSaveHandler;
             }
 
-            if (! class_exists($phpSaveHandler)
+            if (
+                ! class_exists($phpSaveHandler)
                 || ! is_a($phpSaveHandler, SessionHandlerInterface::class, true)
             ) {
                 throw new Exception\InvalidArgumentException(sprintf(
@@ -483,14 +520,14 @@ class SessionConfig extends StandardConfig
         if (! $phpSaveHandler instanceof SessionHandlerInterface) {
             throw new Exception\InvalidArgumentException(sprintf(
                 'Invalid save handler specified ("%s"); must implement %s',
-                get_class($phpSaveHandler),
+                $phpSaveHandler::class,
                 SessionHandlerInterface::class
             ));
         }
 
         session_set_save_handler($phpSaveHandler);
 
-        return get_class($phpSaveHandler);
+        return $phpSaveHandler::class;
     }
 
     /**
@@ -503,8 +540,10 @@ class SessionConfig extends StandardConfig
      */
     private function getPhpInfoForModules()
     {
+        $phpinfo = self::$phpinfo;
+
         ob_start();
-        phpinfo(INFO_MODULES);
+        $phpinfo(INFO_MODULES);
         return ob_get_clean();
     }
 
@@ -536,8 +575,22 @@ class SessionConfig extends StandardConfig
      */
     private function parseSaveHandlersFromPlainText($content)
     {
-        list($prefix, $handlers) = explode('=>', $content);
-        $handlers = trim($handlers);
+        [$prefix, $handlers] = explode('=>', $content);
+        $handlers            = trim($handlers);
         return preg_split('#\s+#', $handlers);
+    }
+
+    /** @return false|string */
+    private function sessionModuleName(?string $module = null)
+    {
+        $callback = self::$sessionModuleName;
+
+        // session_module_name behaves differently when passed an explicit
+        // `null` than it does when passed no arguments.
+        if (null !== $module) {
+            return $callback($module);
+        }
+
+        return $callback();
     }
 }

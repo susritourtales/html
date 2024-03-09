@@ -988,3 +988,20 @@ audio{
         margin-bottom: 0.5em;
     }
 }
+.under-construction {
+    font-size: 26px;
+    font-weight: bold;
+    color: #dc3545; /* Bootstrap's danger color */
+}
+.wip-block{
+    position: fixed;
+    top: 30%;
+}
+.wip-bg {
+    position: fixed;
+    bottom: 0;
+    height: 391px;
+    width: 100%;
+    z-index: -1;
+    background: url(../img/bg.png) no-repeat center / contain;
+}

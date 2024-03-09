@@ -18,45 +18,60 @@ $(document).ready(function () {
         }
     });
     function initPagination() {
-
         var items = parseInt($(".records").val());
         $("#listPager").html('');
 
         if(items>10) {
             $('.pagination').pagination({
-                items: items,
-                itemsOnPage: 10,
-                currentPage: 1,
-                onPageClick: function (pageNumber) {
-
-                    // .load(BASE_URL + "/admin/admin/load-country-list?page_number=" + pageNumber);
-                    postData("/admin/admin/load-state-list", {"page_number": pageNumber}, function (response) {
-                        jQuery("#recordsList").html(response);
-                    });
-                }
-            });
+				items: items,
+				itemsOnPage: 10,
+				currentPage: 1,
+				onPageClick: function(pageNumber) {
+					if (ajaxCall != null) {
+						ajaxCall.abort();
+					}
+					var formData = new FormData();
+					formData.append('filter', JSON.stringify(filter));
+					formData.append('type', 'pagination');
+					formData.append('page_number', pageNumber);
+					ajaxCall = $.ajax({
+						type: "POST",
+						url: BASE_URL + '/admin/load-state-list',
+						data: formData,
+						cache: false,
+						contentType: false,
+						processData: false,
+						success: function(data) {
+							console.log(data);
+							ajaxCall = null;
+							$("tbody").html(data);
+						},
+						error: function() {}
+					});
+				}
+			});
         }
     }
     initPagination();
-    $("body").on("click",".delete-place",function () {
-        var placeId=$(this).data("id");
-        $(".delete-conform-button").attr("data-id",placeId);
-        $("#deletePlaceModal").modal("show");
-    }) .on("click",'.delete-conform-button',function () {
-        $(this).prop("disabled",true);
-        var stateId = $(this).attr("data-id");
-        postData("/admin/admin/delete-state", {state_id:stateId},function (response){
-            var jsonRespnse = parseJsonData(response);
-            messageDisplay(jsonRespnse.message);
-            if(jsonRespnse.success) {
-                setTimeout(function(){
-                    window.location.reload();
-                },2000);
-            }else {
-                $(".delete-conform-button").prop("disabled",true);
-            }
-        })
-    }).on('click', '.fa-sort',  function (){
+    $("body").on("click", ".delete-state", function() {
+		var id = $(this).data("id");
+		$(".delete-conform-button").attr("data-id", id);
+		$("#deleteEntityModal").modal("show");
+	}).on("click", '.delete-conform-button', function() {
+		$(this).prop("disabled", true);
+		var id = $(this).attr("data-id");
+		postData("/admin/delete-state", {'id': id}, function(response) {
+			var jsonRespnse = parseJsonData(response);
+			messageDisplay(jsonRespnse.message);
+			if (jsonRespnse.success) {
+				setTimeout(function() {
+					window.location.href = BASE_URL + "/a_dMin/states";
+				}, 3000);
+			} else {
+				$(".delete-conform-button").prop("disabled", true);
+			}
+		})
+	}).on('click', '.fa-sort',  function (){
         $('.fa-sort').removeClass("d-none");
         $('.fa-sort-up').addClass("d-none");
         $('.fa-sort-down').addClass("d-none");
@@ -77,16 +92,13 @@ $(document).ready(function () {
         let dataId=$(this).data("id");
         for(var keys in filter)
         {
-
             if(keys!=dataId)
             {
                 filter[keys]['order']="";
             }else{
-
                 filter[keys]['order']=1;
             }
         }
-
         $(this).addClass('d-none');
         $(this).parent(".arrows").find('.fa-sort-up').removeClass('d-none');
         filterData();
@@ -96,10 +108,8 @@ $(document).ready(function () {
         let dataId=$(this).data("id");
         for(let keys in filter)
         {
-
             if(keys!=dataId)
             {
-
                 filter[keys]['order']="";
             }else{
                 filter[keys]['order']=-1;
@@ -138,7 +148,7 @@ $(document).ready(function () {
         formData.append('type','search');
         ajaxCall=  $.ajax({
             type: "POST",
-            url: BASE_URL+'/admin/admin/load-state-list',
+            url: BASE_URL+'/admin/load-state-list',
             data: formData,
             cache: false,
             contentType: false,
@@ -147,15 +157,11 @@ $(document).ready(function () {
             {
                 ajaxCall=null;
                 $(".records").remove();
-
                 $("tbody").html(data);
                 initPagination()
             },
             error: function()
-            {
-
-
-            }
+            {}
         });
     }
 });

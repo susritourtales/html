@@ -1,14 +1,12 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-config for the canonical source repository
- * @copyright https://github.com/laminas/laminas-config/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-config/blob/master/LICENSE.md New BSD License
- */
-
 namespace Laminas\Config\Writer;
 
 use Laminas\Config\Exception;
+
+use function call_user_func;
+use function function_exists;
+use function is_callable;
 
 class Yaml extends AbstractWriter
 {

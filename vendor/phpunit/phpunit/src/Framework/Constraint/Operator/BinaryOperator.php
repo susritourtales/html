@@ -10,49 +10,24 @@
 namespace PHPUnit\Framework\Constraint;
 
 use function array_map;
-use function array_values;
 use function count;
 
 /**
- * Abstract base class for binary operators.
- *
- * Binary operator, as formally defined, accepts two operands. A BinaryOperator
- * object, however, accepts arbitrary number of arguments for backward
- * compatibility. The object can actually be thought to be an expression
- * with zero or more repetitions of a given binary operator. The expected
- * behavior for typical implementation of a BinaryOperator is the following:
- *
- * - when created with no arguments, it shall evaluate to false unconditionally,
- * - when created with one argument, it is a degenerate operator, which just
- *   returns the result of its single operand constraint,
- * - with two arguments, it shall follow its classical definition,
- * - with more than two arguments, it shall resemble repeated application of
- *   the same operator, for example $1 or $2 or $3.
+ * @no-named-arguments Parameter names are not covered by the backward compatibility promise for PHPUnit
  */
 abstract class BinaryOperator extends Operator
 {
     /**
-     * @var Constraint[]
+     * @psalm-var list<Constraint>
      */
-    private $constraints = [];
+    private readonly array $constraints;
 
-    public static function fromConstraints(Constraint ...$constraints): self
+    protected function __construct(mixed ...$constraints)
     {
-        $constraint = new static;
-
-        $constraint->constraints = $constraints;
-
-        return $constraint;
-    }
-
-    /**
-     * @param mixed[] $constraints
-     */
-    public function setConstraints(array $constraints): void
-    {
-        $this->constraints = array_map(function ($constraint): Constraint {
-            return $this->checkConstraint($constraint);
-        }, array_values($constraints));
+        $this->constraints = array_map(
+            fn ($constraint): Constraint => $this->checkConstraint($constraint),
+            $constraints,
+        );
     }
 
     /**
@@ -100,7 +75,7 @@ abstract class BinaryOperator extends Operator
     }
 
     /**
-     * Returns the nested constraints.
+     * @psalm-return list<Constraint>
      */
     final protected function constraints(): array
     {
@@ -133,9 +108,6 @@ abstract class BinaryOperator extends Operator
 
     /**
      * Returns string representation of given operand in context of this operator.
-     *
-     * @param Constraint $constraint operand constraint
-     * @param int        $position   position of $constraint in this expression
      */
     private function constraintToString(Constraint $constraint, int $position): string
     {

@@ -66,8 +66,6 @@ class TemporaryFilesTable extends BaseTable
     {
         try
         {
-
-
             $sql=$this->getSql();
             $values=array();
             $where=new Where();
@@ -88,8 +86,6 @@ class TemporaryFilesTable extends BaseTable
                 }
 
             }
-
-
             return array('images'=>$imageFiles,'audioFiles'=>$audioFiles);
         }catch (\Exception $e)
         {

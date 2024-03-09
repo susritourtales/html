@@ -1,15 +1,13 @@
 <?php
 
-
 namespace Admin\Model;
-
 
 use Application\Model\BaseTable;
 use Laminas\Db\Sql\Select;
 use Laminas\Db\Sql\Where;
 use Laminas\Db\TableGateway\TableGateway;
 
-class StatesTable extends   BaseTable
+class StatesTable extends BaseTable
 {
     protected $tableGateway;
     protected $tableName;
@@ -17,19 +15,19 @@ class StatesTable extends   BaseTable
     public function __construct(TableGateway $tableGateway)
     {
         $this->tableGateway = $tableGateway;
-        $this->tableName = array("s" => "states");
+        $this->tableName = array("s" => "state");
     }
 
-    public function addState(Array $data)
+    public function addState(array $data)
     {
-        try{
+        try {
             $insert = $this->insert($data);
-            if($insert){
-                return array("success" => true,"id" => $this->tableGateway->lastInsertValue);
-            }else{
+            if ($insert) {
+                return array("success" => true, "id" => $this->tableGateway->lastInsertValue);
+            } else {
                 return array("success" => false);
             }
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             print_r($e->getMessage());
             exit;
             return array("success" => false);
@@ -37,215 +35,185 @@ class StatesTable extends   BaseTable
     }
     public function getStates($where)
     {
-        try{
-
-
+        try {
             $sql = $this->getSql();
             $query = $sql->select()
                 ->from($this->tableName)
-                ->columns(array("id","state_name",'country_id'))
-            ->where($where);
-
+                ->columns(array("id", "state_name", 'country_id'))
+                ->where($where);
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             $states = array();
-
-            foreach($resultSet as $row){
+            foreach ($resultSet as $row) {
                 $states[] = $row;
             }
-
             return $states;
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             return array();
         }
     }
-    public function getActiveStatesListUser($data=array('limit'=>10,'offset'=>0))
+    public function getActiveStatesListUser($data = array('limit' => 10, 'offset' => 0))
     {
-        try
-        {
+        try {
             $sql = $this->getSql();
-
-            $where=new Where();
-            $where->equalTo('s.status',1);
-
-
-            if(array_key_exists('search',$data)&& $data['search']!='')
-            {
-                $where->and->like('s.state_name',"%".$data['search']."%");
+            $where = new Where();
+            $where->equalTo('s.display', 1);
+            if (array_key_exists('search', $data) && $data['search'] != '') {
+                $where->and->like('s.state_name', "%" . $data['search'] . "%");
             }
-
-
-            $places= $sql->select()
-                ->from(array('tp'=>'tourism_places'))
+            $places = $sql->select()
+                ->from(array('tp' => 'tourism_places'))
                 ->columns(array("state_id"))
-                ->join(array('p'=>'place_prices'),new \Laminas\Db\Sql\Expression("p.state_id =tp.state_id and  p.status =1"),array("tour_type",'countstate'=>new \Laminas\Db\Sql\Expression("SUM(CASE WHEN `place_id` IS NULL || `place_id`='' THEN 0 ELSE 1 END)")))
-                ->join(array('tf'=>'tourism_files'),new \Laminas\Db\Sql\Expression("tf.tourism_file_id =tp.tourism_place_id and  tf.status =1 and tf.file_extension_type=3"),array('filesCount'=>new \Laminas\Db\Sql\Expression("SUM(CASE WHEN `place_id` IS NULL || `place_id`='' THEN 0 ELSE 1 END)")))
-                ->where(array('tp.status'=>1,'p.tour_type'=>$data['tour_type']))
+                ->join(array('p' => 'place_prices'), new \Laminas\Db\Sql\Expression("p.state_id =tp.state_id and  p.display =1"), array("tour_type", 'countstate' => new \Laminas\Db\Sql\Expression("SUM(CASE WHEN `place_id` IS NULL || `place_id`='' THEN 0 ELSE 1 END)")))
+                ->join(array('tf' => 'tourism_files'), new \Laminas\Db\Sql\Expression("tf.tourism_file_id =tp.tourism_place_id and  tf.display =1 and tf.file_extension_type=3"), array('filesCount' => new \Laminas\Db\Sql\Expression("SUM(CASE WHEN `place_id` IS NULL || `place_id`='' THEN 0 ELSE 1 END)")))
+                ->where(array('tp.display' => 1, 'p.tour_type' => $data['tour_type']))
                 ->group('tp.state_id');
-            $placeFiles= $sql->select()
-                ->from(array('tf'=>'tourism_files'))
-                ->columns(array("file_path",'file_data_id'))
-                ->where(array('tf.status'=>1,'tf.file_data_type'=>\Admin\Model\TourismFiles::file_data_type_state,'tf.file_extension_type'=>\Admin\Model\TourismFiles::file_extension_type_image))
+            $placeFiles = $sql->select()
+                ->from(array('tf' => 'tourism_files'))
+                ->columns(array("file_path", 'file_data_id'))
+                ->where(array('tf.display' => 1, 'tf.file_data_type' => \Admin\Model\TourismFiles::file_data_type_state, 'tf.file_extension_type' => \Admin\Model\TourismFiles::file_extension_type_image))
                 ->group(array('tf.file_data_id'));
 
             $query = $sql->select()
                 ->from($this->tableName)
-                ->columns(array('state_id'=>"id","state_name"))
-                ->join(array('c'=>'countries'),'c.id=s.country_id',array('country_name'))
-                ->join(array('tpl'=>$places),'tpl.state_id = s.id',array('countstate','filesCount'))
-                ->join(array('tfl'=>$placeFiles),'tfl.file_data_id = s.id',array('file_path'))
+                ->columns(array('state_id' => "id", "state_name"))
+                ->join(array('c' => 'countries'), 'c.id=s.country_id', array('country_name'))
+                ->join(array('tpl' => $places), 'tpl.state_id = s.id', array('countstate', 'filesCount'))
+                ->join(array('tfl' => $placeFiles), 'tfl.file_data_id = s.id', array('file_path'))
                 ->where($where)
                 ->order('s.updated_at desc');
-               if($data['limit']!=-1) {
-                   $query->offset($data['offset'])
-                       ->limit($data['limit']);
-               }
+            if ($data['limit'] != -1) {
+                $query->offset($data['offset'])
+                    ->limit($data['limit']);
+            }
             //   echo $sql->getSqlStringForSqlObject($query);exit;
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             $countries = array();
-            $counter=-1;
-            foreach($resultSet as $row){
+            $counter = -1;
+            foreach ($resultSet as $row) {
                 $counter++;
                 $countries[$counter]['state_id'] = $row['state_id'];
                 $countries[$counter]['state_name'] =  ucfirst($row['state_name']);
                 $countries[$counter]['file_path'] = $row['file_path'];
                 $countries[$counter]['files_count'] = $row['filesCount'];
-                if($row['countstate']==0)
-                {
-                    $countries[$counter]['up_coming']=1;
-
-                }else{
-                    $countries[$counter]['up_coming']=2;
+                if ($row['countstate'] == 0) {
+                    $countries[$counter]['up_coming'] = 1;
+                } else {
+                    $countries[$counter]['up_coming'] = 2;
                 }
-
-
             }
             return $countries;
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             print_r($e->getMessage());
             exit;
             return array();
         }
     }
 
-    public function getActiveStatesList($data=array('limit'=>10,'offset'=>0))
+    public function getActiveStatesList($data = array('limit' => 10, 'offset' => 0))
     {
-        try
-        {
+        try {
             $sql = $this->getSql();
 
-            $where=new Where();
-            $where->equalTo('s.status',1)->and->equalTo('s.country_id',$data['country_id']);
-            if(array_key_exists('search',$data)&& $data['search']!='')
-            {
-                $where->and->like(new \Laminas\Db\Sql\Expression("LOWER(s.state_name)"),new \Laminas\Db\Sql\Expression('LOWER("%'.$data['search'].'%")'));
+            $where = new Where();
+            $where->equalTo('s.display', 1)->and->equalTo('s.country_id', $data['country_id']);
+            if (array_key_exists('search', $data) && $data['search'] != '') {
+                $where->and->like(new \Laminas\Db\Sql\Expression("LOWER(s.state_name)"), new \Laminas\Db\Sql\Expression('LOWER("%' . $data['search'] . '%")'));
 
                 //$where->and->like('s.state_name',"%".$data['search']."%");
             }
-              
 
-            $places= $sql->select()
-                ->from(array('tp'=>'tourism_places'))
+
+            $places = $sql->select()
+                ->from(array('tp' => 'tourism_places'))
                 ->columns(array("state_id"))
-                ->join(array('p'=>'place_prices'),new \Laminas\Db\Sql\Expression("p.state_id =tp.state_id and  p.status =1"),array("tour_type",'countstate'=>new \Laminas\Db\Sql\Expression("SUM(CASE WHEN `place_id` IS NULL || `place_id`='' THEN 0 ELSE 1 END)")))
-                ->where(array('tp.status'=>1,'p.tour_type'=>$data['tour_type']))
-            ->group('tp.state_id');
-            $placeFiles= $sql->select()
-                ->from(array('tf'=>'tourism_files'))
-                ->columns(array("file_path",'file_data_id'))
-                ->where(array('tf.status'=>1,'tf.file_data_type'=>\Admin\Model\TourismFiles::file_data_type_state,'tf.file_extension_type'=>\Admin\Model\TourismFiles::file_extension_type_image))
+                ->join(array('p' => 'place_prices'), new \Laminas\Db\Sql\Expression("p.state_id =tp.state_id and  p.display =1"), array("tour_type", 'countstate' => new \Laminas\Db\Sql\Expression("SUM(CASE WHEN `place_id` IS NULL || `place_id`='' THEN 0 ELSE 1 END)")))
+                ->where(array('tp.display' => 1, 'p.tour_type' => $data['tour_type']))
+                ->group('tp.state_id');
+            $placeFiles = $sql->select()
+                ->from(array('tf' => 'tourism_files'))
+                ->columns(array("file_path", 'file_data_id'))
+                ->where(array('tf.display' => 1, 'tf.file_data_type' => \Admin\Model\TourismFiles::file_data_type_state, 'tf.file_extension_type' => \Admin\Model\TourismFiles::file_extension_type_image))
                 ->group(array('tf.file_data_id'));
             $query = $sql->select()
                 ->from($this->tableName)
-                ->columns(array('state_id'=>"id","state_name"))
-                ->join(array('tpl'=>$places),'tpl.state_id = s.id',array('countstate'))
-                ->join(array('tfl'=>$placeFiles),'tfl.file_data_id = s.id',array('file_path'))
+                ->columns(array('state_id' => "id", "state_name"))
+                ->join(array('tpl' => $places), 'tpl.state_id = s.id', array('countstate'))
+                ->join(array('tfl' => $placeFiles), 'tfl.file_data_id = s.id', array('file_path'))
                 ->where($where)
                 ->order('s.state_name asc')
                 ->offset($data['offset'])
                 ->limit($data['limit']);
 
-                   
+
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             $countries = array();
-            $counter=-1;
-            foreach($resultSet as $row){
+            $counter = -1;
+            foreach ($resultSet as $row) {
                 $counter++;
                 $countries[$counter]['state_id'] = $row['state_id'];
                 $countries[$counter]['state_name'] =  $row['state_name'];
                 $countries[$counter]['file_path'] = $row['file_path'];
-                if($row['countstate']==0)
-                {
-                    $countries[$counter]['up_coming']=1;
-
-                }else{
-                    $countries[$counter]['up_coming']=2;
+                if ($row['countstate'] == 0) {
+                    $countries[$counter]['up_coming'] = 1;
+                } else {
+                    $countries[$counter]['up_coming'] = 2;
                 }
-
-
             }
             return $countries;
-        }catch(\Exception $e){
-           print_r($e->getMessage());
+        } catch (\Exception $e) {
+            print_r($e->getMessage());
             exit;
             return array();
         }
-    }  
-    public function getActiveStatesListAdmin($data=array())
+    }
+    public function getActiveStatesListAdmin($data = array())
     {
-        try
-        {
+        try {
             $sql = $this->getSql();
 
-            $where=new Where();
-            $where->equalTo('s.status',1)->and->equalTo('s.country_id',$data['country_id']);
+            $where = new Where();
+            $where->equalTo('s.display', 1)->and->equalTo('s.country_id', $data['country_id']);
 
 
-            if(array_key_exists('search',$data)&& $data['search']!='')
-            {
-                $where->and->like('s.state_name',"%".$data['search']."%");
+            if (array_key_exists('search', $data) && $data['search'] != '') {
+                $where->and->like('s.state_name', "%" . $data['search'] . "%");
             }
 
 
-            $placesWhere=new Where();
+            $placesWhere = new Where();
             $prices = $sql->select()
-                ->from(array('p'=>'place_prices'))
+                ->from(array('p' => 'place_prices'))
                 ->columns(array('place_id'))
-                ->where(array('p.tour_type'=>$data['tour_type'],'p.status'=>1));
-            $placesWhere->equalTo('tp.status',1)->and->notIn('tp.tourism_place_id',$prices);
-            $places= $sql->select()
-                ->from(array('tp'=>'tourism_places'))
+                ->where(array('p.tour_type' => $data['tour_type'], 'p.display' => 1));
+            $placesWhere->equalTo('tp.display', 1)->and->notIn('tp.tourism_place_id', $prices);
+            $places = $sql->select()
+                ->from(array('tp' => 'tourism_places'))
                 ->columns(array("state_id"))
                 ->where($placesWhere)
                 ->group(array('tp.state_id'));
-            
-           /* $places= $sql->select()
-                ->from(array('tp'=>'tourism_places'))
-                ->columns(array("state_id"))
-               
-                ->where(array('tp.status'=>1,'p.tour_type'=>$data['tour_type']));*/
-            $placeFiles= $sql->select()
-                ->from(array('tf'=>'tourism_files'))
-                ->columns(array("file_path",'file_data_id'))
-                ->where(array('tf.status'=>1,'tf.file_data_type'=>\Admin\Model\TourismFiles::file_data_type_state,'tf.file_extension_type'=>\Admin\Model\TourismFiles::file_extension_type_image))
+            $placeFiles = $sql->select()
+                ->from(array('tf' => 'tourism_files'))
+                ->columns(array("file_path", 'file_data_id'))
+                ->where(array('tf.display' => 1, 'tf.file_data_type' => \Admin\Model\TourismFiles::file_data_type_state, 'tf.file_extension_type' => \Admin\Model\TourismFiles::file_extension_type_image))
                 ->group(array('tf.file_data_id'));
             $query = $sql->select()
                 ->from($this->tableName)
-                ->columns(array("id","state_name"))
-                ->join(array('tpl'=>$places),'tpl.state_id = s.id',array())
-                ->join(array('tfl'=>$placeFiles),'tfl.file_data_id = s.id',array('file_path'))
+                ->columns(array("id", "state_name"))
+                ->join(array('tpl' => $places), 'tpl.state_id = s.id', array())
+                ->join(array('tfl' => $placeFiles), 'tfl.file_data_id = s.id', array('file_path'))
                 ->where($where)
                 ->order('s.updated_at desc');
 
-                   
+
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             $countries = array();
 
-            foreach($resultSet as $row){
+            foreach ($resultSet as $row) {
                 $countries[] = $row;
             }
             return $countries;
-        }catch(\Exception $e){
-           print_r($e->getMessage());
+        } catch (\Exception $e) {
+            print_r($e->getMessage());
             exit;
             return array();
         }
@@ -255,7 +223,7 @@ class StatesTable extends   BaseTable
         try {
             $sql = $this->getSql();
             $query = $sql->select()
-                ->from(array("s"=>"states"))
+                ->from(array("s" => "states"))
                 ->columns(array("" . $column . ""))
                 ->where($where);
 
@@ -270,292 +238,252 @@ class StatesTable extends   BaseTable
             } else {
                 return "";
             }
-
         } catch (\Exception $e) {
             return "";
         }
     }
-    public function getActiveStates(){
-        try
-        {
+    public function getActiveStates()
+    {
+        try {
             $sql = $this->getSql();
             $query = $sql->select()
                 ->from($this->tableName)
-                ->columns(array("id","state_name"))
-                ->where(array('status'=>1));
+                ->columns(array("id", "state_name"))
+                ->where(array('status' => 1));
 
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             $countries = array();
 
-            foreach($resultSet as $row){
+            foreach ($resultSet as $row) {
                 $countries[] = $row;
             }
 
             return $countries;
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             return array();
         }
     }
-    public function getStateList($data=array('limit'=>10,'offset'=>0))
+    public function getStateList($data = array('limit' => 10, 'offset' => 0), $gc = 0)
     {
-        try
-        {
-            $where=new Where();
-            $where->equalTo('status',1);
-            if(array_key_exists('state',$data))
-            {
-                $where->and->like(new \Laminas\Db\Sql\Expression("LOWER(s.state_name)"),'%'.$data['state']."%");
+        try {
+            $where = new Where();
+            $where->equalTo('display', 1);
+            if (array_key_exists('state', $data)) {
+                $where->and->like(new \Laminas\Db\Sql\Expression("LOWER(s.state_name)"), '%' . $data['state'] . "%");
             }
-            $order=array();
-            if(array_key_exists('state_order',$data))
-            {
-                if($data['state_order']==1)
-                {
-                    $order[]='s.state_name asc';
-                }else if($data['state_order']==-1)
-                {
-                    $order[]='s.state_name desc';
+            $order = array();
+            if (array_key_exists('state_order', $data)) {
+                if ($data['state_order'] == 1) {
+                    $order[] = 's.state_name asc';
+                } else if ($data['state_order'] == -1) {
+                    $order[] = 's.state_name desc';
                 }
-
             }
-            if(!count($order))
-            {
-                $order=array('updated_at desc');
+            if (!count($order)) {
+                $order = array('updated_at desc');
             }
-
             $sql = $this->getSql();
-            $query = $sql->select()
-                ->from($this->tableName)
-                ->columns(array("id","state_name"))
-                ->where($where)
-                ->order($order)
-                ->limit($data['limit'])
-                ->offset($data['offset']);
-
-            $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
-            $countries = array();
-
-            foreach($resultSet as $row){
-                $countries[] = $row;
+            if ($gc == 1) {
+                $query = $sql->select()
+                    ->from($this->tableName)
+                    ->columns(array("id", "state_name"))
+                    ->where($where);
+            } else {
+                $query = $sql->select()
+                    ->from($this->tableName)
+                    ->columns(array("id", "state_name"))
+                    ->where($where)
+                    ->order($order)
+                    ->limit($data['limit'])
+                    ->offset($data['offset']);
             }
-
-            return $countries;
-        }catch(\Exception $e){
+            $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
+            if ($gc == 1)
+                return count($resultSet);
+            $states = array();
+            foreach ($resultSet as $row) {
+                $states[] = $row;
+            }
+            return $states;
+        } catch (\Exception $e) {
             return array();
         }
     }
-    public function updateState($data,$where)
+    public function updateState($data, $where)
     {
-        try{
-
-            return $this->update($data,$where);
-        }catch (\Exception $e)
-        {
-
-
+        try {
+            return $this->update($data, $where);
+        } catch (\Exception $e) {
             return false;
         }
     }
-    public function getStatesCount($data=array()){
-        try
-        {
-            $where=new Where();
-            $where->equalTo('status',1);
+    public function getStatesCount($data = array())
+    {
+        try {
+            $where = new Where();
+            $where->equalTo('status', 1);
 
-            if(array_key_exists('state',$data))
-            {
-                $where->and->like(new \Laminas\Db\Sql\Expression("LOWER(s.state_name)"),'%'.$data['state']."%");
+            if (array_key_exists('state', $data)) {
+                $where->and->like(new \Laminas\Db\Sql\Expression("LOWER(s.state_name)"), '%' . $data['state'] . "%");
             }
 
             $sql = $this->getSql();
             $query = $sql->select()
                 ->from($this->tableName)
-                ->columns(array("id","state_name"))
+                ->columns(array("id", "state_name"))
                 ->where($where);
 
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             $countries = array();
 
-            foreach($resultSet as $row){
+            foreach ($resultSet as $row) {
                 $countries[] = $row;
             }
 
             return $countries;
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             return array();
         }
     }
 
     public function getActiveIndianStates()
     {
-        try{
+        try {
             $sql = $this->getSql();
-            $countryTable=$sql->select()
-                ->from(array('co'=>'countries'))
-                ->columns(array('id','country_name'))
-                ->where(array('co.status'=>1,'co.country_name'=>'india'));
-
+            $countryTable = $sql->select()
+                ->from(array('co' => 'country'))
+                ->columns(array('id', 'country_name'))
+                ->where(array('co.display' => 1, 'co.country_name' => 'india'));
             $query = $sql->select()
                 ->from($this->tableName)
-                ->columns(array("id","state_name"))
-                ->join(array('c'=>$countryTable),'s.country_id=c.id',array('country_name'))
-
-                ->where(array('s.status'=>1))
+                ->columns(array("id", "state_name"))
+                ->join(array('c' => $countryTable), 's.country_id=c.id', array('country_name'))
+                ->where(array('s.display' => 1))
                 ->order('s.updated_at desc');
-
-
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             $countries = array();
-
-            foreach($resultSet as $row){
+            foreach ($resultSet as $row) {
                 $countries[] = $row;
             }
             return $countries;
-        }catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             return array();
         }
-
     }
-    public function getIndiaStates($data){
-    try
+    public function getIndiaStates($data)
     {
-        $sql = $this->getSql();
-        $countryTable=$sql->select()
-            ->from(array('co'=>'countries'))
-            ->columns(array('id','country_name'))
-            ->where(array('co.status'=>1,'co.country_name'=>'india'));
-
-        $where=new Where();
-        $where->equalTo('s.status',1);
-
-
-        if(array_key_exists('search',$data)&& $data['search']!='')
-        {
-            $where->and->like('s.state_name',"%".$data['search']."%");
-        }
-
-
-        $placesWhere=new Where();
-        $prices = $sql->select()
-            ->from(array('p'=>'place_prices'))
-            ->columns(array('place_id'))
-            ->where(array('p.tour_type'=>$data['tour_type'],'p.status'=>1));
-        $placesWhere->equalTo('tp.status',1)->and->notIn('tp.tourism_place_id',$prices);
-        $places= $sql->select()
-            ->from(array('tp'=>'tourism_places'))
-            ->columns(array("state_id"))
-            ->where($placesWhere)
-            ->group(array('tp.state_id'));
-
-        /* $places= $sql->select()
-             ->from(array('tp'=>'tourism_places'))
-             ->columns(array("state_id"))
-
-             ->where(array('tp.status'=>1,'p.tour_type'=>$data['tour_type']));*/
-        $placeFiles= $sql->select()
-            ->from(array('tf'=>'tourism_files'))
-            ->columns(array("file_path",'file_data_id'))
-            ->where(array('tf.status'=>1,'tf.file_data_type'=>\Admin\Model\TourismFiles::file_data_type_state,'tf.file_extension_type'=>\Admin\Model\TourismFiles::file_extension_type_image))
-            ->group(array('tf.file_data_id'));
-        $query = $sql->select()
-            ->from($this->tableName)
-            ->columns(array("id","state_name"))
-            ->join(array('c'=>$countryTable),'s.country_id=c.id',array('country_name'))
-
-            ->join(array('tpl'=>$places),'tpl.state_id = s.id',array())
-            ->join(array('tfl'=>$placeFiles),'tfl.file_data_id = s.id',array('file_path'))
-            ->where($where)
-            ->order('s.updated_at desc');
-           /* echo $sql->getSqlStringForSqlObject($query);
-            exit;*/
-
-        $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
-        $countries = array();
-
-        foreach($resultSet as $row){
-            $countries[] = $row;
-        }
-        return $countries;
-    }catch(\Exception $e){
-        return array();
-    }
-}
-    public function getStatesByMaxId($maxId)
-    {
-        try{
+        try {
             $sql = $this->getSql();
-            $where=new Where();
+            $countryTable = $sql->select()
+                ->from(array('co' => 'countries'))
+                ->columns(array('id', 'country_name'))
+                ->where(array('co.display' => 1, 'co.country_name' => 'india'));
+
+            $where = new Where();
+            $where->equalTo('s.display', 1);
+            if (array_key_exists('search', $data) && $data['search'] != '') {
+                $where->and->like('s.state_name', "%" . $data['search'] . "%");
+            }
+            $placesWhere = new Where();
+            $prices = $sql->select()
+                ->from(array('p' => 'place_prices'))
+                ->columns(array('place_id'))
+                ->where(array('p.tour_type' => $data['tour_type'], 'p.display' => 1));
+            $placesWhere->equalTo('tp.display', 1)->and->notIn('tp.tourism_place_id', $prices);
+            $places = $sql->select()
+                ->from(array('tp' => 'tourism_places'))
+                ->columns(array("state_id"))
+                ->where($placesWhere)
+                ->group(array('tp.state_id'));
+            $placeFiles = $sql->select()
+                ->from(array('tf' => 'tourism_files'))
+                ->columns(array("file_path", 'file_data_id'))
+                ->where(array('tf.display' => 1, 'tf.file_data_type' => \Admin\Model\TourismFiles::file_data_type_state, 'tf.file_extension_type' => \Admin\Model\TourismFiles::file_extension_type_image))
+                ->group(array('tf.file_data_id'));
             $query = $sql->select()
                 ->from($this->tableName)
-                ->columns(array("id","state_name",'country_id'))
-                ->where($where->greaterThan("id",$maxId));
+                ->columns(array("id", "state_name"))
+                ->join(array('c' => $countryTable), 's.country_id=c.id', array('country_name'))
+
+                ->join(array('tpl' => $places), 'tpl.state_id = s.id', array())
+                ->join(array('tfl' => $placeFiles), 'tfl.file_data_id = s.id', array('file_path'))
+                ->where($where)
+                ->order('s.updated_at desc');
+            $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
+            $countries = array();
+            foreach ($resultSet as $row) {
+                $countries[] = $row;
+            }
+            return $countries;
+        } catch (\Exception $e) {
+            return array();
+        }
+    }
+    public function getStatesByMaxId($maxId)
+    {
+        try {
+            $sql = $this->getSql();
+            $where = new Where();
+            $query = $sql->select()
+                ->from($this->tableName)
+                ->columns(array("id", "state_name", 'country_id'))
+                ->where($where->greaterThan("id", $maxId));
 
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             $states = array();
 
-            foreach($resultSet as $row){
+            foreach ($resultSet as $row) {
                 $states[] = $row;
             }
 
             return $states;
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             return array();
         }
     }
     public function getStateDetails($stateId)
     {
-        try
-        {
+        try {
             $sql = $this->getSql();
-
-            $where=new Where();
-            $where->equalTo('s.status',1)->equalTo('s.id',$stateId);
-
-
-
-
-            $placeFiles= $sql->select()
-                ->from(array('tf'=>'tourism_files'))
-                ->columns(array("file_path",'tourism_file_id','file_data_id','file_extension_type','file_language_type','file_name'))
-                ->where(array('tf.status'=>1,'tf.file_data_type'=>\Admin\Model\TourismFiles::file_data_type_state));
+            $where = new Where();
+            $where->equalTo('s.display', 1)->equalTo('s.id', $stateId);
+            $placeFiles = $sql->select()
+                ->from(array('tf' => 'tourism_files'))
+                ->columns(array("file_path", 'tourism_file_id', 'file_data_id', 'file_extension_type', 'file_language_id', 'file_name'))
+                ->where(array('tf.display' => 1, 'tf.file_data_type' => \Admin\Model\TourismFiles::file_data_type_state));
             $query = $sql->select()
                 ->from($this->tableName)
-                ->columns(array('state_id'=>"id","state_name","state_description"))
-                ->join(array('tfl'=>$placeFiles),'tfl.file_data_id = s.id',array('file_path','tourism_file_id','file_extension_type','file_language_type','file_name'),Select::JOIN_LEFT)
+                ->columns(array('state_id' => "id", "state_name", "state_description"))
+                ->join(array('tfl' => $placeFiles), 'tfl.file_data_id = s.id', array('file_path', 'tourism_file_id', 'file_extension_type', 'file_language_id', 'file_name'), Select::JOIN_LEFT)
                 ->where($where);
-
-
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             $states = array();
-
-            foreach($resultSet as $row){
+            foreach ($resultSet as $row) {
                 $states[] = $row;
             }
             return $states;
-        }catch(\Exception $e)
-        {
-            print_r($e->getMessage());
-            exit;
+        } catch (\Exception $e) {
+            /* print_r($e->getMessage());
+            exit; */
             return array();
         }
     }
 
     public function statesList($stateId)
     {
-        try{
-            $where=new Where();
-            $where->in('id',$stateId);
+        try {
+            $where = new Where();
+            $where->in('id', $stateId);
             $sql = $this->getSql();
             $query = $sql->select()
                 ->from($this->tableName)
-                ->columns(array('state_id'=>"id","state_name",'country_id','state_description'))
+                ->columns(array('state_id' => "id", "state_name", 'country_id', 'state_description'))
                 ->where($where);
 
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             $states = array();
-              $counter=-1;
-            foreach($resultSet as $row){
+            $counter = -1;
+            foreach ($resultSet as $row) {
                 $counter++;
                 $states[$counter]['state_id'] = $row['state_id'];
                 $states[$counter]['state_name'] = $row['state_name'];
@@ -564,33 +492,29 @@ class StatesTable extends   BaseTable
             }
 
             return $states;
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             return array();
         }
     }
     public function getStateId($stateName)
     {
-        try
-        {
-            $sql=$this->getSql();
-            $values=array();
-            $where=new Where();
+        try {
+            $sql = $this->getSql();
+            $values = array();
+            $where = new Where();
             $query = $sql->select()
                 ->columns(array('id'))
-                ->from(array("s"=>"states"))
-                ->where($where->equalTo("state_name",$stateName));
+                ->from(array("s" => "states"))
+                ->where($where->equalTo("state_name", $stateName));
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
-            foreach ($resultSet as $row)
-            {
-                $values=$row['id'];
+            foreach ($resultSet as $row) {
+                $values = $row['id'];
             }
 
 
             return $values;
-        }catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             return '';
         }
     }
-
 }

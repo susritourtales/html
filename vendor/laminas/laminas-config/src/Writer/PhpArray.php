@@ -1,30 +1,43 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-config for the canonical source repository
- * @copyright https://github.com/laminas/laminas-config/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-config/blob/master/LICENSE.md New BSD License
- */
-
 namespace Laminas\Config\Writer;
 
 use Laminas\Config\Exception;
+
+use function addslashes;
+use function class_exists;
+use function dirname;
+use function file_put_contents;
+use function interface_exists;
+use function is_array;
+use function is_bool;
+use function is_int;
+use function is_object;
+use function is_string;
+use function preg_match;
+use function restore_error_handler;
+use function set_error_handler;
+use function sprintf;
+use function str_repeat;
+use function str_replace;
+use function strlen;
+use function trait_exists;
+use function var_export;
+
+use const E_WARNING;
+use const LOCK_EX;
 
 class PhpArray extends AbstractWriter
 {
     /**
      * @var string
      */
-    const INDENT_STRING = '    ';
+    public const INDENT_STRING = '    ';
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     protected $useBracketArraySyntax = false;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     protected $useClassNameScalars = false;
 
     /**
@@ -36,13 +49,13 @@ class PhpArray extends AbstractWriter
     public function processConfig(array $config)
     {
         $arraySyntax = [
-            'open' => $this->useBracketArraySyntax ? '[' : 'array(',
-            'close' => $this->useBracketArraySyntax ? ']' : ')'
+            'open'  => $this->useBracketArraySyntax ? '[' : 'array(',
+            'close' => $this->useBracketArraySyntax ? ']' : ')',
         ];
 
-        return "<?php\n" .
-        "return " . $arraySyntax['open'] . "\n" . $this->processIndented($config, $arraySyntax) .
-        $arraySyntax['close'] . ";\n";
+        return "<?php\n"
+        . "return " . $arraySyntax['open'] . "\n" . $this->processIndented($config, $arraySyntax)
+        . $arraySyntax['close'] . ";\n";
     }
 
     /**
@@ -81,6 +94,7 @@ class PhpArray extends AbstractWriter
      * toFile(): defined by Writer interface.
      *
      * @see    WriterInterface::toFile()
+     *
      * @param  string  $filename
      * @param  mixed   $config
      * @param  bool $exclusiveLock
@@ -113,8 +127,8 @@ class PhpArray extends AbstractWriter
             // for Windows, paths are escaped.
             $dirname = str_replace('\\', '\\\\', dirname($filename));
 
-            $string  = $this->toString($config);
-            $string  = str_replace("'" . $dirname, "__DIR__ . '", $string);
+            $string = $this->toString($config);
+            $string = str_replace("'" . $dirname, "__DIR__ . '", $string);
 
             file_put_contents($filename, $string, $flags);
         } catch (\Exception $e) {

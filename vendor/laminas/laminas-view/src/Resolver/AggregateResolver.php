@@ -1,10 +1,6 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-view for the canonical source repository
- * @copyright https://github.com/laminas/laminas-view/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-view/blob/master/LICENSE.md New BSD License
- */
+declare(strict_types=1);
 
 namespace Laminas\View\Resolver;
 
@@ -13,37 +9,50 @@ use IteratorAggregate;
 use Laminas\Stdlib\PriorityQueue;
 use Laminas\View\Renderer\RendererInterface as Renderer;
 use Laminas\View\Resolver\ResolverInterface as Resolver;
+use ReturnTypeWillChange;
+use Traversable;
 
-class AggregateResolver implements Countable, IteratorAggregate, ResolverInterface
+use function count;
+
+/**
+ * @final
+ * @implements IteratorAggregate<int, ResolverInterface>
+ */
+class AggregateResolver implements Countable, IteratorAggregate, Resolver
 {
-    const FAILURE_NO_RESOLVERS = 'AggregateResolver_Failure_No_Resolvers';
-    const FAILURE_NOT_FOUND    = 'AggregateResolver_Failure_Not_Found';
+    public const FAILURE_NO_RESOLVERS = 'AggregateResolver_Failure_No_Resolvers';
+    public const FAILURE_NOT_FOUND    = 'AggregateResolver_Failure_Not_Found';
 
     /**
      * Last lookup failure
+     *
+     * @deprecated This property will be removed in v3.0 of this component.
+     *
      * @var false|string
      */
     protected $lastLookupFailure = false;
 
     /**
-     * @var Resolver
+     * @deprecated This property will be removed in v3.0 of this component.
+     *
+     * @var Resolver|null
      */
     protected $lastSuccessfulResolver;
 
-    /**
-     * @var PriorityQueue
-     */
+    /** @var PriorityQueue<ResolverInterface, int> */
     protected $queue;
 
     /**
      * Constructor
      *
      * Instantiate the internal priority queue
-     *
      */
     public function __construct()
     {
-        $this->queue = new PriorityQueue();
+        /** @var PriorityQueue<ResolverInterface, int> $priorityQueue */
+        $priorityQueue = new PriorityQueue();
+
+        $this->queue = $priorityQueue;
     }
 
     /**
@@ -51,6 +60,7 @@ class AggregateResolver implements Countable, IteratorAggregate, ResolverInterfa
      *
      * @return int
      */
+    #[ReturnTypeWillChange]
     public function count()
     {
         return $this->queue->count();
@@ -59,8 +69,9 @@ class AggregateResolver implements Countable, IteratorAggregate, ResolverInterfa
     /**
      * IteratorAggregate: return internal iterator
      *
-     * @return PriorityQueue
+     * @return Traversable<int, ResolverInterface>
      */
+    #[ReturnTypeWillChange]
     public function getIterator()
     {
         return $this->queue;
@@ -69,9 +80,8 @@ class AggregateResolver implements Countable, IteratorAggregate, ResolverInterfa
     /**
      * Attach a resolver
      *
-     * @param  Resolver $resolver
      * @param  int $priority
-     * @return AggregateResolver
+     * @return $this
      */
     public function attach(Resolver $resolver, $priority = 1)
     {
@@ -83,10 +93,9 @@ class AggregateResolver implements Countable, IteratorAggregate, ResolverInterfa
      * Resolve a template/pattern name to a resource the renderer can consume
      *
      * @param  string $name
-     * @param  null|Renderer $renderer
      * @return false|string
      */
-    public function resolve($name, Renderer $renderer = null)
+    public function resolve($name, ?Renderer $renderer = null)
     {
         $this->lastLookupFailure      = false;
         $this->lastSuccessfulResolver = null;
@@ -97,6 +106,9 @@ class AggregateResolver implements Countable, IteratorAggregate, ResolverInterfa
         }
 
         foreach ($this->queue as $resolver) {
+            /**
+             * @todo This loop should be modified to try { return resolve } catch { continue } in v3.0
+             */
             $resource = $resolver->resolve($name, $renderer);
             if ($resource) {
                 // Resource found; return it
@@ -112,7 +124,9 @@ class AggregateResolver implements Countable, IteratorAggregate, ResolverInterfa
     /**
      * Return the last successful resolver, if any
      *
-     * @return Resolver
+     * @deprecated This method will be removed in v3.0 of this component
+     *
+     * @return Resolver|null
      */
     public function getLastSuccessfulResolver()
     {
@@ -121,6 +135,8 @@ class AggregateResolver implements Countable, IteratorAggregate, ResolverInterfa
 
     /**
      * Get last lookup failure
+     *
+     * @deprecated This method will be removed in v3.0 of this component
      *
      * @return false|string
      */

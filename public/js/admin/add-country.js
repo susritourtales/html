@@ -11,19 +11,19 @@ var uploadFiles={'images':{},"attachment":{}};
 var circle={};
 $(document).ready(function ()
 {
-
-
-    $('#country').selectize({
-        create: true,
-        sortField: 'text'
-    });
+    function initializeSelectize() {
+        $('#country').selectize({
+            create: true,
+            sortField: 'text'
+        });
+    }
+    initializeSelectize();
     $("body").on("change",".flag-upload-file",function(e){
         var files = e.target.files;
         var rowId=$(this).data("id");
         var element=$(this);
         var incerement=0;
         $.each(files, function (i, file) {
-
             var reader = new FileReader();
             reader.onload = function (e)
             {
@@ -90,7 +90,7 @@ $(document).ready(function ()
                 {
                     /*console.log(fileID,"fileId");*/
 
-                       $(".progress-bar[data-id='"+fileID+"']").css("width",'100%').text('100%');
+                    $(".progress-bar[data-id='"+fileID+"']").css("width",'100%').text('100%');
                     if(!progress)
                     {
                         if(response.success)
@@ -126,12 +126,10 @@ $(document).ready(function ()
         .on("change",".image-upload",function(e){
         var files = e.target.files;
         var element=$(this);
-
-           var incerement=0;
+        var incerement=0;
         $.each(files, function (i, file)
          {
             var reader = new FileReader();
-
             reader.onload = function (e)
             {
                 var FileType = files[i].type;
@@ -142,7 +140,6 @@ $(document).ready(function ()
                 if ($.inArray(Extension, imageacceptedExtensions) === -1)
                 {
                     files=[];
-                  //  element.val("");
                     messageDisplay("Invalid File");
                     return false;
                 }
@@ -152,36 +149,32 @@ $(document).ready(function ()
                 imageFiles[imageId].push(file);
                 uploadFiles['images'][imageId]={"uploaded":false};
 
-
                // circle[imageId]  = $('.circlechart').data('radialIndicator');
-
                 filesData.ajaxCall(1,file,imageId,function(progress,fileID,response)
                 {
-
-                           console.log( circle[fileID]);
-                       if(progress)
-                       {
-                           circle[fileID].animate((fileID*100));
-                       }
-
-                              if(!progress)
-                              {
-                                       if(response.success)
-                                       {
-                                                  if(uploadFiles['images'][fileID]!=undefined)
-                                                  {
-                                                      uploadFiles['images'][fileID] = {
-                                                          "uploaded": true,
-                                                          'id': response.id
-                                                      };
-                                                      if (uploadClicked) {
-                                                          var countryElement = $("#addCountry");
-                                                          countryElement.prop('disabled', false);
-                                                          countryElement.click();
-                                                      }
-                                                  }
-                                       }
-                              }
+                    console.log( circle[fileID]);
+                    if(progress)
+                    {
+                        circle[fileID].animate((fileID*100));
+                    }
+                    if(!progress)
+                    {
+                        if(response.success)
+                        {
+                            if(uploadFiles['images'][fileID]!=undefined)
+                            {
+                                uploadFiles['images'][fileID] = {
+                                    "uploaded": true,
+                                    'id': response.id
+                                };
+                                if (uploadClicked) {
+                                    var countryElement = $("#addCountry");
+                                    countryElement.prop('disabled', false);
+                                    countryElement.click();
+                                }
+                            }
+                        }
+                    }
                 });
 
                 if(files.length == incerement)
@@ -194,7 +187,7 @@ $(document).ready(function ()
                 $(".image-preview-wrapper").append('<div class="col-sm-4 mt-2 position-relative image-preview overflow-hidden" data-id="'+imageId+'"><div class="position-absolute circlechart '+classId+'" style="width: 100%;height: 100%" data-id="'+imageId+'"></div><img src="'+e.target.result+'" style="width: 100%;height: 100%"><span class="bg-white circle close-icon" data-id="'+imageId+'"><i class="fas fa-times position-absolute " data-id="'+imageId+'" ></i></span></div>');
                 circle[imageId] = radialIndicator('.'+classId,{
                     radius: 50,
-                        barColor : '#6dd873',
+                    barColor : '#6dd873',
                     barWidth : 8,
                     initValue : 0,
                     barBgColor: '#e4e4e4',
@@ -231,16 +224,12 @@ $(document).ready(function ()
         }
 
     })
-        .on("click","#addCountry",function(){
-
+    .on("click","#addCountry",function(){
         var countryElement=$("#country");
-
         var error=false;
-            var element=$(this);
-            element.html('Please wait...');
-
-            element.prop('disabled',true);
-
+        var element=$(this);
+        element.html('Please wait...');
+        element.prop('disabled',true);
 
         var countryName=countryElement.val();
         var description = $.trim($('#description').val());
@@ -254,54 +243,42 @@ $(document).ready(function ()
             messageDisplay("Please enter country name");
             return  false;
         }
-       /* if(description=='')
-        {
-            messageDisplay("Please enter description");
-            return  false;
-        }*/
-       /* if(flagFile.length==0)
-        {
-            element.prop('disabled',false);
-            element.html('Submit');
-            messageDisplay("Please Upload Flag File");
-            return  false;
-        }*/
         if(imageFiles.length==0)
          {
-         messageDisplay("please select image files");
-         error=true;
-         return false;
+            messageDisplay("please select image files");
+            error=true;
+            return false;
          }
         let mandatorytotalLanguages=[];
         let totalLanguages=[];
-            uploadClicked=true;
-            var imageFileIds=[];
-            var fileIds=[];
-            for(var k in uploadFiles['images'])
+        uploadClicked=true;
+        var imageFileIds=[];
+        var fileIds=[];
+        for(var k in uploadFiles['images'])
+        {
+            if(!uploadFiles['images'][k]['uploaded'])
             {
-                if(!uploadFiles['images'][k]['uploaded'])
-                {
-                     error=true;
-                     break;
-                }
-                imageFileIds.push(uploadFiles['images'][k]['id']);
-                fileIds.push(uploadFiles['images'][k]['id']);
-            }
-            for(var a in uploadFiles['attachment'])
-            {
-                if(!uploadFiles['attachment'][a]['uploaded'])
-                {
                     error=true;
                     break;
-                }
-                fileIds.push(uploadFiles['attachment'][a]['id']);
             }
-               console.log(uploadFiles,error);
+            imageFileIds.push(uploadFiles['images'][k]['id']);
+            fileIds.push(uploadFiles['images'][k]['id']);
+        }
+        for(var a in uploadFiles['attachment'])
+        {
+            if(!uploadFiles['attachment'][a]['uploaded'])
+            {
+                error=true;
+                break;
+            }
+            fileIds.push(uploadFiles['attachment'][a]['id']);
+        }
+        console.log(uploadFiles,error);
 
-             if(error)
-             {
-                 return  false;
-             }
+        if(error)
+        {
+            return  false;
+        }
         $(".file-uploads").each(function(){
             var rowId=$(this).data("id");
             var fileNameElement=$(".upload-file-name[data-id='"+rowId+"']");
@@ -346,21 +323,13 @@ $(document).ready(function ()
                 fileDetails.push(tmp);
             }
         });
-
-
         if(error)
         {
             element.prop('disabled',false);
             element.html('Submit');
             return false;
         }
-        /*if(mandatorytotalLanguages.length!=mandatoryLanguages.length)
-        {
-            messageDisplay("Please Select mandatory languages hindi and english",2000);
-            return false;
-        }*/
         var formData=new FormData();
-       
         formData.append("description",description);
         formData.append("images",imageFileIds);
         formData.append("file_Ids",fileIds);
@@ -371,35 +340,12 @@ $(document).ready(function ()
             messageDisplay("Please Upload Image Files");
             return false;
         }
-            /* if(jQuery.isEmptyObject(mediaFiles))
-             {
-                 messageDisplay("Please Upload Audio Files");
-                 return false;
-             }*/
-       /* for(var id in mediaFiles){
-            $.each(mediaFiles[id], function (i, file) {
-
-                console.log(id);
-                formData.append("mediaFiles_"+id, file);
-            });
-        }
-        $.each(flagFile, function (i, file) {
-                formData.append("flag_file", file);
-        });
-        for(var id in imageFiles){
-            $.each(imageFiles[id], function (i, file) {
-                console.log(id);
-                formData.append("images_files[]", file);
-            });
-        }*/
-
-
         ajaxData('/a_dMin/add-country',formData,function(response){
             if(response.success)
             {
                 messageDisplay("added successfully");
                 setTimeout(function(){
-                    window.location.href=BASE_URL+"/a_dMin/country-list";
+                    window.location.href=BASE_URL+"/a_dMin/countries";
                 },2000);
 
             }else{
@@ -412,9 +358,9 @@ $(document).ready(function ()
     }).on("click",".add-control",function(){
         addedRow++;
         var rowsCount= $(".file-uploads").length;
-        postData('/admin/admin/file-upload-row',{'row_number':addedRow,"rows_count":rowsCount},function(response){
-
+        postData('/admin/file-upload-row',{'row_number':addedRow,"rows_count":rowsCount},function(response){
             $("#file-upload-wrapper").append(response);
+            //initializeSelectize();
         });
     }).on("click",".remove-control",function()
     {

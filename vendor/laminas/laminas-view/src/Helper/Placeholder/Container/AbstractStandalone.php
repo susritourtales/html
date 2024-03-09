@@ -1,23 +1,43 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-view for the canonical source repository
- * @copyright https://github.com/laminas/laminas-view/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-view/blob/master/LICENSE.md New BSD License
- */
+declare(strict_types=1);
 
 namespace Laminas\View\Helper\Placeholder\Container;
 
 use ArrayAccess;
 use Countable;
+use Iterator;
 use IteratorAggregate;
 use Laminas\Escaper\Escaper;
 use Laminas\View\Exception;
 use Laminas\View\Helper\AbstractHelper;
-use Laminas\View\Renderer\RendererInterface;
+use Laminas\View\Helper\Placeholder\Container;
+use ReturnTypeWillChange;
+
+use function call_user_func_array;
+use function class_exists;
+use function class_parents;
+use function count;
+use function in_array;
+use function method_exists;
+use function sprintf;
+use function strtolower;
 
 /**
  * Base class for targeted placeholder helpers
+ *
+ * @template TKey
+ * @template TValue
+ * @implements IteratorAggregate<TKey, TValue>
+ * @implements ArrayAccess<TKey, TValue>
+ * @method static setSeparator(string $separator)
+ * @method string getSeparator()
+ * @method static setIndent(int|string $indent)
+ * @method string getIndent()
+ * @method static setPrefix(string $prefix)
+ * @method string getPrefix()
+ * @method static setPostfix(string $postfix)
+ * @method string getPostfix()
  */
 abstract class AbstractStandalone extends AbstractHelper implements
     IteratorAggregate,
@@ -32,26 +52,19 @@ abstract class AbstractStandalone extends AbstractHelper implements
      */
     protected $autoEscape = true;
 
-    /**
-     * @var AbstractContainer
-     */
+    /** @var AbstractContainer<TKey, TValue>|null */
     protected $container;
 
     /**
      * Default container class
-     * @var string
+     *
+     * @var class-string<AbstractContainer>
      */
-    protected $containerClass = 'Laminas\View\Helper\Placeholder\Container';
+    protected $containerClass = Container::class;
 
-    /**
-     * @var Escaper[]
-     */
+    /** @var array<string, Escaper> */
     protected $escapers = [];
 
-    /**
-     * Constructor
-     *
-     */
     public function __construct()
     {
         $this->setContainer($this->getContainer());
@@ -65,7 +78,7 @@ abstract class AbstractStandalone extends AbstractHelper implements
      * @param  string $method
      * @param  array $args
      * @throws Exception\BadMethodCallException
-     * @return mixed
+     * @return $this|mixed
      */
     public function __call($method, $args)
     {
@@ -85,21 +98,21 @@ abstract class AbstractStandalone extends AbstractHelper implements
     /**
      * Overloading: set property value
      *
-     * @param  string $key
-     * @param  mixed $value
+     * @param TKey $key
+     * @param TValue $value
      * @return void
      */
     public function __set($key, $value)
     {
-        $container = $this->getContainer();
+        $container       = $this->getContainer();
         $container[$key] = $value;
     }
 
     /**
      * Overloading: retrieve property
      *
-     * @param  string $key
-     * @return mixed
+     * @param TKey $key
+     * @return TValue|null
      */
     public function __get($key)
     {
@@ -107,14 +120,12 @@ abstract class AbstractStandalone extends AbstractHelper implements
         if (isset($container[$key])) {
             return $container[$key];
         }
-
-        return;
     }
 
     /**
      * Overloading: check if property is set
      *
-     * @param  string $key
+     * @param TKey $key
      * @return bool
      */
     public function __isset($key)
@@ -126,7 +137,7 @@ abstract class AbstractStandalone extends AbstractHelper implements
     /**
      * Overloading: unset property
      *
-     * @param  string $key
+     * @param TKey $key
      * @return void
      */
     public function __unset($key)
@@ -183,7 +194,7 @@ abstract class AbstractStandalone extends AbstractHelper implements
      * Set whether or not auto escaping should be used
      *
      * @param  bool $autoEscape whether or not to auto escape output
-     * @return AbstractStandalone
+     * @return $this
      */
     public function setAutoEscape($autoEscape = true)
     {
@@ -194,7 +205,7 @@ abstract class AbstractStandalone extends AbstractHelper implements
     /**
      * Return whether autoEscaping is enabled or disabled
      *
-     * return bool
+     * @return bool
      */
     public function getAutoEscape()
     {
@@ -204,8 +215,7 @@ abstract class AbstractStandalone extends AbstractHelper implements
     /**
      * Set container on which to operate
      *
-     * @param  AbstractContainer $container
-     * @return AbstractStandalone
+     * @return $this
      */
     public function setContainer(AbstractContainer $container)
     {
@@ -216,7 +226,7 @@ abstract class AbstractStandalone extends AbstractHelper implements
     /**
      * Retrieve placeholder container
      *
-     * @return AbstractContainer
+     * @return AbstractContainer<TKey, TValue>
      */
     public function getContainer()
     {
@@ -233,7 +243,7 @@ abstract class AbstractStandalone extends AbstractHelper implements
      */
     public function deleteContainer()
     {
-        if (null != $this->container) {
+        if (null !== $this->container) {
             $this->container = null;
             return true;
         }
@@ -244,10 +254,10 @@ abstract class AbstractStandalone extends AbstractHelper implements
     /**
      * Set the container class to use
      *
-     * @param  string $name
+     * @param class-string<AbstractContainer> $name
      * @throws Exception\InvalidArgumentException
      * @throws Exception\DomainException
-     * @return \Laminas\View\Helper\Placeholder\Container\AbstractStandalone
+     * @return $this
      */
     public function setContainerClass($name)
     {
@@ -261,7 +271,7 @@ abstract class AbstractStandalone extends AbstractHelper implements
             );
         }
 
-        if (! in_array('Laminas\View\Helper\Placeholder\Container\AbstractContainer', class_parents($name))) {
+        if (! in_array(AbstractContainer::class, class_parents($name))) {
             throw new Exception\InvalidArgumentException('Invalid Container class specified');
         }
 
@@ -272,7 +282,7 @@ abstract class AbstractStandalone extends AbstractHelper implements
     /**
      * Retrieve the container class
      *
-     * @return string
+     * @return class-string<AbstractContainer>
      */
     public function getContainerClass()
     {
@@ -282,12 +292,11 @@ abstract class AbstractStandalone extends AbstractHelper implements
     /**
      * Set Escaper instance
      *
-     * @param  Escaper $escaper
-     * @return AbstractStandalone
+     * @return $this
      */
     public function setEscaper(Escaper $escaper)
     {
-        $encoding = $escaper->getEncoding();
+        $encoding                  = $escaper->getEncoding();
         $this->escapers[$encoding] = $escaper;
 
         return $this;
@@ -298,8 +307,8 @@ abstract class AbstractStandalone extends AbstractHelper implements
      *
      * Lazy-loads one if none available
      *
-     * @param  string|null $enc Encoding to use
-     * @return mixed
+     * @param  string $enc Encoding to use
+     * @return Escaper
      */
     public function getEscaper($enc = 'UTF-8')
     {
@@ -316,6 +325,7 @@ abstract class AbstractStandalone extends AbstractHelper implements
      *
      * @return int
      */
+    #[ReturnTypeWillChange]
     public function count()
     {
         $container = $this->getContainer();
@@ -325,9 +335,10 @@ abstract class AbstractStandalone extends AbstractHelper implements
     /**
      * ArrayAccess: offsetExists
      *
-     * @param  string|int $offset
+     * @param TKey $offset
      * @return bool
      */
+    #[ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         return $this->getContainer()->offsetExists($offset);
@@ -336,9 +347,10 @@ abstract class AbstractStandalone extends AbstractHelper implements
     /**
      * ArrayAccess: offsetGet
      *
-     * @param  string|int $offset
-     * @return mixed
+     * @param TKey $offset
+     * @return TValue
      */
+    #[ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->getContainer()->offsetGet($offset);
@@ -347,31 +359,34 @@ abstract class AbstractStandalone extends AbstractHelper implements
     /**
      * ArrayAccess: offsetSet
      *
-     * @param  string|int $offset
-     * @param  mixed $value
+     * @param TKey $offset
+     * @param TValue $value
      * @return void
      */
+    #[ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
-        return $this->getContainer()->offsetSet($offset, $value);
+        $this->getContainer()->offsetSet($offset, $value);
     }
 
     /**
      * ArrayAccess: offsetUnset
      *
-     * @param  string|int $offset
+     * @param TKey $offset
      * @return void
      */
+    #[ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
-        return $this->getContainer()->offsetUnset($offset);
+        $this->getContainer()->offsetUnset($offset);
     }
 
     /**
      * IteratorAggregate: get Iterator
      *
-     * @return \Iterator
+     * @return Iterator
      */
+    #[ReturnTypeWillChange]
     public function getIterator()
     {
         return $this->getContainer()->getIterator();

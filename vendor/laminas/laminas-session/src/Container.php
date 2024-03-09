@@ -1,11 +1,5 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-session for the canonical source repository
- * @copyright https://github.com/laminas/laminas-session/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-session/blob/master/LICENSE.md New BSD License
- */
-
 namespace Laminas\Session;
 
 /**
@@ -15,6 +9,10 @@ namespace Laminas\Session;
  * may have their own expiries, or even expiries per key in the container.
  * Additionally, expiries may be absolute TTLs or measured in "hops", which
  * are based on how many times the key or container were accessed.
+ *
+ * @template TKey of string
+ * @template TValue
+ * @template-extends AbstractContainer<TKey, TValue>
  */
 class Container extends AbstractContainer
 {
@@ -32,7 +30,7 @@ class Container extends AbstractContainer
         }
         $storage = $this->getStorage();
         $name    = $this->getName();
-        $ret =& $storage[$name][$key];
+        $ret     = &$storage[$name][$key];
 
         return $ret;
     }

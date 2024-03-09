@@ -1,8 +1,5 @@
 <?php
-
-
 namespace Admin\Model;
-
 
 class TourismFiles
 {

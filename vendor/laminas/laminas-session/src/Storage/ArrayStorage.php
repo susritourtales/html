@@ -1,26 +1,38 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-session for the canonical source repository
- * @copyright https://github.com/laminas/laminas-session/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-session/blob/master/LICENSE.md New BSD License
- */
-
 namespace Laminas\Session\Storage;
 
+use ArrayIterator;
 use Laminas\Session\Exception;
 use Laminas\Stdlib\ArrayObject;
+use ReturnTypeWillChange;
+
+use function array_flip;
+use function array_key_exists;
+use function array_keys;
+use function array_replace_recursive;
+use function is_array;
+use function microtime;
+use function sprintf;
 
 /**
  * Array session storage
  *
  * Defines an ArrayObject interface for accessing session storage, with options
  * for setting metadata, locking, and marking as isImmutable.
+ *
+ * @see ReturnTypeWillChange
+ *
+ * @template TKey of array-key
+ * @template TValue
+ * @template-extends ArrayObject<TKey, TValue>
+ * @template-implements StorageInterface<TKey, TValue>
  */
 class ArrayStorage extends ArrayObject implements StorageInterface
 {
     /**
      * Is storage marked isImmutable?
+     *
      * @var bool
      */
     protected $isImmutable = false;
@@ -38,7 +50,7 @@ class ArrayStorage extends ArrayObject implements StorageInterface
     public function __construct(
         $input = [],
         $flags = ArrayObject::ARRAY_AS_PROPS,
-        $iteratorClass = '\\ArrayIterator'
+        $iteratorClass = ArrayIterator::class
     ) {
         parent::__construct($input, $flags, $iteratorClass);
         $this->setRequestAccessTime(microtime(true));
@@ -48,7 +60,7 @@ class ArrayStorage extends ArrayObject implements StorageInterface
      * Set the request access time
      *
      * @param  float        $time
-     * @return ArrayStorage
+     * @return $this
      */
     protected function setRequestAccessTime($time)
     {
@@ -83,6 +95,7 @@ class ArrayStorage extends ArrayObject implements StorageInterface
      * @param  mixed                      $value
      * @throws Exception\RuntimeException
      */
+    #[ReturnTypeWillChange]
     public function offsetSet($key, $value)
     {
         if ($this->isImmutable()) {
@@ -103,7 +116,7 @@ class ArrayStorage extends ArrayObject implements StorageInterface
      * Lock this storage instance, or a key within it
      *
      * @param  null|int|string $key
-     * @return ArrayStorage
+     * @return $this
      */
     public function lock($key = null)
     {
@@ -159,7 +172,7 @@ class ArrayStorage extends ArrayObject implements StorageInterface
      * Unlock an object or key marked as locked
      *
      * @param  null|int|string $key
-     * @return ArrayStorage
+     * @return $this
      */
     public function unlock($key = null)
     {
@@ -193,7 +206,7 @@ class ArrayStorage extends ArrayObject implements StorageInterface
     /**
      * Mark the storage container as isImmutable
      *
-     * @return ArrayStorage
+     * @return $this
      */
     public function markImmutable()
     {
@@ -225,7 +238,7 @@ class ArrayStorage extends ArrayObject implements StorageInterface
      * @param  string                     $key
      * @param  mixed                      $value
      * @param  bool                       $overwriteArray Whether to overwrite or merge array values; by default, merges
-     * @return ArrayStorage
+     * @return $this
      * @throws Exception\RuntimeException
      */
     public function setMetadata($key, $value, $overwriteArray = false)
@@ -293,7 +306,7 @@ class ArrayStorage extends ArrayObject implements StorageInterface
      * Clear the storage object or a subkey of the object
      *
      * @param  null|int|string            $key
-     * @return ArrayStorage
+     * @return $this
      * @throws Exception\RuntimeException
      */
     public function clear($key = null)
@@ -327,7 +340,7 @@ class ArrayStorage extends ArrayObject implements StorageInterface
      * Overwrites any data that was previously set.
      *
      * @param  array        $array
-     * @return ArrayStorage
+     * @return $this
      */
     public function fromArray(array $array)
     {
@@ -342,7 +355,7 @@ class ArrayStorage extends ArrayObject implements StorageInterface
      * Cast the object to an array
      *
      * @param  bool $metaData Whether to include metadata
-     * @return array
+     * @return array<TKey, TValue>
      */
     public function toArray($metaData = false)
     {

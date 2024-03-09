@@ -1,11 +1,5 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-mvc for the canonical source repository
- * @copyright https://github.com/laminas/laminas-mvc/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-mvc/blob/master/LICENSE.md New BSD License
- */
-
 namespace Laminas\Mvc\Service;
 
 use Interop\Container\ContainerInterface;
@@ -14,7 +8,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 
 abstract class AbstractPluginManagerFactory implements FactoryInterface
 {
-    const PLUGIN_MANAGER_CLASS = 'AbstractPluginManager';
+    public const PLUGIN_MANAGER_CLASS = 'AbstractPluginManager';
 
     /**
      * Create and return a plugin manager.

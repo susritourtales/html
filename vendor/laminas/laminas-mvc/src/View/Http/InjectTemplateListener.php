@@ -1,11 +1,5 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-mvc for the canonical source repository
- * @copyright https://github.com/laminas/laminas-mvc/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-mvc/blob/master/LICENSE.md New BSD License
- */
-
 namespace Laminas\Mvc\View\Http;
 
 use Laminas\EventManager\AbstractListenerAggregate;
@@ -66,7 +60,7 @@ class InjectTemplateListener extends AbstractListenerAggregate
 
         $controller = $e->getTarget();
         if (is_object($controller)) {
-            $controller = get_class($controller);
+            $controller = $controller::class;
         }
 
         $routeMatchController = $routeMatch->getParam('controller', '');
@@ -86,7 +80,6 @@ class InjectTemplateListener extends AbstractListenerAggregate
     /**
      * Set map of controller namespace -> template pairs
      *
-     * @param  array $map
      * @return self
      */
     public function setControllerMap(array $map)
@@ -110,7 +103,7 @@ class InjectTemplateListener extends AbstractListenerAggregate
                 // merging have no feature to remove entries
                 false == $replacement
                 // Match full class or full namespace
-                || ! ($controller === $namespace || strpos($controller, $namespace . '\\') === 0)
+                || ! ($controller === $namespace || str_starts_with($controller, $namespace . '\\'))
             ) {
                 continue;
             }
@@ -169,7 +162,7 @@ class InjectTemplateListener extends AbstractListenerAggregate
      */
     protected function deriveControllerClass($controller)
     {
-        if (false !== strpos($controller, '\\')) {
+        if (str_contains($controller, '\\')) {
             $controller = substr($controller, strrpos($controller, '\\') + 1);
         }
 

@@ -1,17 +1,19 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-config for the canonical source repository
- * @copyright https://github.com/laminas/laminas-config/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-config/blob/master/LICENSE.md New BSD License
- */
-
 namespace Laminas\Config;
 
 use Psr\Container\ContainerInterface;
 
+use function array_keys;
+use function array_values;
+use function class_exists;
+use function in_array;
+use function sprintf;
+use function strtolower;
+
 class StandaloneWriterPluginManager implements ContainerInterface
 {
+    /** @var array<string, class-string> */
     private $knownPlugins = [
         'ini'            => Writer\Ini::class,
         'javaproperties' => Writer\JavaProperties::class,

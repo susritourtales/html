@@ -12,7 +12,7 @@ namespace PHPUnit\Framework\Constraint;
 use function is_finite;
 
 /**
- * Constraint that accepts finite.
+ * @no-named-arguments Parameter names are not covered by the backward compatibility promise for PHPUnit
  */
 final class IsFinite extends Constraint
 {
@@ -27,10 +27,8 @@ final class IsFinite extends Constraint
     /**
      * Evaluates the constraint for parameter $other. Returns true if the
      * constraint is met, false otherwise.
-     *
-     * @param mixed $other value or object to evaluate
      */
-    protected function matches($other): bool
+    protected function matches(mixed $other): bool
     {
         return is_finite($other);
     }

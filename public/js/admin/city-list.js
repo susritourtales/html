@@ -37,7 +37,7 @@ $(document).ready(function () {
                     formData.append('page_number', pageNumber);
                     ajaxCall = $.ajax({
                         type: "POST",
-                        url: BASE_URL + '/admin/admin/load-city-list',
+                        url: BASE_URL + '/admin/load-city-list',
                         data: formData,
                         cache: false,
                         contentType: false,
@@ -55,25 +55,25 @@ $(document).ready(function () {
         }
     }
     initPagination();
-    $("body").on("click",".delete-place",function () {
-        var placeId=$(this).data("id");
-        $(".delete-conform-button").attr("data-id",placeId);
-        $("#deletePlaceModal").modal("show");
-    }) .on("click",'.delete-conform-button',function () {
-        $(this).prop("disabled",true);
-        var cityId = $(this).attr("data-id");
-        postData("/admin/admin/delete-city", {city_id:cityId},function (response){
-            var jsonRespnse = parseJsonData(response);
-            messageDisplay(jsonRespnse.message);
-            if(jsonRespnse.success) {
-                setTimeout(function(){
-                    window.location.reload();
-                },2000);
-            }else {
-                $(".delete-conform-button").prop("disabled",true);
-            }
-        })
-    }).on('click', '.fa-sort',  function (){
+    $("body").on("click", ".delete-city", function() {
+		var id = $(this).data("id");
+		$(".delete-conform-button").attr("data-id", id);
+		$("#deleteEntityModal").modal("show");
+	}).on("click", '.delete-conform-button', function() {
+		$(this).prop("disabled", true);
+		var id = $(this).attr("data-id");
+		postData("/admin/delete-city", {'id': id}, function(response) {
+			var jsonRespnse = parseJsonData(response);
+			messageDisplay(jsonRespnse.message);
+			if (jsonRespnse.success) {
+				setTimeout(function() {
+					window.location.href = BASE_URL + "/a_dMin/cities";
+				}, 3000);
+			} else {
+				$(".delete-conform-button").prop("disabled", true);
+			}
+		})
+	}).on('click', '.fa-sort',  function (){
         $('.fa-sort').removeClass("d-none");
         $('.fa-sort-up').addClass("d-none");
         $('.fa-sort-down').addClass("d-none");
@@ -141,7 +141,7 @@ $(document).ready(function () {
         formData.append('type','search');
         ajaxCall=  $.ajax({
             type: "POST",
-            url: BASE_URL+'/admin/admin/load-city-list',
+            url: BASE_URL+'/admin/load-city-list',
             data: formData,
             cache: false,
             contentType: false,

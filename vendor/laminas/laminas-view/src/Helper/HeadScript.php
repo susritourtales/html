@@ -1,20 +1,39 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-view for the canonical source repository
- * @copyright https://github.com/laminas/laminas-view/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-view/blob/master/LICENSE.md New BSD License
- */
+declare(strict_types=1);
 
 namespace Laminas\View\Helper;
 
 use Laminas\View\Exception;
-use stdClass;
+use Laminas\View\Helper\Placeholder\Container\AbstractContainer;
+use Laminas\View\Helper\Placeholder\Container\AbstractStandalone;
+use Laminas\View\Renderer\PhpRenderer;
+
+use function array_key_exists;
+use function array_shift;
+use function assert;
+use function count;
+use function filter_var;
+use function implode;
+use function in_array;
+use function is_object;
+use function is_string;
+use function ob_get_clean;
+use function ob_start;
+use function preg_match;
+use function sprintf;
+use function str_replace;
+use function strtolower;
+use function ucfirst;
+
+use const FILTER_VALIDATE_BOOLEAN;
+use const PHP_EOL;
 
 /**
  * Helper for setting and retrieving script elements for HTML head section
  *
  * Allows the following method calls:
+ *
  * @method HeadScript appendFile($src, $type = 'text/javascript', $attrs = [])
  * @method HeadScript offsetSetFile($index, $src, $type = 'text/javascript', $attrs = [])
  * @method HeadScript prependFile($src, $type = 'text/javascript', $attrs = [])
@@ -23,16 +42,27 @@ use stdClass;
  * @method HeadScript offsetSetScript($index, $src, $type = 'text/javascript', $attrs = [])
  * @method HeadScript prependScript($script, $type = 'text/javascript', $attrs = [])
  * @method HeadScript setScript($script, $type = 'text/javascript', $attrs = [])
+ * @psalm-type ObjectShape = object{
+ *     type: string,
+ *     attributes: array<string, mixed>,
+ *     source: string|null,
+ * }
+ * @extends AbstractStandalone<int, ObjectShape>
  */
-class HeadScript extends Placeholder\Container\AbstractStandalone
+class HeadScript extends AbstractStandalone
 {
     /**
      * Script type constants
      *
      * @const string
      */
-    const FILE   = 'FILE';
-    const SCRIPT = 'SCRIPT';
+    public const FILE   = 'FILE';
+    public const SCRIPT = 'SCRIPT';
+
+    /**
+     * @internal
+     */
+    public const DEFAULT_SCRIPT_TYPE = 'text/javascript';
 
     /**
      * Are arbitrary attributes allowed?
@@ -46,33 +76,33 @@ class HeadScript extends Placeholder\Container\AbstractStandalone
      *
      * @var bool
      */
-    protected $captureLock;
+    protected $captureLock = false;
 
     /**
      * Capture type
      *
-     * @var string
+     * @var string|null
      */
     protected $captureScriptType;
 
     /**
      * Capture attributes
      *
-     * @var null|array
+     * @var null|array<string, mixed>
      */
-    protected $captureScriptAttrs = null;
+    protected $captureScriptAttrs;
 
     /**
      * Capture type (append, prepend, set)
      *
-     * @var string
+     * @var string|null
      */
     protected $captureType;
 
     /**
      * Optional allowed attributes for script tag
      *
-     * @var array
+     * @var list<string>
      */
     protected $optionalAttributes = [
         'charset',
@@ -83,12 +113,28 @@ class HeadScript extends Placeholder\Container\AbstractStandalone
         'language',
         'src',
         'id',
+        'nonce',
+        'nomodule',
+        'referrerpolicy',
+    ];
+
+    /**
+     * Script attributes that behave as booleans
+     *
+     * @var list<string>
+     */
+    private array $booleanAttributes = [
+        'nomodule',
+        'defer',
+        'async',
     ];
 
     /**
      * Required attributes for script tag
      *
-     * @var string
+     * @deprecated This property is unused and will be removed in version 3.0 of this component
+     *
+     * @var list<string>
      */
     protected $requiredAttributes = ['type'];
 
@@ -100,16 +146,11 @@ class HeadScript extends Placeholder\Container\AbstractStandalone
      */
     public $useCdata = false;
 
-    /**
-     * Constructor
-     *
-     * Set separator to PHP_EOL.
-     */
     public function __construct()
     {
         parent::__construct();
 
-        $this->setSeparator(PHP_EOL);
+        $this->getContainer()->setSeparator(PHP_EOL);
     }
 
     /**
@@ -121,16 +162,16 @@ class HeadScript extends Placeholder\Container\AbstractStandalone
      * @param  string $mode      Script or file
      * @param  string $spec      Script/url
      * @param  string $placement Append, prepend, or set
-     * @param  array  $attrs     Array of script attributes
+     * @param  array<string, mixed> $attrs Array of script attributes
      * @param  string $type      Script type and/or array of script attributes
-     * @return HeadScript
+     * @return $this
      */
     public function __invoke(
         $mode = self::FILE,
         $spec = null,
         $placement = 'APPEND',
         array $attrs = [],
-        $type = 'text/javascript'
+        $type = self::DEFAULT_SCRIPT_TYPE
     ) {
         if ((null !== $spec) && is_string($spec)) {
             $action    = ucfirst(strtolower($mode));
@@ -156,8 +197,8 @@ class HeadScript extends Placeholder\Container\AbstractStandalone
      *
      * @param  string $method Method to call
      * @param  array  $args   Arguments of method
-     * @throws Exception\BadMethodCallException if too few arguments or invalid method
-     * @return HeadScript
+     * @throws Exception\BadMethodCallException If too few arguments or invalid method.
+     * @return $this
      */
     public function __call($method, $args)
     {
@@ -169,12 +210,13 @@ class HeadScript extends Placeholder\Container\AbstractStandalone
                 ));
             }
 
-            $action  = $matches['action'];
-            $mode    = strtolower($matches['mode']);
-            $type    = 'text/javascript';
-            $attrs   = [];
+            $action = $matches['action'];
+            $mode   = strtolower($matches['mode']);
+            $type   = self::DEFAULT_SCRIPT_TYPE;
+            $index  = 0;
+            $attrs  = [];
 
-            if ('offsetSet' == $action) {
+            if ('offsetSet' === $action) {
                 $index = array_shift($args);
                 if (1 > count($args)) {
                     throw new Exception\BadMethodCallException(sprintf(
@@ -196,7 +238,7 @@ class HeadScript extends Placeholder\Container\AbstractStandalone
             switch ($mode) {
                 case 'script':
                     $item = $this->createData($type, $attrs, $content);
-                    if ('offsetSet' == $action) {
+                    if ('offsetSet' === $action) {
                         $this->offsetSet($index, $item);
                     } else {
                         $this->$action($item);
@@ -206,8 +248,8 @@ class HeadScript extends Placeholder\Container\AbstractStandalone
                 default:
                     if (! $this->isDuplicate($content)) {
                         $attrs['src'] = $content;
-                        $item = $this->createData($type, $attrs);
-                        if ('offsetSet' == $action) {
+                        $item         = $this->createData($type, $attrs);
+                        if ('offsetSet' === $action) {
                             $this->offsetSet($index, $item);
                         } else {
                             $this->$action($item);
@@ -230,22 +272,26 @@ class HeadScript extends Placeholder\Container\AbstractStandalone
      */
     public function toString($indent = null)
     {
-        $indent = (null !== $indent)
-            ? $this->getWhitespace($indent)
-            : $this->getIndent();
+        $container = $this->getContainer();
+        $indent    = null !== $indent
+            ? $container->getWhitespace($indent)
+            : $container->getIndent();
 
-        if ($this->view) {
-            $useCdata = $this->view->plugin('doctype')->isXhtml();
+        if ($this->view instanceof PhpRenderer) {
+            $doctype = $this->view->plugin('doctype');
+            assert($doctype instanceof Doctype);
+
+            $useCdata = $doctype->isXhtml();
         } else {
             $useCdata = $this->useCdata;
         }
 
-        $escapeStart = ($useCdata) ? '//<![CDATA[' : '//<!--';
-        $escapeEnd   = ($useCdata) ? '//]]>' : '//-->';
+        $escapeStart = $useCdata ? '//<![CDATA[' : '//<!--';
+        $escapeEnd   = $useCdata ? '//]]>' : '//-->';
 
         $items = [];
-        $this->getContainer()->ksort();
-        foreach ($this as $item) {
+        $container->ksort();
+        foreach ($container as $item) {
             if (! $this->isValid($item)) {
                 continue;
             }
@@ -253,21 +299,21 @@ class HeadScript extends Placeholder\Container\AbstractStandalone
             $items[] = $this->itemToString($item, $indent, $escapeStart, $escapeEnd);
         }
 
-        return implode($this->getSeparator(), $items);
+        return implode($container->getSeparator(), $items);
     }
 
     /**
      * Start capture action
      *
-     * @param  mixed  $captureType Type of capture
-     * @param  string $type        Type of script
-     * @param  array  $attrs       Attributes of capture
+     * @param string $captureType Type of capture
+     * @param string $type        Type of script
+     * @param array<string, mixed> $attrs Attributes of capture
      * @throws Exception\RuntimeException
      * @return void
      */
     public function captureStart(
-        $captureType = Placeholder\Container\AbstractContainer::APPEND,
-        $type = 'text/javascript',
+        $captureType = AbstractContainer::APPEND,
+        $type = self::DEFAULT_SCRIPT_TYPE,
         $attrs = []
     ) {
         if ($this->captureLock) {
@@ -296,9 +342,9 @@ class HeadScript extends Placeholder\Container\AbstractStandalone
         $this->captureLock        = false;
 
         switch ($this->captureType) {
-            case Placeholder\Container\AbstractContainer::SET:
-            case Placeholder\Container\AbstractContainer::PREPEND:
-            case Placeholder\Container\AbstractContainer::APPEND:
+            case AbstractContainer::SET:
+            case AbstractContainer::PREPEND:
+            case AbstractContainer::APPEND:
                 $action = strtolower($this->captureType) . 'Script';
                 break;
             default:
@@ -312,19 +358,20 @@ class HeadScript extends Placeholder\Container\AbstractStandalone
     /**
      * Create data item containing all necessary components of script
      *
+     * @internal This method will become private in version 3.0
+     *
      * @param  string $type       Type of data
-     * @param  array  $attributes Attributes of data
+     * @param  array<string, mixed> $attributes Attributes of data
      * @param  string $content    Content of data
-     * @return stdClass
+     * @return ObjectShape
      */
     public function createData($type, array $attributes, $content = null)
     {
-        $data             = new stdClass();
-        $data->type       = $type;
-        $data->attributes = $attributes;
-        $data->source     = $content;
-
-        return $data;
+        return (object) [
+            'type'       => $type,
+            'attributes' => $attributes,
+            'source'     => $content,
+        ];
     }
 
     /**
@@ -336,9 +383,10 @@ class HeadScript extends Placeholder\Container\AbstractStandalone
     protected function isDuplicate($file)
     {
         foreach ($this->getContainer() as $item) {
-            if (($item->source === null)
+            if (
+                ($item->source === null)
                 && array_key_exists('src', $item->attributes)
-                && ($file == $item->attributes['src'])
+                && ($file === $item->attributes['src'])
             ) {
                 return true;
             }
@@ -350,12 +398,15 @@ class HeadScript extends Placeholder\Container\AbstractStandalone
     /**
      * Is the script provided valid?
      *
-     * @param  mixed  $value  Is the given script valid?
+     * @internal This method will become private in version 3.0
+     *
+     * @param mixed $value Is the given script valid?
      * @return bool
      */
     protected function isValid($value)
     {
-        if ((! $value instanceof stdClass)
+        if (
+            ! is_object($value)
             || ! isset($value->type)
             || (! isset($value->source)
                 && ! isset($value->attributes))
@@ -369,10 +420,12 @@ class HeadScript extends Placeholder\Container\AbstractStandalone
     /**
      * Create script HTML
      *
-     * @param  mixed  $item        Item to convert
-     * @param  string $indent      String to add before the item
-     * @param  string $escapeStart Starting sequence
-     * @param  string $escapeEnd   Ending sequence
+     * @internal This method will become private in version 3.0
+     *
+     * @param ObjectShape $item Item to convert
+     * @param string $indent String to add before the item
+     * @param string $escapeStart Starting sequence
+     * @param string $escapeEnd Ending sequence
      * @return string
      */
     public function itemToString($item, $indent, $escapeStart, $escapeEnd)
@@ -380,20 +433,19 @@ class HeadScript extends Placeholder\Container\AbstractStandalone
         $attrString = '';
         if (! empty($item->attributes)) {
             foreach ($item->attributes as $key => $value) {
-                if ((! $this->arbitraryAttributesAllowed() && ! in_array($key, $this->optionalAttributes))
-                    || in_array($key, ['conditional', 'noescape'])) {
+                if (
+                    (! $this->arbitraryAttributesAllowed() && ! in_array($key, $this->optionalAttributes))
+                    || in_array($key, ['conditional', 'noescape'])
+                ) {
                     continue;
                 }
-                if ('defer' == $key) {
-                    $value = 'defer';
-                }
-                if ('async' == $key) {
-                    $value = 'async';
+                if (in_array(strtolower($key), $this->booleanAttributes, true)) {
+                    $value = strtolower($key);
                 }
                 $attrString .= sprintf(
                     ' %s="%s"',
                     $key,
-                    ($this->autoEscape) ? $this->escapeAttribute($value) : $value
+                    $this->autoEscape ? $this->escapeAttribute($value) : $value
                 );
             }
         }
@@ -401,10 +453,14 @@ class HeadScript extends Placeholder\Container\AbstractStandalone
         $addScriptEscape = ! (isset($item->attributes['noescape'])
             && filter_var($item->attributes['noescape'], FILTER_VALIDATE_BOOLEAN));
 
-        if (empty($item->type) && $this->view && $this->view->plugin('doctype')->isHtml5()) {
+        if (
+            (empty($item->type) || strtolower($item->type) === self::DEFAULT_SCRIPT_TYPE)
+            && $this->view
+            && $this->view->plugin('doctype')->isHtml5()
+        ) {
             $html = '<script ' . $attrString . '>';
         } else {
-            $type = ($this->autoEscape) ? $this->escapeAttribute($item->type) : $item->type;
+            $type = $this->autoEscape ? $this->escapeAttribute($item->type) : $item->type;
             $html = '<script type="' . $type . '"' . $attrString . '>';
         }
         if (! empty($item->source)) {
@@ -424,7 +480,8 @@ class HeadScript extends Placeholder\Container\AbstractStandalone
         }
         $html .= '</script>';
 
-        if (isset($item->attributes['conditional'])
+        if (
+            isset($item->attributes['conditional'])
             && ! empty($item->attributes['conditional'])
             && is_string($item->attributes['conditional'])
         ) {
@@ -443,9 +500,9 @@ class HeadScript extends Placeholder\Container\AbstractStandalone
     /**
      * Override append
      *
-     * @param  string $value Append script or file
+     * @param ObjectShape $value Append script or file
      * @throws Exception\InvalidArgumentException
-     * @return void
+     * @return AbstractContainer
      */
     public function append($value)
     {
@@ -462,9 +519,9 @@ class HeadScript extends Placeholder\Container\AbstractStandalone
     /**
      * Override prepend
      *
-     * @param  string $value Prepend script or file
+     * @param ObjectShape $value Prepend script or file
      * @throws Exception\InvalidArgumentException
-     * @return void
+     * @return AbstractContainer
      */
     public function prepend($value)
     {
@@ -481,7 +538,7 @@ class HeadScript extends Placeholder\Container\AbstractStandalone
     /**
      * Override set
      *
-     * @param  string $value Set script or file
+     * @param ObjectShape $value Set script or file
      * @throws Exception\InvalidArgumentException
      * @return void
      */
@@ -493,18 +550,18 @@ class HeadScript extends Placeholder\Container\AbstractStandalone
             );
         }
 
-        return $this->getContainer()->set($value);
+        $this->getContainer()->set($value);
     }
 
     /**
      * Override offsetSet
      *
-     * @param  string|int $index Set script of file offset
-     * @param  mixed      $value
-     * @throws Exception\InvalidArgumentException
+     * @param int $offset Set script of file offset
+     * @param ObjectShape $value
      * @return void
+     * @throws Exception\InvalidArgumentException
      */
-    public function offsetSet($index, $value)
+    public function offsetSet($offset, $value)
     {
         if (! $this->isValid($value)) {
             throw new Exception\InvalidArgumentException(
@@ -513,14 +570,14 @@ class HeadScript extends Placeholder\Container\AbstractStandalone
             );
         }
 
-        return $this->getContainer()->offsetSet($index, $value);
+        $this->getContainer()->offsetSet($offset, $value);
     }
 
     /**
      * Set flag indicating if arbitrary attributes are allowed
      *
      * @param  bool $flag Set flag
-     * @return HeadScript
+     * @return $this
      */
     public function setAllowArbitraryAttributes($flag)
     {

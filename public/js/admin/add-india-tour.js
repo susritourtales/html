@@ -9,7 +9,7 @@ $(document).ready(function ()
     $("body").on("change","#states",function(){
         var stateId=$(this).val();
         $(".city-wrapper").removeClass("hidden");
-        postData('/admin/tours/get-cities',{"state_id":stateId,'tour_type':1},function(response){
+        postData('/admin/get-cities',{"state_id":stateId,'tour_type':1},function(response){
             var options='<option value="">--select city--</option>';
             if(response.success)
             {
@@ -18,7 +18,6 @@ $(document).ready(function ()
                 {
                     options +='<option value="'+list[s].id+'">'+list[s].city_name+'</option>'
                 }
-
                 $('#cities').html(options);
             }
             $(".sol-container").remove();
@@ -27,14 +26,14 @@ $(document).ready(function ()
     }).on("change","#cities",function(){
         var cityId=$(this).val();
         $(".city-wrapper").removeClass("hidden");
-        postData('/admin/tours/tourism-places-add-price',{"city_id":cityId,'tour_type':1},function(response){
+        postData('/admin/add-tour-get-places',{"city_id":cityId,'tour_type':1},function(response){
             var options='';
             if(response.success)
             {
                 var list=response.places;
                 for(var s=0;s<list.length;s++)
                 {
-                    options +='<option value="'+list[s].tourism_place_id+'">'+list[s].place_name+'</option>'
+                    options +='<option value="'+list[s].id+'">'+list[s].place_name+'</option>'
                 }
                 $(".sol-container").remove();
                 $("#places").html(options).val('').removeAttr('class').prop("multiple",true).searchableOptionList();
@@ -127,57 +126,34 @@ $(document).ready(function ()
         }
 
     }).on("click","#addIndiaTour",function(){
-
         var stateElement=$("#states");
         var cityElement=$("#cities");
         var error=false;
         var placeElement=$("#places");
-
-
         var cityId=cityElement.val();
         var stateId=stateElement.val();
         var placeName=placeElement.val();
+        var free = 0;
+        if($("input[name='free']:checked"))
+            free = 1;
         var fileDetails=[];
-
         if(stateId=='')
         {
             messageDisplay("Please select state");
             return  false;
         }
-
-       /* if(cityId=='')
-        {
-            messageDisplay("Please select city");
-            return  false;
-        }
-
-        if(placeName=='')
-        {
-            messageDisplay("Please select place");
-            return  false;
-        }*/
-       
-        /*if(imageFiles.length==0)
-         {
-         messageDisplay("please select image files");
-         error=true;
-         return false;
-         }*/
         if(placeName==null)
         {
             placeName ="";
         }
         var formData=new FormData();
-
         formData.append("state_id",stateId);
         formData.append("city_id",cityId);
         formData.append("place_name",placeName);
-
+        formData.append("free",free);
         var element=$(this);
         element.html('Please wait...');
-
         element.prop('disabled',true);
-
         ajaxData('/a_dMin/add-india-tour',formData,function(response){
             if(response.success)
             {

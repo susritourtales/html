@@ -1,11 +1,5 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-mvc for the canonical source repository
- * @copyright https://github.com/laminas/laminas-mvc/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-mvc/blob/master/LICENSE.md New BSD License
- */
-
 namespace Laminas\Mvc\Controller;
 
 use Interop\Container\ContainerInterface;
@@ -43,7 +37,7 @@ class ControllerManager extends AbstractPluginManager
      * Injects an initializer for injecting controllers with an
      * event manager and plugin manager.
      *
-     * @param  ConfigInterface|ContainerInterface $container
+     * @param  ConfigInterface|ContainerInterface $configOrContainerInstance
      * @param  array $config
      */
     public function __construct($configOrContainerInstance, array $config = [])
@@ -63,7 +57,7 @@ class ControllerManager extends AbstractPluginManager
         if (! $plugin instanceof $this->instanceOf) {
             throw new InvalidServiceException(sprintf(
                 'Plugin of type "%s" is invalid; must implement %s',
-                (is_object($plugin) ? get_class($plugin) : gettype($plugin)),
+                (get_debug_type($plugin)),
                 $this->instanceOf
             ));
         }
@@ -97,7 +91,6 @@ class ControllerManager extends AbstractPluginManager
     /**
      * Initializer: inject plugin manager
      *
-     * @param ContainerInterface $container
      * @param DispatchableInterface $controller
      */
     public function injectPluginManager(ContainerInterface $container, $controller)

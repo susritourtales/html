@@ -1,18 +1,24 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-db for the canonical source repository
- * @copyright https://github.com/laminas/laminas-db/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-db/blob/master/LICENSE.md New BSD License
- */
-
 namespace Laminas\Db\Sql;
+
+use Laminas\Db\Sql\ExpressionInterface;
+use Laminas\Db\Sql\SqlInterface;
+
+use function current;
+use function gettype;
+use function implode;
+use function in_array;
+use function is_array;
+use function is_int;
+use function is_object;
+use function is_scalar;
+use function key;
+use function sprintf;
 
 abstract class AbstractExpression implements ExpressionInterface
 {
-    /**
-     * @var string[]
-     */
+    /** @var string[] */
     protected $allowedTypes = [
         self::TYPE_IDENTIFIER,
         self::TYPE_LITERAL,
@@ -25,9 +31,7 @@ abstract class AbstractExpression implements ExpressionInterface
      *
      * @param mixed $argument
      * @param string $defaultType
-     *
      * @return array
-     *
      * @throws Exception\InvalidArgumentException
      */
     protected function normalizeArgument($argument, $defaultType = self::TYPE_VALUE)
@@ -49,7 +53,7 @@ abstract class AbstractExpression implements ExpressionInterface
 
             $key = key($argument);
 
-            if (is_integer($key) && ! in_array($value, $this->allowedTypes)) {
+            if (is_int($key) && ! in_array($value, $this->allowedTypes)) {
                 return $this->buildNormalizedArgument($value, $defaultType);
             }
 
@@ -61,18 +65,16 @@ abstract class AbstractExpression implements ExpressionInterface
             'null',
             'scalar',
             'array',
-            'Laminas\Db\Sql\ExpressionInterface',
-            'Laminas\Db\Sql\SqlInterface',
-            is_object($argument) ? get_class($argument) : gettype($argument)
+            ExpressionInterface::class,
+            SqlInterface::class,
+            is_object($argument) ? $argument::class : gettype($argument)
         ));
     }
 
     /**
      * @param mixed  $argument
      * @param string $argumentType
-     *
      * @return array
-     *
      * @throws Exception\InvalidArgumentException
      */
     private function buildNormalizedArgument($argument, $argumentType)

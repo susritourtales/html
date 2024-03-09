@@ -9,6 +9,8 @@
  */
 namespace SebastianBergmann\Complexity;
 
+use function assert;
+use function file_get_contents;
 use PhpParser\Error;
 use PhpParser\Node;
 use PhpParser\NodeTraverser;
@@ -31,10 +33,8 @@ final class Calculator
      */
     public function calculateForSourceString(string $source): ComplexityCollection
     {
-        $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
-
         try {
-            $nodes = $parser->parse($source);
+            $nodes = (new ParserFactory)->createForHostVersion()->parse($source);
 
             assert($nodes !== null);
 
@@ -44,8 +44,8 @@ final class Calculator
         } catch (Error $error) {
             throw new RuntimeException(
                 $error->getMessage(),
-                (int) $error->getCode(),
-                $error
+                $error->getCode(),
+                $error,
             );
         }
         // @codeCoverageIgnoreEnd
@@ -72,8 +72,8 @@ final class Calculator
         } catch (Error $error) {
             throw new RuntimeException(
                 $error->getMessage(),
-                (int) $error->getCode(),
-                $error
+                $error->getCode(),
+                $error,
             );
         }
         // @codeCoverageIgnoreEnd

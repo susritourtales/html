@@ -11,44 +11,24 @@ namespace PHPUnit\Framework\Constraint;
 
 use function is_string;
 use function sprintf;
-use function strpos;
+use function str_contains;
 use function trim;
 use PHPUnit\Framework\ExpectationFailedException;
+use PHPUnit\Util\Exporter;
 use SebastianBergmann\Comparator\ComparisonFailure;
 use SebastianBergmann\Comparator\Factory as ComparatorFactory;
 
 /**
- * Constraint that checks if one value is equal to another.
- *
- * Equality is checked with PHP's == operator, the operator is explained in
- * detail at {@url https://php.net/manual/en/types.comparisons.php}.
- * Two values are equal if they have the same value disregarding type.
- *
- * The expected value is passed in the constructor.
+ * @no-named-arguments Parameter names are not covered by the backward compatibility promise for PHPUnit
  */
 final class IsEqual extends Constraint
 {
-    /**
-     * @var mixed
-     */
-    private $value;
+    private readonly mixed $value;
+    private readonly float $delta;
+    private readonly bool $canonicalize;
+    private readonly bool $ignoreCase;
 
-    /**
-     * @var float
-     */
-    private $delta;
-
-    /**
-     * @var bool
-     */
-    private $canonicalize;
-
-    /**
-     * @var bool
-     */
-    private $ignoreCase;
-
-    public function __construct($value, float $delta = 0.0, bool $canonicalize = false, bool $ignoreCase = false)
+    public function __construct(mixed $value, float $delta = 0.0, bool $canonicalize = false, bool $ignoreCase = false)
     {
         $this->value        = $value;
         $this->delta        = $delta;
@@ -67,10 +47,8 @@ final class IsEqual extends Constraint
      * failure.
      *
      * @throws ExpectationFailedException
-     *
-     * @return bool
      */
-    public function evaluate($other, string $description = '', bool $returnResult = false): ?bool
+    public function evaluate(mixed $other, string $description = '', bool $returnResult = false): ?bool
     {
         // If $this->value and $other are identical, they are also equal.
         // This is the most common path and will allow us to skip
@@ -84,7 +62,7 @@ final class IsEqual extends Constraint
         try {
             $comparator = $comparatorFactory->getComparatorFor(
                 $this->value,
-                $other
+                $other,
             );
 
             $comparator->assertEquals(
@@ -92,7 +70,7 @@ final class IsEqual extends Constraint
                 $other,
                 $this->delta,
                 $this->canonicalize,
-                $this->ignoreCase
+                $this->ignoreCase,
             );
         } catch (ComparisonFailure $f) {
             if ($returnResult) {
@@ -101,7 +79,7 @@ final class IsEqual extends Constraint
 
             throw new ExpectationFailedException(
                 trim($description . "\n" . $f->getMessage()),
-                $f
+                $f,
             );
         }
 
@@ -110,35 +88,33 @@ final class IsEqual extends Constraint
 
     /**
      * Returns a string representation of the constraint.
-     *
-     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
-    public function toString(): string
+    public function toString(bool $exportObjects = false): string
     {
         $delta = '';
 
         if (is_string($this->value)) {
-            if (strpos($this->value, "\n") !== false) {
+            if (str_contains($this->value, "\n")) {
                 return 'is equal to <text>';
             }
 
             return sprintf(
                 "is equal to '%s'",
-                $this->value
+                $this->value,
             );
         }
 
         if ($this->delta != 0) {
             $delta = sprintf(
                 ' with delta <%F>',
-                $this->delta
+                $this->delta,
             );
         }
 
         return sprintf(
             'is equal to %s%s',
-            $this->exporter()->export($this->value),
-            $delta
+            Exporter::export($this->value, $exportObjects),
+            $delta,
         );
     }
 }

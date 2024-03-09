@@ -1,11 +1,5 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-mvc for the canonical source repository
- * @copyright https://github.com/laminas/laminas-mvc/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-mvc/blob/master/LICENSE.md New BSD License
- */
-
 namespace Laminas\Mvc\Controller;
 
 use Interop\Container\ContainerInterface;
@@ -17,12 +11,14 @@ use Laminas\Log\FilterPluginManager as LogFilterManager;
 use Laminas\Log\FormatterPluginManager as LogFormatterManager;
 use Laminas\Log\ProcessorPluginManager as LogProcessorManager;
 use Laminas\Log\WriterPluginManager as LogWriterManager;
+use Laminas\Mvc\Exception\DomainException;
 use Laminas\Serializer\AdapterPluginManager as SerializerAdapterManager;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
 use Laminas\Stdlib\DispatchableInterface;
 use Laminas\Validator\ValidatorPluginManager;
 use ReflectionClass;
+use ReflectionNamedType;
 use ReflectionParameter;
 
 /**
@@ -147,29 +143,40 @@ class LazyControllerAbstractFactory implements AbstractFactoryInterface
     private function resolveParameter(ContainerInterface $container, $requestedName)
     {
         /**
-         * @param ReflectionClass $parameter
+         * @param ReflectionParameter $parameter
          * @return mixed
          * @throws ServiceNotFoundException If type-hinted parameter cannot be
          *   resolved to a service in the container.
          */
         return function (ReflectionParameter $parameter) use ($container, $requestedName) {
-            if ($parameter->isArray()
-                && $parameter->getName() === 'config'
-                && $container->has('config')
-            ) {
-                return $container->get('config');
+
+            $parameterType = $parameter->getType();
+            if ($parameterType === null) {
+                return null;
+            }
+            if (! $parameterType instanceof ReflectionNamedType) {
+                throw new DomainException(sprintf(
+                    'Unable to create controller "%s"; unable to resolve parameter "%s" with union type hint',
+                    $requestedName,
+                    $parameter->getName()
+                ));
             }
 
-            if ($parameter->isArray()) {
+            if ($parameterType->getName() === 'array') {
+                if ($parameter->getName() === 'config'
+                    && $container->has('config')
+                ) {
+                    return $container->get('config');
+                }
                 return [];
             }
 
-            if (! $parameter->getClass()) {
-                return;
+            if ($parameterType->isBuiltin()) {
+                return null;
             }
 
-            $type = $parameter->getClass()->getName();
-            $type = isset($this->aliases[$type]) ? $this->aliases[$type] : $type;
+            $type = $parameterType->getName();
+            $type = $this->aliases[$type] ?? $type;
 
             if (! $container->has($type)) {
                 throw new ServiceNotFoundException(sprintf(

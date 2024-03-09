@@ -1,14 +1,20 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-config for the canonical source repository
- * @copyright https://github.com/laminas/laminas-config/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-config/blob/master/LICENSE.md New BSD License
- */
-
 namespace Laminas\Config\Reader;
 
 use Laminas\Config\Exception;
+
+use function array_replace_recursive;
+use function call_user_func;
+use function dirname;
+use function file_get_contents;
+use function function_exists;
+use function is_array;
+use function is_callable;
+use function is_file;
+use function is_readable;
+use function sprintf;
+use function trim;
 
 /**
  * YAML config reader.
@@ -77,6 +83,7 @@ class Yaml implements ReaderInterface
      * fromFile(): defined by Reader interface.
      *
      * @see    ReaderInterface::fromFile()
+     *
      * @param  string $filename
      * @return array
      * @throws Exception\RuntimeException
@@ -108,6 +115,7 @@ class Yaml implements ReaderInterface
      * fromString(): defined by Reader interface.
      *
      * @see    ReaderInterface::fromString()
+     *
      * @param  string $string
      * @return array|bool
      * @throws Exception\RuntimeException

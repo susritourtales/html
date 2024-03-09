@@ -1,25 +1,19 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-db for the canonical source repository
- * @copyright https://github.com/laminas/laminas-db/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-db/blob/master/LICENSE.md New BSD License
- */
-
 namespace Laminas\Db\Sql;
 
-/**
- */
+use function gettype;
+use function is_callable;
+use function is_object;
+use function is_string;
+use function sprintf;
+
 class TableIdentifier
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $table;
 
-    /**
-     * @var null|string
-     */
+    /** @var null|string */
     protected $schema;
 
     /**
@@ -31,7 +25,7 @@ class TableIdentifier
         if (! (is_string($table) || is_callable([$table, '__toString']))) {
             throw new Exception\InvalidArgumentException(sprintf(
                 '$table must be a valid table name, parameter of type %s given',
-                is_object($table) ? get_class($table) : gettype($table)
+                is_object($table) ? $table::class : gettype($table)
             ));
         }
 
@@ -47,7 +41,7 @@ class TableIdentifier
             if (! (is_string($schema) || is_callable([$schema, '__toString']))) {
                 throw new Exception\InvalidArgumentException(sprintf(
                     '$schema must be a valid schema name, parameter of type %s given',
-                    is_object($schema) ? get_class($schema) : gettype($schema)
+                    is_object($schema) ? $schema::class : gettype($schema)
                 ));
             }
 
@@ -62,9 +56,9 @@ class TableIdentifier
     }
 
     /**
-     * @param string $table
-     *
      * @deprecated please use the constructor and build a new {@see TableIdentifier} instead
+     *
+     * @param string $table
      */
     public function setTable($table)
     {
@@ -84,13 +78,14 @@ class TableIdentifier
      */
     public function hasSchema()
     {
-        return ($this->schema !== null);
+        return $this->schema !== null;
     }
 
     /**
-     * @param $schema
-     *
      * @deprecated please use the constructor and build a new {@see TableIdentifier} instead
+     *
+     * @param null|string $schema
+     * @return void
      */
     public function setSchema($schema)
     {
@@ -105,6 +100,7 @@ class TableIdentifier
         return $this->schema;
     }
 
+    /** @return array{0: string, 1: null|string} */
     public function getTableAndSchema()
     {
         return [$this->table, $this->schema];

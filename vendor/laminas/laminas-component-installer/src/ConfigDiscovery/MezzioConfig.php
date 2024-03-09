@@ -1,32 +1,34 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-component-installer for the canonical source repository
- * @copyright https://github.com/laminas/laminas-component-installer/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-component-installer/blob/master/LICENSE.md New BSD License
- */
+declare(strict_types=1);
 
 namespace Laminas\ComponentInstaller\ConfigDiscovery;
 
-class MezzioConfig extends AbstractDiscovery
+use function preg_quote;
+use function sprintf;
+
+/**
+ * @internal
+ */
+final class MezzioConfig extends AbstractDiscovery
 {
     /**
      * Configuration file to look for.
      *
-     * @var string
+     * @var non-empty-string
      */
-    protected $configFile = 'config/config.php';
+    protected string $configFile = 'config/config.php';
 
     /**
      * Expected pattern to match if the configuration file exists.
      *
      * Pattern is set in constructor to ensure PCRE quoting is correct.
      *
-     * @var string
+     * @var non-empty-string
      */
-    protected $expected = '';
+    protected string $expected;
 
-    public function __construct($projectDirectory = '')
+    public function __construct(string $projectDirectory = '')
     {
         $this->expected = sprintf(
             '/new (?:%s?%s)?ConfigManager\(\s*(?:array\(|\[)/s',

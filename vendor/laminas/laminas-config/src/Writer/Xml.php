@@ -1,15 +1,13 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-config for the canonical source repository
- * @copyright https://github.com/laminas/laminas-config/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-config/blob/master/LICENSE.md New BSD License
- */
-
 namespace Laminas\Config\Writer;
 
 use Laminas\Config\Exception;
 use XMLWriter;
+
+use function is_array;
+use function is_numeric;
+use function str_repeat;
 
 class Xml extends AbstractWriter
 {
@@ -48,7 +46,6 @@ class Xml extends AbstractWriter
      *
      * @param  string    $branchName
      * @param  array     $config
-     * @param  XMLWriter $writer
      * @return void
      * @throws Exception\RuntimeException
      */

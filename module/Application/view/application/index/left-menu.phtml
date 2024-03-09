@@ -2,9 +2,7 @@
 if (!isset($role)) {
     $role = null;
 }
-
-if (!isset($navigation))
-{
+if (!isset($navigation)) {
     $navigation = null;
 }
 ?>
@@ -16,393 +14,271 @@ if (!isset($navigation))
         </div>
     </a>
 </div>
-<div class="side-menu position-absolute mCustomScrollbar "
-     data-mcs-theme="light" id="content-3">
+<div class="side-menu position-absolute mCustomScrollbar " data-mcs-theme="light" id="content-3">
     <nav class="navbar-side qregular <?php echo $this->layout()->page; ?>" id="">
         <ul class="nav">
-            <li class="<?php echo ((isset($mainActiveTab) && $mainActiveTab==\Application\Constants\Constants::Tour_Page?'active':''))?>">
-                <a  href="#tourCollapse" data-toggle="collapse" class="custom-collapse <?php echo ((isset($mainActiveTab) && $mainActiveTab==\Application\Constants\Constants::Tour_Page?'custom-collapse-open':''))?>">
-                    <div class="d-flex align-items-center justify-content-between">
-
-                                <span class="text-capitalize">
-                            Tours
-                        </span>
-                        <i class="fas <?php echo (isset($mainActiveTab) && $mainActiveTab==\Application\Constants\Constants::Tour_Page?'fa-angle-right':'fa-angle-right')?>"></i>
-                    </div>
-                </a>
-            </li>
-            <div class="collapse w-100 <?php echo ((isset($mainActiveTab) && $mainActiveTab==\Application\Constants\Constants::Tour_Page?'show':''))?>" id="tourCollapse">
-                <ul class="list-unstyled bg-secondary">
-                    <li class="<?php echo ($activeTab==\Application\Constants\Constants::Tour_Page_Spiritual?'active':'');?>">
-                        <a  href="<?php echo $this->basePath(); ?>/a_dMin/spiritual-tour-list">
-                            <div class="d-flex align-items-center justify-content-between">
-
-                                <span class="text-capitalize">
-                            Spiritual Tour
-                        </span>
-
-                            </div>
-                        </a>
-
-                    </li>
-                    <li class="<?php echo ($activeTab==\Application\Constants\Constants::Tour_Page_City?'active':'');?>">
-                        <a  href="<?php echo $this->basePath(); ?>/a_dMin/city-tour-list">
-                            <div class="d-flex align-items-center justify-content-between">
-
-                                <span class="text-capitalize">
-                            City Tour
-                        </span>
-                            </div>
-                        </a>
-
-                    </li>
-                    <li class="<?php echo ($activeTab==\Application\Constants\Constants::Tour_Page_India?'active':'');?>">
-                        <a  href="<?php echo $this->basePath(); ?>/a_dMin/india-tour-list">
-                            <div class="d-flex align-items-center justify-content-between">
-
-                                <span class="text-capitalize">
-                            India Tour
-                        </span>
-                            </div>
-                        </a>
-
-                    </li>
-                    <li class="<?php echo ($activeTab==\Application\Constants\Constants::Tour_Page_World?'active':'');?>">
-                        <a  href="<?php echo $this->basePath(); ?>/a_dMin/world-tour-list">
-                            <div class="d-flex align-items-center justify-content-between">
-
-                                <span class="text-capitalize">
-                            World Tour
-                        </span>
-                            </div>
-                        </a>
-
-                    </li>
-                    <li class="<?php echo ($activeTab==\Application\Constants\Constants::Seasonal_specials_list?'active':'')?>">
-                        <a href="<?php echo $this->basePath(); ?>/a_dMin/seasonal-specials-list">
-                            <div class="d-flex align-items-center">
-                                        <span class="text-capitalize">
-                                        Festival Tours
-                                </span>
-                            </div>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-            <!-- <li class="<?php echo ($activeTab==\Application\Constants\Constants::Seasonal_specials_list?'active':'')?>">
-                <a href="<?php echo $this->basePath(); ?>/a_dMin/seasonal-specials-list">
-                    <div class="d-flex align-items-center">
-                                <span class="text-capitalize">
-                                Festival Tours
-                        </span>
-                    </div>
-                </a>
-            </li> -->
-            <li class="<?php echo ($activeTab==\Application\Constants\Constants::Pricing_list?'active':'')?>">
-                <a href="<?php echo $this->basePath(); ?>/a_dMin/pricing-list">
+            <li class="<?php echo ($activeTab == \Application\Constants\Constants::App_parameters ? 'active' : '') ?>">
+                <a href="<?php echo $this->basePath(); ?>/a_dMin/parameters">
                     <div class="d-flex align-items-center">
                         <span class="text-capitalize">
-                            Subscription Parameters
+                            App Parameters
                         </span>
                     </div>
                 </a>
             </li>
-            <li class="<?php echo ($activeTab==\Application\Constants\Constants::Parameters_list?'active':'')?>">
-                <a href="<?php echo $this->basePath(); ?>/a_dMin/parameters-list">
-                    <div class="d-flex align-items-center">
-                        <span class="text-capitalize">
-                            Parameters Table
-                        </span>
-                    </div>
-                </a>
-            </li>
-            <!-- <li class="<?php //echo ($activeTab==\Application\Constants\Constants::Slab_price_page?'active':'')?>">
-                <a href="<?php //echo $this->basePath(); ?>/a_dMin/add-slab-price">
-                    <div class="d-flex align-items-center">
-                                <span class="text-capitalize">
-                            View/Edit Slab Prices
-                        </span>
-                    </div>
-                </a>
-            </li>
-            <li class="<?php //echo ($activeTab==\Application\Constants\Constants::City_Slab_days?'active':'')?>">
-                <a href="<?php //echo $this->basePath(); ?>/a_dMin/add-city-slab-days">
-                    <div class="d-flex align-items-center">
-                                <span class="text-capitalize">
-                            View/Edit City Slab days
-                        </span>
-                    </div>
-                </a>
-            </li> -->
-            <li class="<?php echo ($activeTab==\Application\Constants\Constants::Subscriber_Count?'active':'')?>">
-                <a href="<?php echo $this->basePath(); ?>/a_dMin/edit-ssc">
-                    <div class="d-flex align-items-center">
-                                <span class="text-capitalize">
-                            Show/Hide Subscriber Count
-                        </span>
-                    </div>
-                </a>
-            </li>
-            <li class="<?php echo ($activeTab==\Application\Constants\Constants::Languages?'active':'')?>">
-                <a href="<?php echo $this->basePath(); ?>/a_dMin/add-language">
-                    <div class="d-flex align-items-center">
-                                <span class="text-capitalize">
-                            Add Language
-                        </span>
-                    </div>
-                </a>
-            </li>
-            <li class="<?php echo ($activeTab==\Application\Constants\Constants::Country_Page?'active':'')?>">
-                <a  href="<?php echo $this->basePath(); ?>/a_dMin/country-list">
-                    <div class="d-flex align-items-center">
-
-                                <span class="text-capitalize">
-                            Countries
-                        </span>
-                    </div>
-                </a>
-                
-            </li>
-            <li class="<?php echo ($activeTab==\Application\Constants\Constants::State_Page?'active':'')?>">
-                <a  href="<?php echo $this->basePath(); ?>/a_dMin/state-list">
-                    <div class="d-flex align-items-center">
-
-                                <span class="text-capitalize">
-                            State
-                        </span>
-                    </div>
-                </a>
-            </li>
-            <li class="<?php echo ($activeTab==\Application\Constants\Constants::City_Page?'active':'')?>">
-                <a  href="<?php echo $this->basePath(); ?>/a_dMin/city-list">
-                    <div class="d-flex align-items-center">
-
-                                <span class="text-capitalize">
-                            City
-                        </span>
-                    </div>
-                </a>
-            </li>
-            <li class="<?php echo ($activeTab==\Application\Constants\Constants::Place_Page?'active':'')?>">
-                        <a href="<?php echo $this->basePath(); ?>/a_dMin/places-list">
-                            <div class="d-flex align-items-center">
-                                <span class="text-capitalize">
-                            Places
-                        </span>
-                            </div>
-                        </a>
-
-
-             </li>
-             <li class="<?php echo ((isset($mainActiveTab) && $mainActiveTab==\Application\Constants\Constants::TA_Section?'active':''))?>">
-                <a  href="#taCollapse" data-toggle="collapse" class="custom-collapse <?php echo ((isset($mainActiveTab) && $mainActiveTab==\Application\Constants\Constants::TA_Section?'custom-collapse-open':''))?>">
+            <li class="<?php echo ((isset($mainActiveTab) && $mainActiveTab == \Application\Constants\Constants::Users ? 'active' : '')) ?>">
+                <a href="#userCollapse" data-bs-toggle="collapse" class="custom-collapse <?php echo ((isset($mainActiveTab) && $mainActiveTab == \Application\Constants\Constants::Users ? 'custom-collapse-open' : '')) ?>">
                     <div class="d-flex align-items-center justify-content-between">
-
-                                <span class="text-capitalize">
-                            TA Section
-                        </span>
-                        <i class="fas <?php echo (isset($mainActiveTab) && $mainActiveTab==\Application\Constants\Constants::TA_Section?'fa-angle-right':'fa-angle-right')?>"></i>
-                    </div>
-                </a>
-            </li>
-            <div class="collapse w-100 <?php echo ((isset($mainActiveTab) && $mainActiveTab==\Application\Constants\Constants::TA_Section?'show':''))?>" id="taCollapse">
-                <ul class="list-unstyled bg-secondary">
-                    <li class="<?php echo ($activeTab==\Application\Constants\Constants::TA_Plans?'active':'');?>">
-                        <a href="<?php echo $this->basePath(); ?>/a_dMin/ta-plans">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <span class="text-capitalize">TA Plans</span>
-                            </div>
-                        </a>
-
-                    </li>
-                    <li class="<?php echo ($activeTab==\Application\Constants\Constants::TA_Admin?'active':'');?>">
-                        <a  href="<?php echo $this->basePath(); ?>/a_dMin/ta-list">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <span class="text-capitalize">TA Admin</span>
-                            </div>
-                        </a>
-                    </li>
-                    <li class="<?php echo ($activeTab==\Application\Constants\Constants::TA_Purchases?'active':'');?>">
-                        <a  href="<?php echo $this->basePath(); ?>/a_dMin/ta-purchases">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <span class="text-capitalize">TA Purchases</span>
-                            </div>
-                        </a>
-                    </li>
-                    <li class="<?php echo ($activeTab==\Application\Constants\Constants::TAC_Performance?'active':'');?>">
-                        <a  href="<?php echo $this->basePath(); ?>/a_dMin/ta-cons">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <span class="text-capitalize">STTSE</span>
-                            </div>
-                        </a>
-
-                    </li>
-                    <li class="<?php echo ($activeTab==\Application\Constants\Constants::TAC_Payments?'active':'');?>">
-                        <a  href="<?php echo $this->basePath(); ?>/a_dMin/se-payments">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <span class="text-capitalize">STTSE Payments</span>
-                            </div>
-                        </a>
-
-                    </li>
-                </ul>
-            </div>
-            <li class="<?php echo ($activeTab==\Application\Constants\Constants::Users_List?'active':'')?>">
-                <a href="<?php echo $this->basePath(); ?>/a_dMin/users-list">
-                    <div class="d-flex align-items-center">
-                                <span class="text-capitalize">
+                        <span class="text-capitalize">
                             Users
                         </span>
+                        <i class="fas <?php echo (isset($mainActiveTab) && $mainActiveTab == \Application\Constants\Constants::Users ? 'fa-angle-right' : 'fa-angle-right') ?>"></i>
                     </div>
                 </a>
             </li>
-            <li class="<?php echo ((isset($mainActiveTab) && $mainActiveTab==\Application\Constants\Constants::Promoter_Section?'active':''))?>">
-                <a  href="#prmCollapse" data-toggle="collapse" class="custom-collapse <?php echo ((isset($mainActiveTab) && $mainActiveTab==\Application\Constants\Constants::Promoter_Section?'custom-collapse-open':''))?>">
-                    <div class="d-flex align-items-center justify-content-between">
-
-                                <span class="text-capitalize">
-                            Promoters
-                        </span>
-                        <i class="fas <?php echo (isset($mainActiveTab) && $mainActiveTab==\Application\Constants\Constants::Promoter_Section?'fa-angle-right':'fa-angle-right')?>"></i>
-                    </div>
-                </a>
-            </li>
-            <div class="collapse w-100 <?php echo ((isset($mainActiveTab) && $mainActiveTab==\Application\Constants\Constants::Promoter_Section?'show':''))?>" id="prmCollapse">
+            <div class="collapse w-100 <?php echo ((isset($mainActiveTab) && $mainActiveTab == \Application\Constants\Constants::Users ? 'show' : '')) ?>" id="userCollapse">
                 <ul class="list-unstyled bg-secondary">
-                    <li class="<?php echo ($activeTab==\Application\Constants\Constants::Promoters_List?'active':'')?>">
-                        <a href="<?php echo $this->basePath(); ?>/a_dMin/promoters-list">
+                    <li class="<?php echo ($activeTab == \Application\Constants\Constants::Users_dashboard ? 'active' : ''); ?>">
+                        <a href="<?php echo $this->basePath(); ?>/a_dMin/user-dashboard">
                             <div class="d-flex align-items-center justify-content-between">
-                                        <span class="text-capitalize">
-                                    Promoters Performance
+                                <span class="text-capitalize">
+                                    Users Dashboard
                                 </span>
                             </div>
                         </a>
                     </li>
-                    <li class="<?php echo ($activeTab==\Application\Constants\Constants::Promoters_Payments?'active':'')?>">
-                        <a href="<?php echo $this->basePath(); ?>/a_dMin/promoters-payments">
+                    <li class="<?php echo ($activeTab == \Application\Constants\Constants::All_Downloads ? 'active' : ''); ?>">
+                        <a href="<?php echo $this->basePath(); ?>/a_dMin/downloads">
                             <div class="d-flex align-items-center justify-content-between">
-                                        <span class="text-capitalize">
-                                    Promoters Payments
+                                <span class="text-capitalize">
+                                    All Downloads
                                 </span>
                             </div>
                         </a>
+
                     </li>
-                    <li class="<?php echo ($activeTab==\Application\Constants\Constants::Promoter_Parameters?'active':'')?>">
-                        <a href="<?php echo $this->basePath(); ?>/a_dMin/promoter-parameters">
+                    <li class="<?php echo ($activeTab == \Application\Constants\Constants::Subscription_plans ? 'active' : '');
+                                ?>">
+                        <a href="<?php echo $this->basePath(); ?>/a_dMin/subscription-plans">
                             <div class="d-flex align-items-center justify-content-between">
-                                        <span class="text-capitalize">
-                                    Promoters Parameters
+                                <span class="text-capitalize">
+                                    Subscription Plans
                                 </span>
                             </div>
                         </a>
                     </li>
                 </ul>
             </div>
-            <li class="<?php echo ($activeTab==\Application\Constants\Constants::Sponsors_List?'active':'')?>">
-                <a href="<?php echo $this->basePath(); ?>/a_dMin/sponsors-list">
+            <li class="<?php echo ((isset($mainActiveTab) && $mainActiveTab == \Application\Constants\Constants::Tales ? 'active' : '')) ?>">
+                <a href="#taleCollapse" data-bs-toggle="collapse" class="custom-collapse <?php echo ((isset($mainActiveTab) && $mainActiveTab == \Application\Constants\Constants::Tales ? 'custom-collapse-open' : '')) ?>">
                     <div class="d-flex align-items-center justify-content-between">
+                        <span class="text-capitalize">
+                            Tales
+                        </span>
+                        <i class="fas <?php echo (isset($mainActiveTab) && $mainActiveTab == \Application\Constants\Constants::Tales ? 'fa-angle-right' : 'fa-angle-right') ?>"></i>
+                    </div>
+                </a>
+            </li>
+            <div class="collapse w-100 <?php echo ((isset($mainActiveTab) && $mainActiveTab == \Application\Constants\Constants::Tales ? 'show' : '')) ?>" id="taleCollapse">
+                <ul class="list-unstyled bg-secondary">
+                    <li class="<?php echo ($activeTab == \Application\Constants\Constants::Languages ? 'active' : ''); ?>">
+                        <a href="<?php echo $this->basePath(); ?>/a_dMin/languages">
+                            <div class="d-flex align-items-center justify-content-between">
                                 <span class="text-capitalize">
-                            Sponsors
+                                    Languages
+                                </span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="<?php echo ($activeTab == \Application\Constants\Constants::Countries ? 'active' : ''); ?>">
+                        <a href="<?php echo $this->basePath(); ?>/a_dMin/countries">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <span class="text-capitalize">
+                                    Countries
+                                </span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="<?php echo ($activeTab == \Application\Constants\Constants::States ? 'active' : ''); ?>">
+                        <a href="<?php echo $this->basePath(); ?>/a_dMin/states">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <span class="text-capitalize">
+                                    States
+                                </span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="<?php echo ($activeTab == \Application\Constants\Constants::Cities ? 'active' : ''); ?>">
+                        <a href="<?php echo $this->basePath(); ?>/a_dMin/cities">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <span class="text-capitalize">
+                                    Cities
+                                </span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="<?php echo ($activeTab == \Application\Constants\Constants::Places ? 'active' : ''); ?>">
+                        <a href="<?php echo $this->basePath(); ?>/a_dMin/places">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <span class="text-capitalize">
+                                    Places
+                                </span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="<?php echo ($activeTab == \Application\Constants\Constants::IT ? 'active' : ''); ?>">
+                        <a href="<?php echo $this->basePath(); ?>/a_dMin/india-tour-list">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <span class="text-capitalize">
+                                    India Tales
+                                </span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="<?php echo ($activeTab == \Application\Constants\Constants::WT ? 'active' : ''); ?>">
+                        <a href="<?php echo $this->basePath(); ?>/a_dMin/world-tour-list">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <span class="text-capitalize">
+                                    World Tales
+                                </span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="<?php echo ($activeTab == \Application\Constants\Constants::FT ? 'active' : ''); ?>">
+                        <a href="<?php echo $this->basePath(); ?>/a_dMin/free-tour-list">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <span class="text-capitalize">
+                                    Free Tales
+                                </span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="<?php echo ($activeTab == \Application\Constants\Constants::Bunched_Tales ? 'active' : ''); ?>">
+                        <a href="<?php echo $this->basePath(); ?>/a_dMin/bunched-tour-list">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <span class="text-capitalize">
+                                    Bunched Tales
+                                </span>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <li class="<?php echo ((isset($mainActiveTab) && $mainActiveTab == \Application\Constants\Constants::TWISTT_ENABLERS ? 'active' : '')) ?>">
+                <a href="#teCollapse" data-bs-toggle="collapse" class="custom-collapse <?php echo ((isset($mainActiveTab) && $mainActiveTab == \Application\Constants\Constants::TWISTT_ENABLERS ? 'custom-collapse-open' : '')) ?>">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <span class="text-capitalize">
+                            TWISTT Enablers
+                        </span>
+                        <i class="fas <?php echo (isset($mainActiveTab) && $mainActiveTab == \Application\Constants\Constants::TWISTT_ENABLERS ? 'fa-angle-right' : 'fa-angle-right') ?>"></i>
+                    </div>
+                </a>
+            </li>
+            <div class="collapse w-100 <?php echo ((isset($mainActiveTab) && $mainActiveTab == \Application\Constants\Constants::TWISTT_ENABLERS ? 'show' : '')) ?>" id="teCollapse">
+                <ul class="list-unstyled bg-secondary">
+                    <li class="<?php echo ($activeTab == \Application\Constants\Constants::TE_Plans ? 'active' : ''); ?>">
+                        <a href="<?php echo $this->basePath(); ?>/a_dMin/te-plans">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <span class="text-capitalize">
+                                    TE Plans
+                                </span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="<?php echo ($activeTab == \Application\Constants\Constants::TE_Profiles ? 'active' : ''); ?>">
+                        <a href="<?php echo $this->basePath(); ?>/a_dMin/te-profiles">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <span class="text-capitalize">
+                                    TE Profiles
+                                </span>
+                            </div>
+                        </a>
+
+                    </li>
+                    <li class="<?php echo ($activeTab == \Application\Constants\Constants::TE_Performance ? 'active' : ''); ?>">
+                        <a href="<?php echo $this->basePath(); ?>/a_dMin/te-performance">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <span class="text-capitalize">
+                                    TE Performance
+                                </span>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <li class="<?php echo ($activeTab == \Application\Constants\Constants::TEx_Dashboard ? 'active' : '') ?>">
+                <a href="<?php echo $this->basePath(); ?>/a_dMin/tex-dashboard">
+                    <div class="d-flex align-items-center">
+                        <span class="text-capitalize">
+                            TEx Dashboard
                         </span>
                     </div>
                 </a>
             </li>
-            
-            <!-- <li class="<?php //echo ($activeTab==\Application\Constants\Constants::Tour_operator_list?'active':'')?>">
-                <a href="<?php //echo $this->basePath(); ?>/a_dMin/tour-operator-list">
+            <li class="<?php echo ($activeTab == \Application\Constants\Constants::Statistics ? 'active' : '') ?>">
+                <a href="<?php echo $this->basePath(); ?>/a_dMin/statistics">
                     <div class="d-flex align-items-center">
-                                <span class="text-capitalize">
-                            Tour Operator
+                        <span class="text-capitalize">
+                            Statistics
                         </span>
                     </div>
                 </a>
             </li>
-            <li class="<?php //echo ($activeTab==\Application\Constants\Constants::Booking_page?'active':'')?>">
-                <a href="<?php //echo $this->basePath(); ?>/a_dMin/booking-list">
-                    <div class="d-flex align-items-center">
-                                <span class="text-capitalize">
-                            Bookings
+            <li class="<?php echo ((isset($mainActiveTab) && $mainActiveTab == \Application\Constants\Constants::Receipts_Expenditure ? 'active' : '')) ?>">
+                <a href="#reCollapse" data-bs-toggle="collapse" class="custom-collapse <?php echo ((isset($mainActiveTab) && $mainActiveTab == \Application\Constants\Constants::Receipts_Expenditure ? 'custom-collapse-open' : '')) ?>">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <span class="text-capitalize">
+                            Receipts & Expenditure
                         </span>
+                        <i class="fas <?php echo (isset($mainActiveTab) && $mainActiveTab == \Application\Constants\Constants::Receipts_Expenditure ? 'fa-angle-right' : 'fa-angle-right') ?>"></i>
                     </div>
                 </a>
-            </li>-->
-            <li class="<?php echo ($activeTab==\Application\Constants\Constants::Downloads?'active':'')?>">
-                <a href="<?php echo $this->basePath(); ?>/a_dMin/download-list">
-                    <div class="d-flex align-items-center">
+            </li>
+            <div class="collapse w-100 <?php echo ((isset($mainActiveTab) && $mainActiveTab == \Application\Constants\Constants::Receipts_Expenditure ? 'show' : '')) ?>" id="reCollapse">
+                <ul class="list-unstyled bg-secondary">
+                    <li class="<?php echo ($activeTab == \Application\Constants\Constants::Receipts ? 'active' : ''); ?>">
+                        <a href="<?php echo $this->basePath(); ?>/a_dMin/receipts">
+                            <div class="d-flex align-items-center justify-content-between">
                                 <span class="text-capitalize">
-                            Downloads
+                                    Receipts
+                                </span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="<?php echo ($activeTab == \Application\Constants\Constants::Expenditure_on_Commission ? 'active' : ''); ?>">
+                        <a href="<?php echo $this->basePath(); ?>/a_dMin/expenditure">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <span class="text-capitalize">
+                                    Expenditure on Commission
+                                </span>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <li class="<?php echo ($activeTab == \Application\Constants\Constants::Ads ? 'active' : '') ?>">
+                <a href="<?php echo $this->basePath(); ?>/a_dMin/ads">
+                    <div class="d-flex align-items-center">
+                        <span class="text-capitalize">
+                            Advertisements
                         </span>
                     </div>
                 </a>
             </li>
-            <li class="<?php echo ($activeTab==\Application\Constants\Constants::Payments?'active':'')?>">
-                <a href="<?php echo $this->basePath();?>/a_dMin/payments">
+            <li class="<?php echo ($activeTab == \Application\Constants\Constants::Video_links ? 'active' : '') ?>">
+                <a href="<?php echo $this->basePath(); ?>/a_dMin/videos">
                     <div class="d-flex align-items-center">
-                                <span class="text-capitalize">
-                            Receipts
+                        <span class="text-capitalize">
+                            Video links
                         </span>
                     </div>
                 </a>
             </li>
-            <li class="<?php echo ($activeTab==\Application\Constants\Constants::Financial_statements?'active':'')?>">
-                <a href="<?php echo $this->basePath(); ?>/a_dMin/financial-statements">
-                    <div class="d-flex align-items-center">
-                                <span class="text-capitalize">
-                                Financial Statements
-                        </span>
-                    </div>
-                </a>
-            </li>
-            <li class="<?php echo ($activeTab==\Application\Constants\Constants::Upcoming?'active':'')?>">
-                <a href="<?php echo $this->basePath(); ?>/a_dMin/upcoming-list">
-                    <div class="d-flex align-items-center">
-                                <span class="text-capitalize">
-                            Upcoming
-                        </span>
-                    </div>
-                </a>
-            </li>
-            <!-- <li class="<?php //echo ($activeTab==\Application\Constants\Constants::Privilage_user?'active':'')?>">
-                <a href="<?php //echo $this->basePath(); ?>/a_dMin/privilage-user-list">
-                    <div class="d-flex align-items-center">
-                                <span class="text-capitalize">
-                            Privilage User
-                        </span>
-                    </div>
-                </a>
-            </li> -->
-            <li class="<?php echo ($activeTab==\Application\Constants\Constants::Samples_list?'active':'')?>">
-                <a href="<?php echo $this->basePath(); ?>/a_dMin/samples">
-                    <div class="d-flex align-items-center">
-                                <span class="text-capitalize">
-                            Samples
-                        </span>
-                    </div>
-                </a>
-            </li>
-            <!-- <li class="<?php //echo ($activeTab==\Application\Constants\Constants::Indox?'active':'')?>">
-                <a href="<?php //echo $this->basePath(); ?>/a_dMin/inbox">
-                    <div class="d-flex align-items-center">
-                                <span class="text-capitalize">
-                            inbox
-                        </span>
-                    </div>
-                </a>
-            </li> -->
-            <li class="<?php echo ($activeTab==\Application\Constants\Constants::Change_password?'active':'')?>">
+            <li class="<?php echo ($activeTab == \Application\Constants\Constants::Change_Password ? 'active' : '') ?>">
                 <a href="<?php echo $this->basePath(); ?>/a_dMin/change-password">
                     <div class="d-flex align-items-center">
-                                <span class="text-capitalize">
-                            change password
-                        </span>
-                    </div>
-                </a>
-            </li>
-            <li class="<?php echo ($activeTab==\Application\Constants\Constants::Home_banners?'active':'')?>">
-                <a href="<?php echo $this->basePath(); ?>/a_dMin/banners">
-                    <div class="d-flex align-items-center">
-                                <span class="text-capitalize">
-                            Banners
+                        <span class="text-capitalize">
+                            Change Password
                         </span>
                     </div>
                 </a>

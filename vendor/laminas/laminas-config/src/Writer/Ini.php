@@ -1,14 +1,16 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-config for the canonical source repository
- * @copyright https://github.com/laminas/laminas-config/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-config/blob/master/LICENSE.md New BSD License
- */
-
 namespace Laminas\Config\Writer;
 
 use Laminas\Config\Exception;
+
+use function array_merge;
+use function implode;
+use function is_array;
+use function is_bool;
+use function is_float;
+use function is_int;
+use function strpos;
 
 class Ini extends AbstractWriter
 {
@@ -92,13 +94,13 @@ class Ini extends AbstractWriter
             foreach ($config as $sectionName => $data) {
                 if (! is_array($data)) {
                     $iniString .= $sectionName
-                               .  ' = '
-                               .  $this->prepareValue($data)
-                               .  "\n";
+                               . ' = '
+                               . $this->prepareValue($data)
+                               . "\n";
                 } else {
                     $iniString .= '[' . $sectionName . ']' . "\n"
-                               .  $this->addBranch($data)
-                               .  "\n";
+                               . $this->addBranch($data)
+                               . "\n";
                 }
             }
         }
@@ -124,9 +126,9 @@ class Ini extends AbstractWriter
                 $iniString .= $this->addBranch($value, $group);
             } else {
                 $iniString .= implode($this->nestSeparator, $group)
-                           .  ' = '
-                           .  $this->prepareValue($value)
-                           .  "\n";
+                           . ' = '
+                           . $this->prepareValue($value)
+                           . "\n";
             }
         }
 
@@ -147,11 +149,11 @@ class Ini extends AbstractWriter
         }
 
         if (is_bool($value)) {
-            return ($value ? 'true' : 'false');
+            return $value ? 'true' : 'false';
         }
 
         if (false === strpos($value, '"')) {
-            return '"' . $value .  '"';
+            return '"' . $value . '"';
         }
 
         throw new Exception\RuntimeException('Value can not contain double quotes');

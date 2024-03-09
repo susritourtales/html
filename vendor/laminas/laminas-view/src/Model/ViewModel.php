@@ -1,10 +1,6 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-view for the canonical source repository
- * @copyright https://github.com/laminas/laminas-view/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-view/blob/master/LICENSE.md New BSD License
- */
+declare(strict_types=1);
 
 namespace Laminas\View\Model;
 
@@ -12,9 +8,18 @@ use ArrayAccess;
 use ArrayIterator;
 use Laminas\Stdlib\ArrayUtils;
 use Laminas\View\Exception;
-use Laminas\View\Model;
 use Laminas\View\Variables as ViewVariables;
+use ReturnTypeWillChange; // phpcs:ignore
 use Traversable;
+
+use function array_key_exists;
+use function array_merge;
+use function count;
+use function get_debug_type;
+use function gettype;
+use function is_array;
+use function is_object;
+use function sprintf;
 
 class ViewModel implements ModelInterface, ClearableModelInterface, RetrievableChildrenInterface
 {
@@ -27,13 +32,15 @@ class ViewModel implements ModelInterface, ClearableModelInterface, RetrievableC
 
     /**
      * Child models
-     * @var array
+     *
+     * @var list<ModelInterface>
      */
     protected $children = [];
 
     /**
      * Renderer options
-     * @var array
+     *
+     * @var array<string, mixed>
      */
     protected $options = [];
 
@@ -53,7 +60,9 @@ class ViewModel implements ModelInterface, ClearableModelInterface, RetrievableC
 
     /**
      * View variables
-     * @var array|ArrayAccess&Traversable
+     *
+     * @var array|ArrayAccess|Traversable
+     * @psalm-var array|ArrayAccess&Traversable
      */
     protected $variables = [];
 
@@ -67,8 +76,8 @@ class ViewModel implements ModelInterface, ClearableModelInterface, RetrievableC
     /**
      * Constructor
      *
-     * @param  null|array|Traversable $variables
-     * @param  array|Traversable $options
+     * @param  null|array<string, mixed>|Traversable<string, mixed>|ArrayAccess<string, mixed> $variables
+     * @param  null|array<string, mixed>|Traversable<string, mixed> $options
      */
     public function __construct($variables = null, $options = null)
     {
@@ -183,8 +192,8 @@ class ViewModel implements ModelInterface, ClearableModelInterface, RetrievableC
     /**
      * Set renderer options/hints en masse
      *
-     * @param array|Traversable $options
-     * @throws \Laminas\View\Exception\InvalidArgumentException
+     * @param array<string, mixed>|Traversable<string, mixed> $options
+     * @throws Exception\InvalidArgumentException
      * @return ViewModel
      */
     public function setOptions($options)
@@ -199,7 +208,7 @@ class ViewModel implements ModelInterface, ClearableModelInterface, RetrievableC
             throw new Exception\InvalidArgumentException(sprintf(
                 '%s: expects an array, or Traversable argument; received "%s"',
                 __METHOD__,
-                (is_object($options) ? get_class($options) : gettype($options))
+                get_debug_type($options),
             ));
         }
 
@@ -210,7 +219,7 @@ class ViewModel implements ModelInterface, ClearableModelInterface, RetrievableC
     /**
      * Get renderer options/hints
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function getOptions()
     {
@@ -220,7 +229,7 @@ class ViewModel implements ModelInterface, ClearableModelInterface, RetrievableC
     /**
      * Clear any existing renderer options/hints
      *
-     * @return ViewModel
+     * @return $this
      */
     public function clearOptions()
     {
@@ -279,7 +288,7 @@ class ViewModel implements ModelInterface, ClearableModelInterface, RetrievableC
             throw new Exception\InvalidArgumentException(sprintf(
                 '%s: expects an array, or Traversable argument; received "%s"',
                 __METHOD__,
-                (is_object($variables) ? get_class($variables) : gettype($variables))
+                is_object($variables) ? $variables::class : gettype($variables)
             ));
         }
 
@@ -347,7 +356,6 @@ class ViewModel implements ModelInterface, ClearableModelInterface, RetrievableC
     /**
      * Add a child model
      *
-     * @param  ModelInterface $child
      * @param  null|string $captureTo Optional; if specified, the "capture to" value to set on the child
      * @param  null|bool $append Optional; if specified, append to child  with the same capture
      * @return ViewModel
@@ -370,7 +378,7 @@ class ViewModel implements ModelInterface, ClearableModelInterface, RetrievableC
      *
      * Return specifies an array, but may be any iterable object.
      *
-     * @return array
+     * @return list<ModelInterface>
      */
     public function getChildren()
     {
@@ -403,15 +411,15 @@ class ViewModel implements ModelInterface, ClearableModelInterface, RetrievableC
      *
      * @param string $capture
      * @param bool $recursive search recursive through children, default true
-     * @return array
+     * @return list<ModelInterface>
      */
     public function getChildrenByCaptureTo($capture, $recursive = true)
     {
         $children = [];
 
         foreach ($this->children as $child) {
-            if ($recursive === true) {
-                $children += $child->getChildrenByCaptureTo($capture);
+            if ($recursive === true && $child instanceof RetrievableChildrenInterface) {
+                $children = array_merge($children, $child->getChildrenByCaptureTo($capture));
             }
 
             if ($child->captureTo() === $capture) {
@@ -493,6 +501,7 @@ class ViewModel implements ModelInterface, ClearableModelInterface, RetrievableC
      *
      * @return int
      */
+    #[ReturnTypeWillChange]
     public function count()
     {
         return count($this->children);
@@ -501,8 +510,9 @@ class ViewModel implements ModelInterface, ClearableModelInterface, RetrievableC
     /**
      * Get iterator of children
      *
-     * @return ArrayIterator
+     * @return Traversable<int, ModelInterface>
      */
+    #[ReturnTypeWillChange]
     public function getIterator()
     {
         return new ArrayIterator($this->children);

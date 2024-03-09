@@ -1,10 +1,6 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-authentication for the canonical source repository
- * @copyright https://github.com/laminas/laminas-authentication/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-authentication/blob/master/LICENSE.md New BSD License
- */
+declare(strict_types=1);
 
 namespace Laminas\Authentication\Storage;
 
@@ -16,12 +12,12 @@ class Session implements StorageInterface
     /**
      * Default session namespace
      */
-    const NAMESPACE_DEFAULT = 'Laminas_Auth';
+    public const NAMESPACE_DEFAULT = 'Laminas_Auth';
 
     /**
      * Default session object member name
      */
-    const MEMBER_DEFAULT = 'storage';
+    public const MEMBER_DEFAULT = 'storage';
 
     /**
      * Object to proxy $_SESSION storage
@@ -33,25 +29,24 @@ class Session implements StorageInterface
     /**
      * Session namespace
      *
-     * @var mixed
+     * @var string
      */
     protected $namespace = self::NAMESPACE_DEFAULT;
 
     /**
      * Session object member
      *
-     * @var mixed
+     * @var string
      */
     protected $member = self::MEMBER_DEFAULT;
 
     /**
      * Sets session storage options and initializes session namespace object
      *
-     * @param  mixed $namespace
-     * @param  mixed $member
-     * @param  SessionManager $manager
+     * @param  string|null $namespace
+     * @param  string|null $member
      */
-    public function __construct($namespace = null, $member = null, SessionManager $manager = null)
+    public function __construct($namespace = null, $member = null, ?SessionManager $manager = null)
     {
         if ($namespace !== null) {
             $this->namespace = $namespace;
@@ -59,7 +54,7 @@ class Session implements StorageInterface
         if ($member !== null) {
             $this->member = $member;
         }
-        $this->session   = new SessionContainer($this->namespace, $manager);
+        $this->session = new SessionContainer($this->namespace, $manager);
     }
 
     /**

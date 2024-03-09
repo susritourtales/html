@@ -11,7 +11,7 @@ $(document).ready(function ()
 
 
         $(".city-wrapper").removeClass("hidden");
-        postData('/admin/tours/get-cities',{"country_id":countryId,'tour_type':2},function(response){
+        postData('/admin/get-cities',{"country_id":countryId,'tour_type':2},function(response){
             var options='<option value="">--select city--</option>';
             if(response.success)
             {
@@ -31,21 +31,17 @@ $(document).ready(function ()
     }).on("change","#cities",function(){
         var cityId=$(this).val();
         $(".city-wrapper").removeClass("hidden");
-        postData('/admin/tours/tourism-places-add-price',{"city_id":cityId,'tour_type':2},function(response){
+        postData('/admin/add-tour-get-places',{"city_id":cityId,'tour_type':2},function(response){
             var options='';
             if(response.success)
             {
                 var list=response.places;
                 for(var s=0;s<list.length;s++)
                 {
-                    options +='<option value="'+list[s].tourism_place_id+'">'+list[s].place_name+'</option>'
+                    options +='<option value="'+list[s].id+'">'+list[s].place_name+'</option>'
                 }
                 $(".sol-container").remove();
-
                 $("#places").html(options).val('').removeAttr('class').prop("multiple",true).searchableOptionList();
-
-
-
             }
         });
     }).on("change",".upload-file",function(e){
@@ -59,7 +55,6 @@ $(document).ready(function ()
             reader.onload = function (e)
             {
                 console.log(files);
-
                 var FileType = files[i].type;
                 var filename = files[i].name;
                 var fileExtension = FileType.substr((FileType.lastIndexOf('/') + 1));
@@ -77,8 +72,6 @@ $(document).ready(function ()
                     mediaFiles[rowId]=[];
                 }
                 incerement++;
-
-
                 mediaFiles[rowId]=[];
                 mediaFiles[rowId].push(file);
                 $('.file_name[data-id="'+rowId+'"]').html(filename);
@@ -121,8 +114,6 @@ $(document).ready(function ()
                 {
                     element.val("");
                 }
-                //  console.log( $('.file_name[data-id="'+rowId+'"]').length);
-                //  $('.file_name[data-id="'+rowId+'"]').html(filename);
                 $(".image-preview-wrapper").append('<div class="col-sm-3 mt-2 position-relative image-preview" data-id="'+imageId+'"><img src="'+e.target.result+'" style="width: 100%;height: 100%"><i class="fas fa-times position-absolute close-icon" data-id="'+imageId+'"></i></div>');
 
             };
@@ -130,7 +121,6 @@ $(document).ready(function ()
         });
 
         setTimeout(function(){
-
             /* var height=$(".image-preview-wrapper").height();
              var parentHeight=$(".image-upload-wrapper").height();
              console.log(parentHeight,height);
@@ -155,43 +145,19 @@ $(document).ready(function ()
         var countryElement=$("#country");
         var cityElement=$("#cities");
         var placeNameElement=$("#places");
-        var priceElement=$("#price");
-
         var error=false;
-
-
-
         var countryName=countryElement.val();
         var cityName=cityElement.val();
         var placeName=placeNameElement.val();
-        var price=priceElement.val();
+        var free = 0;
+        if($("input[name='free']:checked"))
+            free = 1;
 
         if(countryName=='')
         {
             messageDisplay("Please select country");
             return  false;
         }
-
-        /*if(cityName=='')
-        {
-            messageDisplay("Please enter city name");
-            return  false;
-        }
-
-        if(placeName=='')
-        {
-            messageDisplay("Please select place");
-            return  false;
-        }*/
-
-        /*if(imageFiles.length==0)
-         {
-         messageDisplay("please select image files");
-         error=true;
-         return false;
-         }*/
-
-
         if(error)
         {
             return false;
@@ -201,17 +167,13 @@ $(document).ready(function ()
               placeName ="";
           }
         var formData=new FormData();
-
         formData.append("country_id",countryName);
         formData.append("city_id",cityName);
         formData.append("place_id",placeName);
-
-
+        formData.append("free",free);
         var element=$(this);
         element.html('Please wait...');
-
         element.prop('disabled',true);
-
         ajaxData('/a_dMin/add-world-tour',formData,function(response){
             if(response.success)
             {

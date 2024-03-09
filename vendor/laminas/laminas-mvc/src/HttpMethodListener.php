@@ -1,11 +1,5 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-mvc for the canonical source repository
- * @copyright https://github.com/laminas/laminas-mvc/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-mvc/blob/master/LICENSE.md New BSD License
- */
-
 namespace Laminas\Mvc;
 
 use Laminas\EventManager\AbstractListenerAggregate;
@@ -66,7 +60,6 @@ class HttpMethodListener extends AbstractListenerAggregate
     }
 
     /**
-     * @param  MvcEvent $e
      * @return void|HttpResponse
      */
     public function onRoute(MvcEvent $e)
@@ -97,9 +90,6 @@ class HttpMethodListener extends AbstractListenerAggregate
         return $this->allowedMethods;
     }
 
-    /**
-     * @param array $allowedMethods
-     */
     public function setAllowedMethods(array $allowedMethods)
     {
         foreach ($allowedMethods as &$value) {

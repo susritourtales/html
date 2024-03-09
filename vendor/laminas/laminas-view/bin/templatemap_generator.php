@@ -1,13 +1,7 @@
 #!/usr/bin/env php
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-view for the canonical source repository
- * @copyright https://github.com/laminas/laminas-view/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-view/blob/master/LICENSE.md New BSD License
- */
-
-$help = <<< EOH
+$help = <<<'EOH'
 Generate template maps.
 
 Usage:
@@ -92,7 +86,7 @@ if (! is_dir($argv[1])) {
 }
 
 $basePath = $argv[1];
-$files = ($argc < 3)
+$files    = $argc < 3
     ? findTemplateFilesInTemplatePath($basePath)
     : array_slice($argv, 2);
 
@@ -103,17 +97,16 @@ if (empty($files)) {
     exit(2);
 }
 
-$map = [];
 $realPath = realpath($basePath);
 
-$entries = array_map(function ($file) use ($basePath, $realPath) {
+$entries = array_map(function (string $file) use ($basePath, $realPath) {
     $file = str_replace('\\', '/', $file);
 
-    $template = (0 === strpos($file, $realPath))
+    $template = 0 === strpos($file, $realPath)
         ? substr($file, strlen($realPath))
         : $file;
 
-    $template = (0 === strpos($template, $basePath))
+    $template = 0 === strpos($template, $basePath)
         ? substr($template, strlen($basePath))
         : $template;
 
@@ -132,7 +125,11 @@ echo '<' . "?php\nreturn [\n"
 
 exit(0);
 
-function findTemplateFilesInTemplatePath($templatePath)
+/**
+ * @param string $templatePath
+ * @return list<string>
+ */
+function findTemplateFilesInTemplatePath($templatePath): array
 {
     $rdi = new RecursiveDirectoryIterator(
         $templatePath,
@@ -142,7 +139,8 @@ function findTemplateFilesInTemplatePath($templatePath)
 
     $files = [];
     foreach ($rii as $file) {
-        if (strtolower($file->getExtension()) != 'phtml') {
+        assert($file instanceof SplFileInfo);
+        if (strtolower($file->getExtension()) !== 'phtml') {
             continue;
         }
 

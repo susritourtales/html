@@ -1,10 +1,6 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-authentication for the canonical source repository
- * @copyright https://github.com/laminas/laminas-authentication/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-authentication/blob/master/LICENSE.md New BSD License
- */
+declare(strict_types=1);
 
 namespace Laminas\Authentication\Storage;
 
@@ -17,7 +13,7 @@ class Chain implements StorageInterface
      * placed in the priority queue with a higher priority is always used
      * before using a storage with a lower priority.
      *
-     * @var PriorityQueue
+     * @var PriorityQueue<StorageInterface, int>
      */
     protected $storageChain;
 
@@ -26,12 +22,13 @@ class Chain implements StorageInterface
      */
     public function __construct()
     {
+        /** @psalm-var PriorityQueue<StorageInterface, int> */
         $this->storageChain = new PriorityQueue();
     }
 
     /**
-     * @param StorageInterface $storage
      * @param int          $priority
+     * @return void
      */
     public function add(StorageInterface $storage, $priority = 1)
     {
@@ -47,6 +44,8 @@ class Chain implements StorageInterface
      * are filled.
      *
      * @see StorageInterface::isEmpty()
+     *
+     * @return bool
      */
     public function isEmpty()
     {
@@ -76,6 +75,8 @@ class Chain implements StorageInterface
      * filled. Return its value.
      *
      * @see StorageInterface::read()
+     *
+     * @return mixed
      */
     public function read()
     {
@@ -86,6 +87,9 @@ class Chain implements StorageInterface
      * Write the new $contents to all storage in the chain.
      *
      * @see StorageInterface::write()
+     *
+     * @param mixed $contents
+     * @return void
      */
     public function write($contents)
     {

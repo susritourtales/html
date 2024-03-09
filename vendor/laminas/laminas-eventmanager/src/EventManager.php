@@ -1,14 +1,16 @@
 <?php
 
-/**
- * @see       https://github.com/laminas/laminas-eventmanager for the canonical source repository
- * @copyright https://github.com/laminas/laminas-eventmanager/blob/master/COPYRIGHT.md
- * @license   https://github.com/laminas/laminas-eventmanager/blob/master/LICENSE.md New BSD License
- */
-
 namespace Laminas\EventManager;
 
 use ArrayObject;
+
+use function array_keys;
+use function array_merge;
+use function array_unique;
+use function get_debug_type;
+use function is_string;
+use function krsort;
+use function sprintf;
 
 /**
  * Event manager: notification system
@@ -37,13 +39,11 @@ class EventManager implements EventManagerInterface
      * instead of first iterating over it and generating a new one
      * -> In result it improves performance by up to 25% even if it looks a bit strange
      *
-     * @var array[]
+     * @var array<string, array<int, array{0: list<callable>}>>
      */
     protected $events = [];
 
-    /**
-     * @var EventInterface Prototype to use when creating an event at trigger().
-     */
+    /** @var EventInterface Prototype to use when creating an event at trigger(). */
     protected $eventPrototype;
 
     /**
@@ -58,7 +58,7 @@ class EventManager implements EventManagerInterface
      *
      * @var null|SharedEventManagerInterface
      */
-    protected $sharedManager = null;
+    protected $sharedManager;
 
     /**
      * Constructor
@@ -66,10 +66,9 @@ class EventManager implements EventManagerInterface
      * Allows optionally specifying identifier(s) to use to pull signals from a
      * SharedEventManagerInterface.
      *
-     * @param SharedEventManagerInterface $sharedEventManager
      * @param array $identifiers
      */
-    public function __construct(SharedEventManagerInterface $sharedEventManager = null, array $identifiers = [])
+    public function __construct(?SharedEventManagerInterface $sharedEventManager = null, array $identifiers = [])
     {
         if ($sharedEventManager) {
             $this->sharedManager = $sharedEventManager;
@@ -187,7 +186,7 @@ class EventManager implements EventManagerInterface
             throw new Exception\InvalidArgumentException(sprintf(
                 '%s expects a string for the event; received %s',
                 __METHOD__,
-                (is_object($eventName) ? get_class($eventName) : gettype($eventName))
+                get_debug_type($eventName),
             ));
         }
 
@@ -197,11 +196,10 @@ class EventManager implements EventManagerInterface
 
     /**
      * @inheritDoc
-     * @throws Exception\InvalidArgumentException for invalid event types.
+     * @throws Exception\InvalidArgumentException For invalid event types.
      */
     public function detach(callable $listener, $eventName = null, $force = false)
     {
-
         // If event is wildcard, we need to iterate through each listeners
         if (null === $eventName || ('*' === $eventName && ! $force)) {
             foreach (array_keys($this->events) as $eventName) {
@@ -214,7 +212,7 @@ class EventManager implements EventManagerInterface
             throw new Exception\InvalidArgumentException(sprintf(
                 '%s expects a string for the event; received %s',
                 __METHOD__,
-                (is_object($eventName) ? get_class($eventName) : gettype($eventName))
+                get_debug_type($eventName),
             ));
         }
 
@@ -262,8 +260,10 @@ class EventManager implements EventManagerInterface
      * listener. It returns an ArrayObject of the arguments, which may then be
      * passed to trigger().
      *
-     * @param  array $args
-     * @return ArrayObject
+     * @template Tk of array-key
+     * @template Tv
+     * @param  array<Tk, Tv> $args
+     * @return ArrayObject<Tk, Tv>
      */
     public function prepareArgs(array $args)
     {
@@ -275,11 +275,9 @@ class EventManager implements EventManagerInterface
      *
      * Actual functionality for triggering listeners, to which trigger() delegate.
      *
-     * @param  EventInterface $event
-     * @param  null|callable $callback
      * @return ResponseCollection
      */
-    protected function triggerListeners(EventInterface $event, callable $callback = null)
+    protected function triggerListeners(EventInterface $event, ?callable $callback = null)
     {
         $name = $event->getName();
 

@@ -1,4 +1,5 @@
 <?php
+
 use Laminas\Mvc\Application;
 use Laminas\Stdlib\ArrayUtils;
 
@@ -6,6 +7,9 @@ use Laminas\Stdlib\ArrayUtils;
  * Display all errors when APPLICATION_ENV is development.
  */
 if ($_SERVER['APPLICATION_ENV'] === 'development') {
+    error_reporting(E_ALL);
+    ini_set("display_errors", '1');
+} else {
     error_reporting(E_ALL);
     ini_set("display_errors", '1');
 }
@@ -28,12 +32,12 @@ if (php_sapi_name() === 'cli-server') {
 // Composer autoloading
 include __DIR__ . '/../vendor/autoload.php';
 
-if (! class_exists(Application::class)) {
+if (!class_exists(Application::class)) {
     throw new RuntimeException(
         "Unable to load application.\n"
-        . "- Type `composer install` if you are developing locally.\n"
-        . "- Type `vagrant ssh -c 'composer install'` if you are using Vagrant.\n"
-        . "- Type `docker-compose run laminas composer install` if you are using Docker.\n"
+            . "- Type `composer install` if you are developing locally.\n"
+            . "- Type `vagrant ssh -c 'composer install'` if you are using Vagrant.\n"
+            . "- Type `docker-compose run laminas composer install` if you are using Docker.\n"
     );
 }
 
@@ -45,4 +49,3 @@ if (file_exists(__DIR__ . '/../config/development.config.php')) {
 
 // Run the application!
 Application::init($appConfig)->run();
-?>

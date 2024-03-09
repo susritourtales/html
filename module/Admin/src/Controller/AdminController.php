@@ -12,7 +12,7 @@ class AdminController extends BaseController
 {
     public function indexAction()
     {
-        echo "Admin index action";
+        echo "admin index action";
         exit();
         $baseUrl = $this->url()->fromRoute();
         // Check if a variable is already set in the session

@@ -2514,6 +2514,8 @@ class AdminController extends BaseController
 
     public function loginAction()
     {
+        echo "admin login page";
+        exit();
         if ($this->getRequest()->isXmlHttpRequest()) {
             $request = $this->getRequest()->getPost();
             $this->authService->getAdapter()

@@ -6,8 +6,6 @@ use Laminas\Router\Http\Segment;
 use Laminas\Router\Http\Literal;
 use Laminas\ServiceManager\AbstractFactory\ReflectionBasedAbstractFactory;
 
-echo "config file";
-exit();
 return [
     'router' => [
         'routes' => [

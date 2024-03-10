@@ -3,7 +3,7 @@
 use Laminas\Mvc\Application;
 use Laminas\Stdlib\ArrayUtils;
 
-echo $_SERVER['REQUEST_URI'];
+echo "index.php called";
 exit;
 /**
  * Display all errors when APPLICATION_ENV is development.

@@ -10,13 +10,13 @@ return [
     'router' => [
         'routes' => [
             'admin' => [
-                'type' => Segment::class,
+                'type' => Literal::class, //Segment::class,
                 'options' => [
-                    'route' => '/admin[/:action[/:id]]',
-                    'constraints' => array(
+                    'route' => '/admin', //'/admin[/:action[/:id]]',
+                    /* 'constraints' => array(
                         'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
                         'id' => '[a-zA-Z0-9_~\-!@#\$%\^&*\(\)=]*[/]*',
-                    ),
+                    ), */
                     'defaults' => [
                         'controller' => Controller\AdminController::class,
                         'action'     => 'index',

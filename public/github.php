@@ -10,8 +10,9 @@ if ($output === null) {
 
 <?php
 $output = shell_exec('git pull https://github.com/susritourtales/html.git');
-if ($output === null)
+echo "<pre>$output</pre>";
+/* if ($output === null)
   echo "unknown issue";
 else
-  echo "<pre>$output</pre>";
+  echo "<pre>$output</pre>"; */
 ?>

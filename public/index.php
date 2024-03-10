@@ -3,8 +3,6 @@
 use Laminas\Mvc\Application;
 use Laminas\Stdlib\ArrayUtils;
 
-echo $_SERVER['REQUEST_URI'];
-exit;
 /**
  * Display all errors when APPLICATION_ENV is development.
  */

@@ -14,7 +14,7 @@ class AdminController extends BaseController
     {
         echo "admin index action";
         exit();
-        $baseUrl = $this->url()->fromRoute();
+        //$baseUrl = $this->url()->fromRoute();
         // Check if a variable is already set in the session
         if (isset($this->sessionContainer->user)) {
             $username = $this->sessionContainer->user;

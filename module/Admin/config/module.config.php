@@ -6,6 +6,8 @@ use Laminas\Router\Http\Segment;
 use Laminas\Router\Http\Literal;
 use Laminas\ServiceManager\AbstractFactory\ReflectionBasedAbstractFactory;
 
+echo ($_SERVER['REQUEST_URI']);
+exit();
 return [
     'router' => [
         'routes' => [

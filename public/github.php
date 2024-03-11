@@ -10,7 +10,7 @@ if ($output === null) {
 
 <?php
 // Execute a shell command and capture the last line of the output
-exec('pwd', $output, $returnCode);
+exec('sudo git pull https://github.com/susritourtales/html.git', $output, $returnCode);
 
 // Display the output and return code
 echo "<pre>" . implode("\n", $output) . "</pre>";

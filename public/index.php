@@ -2,7 +2,7 @@
 
 use Laminas\Mvc\Application;
 use Laminas\Stdlib\ArrayUtils;
-// just checking git 
+
 /**
  * Display all errors when APPLICATION_ENV is development.
  */

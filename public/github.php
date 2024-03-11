@@ -9,7 +9,7 @@ if ($output === null) {
 ?>
 
 <?php
-$output = shell_exec('git pull https://github.com/susritourtales/html.git');
+$output = shell_exec('sudo git pull https://github.com/susritourtales/html.git');
 echo "<pre>$output</pre>";
 /* if ($output === null)
   echo "unknown issue";

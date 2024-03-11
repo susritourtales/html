@@ -9,9 +9,16 @@ if ($output === null) {
 ?>
 
 <?php
-$output = shell_exec('sudo git pull https://github.com/susritourtales/html.git');
+// Execute a shell command and capture the last line of the output
+exec('sudo git pull https://github.com/susritourtales/html.git', $output, $returnCode);
+
+// Display the output and return code
+echo "<pre>" . implode("\n", $output) . "</pre>";
+echo "Return Code: $returnCode";
+
+/* $output = shell_exec('sudo git pull https://github.com/susritourtales/html.git');
 echo "<pre>$output</pre>";
-/* if ($output === null)
+if ($output === null)
   echo "unknown issue";
 else
   echo "<pre>$output</pre>"; */

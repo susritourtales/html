@@ -266,10 +266,6 @@ class Connection extends AbstractConnection
         $this->dsn = $dsn;
 
         try {
-            echo $dsn . "- -" . $username . "- -" . $password;
-            var_dump($options);
-            exit();
-
             $this->resource = new \PDO($dsn, $username, $password, $options);
             $this->resource->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
             if (isset($charset) && $pdoDriver === 'pgsql') {

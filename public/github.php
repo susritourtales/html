@@ -7,4 +7,4 @@ exec('git pull https://github.com/susritourtales/html.git', $output, $returnCode
 
 // Display the output and return code
 echo "<pre>" . implode("\n", $output) . "</pre>";
-echo "Return Code: $returnCode";
+echo "\n Return Code: $returnCode";

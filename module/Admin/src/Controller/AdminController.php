@@ -1790,7 +1790,7 @@ class AdminController extends BaseController
             }
 
             if (isset($files['attachments'])) {
-                return new JsonModel(array('success' => false, "messsage" => $files));
+                //return new JsonModel(array('success' => false, "messsage" => $files));
                 $uploadFile = $files['attachments'];
                 $filename = $uploadFile['name'];
                 $fileExt = explode(".", $filename);

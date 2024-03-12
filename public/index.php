@@ -1,5 +1,5 @@
 <?php
-// testing again the git pull execution
+
 use Laminas\Mvc\Application;
 use Laminas\Stdlib\ArrayUtils;
 

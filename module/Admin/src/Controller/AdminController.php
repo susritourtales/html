@@ -1761,7 +1761,7 @@ class AdminController extends BaseController
             $validImageFiles = array('png', 'jpg', 'jpeg');
             $uploadFileDetails = array();
             $aes = new Aes();
-            return new JsonModel(array('success' => false, "messsage" => 'action function called'));
+
             if (isset($files['image_files'])) {
                 $attachment = $files['image_files'];
                 $filename = $attachment['name'];
@@ -1807,6 +1807,7 @@ class AdminController extends BaseController
                 if ($fileDuration) {
                     $duration = $fileDuration;
                 }
+                return new JsonModel(array('success' => false, "messsage" => getcwd()));
                 $fp = fopen(getcwd() . "/public/" . $filePath, 'w');
                 $encodeContent = $aes->encrypt(file_get_contents($uploadFile['tmp_name']));
                 $encodeString = $encodeContent['password'];

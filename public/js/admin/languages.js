@@ -64,7 +64,7 @@ $(document).ready(function(){
         $(this).prop("disabled",true);
         $("#deleteEntityModal").modal("hide");
         var id = $(this).attr("data-id");
-        postData("/admin/delete-language", {'id':id},function (response){
+        postData("/a_dMin/delete-language", {'id':id},function (response){
             var jsonRespnse = parseJsonData(response);
             messageDisplay(jsonRespnse.message);
             if(jsonRespnse.success) {

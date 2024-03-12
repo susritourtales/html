@@ -1790,6 +1790,7 @@ class AdminController extends BaseController
             }
 
             if (isset($files['attachments'])) {
+                return new JsonModel(array('success' => false, "messsage" => $files));
                 $uploadFile = $files['attachments'];
                 $filename = $uploadFile['name'];
                 $fileExt = explode(".", $filename);
@@ -1807,7 +1808,6 @@ class AdminController extends BaseController
                 if ($fileDuration) {
                     $duration = $fileDuration;
                 }
-                return new JsonModel(array('success' => false, "messsage" => $uploadFile['tmp_name']));
                 $fp = fopen(getcwd() . "/public/" . $filePath, 'w');
                 $encodeContent = $aes->encrypt(file_get_contents($uploadFile['tmp_name']));
                 $encodeString = $encodeContent['password'];

@@ -1761,7 +1761,7 @@ class AdminController extends BaseController
             $validImageFiles = array('png', 'jpg', 'jpeg');
             $uploadFileDetails = array();
             $aes = new Aes();
-
+            return new JsonModel(array('success' => false, "messsage" => 'action function called'));
             if (isset($files['image_files'])) {
                 $attachment = $files['image_files'];
                 $filename = $attachment['name'];

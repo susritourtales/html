@@ -87,6 +87,16 @@ return [
                     ],
                 ],
             ],
+            'fileUploadRow' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route'    => '/admin/file-upload-row',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action'     => 'fileUploadRow',
+                    ],
+                ],
+            ],
             'countries' => [
                 'type' => Segment::class,
                 'options' => [

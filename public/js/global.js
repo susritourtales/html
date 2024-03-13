@@ -140,6 +140,7 @@ AjaxCallFiles.prototype.ajaxCall=function(fileType,file,fileID,callback)
             cache: false,
             contentType: false,
             processData: false,
+            
             xhr: function(){
                 var xhr = new window.XMLHttpRequest();
 

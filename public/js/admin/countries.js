@@ -64,7 +64,7 @@ $(document).ready(function() {
 	}).on("click", '.delete-conform-button', function() {
 		$(this).prop("disabled", true);
 		var id = $(this).attr("data-id");
-		postData("/admin/delete-country", {'id': id}, function(response) {
+		postData("/a_dMin/delete-country", {'id': id}, function(response) {
 			var jsonRespnse = parseJsonData(response);
 			messageDisplay(jsonRespnse.message);
 			if (jsonRespnse.success) {

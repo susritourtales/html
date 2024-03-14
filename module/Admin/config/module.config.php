@@ -107,6 +107,16 @@ return [
                     ],
                 ],
             ],
+            'country-list' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route'    => '/admin/load-country-list',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action'     => 'load-country-list',
+                    ],
+                ],
+            ],
             'add-country' => [
                 'type' => Segment::class,
                 'options' => [
@@ -152,6 +162,16 @@ return [
                     'defaults' => [
                         'controller' => Controller\AdminController::class,
                         'action'     => 'states',
+                    ],
+                ],
+            ],
+            'state-list' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route'    => '/admin/load-state-list',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action'     => 'load-state-list',
                     ],
                 ],
             ],
@@ -203,6 +223,16 @@ return [
                     ],
                 ],
             ],
+            'city-list' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route'    => '/admin/load-city-list',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action'     => 'load-city-list',
+                    ],
+                ],
+            ],
             'add-city' => [
                 'type' => Segment::class,
                 'options' => [
@@ -241,6 +271,16 @@ return [
                     ],
                 ],
             ],
+            'get-states' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/admin/get-states',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'get-states',
+                    ],
+                ],
+            ],
             'places' => [
                 'type' => Segment::class,
                 'options' => [
@@ -248,6 +288,16 @@ return [
                     'defaults' => [
                         'controller' => Controller\AdminController::class,
                         'action'     => 'places',
+                    ],
+                ],
+            ],
+            'places-list' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route'    => '/admin/load-places-list',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action'     => 'load-places-list',
                     ],
                 ],
             ],
@@ -286,6 +336,16 @@ return [
                     'defaults' => [
                         'controller' => Controller\AdminController::class,
                         'action' => 'delete-place',
+                    ],
+                ],
+            ],
+            'get-cities' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/admin/get-cities',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'get-cities',
                     ],
                 ],
             ],

@@ -209,12 +209,10 @@ class AdminController extends BaseController
 
                 $request = $this->getRequest()->getPost();
                 $countryName = $request['country_name'];
-                $countryDescription = $request['description'];
                 $fileDetails = $request['file_details'];
                 $fileDetails = json_decode($fileDetails, true);
                 $fileIds = explode(",", $request['file_Ids']);
                 $uploadFileDetails = array();
-
                 $countryName = trim($countryName);
                 if ($countryName == '')
                     return new JsonModel(array("success" => false, "message" => "Please enter country name"));
@@ -223,7 +221,6 @@ class AdminController extends BaseController
                 if ($checkCountry)
                     return new JsonModel(array("success" => false, "message" => "Country Already exists"));
 
-                $flagImagePath = '';
                 $getFiles = $this->temporaryFiles->getFiles($fileIds);
                 $uploadFiles = array();
                 foreach ($getFiles['images'] as $images) {
@@ -242,30 +239,6 @@ class AdminController extends BaseController
                         $uploadFiles[] = array('old_path' => $images['file_path'], 'new_path' => $images['file_path'], 'id' => $images['temporary_files_id']);
                     }
                 }
-                /* $audioFiles = isset($getFiles['audioFiles']) ? $getFiles['audioFiles'] : array();
-                foreach ($fileDetails as $fileDetail) {
-                    $fileName = $fileDetail['file_name'];
-                    $fileLanaguage = $fileDetail['lanaguage'];
-                    $filePath = $audioFiles[$fileDetail['file_id']]['file_path'];
-                    $ext = $audioFiles[$fileDetail['file_id']]['file_extension'];
-                    $duration = $audioFiles[$fileDetail['file_id']]['duration'];
-                    $hash = $audioFiles[$fileDetail['file_id']]['hash'];
-                    $fileType = $audioFiles[$fileDetail['file_id']]['file_extension_type'];
-                    if ($audioFiles[$fileDetail['file_id']]['status'] == \Admin\Model\TemporaryFiles::status_file_not_copied) {
-                        $uploadFiles[] = array('old_path' => $audioFiles[$fileDetail['file_id']]['file_path'], 'new_path' => $audioFiles[$fileDetail['file_id']]['file_path'], 'id' => $audioFiles[$fileDetail['file_id']]['temporary_files_id']);
-                    }
-                    $uploadFileDetails[] = array(
-                        'file_path' => $filePath,
-                        'file_data_type' => \Admin\Model\TourismFiles::file_data_type_country,
-                        'file_extension_type' => $fileType,
-                        'file_extension' => $ext,
-                        'display' => 1,
-                        'duration' => $duration,
-                        'file_language_id' => $fileLanaguage,
-                        'hash' => $hash,
-                        'file_name' => $fileName
-                    );
-                } */
                 $copyFiles = $this->copypushFiles($uploadFiles);
                 if (count($copyFiles['copied'])) {
                     $this->temporaryFiles->updateCopiedFiles($copyFiles['copied']);
@@ -275,7 +248,7 @@ class AdminController extends BaseController
 
                 $countryId = "";
                 $getCountryId = $this->countriesTable->getField(array('country_name' => $countryName, 'display' => 0), 'id');
-                $data = ['country_name' => $countryName, 'country_description' => $countryDescription, 'flag_image' => $flagImagePath, 'display' => 1];
+                $data = ['country_name' => $countryName, 'display' => 1];
                 if ($getCountryId) {
                     $countryId = $getCountryId;
                     $update = $this->countriesTable->updateCountry($data, array('id' => $countryId));
@@ -335,23 +308,12 @@ class AdminController extends BaseController
             ini_set('max_execution_time', '0');
             ini_set("memory_limit", "-1");
             $request = $this->getRequest()->getPost();
-            //print_r($request);exit;
-            $files = $this->getRequest()->getFiles();
-
             $countryName = $request['country_name'];
             $countryId = $request['country_id'];
-            $countryDescription = $request['description'];
             $fileDetails = $request['file_details'];
-
-            //$validFiles=array('mp3','mp4','wav','mpeg','avi');
-            $audioFiles = array('mp3', 'wav', 'mpeg');
-            //$videoFiles=array('mp4','mpg','avi');
-            $validImageFiles = array('png', 'jpg', 'jpeg');
             $fileDetails = json_decode($fileDetails, true);
             $uploadFileDetails = array();
-            $deletedImages = json_decode($request['deleted_images'], true);
-            $deletedAudio = json_decode($request['deleted_audio'], true);
-            $deleteFiles = array_merge($deletedAudio, $deletedImages);
+            $deleteFiles = json_decode($request['deleted_images'], true);
             $countryName = trim($countryName);
             if ($countryName == '') {
                 return new JsonModel(array("success" => false, "message" => "Please enter country name"));
@@ -360,27 +322,7 @@ class AdminController extends BaseController
             if ($checkCountry && $checkCountry['id'] != $countryId) {
                 return new JsonModel(array("success" => false, "message" => "Country not found"));
             }
-            //$imageFileAttachment=array();
-            //$aes=new Aes();
             $flagImagePath = '';
-            if (isset($files['flag_file'])) {
-                $attachment = $files['flag_file'];
-                //$imagesPath = '';
-                //$pdf_to_image = "";
-                $filename = $attachment['name'];
-                $fileExt = explode(".", $filename);
-                $ext = end($fileExt) ? end($fileExt) : "";
-                $filenameWithoutExt = $this->generateRandomString() . "_" . strtotime(date("Y-m-d H:i:s"));
-                $filename = $filenameWithoutExt;
-                $filePath = "data/images";
-                @mkdir(getcwd() . "/public/" . $filePath, 0777, true);
-                $filePath = $filePath . "/" . $filename . "." . $ext;
-                if (!in_array(strtolower($ext), $validImageFiles)) {
-                    return new JsonModel(array("success" => false, "message" => $ext . " file format is not supported !"));
-                }
-                $flagImagePath = $filePath;
-                $this->pushFiles($filePath, $attachment['tmp_name'], $attachment['type']);
-            }
             $fileIds = explode(",", $request['file_Ids']);
             $getFiles = $this->temporaryFiles->getFiles($fileIds);
             $uploadFiles = array();
@@ -401,73 +343,6 @@ class AdminController extends BaseController
                         $uploadFiles[] = array('old_path' => $images['file_path'], 'new_path' => $images['file_path'], 'id' => $images['temporary_files_id']);
                     }
                 }
-                $audioFiles = $getFiles['audioFiles'];
-                foreach ($fileDetails as $fileDetail) {
-                    $fileName = $fileDetail['file_name'];
-                    $fileLanaguage = $fileDetail['lanaguage'];
-                    if (isset($fileDetail['edit_id']) && $fileDetail['edit_id'] != 0) {
-                        $updateData = array('file_name' => $fileName, 'file_language_id' => $fileLanaguage);
-                        if (isset($fileDetail['file_id']) && $fileDetail['file_id']) {
-                            $filePath = $audioFiles[$fileDetail['file_id']]['file_path'];
-                            $ext = $audioFiles[$fileDetail['file_id']]['file_extension'];
-                            $duration = $audioFiles[$fileDetail['file_id']]['duration'];
-                            $hash = $audioFiles[$fileDetail['file_id']]['hash'];
-                            $fileType = $audioFiles[$fileDetail['file_id']]['file_extension_type'];
-                            if ($audioFiles[$fileDetail['file_id']]['status'] == \Admin\Model\TemporaryFiles::status_file_not_copied) {
-                                $uploadUpdateFiles[] = array(
-                                    'old_path' => $audioFiles[$fileDetail['file_id']]['file_path'], 'new_path' => $audioFiles[$fileDetail['file_id']]['file_path'],
-                                    'id' => $audioFiles[$fileDetail['file_id']]['temporary_files_id']
-                                );
-                                $copyFiles = $this->copypushFiles($uploadUpdateFiles);
-                                if (count($copyFiles['copied'])) {
-                                    $this->temporaryFiles->updateCopiedFiles($copyFiles['copied']);
-                                }
-                                if (!$copyFiles['status']) {
-                                    return new JsonModel(array('success' => false, 'message' => 'unable to update city'));
-                                }
-                            }
-                            $updateData['file_path'] = $filePath;
-                            $updateData['file_extension_type'] = $fileType;
-                            $updateData['file_extension'] = $ext;
-                            $updateData['duration'] = $duration;
-                            $updateData['hash'] = $hash;
-                        }
-                        $tourismFileId = $fileDetail['edit_id'];
-                        $updateResponse = $this->tourismFilesTable->updatePlaceFiles($updateData, array('tourism_file_id' => $tourismFileId));
-                    } else {
-                        $filePath = $audioFiles[$fileDetail['file_id']]['file_path'];
-                        $ext = $audioFiles[$fileDetail['file_id']]['file_extension'];
-                        $duration = $audioFiles[$fileDetail['file_id']]['duration'];
-                        $hash = $audioFiles[$fileDetail['file_id']]['hash'];
-                        $fileType = $audioFiles[$fileDetail['file_id']]['file_extension_type'];
-
-                        if ($audioFiles[$fileDetail['file_id']]['status'] == \Admin\Model\TemporaryFiles::status_file_not_copied) {
-                            $uploadFiles[] = array(
-                                'old_path' => $audioFiles[$fileDetail['file_id']]['file_path'], 'new_path' => $audioFiles[$fileDetail['file_id']]['file_path'],
-                                'id' => $audioFiles[$fileDetail['file_id']]['temporary_files_id']
-                            );
-                            $copyFiles = $this->copypushFiles($uploadFiles);
-                            if (count($copyFiles['copied'])) {
-                                $this->temporaryFiles->updateCopiedFiles($copyFiles['copied']);
-                            }
-                            if (!$copyFiles['status']) {
-                                return new JsonModel(array('success' => false, 'message' => 'unable to update state'));
-                            }
-                        }
-                        $uploadFileDetails[] = array(
-                            'file_path' => $filePath,
-                            'file_data_type' => \Admin\Model\TourismFiles::file_data_type_country,
-                            'file_extension_type' => $fileType,
-                            'file_extension' => $ext,
-                            'display' => 1,
-                            'duration' => $duration,
-                            'file_language_id' => $fileLanaguage,
-                            'hash' => $hash,
-                            'file_name' => $fileName
-                        );
-                    }
-                }
-
                 $copyFiles = $this->copypushFiles($uploadFiles);
 
                 if (count($copyFiles['copied'])) {
@@ -480,7 +355,6 @@ class AdminController extends BaseController
 
             $data = array(
                 'country_name' => $countryName,
-                'country_description' => $countryDescription,
                 'display' => 1
             );
             if ($flagImagePath) {
@@ -520,30 +394,19 @@ class AdminController extends BaseController
         $countryId = array_key_exists(1, $countryIdString) ? $countryIdString[1] : 0;
         $countryDetails = $this->countriesTable->getCountriesDetails($countryId);
         $imageFiles = array();
-        $audioFiles = array();
         $imageCounter = -1;
-        $audioCounter = -1;
         $countryInfo = array();
         foreach ($countryDetails as $country) {
             $countryInfo['country_id'] = $country['country_id'];
             $countryInfo['country_name'] = $country['country_name'];
-            $countryInfo['country_description'] = $country['country_description'];
-            $countryInfo['flag_image'] = $country['flag_image'];
-            if ($country['file_extension_type'] != 1) {
-                $audioCounter++;
-                $audioFiles[$audioCounter]['file_path'] = $country['file_path'];
-                $audioFiles[$audioCounter]['file_language_id'] = $country['file_language_id'];
-                $audioFiles[$audioCounter]['tourism_file_id'] = $country['tourism_file_id'];
-                $audioFiles[$audioCounter]['file_name'] = $country['file_name'];
-            } else {
+            if ($country['file_extension_type'] == 1) {
                 $imageCounter++;
                 $imageFiles[$imageCounter]['file_path'] = $country['file_path'];
-                $imageFiles[$imageCounter]['file_language_id'] = $country['file_language_id'];
                 $imageFiles[$imageCounter]['tourism_file_id'] = $country['tourism_file_id'];
                 $imageFiles[$imageCounter]['file_name'] = $country['file_name'];
             }
         }
-        return new ViewModel(array('countries' => $countriesList, 'imageUrl' => $this->filesUrl(), 'country_id' => $countryId, 'languages' => $languagesList, 'countryDetails' => $countryInfo, 'audioFiles' => $audioFiles, 'imageFiles' => $imageFiles));
+        return new ViewModel(array('countries' => $countriesList, 'imageUrl' => $this->filesUrl(), 'country_id' => $countryId, 'languages' => $languagesList, 'countryDetails' => $countryInfo, 'imageFiles' => $imageFiles));
     }
 
     public function deleteCountryAction()
@@ -651,13 +514,10 @@ class AdminController extends BaseController
             ini_set('max_execution_time', '0');
             ini_set("memory_limit", "-1");
             $request = $this->getRequest()->getPost();
-            $files = $this->getRequest()->getFiles();
             $countryName = $request['country_name'];
             $stateName = $request['state_name'];
             $cityName = $request['city_name'];
-            $description = $request['description'];
             $fileDetails = $request['file_details'];
-            $audioFiles = array('mp3', 'wav', 'mpeg');
             $fileDetails = json_decode($fileDetails, true);
             $uploadFileDetails = array();
 
@@ -688,33 +548,6 @@ class AdminController extends BaseController
                     $uploadFiles[] = array('old_path' => $images['file_path'], 'new_path' => $images['file_path'], 'id' => $images['temporary_files_id']);
                 }
             }
-            $audioFiles = $getFiles['audioFiles'];
-            foreach ($fileDetails as $fileDetail) {
-                $fileName = $fileDetail['file_name'];
-                $fileLanaguage = $fileDetail['lanaguage'];
-                $filePath = $audioFiles[$fileDetail['file_id']]['file_path'];
-                $ext = $audioFiles[$fileDetail['file_id']]['file_extension'];
-                $duration = $audioFiles[$fileDetail['file_id']]['duration'];
-                $hash = $audioFiles[$fileDetail['file_id']]['hash'];
-                $fileType = $audioFiles[$fileDetail['file_id']]['file_extension_type'];
-                if ($audioFiles[$fileDetail['file_id']]['status'] == \Admin\Model\TemporaryFiles::status_file_not_copied) {
-                    $uploadFiles[] = array(
-                        'old_path' => $audioFiles[$fileDetail['file_id']]['file_path'], 'new_path' => $audioFiles[$fileDetail['file_id']]['file_path'],
-                        'id' => $audioFiles[$fileDetail['file_id']]['temporary_files_id']
-                    );
-                }
-                $uploadFileDetails[] = array(
-                    'file_path' => $filePath,
-                    'file_data_type' => \Admin\Model\TourismFiles::file_data_type_city,
-                    'file_extension_type' => $fileType,
-                    'file_extension' => $ext,
-                    'display' => 1,
-                    'duration' => $duration,
-                    'file_language_id' => $fileLanaguage,
-                    'hash' => $hash,
-                    'file_name' => $fileName
-                );
-            }
             $copyFiles = $this->copypushFiles($uploadFiles);
             if (count($copyFiles['copied'])) {
                 $this->temporaryFiles->updateCopiedFiles($copyFiles['copied']);
@@ -730,7 +563,6 @@ class AdminController extends BaseController
                 'country_id' => $countryName,
                 'state_id' => $stateName,
                 'city_name' => $cityName,
-                'city_description' => $description,
                 'display' => 1
             );
             $response = $this->citiesTable->addCity($data);
@@ -766,19 +598,14 @@ class AdminController extends BaseController
             ini_set('max_execution_time', '0');
             ini_set("memory_limit", "-1");
             $request = $this->getRequest()->getPost();
-            $files = $this->getRequest()->getFiles();
             $countryName = $request['country_name'];
             $stateName = $request['state_name'];
             $cityId = $request['city_id'];
             $cityName = $request['city_name'];
-            $description = $request['description'];
             $fileDetails = $request['file_details'];
-            $audioFiles = array('mp3', 'wav', 'mpeg');
             $fileDetails = json_decode($fileDetails, true);
             $uploadFileDetails = array();
-            $deletedImages = json_decode($request['deleted_images'], true);
-            $deletedAudio = json_decode($request['deleted_audio'], true);
-            $deleteFiles = array_merge($deletedAudio, $deletedImages);
+            $deleteFiles = json_decode($request['deleted_images'], true);
             $cityName = trim($cityName);
             if ($cityName == '') {
                 return new JsonModel(array("success" => false, "message" => "Please enter city name"));
@@ -807,64 +634,6 @@ class AdminController extends BaseController
                         $uploadFiles[] = array('old_path' => $images['file_path'], 'new_path' => $images['file_path'], 'id' => $images['temporary_files_id']);
                     }
                 }
-                $audioFiles = $getFiles['audioFiles'];
-                foreach ($fileDetails as $fileDetail) {
-                    $fileName = $fileDetail['file_name'];
-                    $fileLanaguage = $fileDetail['lanaguage'];
-                    if (isset($fileDetail['edit_id']) && $fileDetail['edit_id'] != 0) {
-                        $updateData = array('file_name' => $fileName, 'file_language_id' => $fileLanaguage);
-                        if (isset($fileDetail['file_id']) && $fileDetail['file_id']) {
-                            $filePath = $audioFiles[$fileDetail['file_id']]['file_path'];
-                            $ext = $audioFiles[$fileDetail['file_id']]['file_extension'];
-                            $duration = $audioFiles[$fileDetail['file_id']]['duration'];
-                            $hash = $audioFiles[$fileDetail['file_id']]['hash'];
-                            $fileType = $audioFiles[$fileDetail['file_id']]['file_extension_type'];
-                            if ($audioFiles[$fileDetail['file_id']]['status'] == \Admin\Model\TemporaryFiles::status_file_not_copied) {
-                                $uploadUpdateFiles[] = array(
-                                    'old_path' => $audioFiles[$fileDetail['file_id']]['file_path'], 'new_path' => $audioFiles[$fileDetail['file_id']]['file_path'],
-                                    'id' => $audioFiles[$fileDetail['file_id']]['temporary_files_id']
-                                );
-                                $copyFiles = $this->copypushFiles($uploadUpdateFiles);
-                                if (count($copyFiles['copied'])) {
-                                    $this->temporaryFiles->updateCopiedFiles($copyFiles['copied']);
-                                }
-                                if (!$copyFiles['status']) {
-                                    return new JsonModel(array('success' => false, 'message' => 'unable to update city'));
-                                }
-                            }
-                            $updateData['file_path'] = $filePath;
-                            $updateData['file_extension_type'] = $fileType;
-                            $updateData['file_extension'] = $ext;
-                            $updateData['duration'] = $duration;
-                            $updateData['hash'] = $hash;
-                        }
-                        $tourismFileId = $fileDetail['edit_id'];
-                        $updateResponse = $this->tourismFilesTable->updatePlaceFiles($updateData, array('tourism_file_id' => $tourismFileId));
-                    } else {
-                        $filePath = $audioFiles[$fileDetail['file_id']]['file_path'];
-                        $ext = $audioFiles[$fileDetail['file_id']]['file_extension'];
-                        $duration = $audioFiles[$fileDetail['file_id']]['duration'];
-                        $hash = $audioFiles[$fileDetail['file_id']]['hash'];
-                        $fileType = $audioFiles[$fileDetail['file_id']]['file_extension_type'];
-                        if ($audioFiles[$fileDetail['file_id']]['status'] == \Admin\Model\TemporaryFiles::status_file_not_copied) {
-                            $uploadFiles[] = array(
-                                'old_path' => $audioFiles[$fileDetail['file_id']]['file_path'], 'new_path' => $audioFiles[$fileDetail['file_id']]['file_path'],
-                                'id' => $audioFiles[$fileDetail['file_id']]['temporary_files_id']
-                            );
-                        }
-                        $uploadFileDetails[] = array(
-                            'file_path' => $filePath,
-                            'file_data_type' => \Admin\Model\TourismFiles::file_data_type_city,
-                            'file_extension_type' => $fileType,
-                            'file_extension' => $ext,
-                            'display' => 1,
-                            'duration' => $duration,
-                            'file_language_id' => $fileLanaguage,
-                            'hash' => $hash,
-                            'file_name' => $fileName
-                        );
-                    }
-                }
                 $copyFiles = $this->copypushFiles($uploadFiles);
 
                 if (count($copyFiles['copied'])) {
@@ -881,7 +650,6 @@ class AdminController extends BaseController
                 'country_id' => $countryName,
                 'state_id' => $stateName,
                 'city_name' => $cityName,
-                'city_description' => $description,
                 'display' => 1
             );
             $response = $this->citiesTable->updateCity($data, array('id' => $cityId));
@@ -916,9 +684,7 @@ class AdminController extends BaseController
         $cityId = array_key_exists(1, $cityIdString) ? $cityIdString[1] : 0;
         $cityDetails = $this->citiesTable->getCityDetails($cityId);
         $imageFiles = array();
-        $audioFiles = array();
         $imageCounter = -1;
-        $audioCounter = -1;
 
         $cityInfo = array();
         foreach ($cityDetails as $city) {
@@ -926,15 +692,8 @@ class AdminController extends BaseController
             $cityInfo['state_id'] = $city['state_id'];
             $cityInfo['city_id'] = $city['city_id'];
             $cityInfo['city_name'] = $city['city_name'];
-            $cityInfo['city_description'] = $city['city_description'];
             $cityInfo['country_name'] = strtolower($city['country_name']);
-            if ($city['file_extension_type'] != 1) {
-                $audioCounter++;
-                $audioFiles[$audioCounter]['file_path'] = $city['file_path'];
-                $audioFiles[$audioCounter]['file_language_id'] = $city['file_language_id'];
-                $audioFiles[$audioCounter]['tourism_file_id'] = $city['tourism_file_id'];
-                $audioFiles[$audioCounter]['file_name'] = $city['file_name'];
-            } else {
+            if ($city['file_extension_type'] == 1) {
                 $imageCounter++;
                 $imageFiles[$imageCounter]['file_path'] = $city['file_path'];
                 $imageFiles[$imageCounter]['file_language_id'] = $city['file_language_id'];
@@ -946,7 +705,7 @@ class AdminController extends BaseController
         if ($cityInfo['country_name'] == 'india') {
             $stateList = $this->statesTable->getStates(array('display' => 1, 'country_id' => $cityInfo['country_id']));
         }
-        return new ViewModel(array('countries' => $countriesList, "languages" => $languagesList, 'stateList' => $stateList, 'imageUrl' => $this->filesUrl(), 'cityDetails' => $cityInfo, 'audioFiles' => $audioFiles, 'imageFiles' => $imageFiles));
+        return new ViewModel(array('countries' => $countriesList, "languages" => $languagesList, 'stateList' => $stateList, 'imageUrl' => $this->filesUrl(), 'cityDetails' => $cityInfo, 'imageFiles' => $imageFiles));
     }
 
     public function deleteCityAction()
@@ -1033,14 +792,12 @@ class AdminController extends BaseController
         if ($this->getRequest()->isXmlHttpRequest()) {
             $request = $this->getRequest()->getPost();
             $stateName = $request['state_name'];
-            $stateDescription = $request['description'];
             $fileDetails = $request['file_details'];
-            $audioFiles = array('mp3', 'wav', 'mpeg');
             $fileDetails = json_decode($fileDetails, true);
             $uploadFileDetails = array();
             $countryName = $this->countriesTable->getField(array('country_name' => 'India', 'display' => 1), 'id');
             if ($countryName == '') {
-                return new JsonModel(array("success" => false, "message" => "Please add india country to add state"));
+                return new JsonModel(array("success" => false, "message" => "Please add India country to add state"));
             }
 
             $check = $this->statesTable->getField(array('state_name' => $stateName, 'display' => 1), 'id');
@@ -1067,32 +824,6 @@ class AdminController extends BaseController
                     $uploadFiles[] = array('old_path' => $images['file_path'], 'new_path' => $images['file_path'], 'id' => $images['temporary_files_id']);
                 }
             }
-            /* $audioFiles = $getFiles['audioFiles'];
-            foreach ($fileDetails as $fileDetail) {
-                $fileName = $fileDetail['file_name'];
-                $fileLanaguage = $fileDetail['lanaguage'];
-                $filePath = $audioFiles[$fileDetail['file_id']]['file_path'];
-                $ext = $audioFiles[$fileDetail['file_id']]['file_extension'];
-                $duration = $audioFiles[$fileDetail['file_id']]['duration'];
-                $hash = $audioFiles[$fileDetail['file_id']]['hash'];
-                $fileType = $audioFiles[$fileDetail['file_id']]['file_extension_type'];
-                if ($audioFiles[$fileDetail['file_id']]['status'] == \Admin\Model\TemporaryFiles::status_file_not_copied) {
-                    $uploadFiles[] = array(
-                        'old_path' => $audioFiles[$fileDetail['file_id']]['file_path'], 'new_path' => $audioFiles[$fileDetail['file_id']]['file_path'], 'id' => $audioFiles[$fileDetail['file_id']]['temporary_files_id']
-                    );
-                }
-                $uploadFileDetails[] = array(
-                    'file_path' => $filePath,
-                    'file_data_type' => \Admin\Model\TourismFiles::file_data_type_state,
-                    'file_extension_type' => $fileType,
-                    'file_extension' => $ext,
-                    'display' => 1,
-                    'duration' => $duration,
-                    'file_language_id' => $fileLanaguage,
-                    'hash' => $hash,
-                    'file_name' => $fileName
-                );
-            } */
             $copyFiles = $this->copypushFiles($uploadFiles);
             if (count($copyFiles['copied'])) {
                 $this->temporaryFiles->updateCopiedFiles($copyFiles['copied']);
@@ -1103,7 +834,6 @@ class AdminController extends BaseController
             $data = array(
                 'country_id' => $countryName,
                 'state_name' => $stateName,
-                'state_description' => $stateDescription,
                 'display' => 1
             );
             $response = $this->statesTable->addState($data);
@@ -1143,18 +873,14 @@ class AdminController extends BaseController
             $request = $this->getRequest()->getPost();
             $stateName = $request['state_name'];
             $stateId = $request['state_id'];
-            $stateDescription = $request['description'];
             $fileDetails = $request['file_details'];
-            $audioFiles = array('mp3', 'wav', 'mpeg');
             $fileDetails = json_decode($fileDetails, true);
             $uploadFileDetails = array();
             $countryName = $this->countriesTable->getField(array('country_name' => 'India', 'display' => 1), 'id');
             if ($countryName == '') {
                 return new JsonModel(array("success" => false, "message" => "Please add india country to add state"));
             }
-            $deletedImages = json_decode($request['deleted_images'], true);
-            $deletedAudio = json_decode($request['deleted_audio'], true);
-            $deleteFiles = array_merge($deletedAudio, $deletedImages);
+            $deleteFiles = json_decode($request['deleted_images'], true);
             $check = $this->statesTable->getField(array('state_name' => $stateName, 'status' => 1), 'id');
             if ($check && $check != $stateId) {
                 return new JsonModel(array("success" => false, "message" => "State Already exists"));
@@ -1179,64 +905,6 @@ class AdminController extends BaseController
                         $uploadFiles[] = array('old_path' => $images['file_path'], 'new_path' => $images['file_path'], 'id' => $images['temporary_files_id']);
                     }
                 }
-                $audioFiles = $getFiles['audioFiles'];
-                foreach ($fileDetails as $fileDetail) {
-                    $fileName = $fileDetail['file_name'];
-                    $fileLanaguage = $fileDetail['lanaguage'];
-                    if (isset($fileDetail['edit_id']) && $fileDetail['edit_id'] != 0) {
-                        $updateData = array('file_name' => $fileName, 'file_language_id' => $fileLanaguage);
-                        if (isset($fileDetail['file_id']) && $fileDetail['file_id']) {
-                            $filePath = $audioFiles[$fileDetail['file_id']]['file_path'];
-                            $ext = $audioFiles[$fileDetail['file_id']]['file_extension'];
-                            $duration = $audioFiles[$fileDetail['file_id']]['duration'];
-                            $hash = $audioFiles[$fileDetail['file_id']]['hash'];
-                            $fileType = $audioFiles[$fileDetail['file_id']]['file_extension_type'];
-                            if ($audioFiles[$fileDetail['file_id']]['status'] == \Admin\Model\TemporaryFiles::status_file_not_copied) {
-                                $uploadUpdateFiles[] = array(
-                                    'old_path' => $audioFiles[$fileDetail['file_id']]['file_path'], 'new_path' => $audioFiles[$fileDetail['file_id']]['file_path'],
-                                    'id' => $audioFiles[$fileDetail['file_id']]['temporary_files_id']
-                                );
-                                $copyFiles = $this->copypushFiles($uploadUpdateFiles);
-                                if (count($copyFiles['copied'])) {
-                                    $this->temporaryFiles->updateCopiedFiles($copyFiles['copied']);
-                                }
-                                if (!$copyFiles['status']) {
-                                    return new JsonModel(array('success' => false, 'message' => 'unable to update city'));
-                                }
-                            }
-                            $updateData['file_path'] = $filePath;
-                            $updateData['file_extension_type'] = $fileType;
-                            $updateData['file_extension'] = $ext;
-                            $updateData['duration'] = $duration;
-                            $updateData['hash'] = $hash;
-                        }
-                        $tourismFileId = $fileDetail['edit_id'];
-                        $updateResponse = $this->tourismFilesTable->updatePlaceFiles($updateData, array('tourism_file_id' => $tourismFileId));
-                    } else {
-                        $filePath = $audioFiles[$fileDetail['file_id']]['file_path'];
-                        $ext = $audioFiles[$fileDetail['file_id']]['file_extension'];
-                        $duration = $audioFiles[$fileDetail['file_id']]['duration'];
-                        $hash = $audioFiles[$fileDetail['file_id']]['hash'];
-                        $fileType = $audioFiles[$fileDetail['file_id']]['file_extension_type'];
-                        if ($audioFiles[$fileDetail['file_id']]['status'] == \Admin\Model\TemporaryFiles::status_file_not_copied) {
-                            $uploadFiles[] = array(
-                                'old_path' => $audioFiles[$fileDetail['file_id']]['file_path'], 'new_path' => $audioFiles[$fileDetail['file_id']]['file_path'],
-                                'id' => $audioFiles[$fileDetail['file_id']]['temporary_files_id']
-                            );
-                        }
-                        $uploadFileDetails[] = array(
-                            'file_path' => $filePath,
-                            'file_data_type' => \Admin\Model\TourismFiles::file_data_type_state,
-                            'file_extension_type' => $fileType,
-                            'file_extension' => $ext,
-                            'display' => 1,
-                            'duration' => $duration,
-                            'file_language_id' => $fileLanaguage,
-                            'hash' => $hash,
-                            'file_name' => $fileName
-                        );
-                    }
-                }
                 $copyFiles = $this->copypushFiles($uploadFiles);
                 if (count($copyFiles['copied'])) {
                     $this->temporaryFiles->updateCopiedFiles($copyFiles['copied']);
@@ -1249,7 +917,6 @@ class AdminController extends BaseController
             $data = array(
                 'country_id' => $countryName,
                 'state_name' => $stateName,
-                'state_description' => $stateDescription,
                 'display' => 1
             );
             $response = $this->statesTable->updateState($data, array('id' => $stateId));
@@ -1283,21 +950,12 @@ class AdminController extends BaseController
         $stateId = array_key_exists(1, $stateIdString) ? $stateIdString[1] : 0;
         $stateDetails = $this->statesTable->getStateDetails($stateId);
         $imageFiles = array();
-        $audioFiles = array();
         $imageCounter = -1;
-        $audioCounter = -1;
         $stateInfo = array();
         foreach ($stateDetails as $state) {
             $stateInfo['state_id'] = $state['state_id'];
             $stateInfo['state_name'] = $state['state_name'];
-            $stateInfo['state_description'] = $state['state_description'];
-            if ($state['file_extension_type'] != 1) {
-                $audioCounter++;
-                $audioFiles[$audioCounter]['file_path'] = $state['file_path'];
-                $audioFiles[$audioCounter]['file_language_id'] = $state['file_language_id'];
-                $audioFiles[$audioCounter]['tourism_file_id'] = $state['tourism_file_id'];
-                $audioFiles[$audioCounter]['file_name'] = $state['file_name'];
-            } else {
+            if ($state['file_extension_type'] == 1) {
                 $imageCounter++;
                 $imageFiles[$imageCounter]['file_path'] = $state['file_path'];
                 $imageFiles[$imageCounter]['file_language_id'] = $state['file_language_id'];
@@ -1305,7 +963,7 @@ class AdminController extends BaseController
                 $imageFiles[$imageCounter]['file_name'] = $state['file_name'];
             }
         }
-        return new ViewModel(array('imageUrl' => $this->filesUrl(), "languages" => $languagesList, 'stateDetails' => $stateInfo, 'audioFiles' => $audioFiles, 'imageFiles' => $imageFiles));
+        return new ViewModel(array('imageUrl' => $this->filesUrl(), "languages" => $languagesList, 'stateDetails' => $stateInfo, 'imageFiles' => $imageFiles));
     }
 
     public function deleteStateAction()

@@ -27,11 +27,9 @@
                     <td><?= $this->escapeHtml($country['country_name']) ?></td>
                     <td>
                         <div class="d-flex">
-                            <!-- <a class="action-icon" href="<?php //echo $this->basePath() . '/a_dMin/edit-country/' . base64_encode('tourismCountryId=' . $country['id']) 
-                                                                ?>" >
-                        <img src="<?php //echo $this->basePath(); 
-                                    ?>/img/edit.png" class="img-fluid">
-                    </a> -->
+                            <a class="action-icon" href="<?php echo $this->basePath() . '/a_dMin/edit-country/' . base64_encode('tourismCountryId=' . $country['id']) ?>">
+                                <img src="<?php echo $this->basePath(); ?>/img/edit.png" class="img-fluid">
+                            </a>
                             <div class="action-icon delete-country" data-id="<?php echo $country['id']; ?>">
                                 <img src="<?php echo $this->basePath(); ?>/img/delete.png" class="img-fluid">
                             </div>

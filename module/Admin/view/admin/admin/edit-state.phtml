@@ -24,12 +24,6 @@
                                     <input type="text" class="form-control" id="state" value="<?php echo $stateDetails['state_name']; ?>" />
                                 </div>
                                 <div class="col-12">
-                                    <label class="text-black-50">Description</label>
-                                    <textarea class="form-control" id="description">
-                            <?php echo $stateDetails['state_description']; ?>
-                        </textarea>
-                                </div>
-                                <div class="col-12">
                                     <label class="text-black-50">Image Files</label>
                                     <div class="position-relative w-100 image-upload-wrapper">
                                         <input type="file" class="image-upload" name="image-file" multiple title=" ">
@@ -53,15 +47,6 @@
                                 <div class="row">
                                     <div> <button type="button" class="btn submit-btn" id="addPlace">Submit </button> </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <div class="text-capitalize heading mb-3">Audio</div>
-                            <div class="" id="file-upload-wrapper">
-                                <?php echo $this->partial("/admin/admin/file-upload-row", array('languages' => $languages, 'audioFiles' => $audioFiles, 'numberOfrows' => 0, "rowNumber" => 1)); ?>
-                            </div>
-                            <div class="row mt-3">
-                                <div class="col-sm-12 text-end"> <a class="add-control"><i class="fas fa-plus-circle"></i>Add Audio</a></div>
                             </div>
                         </div>
                         <input type="hidden" value="<?php echo $stateDetails['state_id']; ?>" id="stateId">

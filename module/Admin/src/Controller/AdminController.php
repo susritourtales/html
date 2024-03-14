@@ -242,7 +242,7 @@ class AdminController extends BaseController
                         $uploadFiles[] = array('old_path' => $images['file_path'], 'new_path' => $images['file_path'], 'id' => $images['temporary_files_id']);
                     }
                 }
-                $audioFiles = isset($getFiles['audioFiles']) ? $getFiles['audioFiles'] : array();
+                /* $audioFiles = isset($getFiles['audioFiles']) ? $getFiles['audioFiles'] : array();
                 foreach ($fileDetails as $fileDetail) {
                     $fileName = $fileDetail['file_name'];
                     $fileLanaguage = $fileDetail['lanaguage'];
@@ -265,7 +265,7 @@ class AdminController extends BaseController
                         'hash' => $hash,
                         'file_name' => $fileName
                     );
-                }
+                } */
                 $copyFiles = $this->copypushFiles($uploadFiles);
                 if (count($copyFiles['copied'])) {
                     $this->temporaryFiles->updateCopiedFiles($copyFiles['copied']);
@@ -1067,7 +1067,7 @@ class AdminController extends BaseController
                     $uploadFiles[] = array('old_path' => $images['file_path'], 'new_path' => $images['file_path'], 'id' => $images['temporary_files_id']);
                 }
             }
-            $audioFiles = $getFiles['audioFiles'];
+            /* $audioFiles = $getFiles['audioFiles'];
             foreach ($fileDetails as $fileDetail) {
                 $fileName = $fileDetail['file_name'];
                 $fileLanaguage = $fileDetail['lanaguage'];
@@ -1092,7 +1092,7 @@ class AdminController extends BaseController
                     'hash' => $hash,
                     'file_name' => $fileName
                 );
-            }
+            } */
             $copyFiles = $this->copypushFiles($uploadFiles);
             if (count($copyFiles['copied'])) {
                 $this->temporaryFiles->updateCopiedFiles($copyFiles['copied']);

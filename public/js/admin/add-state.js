@@ -11,7 +11,7 @@ var circle={};
 $(document).ready(function ()
 {
     $("body")
-        .on("change",".upload-file",function(e){
+        /* .on("change",".upload-file",function(e){
             var files = e.target.files;
             var rowId=$(this).data("id");
             var element=$(this);
@@ -68,7 +68,7 @@ $(document).ready(function ()
                 };
                 reader.readAsDataURL(file);
             });
-        })
+        }) */
         .on("change",".image-upload",function(e){
             var files = e.target.files;
             var element=$(this);

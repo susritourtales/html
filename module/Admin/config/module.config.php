@@ -349,6 +349,16 @@ return [
                     ],
                 ],
             ],
+            'add-tour-get-places' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/admin/add-tour-get-places',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'add-tour-get-places',
+                    ],
+                ],
+            ],
             'india-tour-list' => [
                 'type' => Segment::class,
                 'options' => [

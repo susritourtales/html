@@ -77,6 +77,16 @@ return [
                     ],
                 ],
             ],
+            'language-list' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route'    => '/admin/load-language-list',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action'     => 'load-language-list',
+                    ],
+                ],
+            ],
             'uploadFiles' => [
                 'type' => Literal::class,
                 'options' => [

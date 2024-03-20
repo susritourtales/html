@@ -469,6 +469,16 @@ return [
                     ],
                 ],
             ],
+            'delete-tour-tale' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/admin/delete-tour-tale',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'delete-tour-tale',
+                    ],
+                ],
+            ],
             'parameters' => [
                 'type' => Segment::class,
                 'options' => [

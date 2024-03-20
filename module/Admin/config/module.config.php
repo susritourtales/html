@@ -379,13 +379,13 @@ return [
                     ],
                 ],
             ],
-            'load-inida-tour-list' => [
+            'load-india-tour-list' => [
                 'type' => Segment::class,
                 'options' => [
                     'route'    => '/admin/load-india-tour-list',
                     'defaults' => [
                         'controller' => Controller\AdminController::class,
-                        'action'     => 'load-inida-tour-list',
+                        'action'     => 'load-india-tour-list',
                     ],
                 ],
             ],

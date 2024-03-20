@@ -379,6 +379,16 @@ return [
                     ],
                 ],
             ],
+            'load-inida-tour-list' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route'    => '/admin/load-inida-tour-list',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action'     => 'load-inida-tour-list',
+                    ],
+                ],
+            ],
             'add-india-tour' => [
                 'type' => Segment::class,
                 'options' => [

@@ -10,6 +10,8 @@ $(document).ready(function ()
     $("body").on("change","#country",function(){
         var countryId=$(this).val();
         $(".city-wrapper").removeClass("hidden");
+        $('#places').html('');
+        $('.tags-container').html('');
         postData('/admin/get-cities',{"country_id":countryId},function(response){
             var options='<option value="">--select city--</option>';
             if(response.success)
@@ -19,7 +21,6 @@ $(document).ready(function ()
                 {
                     options +='<option value="'+list[s].id+'">'+list[s].city_name+'</option>'
                 }
-
                 $('#cities').html(options);
             }
         });

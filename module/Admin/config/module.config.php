@@ -469,6 +469,16 @@ return [
                     ],
                 ],
             ],
+            'get-places' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/admin/get-places',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'get-places',
+                    ],
+                ],
+            ],
             'free-tour-list' => [
                 'type' => Segment::class,
                 'options' => [

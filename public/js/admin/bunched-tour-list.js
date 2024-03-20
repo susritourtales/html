@@ -20,7 +20,6 @@ $(document).ready(function () {
     });
     function initPagination()
     {
-
         $("#listPager").html('');
         var items = parseInt($(".records").val());
 
@@ -89,12 +88,10 @@ $(document).ready(function () {
         let dataId=$(this).data("id");
         for(var keys in filter)
         {
-
             if(keys!=dataId)
             {
                 filter[keys]['order']="";
             }else{
-
                 filter[keys]['order']=1;
             }
         }
@@ -165,8 +162,6 @@ $(document).ready(function () {
             },
             error: function()
             {
-
-
             }
         });
     }

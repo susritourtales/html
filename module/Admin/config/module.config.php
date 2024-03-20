@@ -419,6 +419,16 @@ return [
                     ],
                 ],
             ],
+            'load-world-tour-list' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route'    => '/admin/load-world-tour-list',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action'     => 'load-world-tour-list',
+                    ],
+                ],
+            ],
             'bunched-tour-list' => [
                 'type' => Segment::class,
                 'options' => [
@@ -426,6 +436,16 @@ return [
                     'defaults' => [
                         'controller' => Controller\AdminController::class,
                         'action' => 'bunched-tour-list',
+                    ],
+                ],
+            ],
+            'load-bunched-tour-list' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route'    => '/admin/load-bunched-tour-list',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action'     => 'load-bunched-tour-list',
                     ],
                 ],
             ],
@@ -456,6 +476,16 @@ return [
                     'defaults' => [
                         'controller' => Controller\AdminController::class,
                         'action' => 'free-tour-list',
+                    ],
+                ],
+            ],
+            'load-free-tour-list' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route'    => '/admin/load-free-tour-list',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action'     => 'load-free-tour-list',
                     ],
                 ],
             ],

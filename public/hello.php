@@ -1,2 +1,2 @@
 <?php
-echo "STTANDAPP test page";
+echo phpinfo();

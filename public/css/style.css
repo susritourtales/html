@@ -1005,3 +1005,17 @@ audio{
     z-index: -1;
     background: url(../img/bg.png) no-repeat center / contain;
 }
+.table-scroll {
+    width: 100%;
+    display: block;
+    height: 400px;
+    overflow-x: auto;
+}
+
+.sticky {
+    position: sticky;
+    left: 0;
+    background-color: #fff;
+    z-index: 1; 
+}
+  

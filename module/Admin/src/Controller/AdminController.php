@@ -2110,12 +2110,7 @@ class AdminController extends BaseController
     {
         $this->checkAdmin();
         if ($this->getRequest()->isXmlHttpRequest()) {
-            set_time_limit(0);
-            ini_set('mysql.connect_timeout', '0');
-            ini_set('max_execution_time', '0');
-            ini_set("memory_limit", "-1");
             $request = $this->getRequest()->getPost();
-            //print_r($request);exit;
             $ssc = $request['ssc'];
             $adp = $request['adp'];
             $mtl = $request['mtl'];
@@ -2191,4 +2186,10 @@ class AdminController extends BaseController
         }
     }
     // Login - END
+
+
+    /*********************-- TWISTT Login - START --************************/
+
+
+    /*********************-- TWISTT Login - END --************************/
 }

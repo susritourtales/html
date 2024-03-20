@@ -64,7 +64,7 @@ class SubscriptionPlanTable extends BaseTable
       $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
       $plans = array();
       foreach ($resultSet as $row) {
-        $plans = $row;
+        $plans[] = $row;
       }
       return $plans;
     } catch (\Exception $e) {

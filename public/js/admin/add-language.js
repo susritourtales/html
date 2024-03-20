@@ -8,7 +8,7 @@ $(document).ready(function(){
         var element=$(this);
         element.html('Please wait...');
         element.prop('disabled',true);
-        postData("/admin/add-language",{'id':id},function(response){
+        postData("/a_dMin/add-language",{'id':id},function(response){
             if(response)
             {
                 element.prop('disabled',false);

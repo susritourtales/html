@@ -1864,6 +1864,15 @@ class AdminController extends BaseController
                         $searchData['place_name_order'] = $filterData['place_name']['order'];
                     }
                 }
+                if (isset($filterData['tale_name'])) {
+
+                    if (isset($filterData['tale_name']['text']) && $filterData['tale_name']['text']) {
+                        $searchData['tale_name'] = $filterData['tale_name']['text'];
+                    }
+                    if (isset($filterData['tale_name']['order']) && $filterData['tale_name']['order']) {
+                        $searchData['tale_name'] = $filterData['tale_name']['order'];
+                    }
+                }
             }
             if (isset($request['page_number'])) {
                 $pageNumber = $request['page_number'];
@@ -1890,6 +1899,7 @@ class AdminController extends BaseController
             $countryId = $request['country_id'];
             $cityId = $request['city_id'];
             $place = $request['place_name'];
+            $taleName = $request['tale_name'];
             if ($countryId == '') {
                 return new JsonModel(array("success" => false, "message" => "Please select country"));
             }
@@ -1901,7 +1911,6 @@ class AdminController extends BaseController
                 $where['city_id'] = $cityId;
             }
             $checkCountryAdded = $this->tourTalesTable->checkTaleAdded($where);
-
             if ($cityId && count($checkCountryAdded)) {
                 return new JsonModel(array('success' => false, 'message' => 'city already added'));
             }
@@ -1920,6 +1929,9 @@ class AdminController extends BaseController
                 $data['place_id'] = "," . $place . ",";
             } else {
                 $data['place_id'] = '';
+            }
+            if ($taleName) {
+                $data['tale_name'] = $taleName;
             }
             $success = true;
             if (!count($checkCountryAdded)) {
@@ -1960,20 +1972,25 @@ class AdminController extends BaseController
         $this->checkAdmin();
         if ($this->getRequest()->isXmlHttpRequest()) {
             $request = $this->getRequest()->getPost();
+            $taleId = $request['id'];
             $countryId = $request['country_id'];
             $cityId = $request['city_id'];
             $place = $request['place_name'];
+            $taleName = $request['tale_name'];
             if ($countryId == '') {
                 return new JsonModel(array("success" => false, "message" => "Please select country"));
             }
             $where = array('country_id' => $countryId, 'tour_type' => \Admin\Model\TourTales::tour_type_Bunched_tour);
+            if (is_null($place)) {
+                $place = '';
+            }
             if ($cityId) {
                 $where['city_id'] = $cityId;
             }
             $checkTaleAdded = $this->tourTalesTable->checkTaleAdded($where);
-            if ($cityId && count($checkTaleAdded) /* &&  $checkTaleAdded['place_price_id']!=$priceId */) {
+            /* if ($cityId && count($checkTaleAdded)) {
                 return new JsonModel(array('success' => false, 'message' => 'city already added'));
-            }
+            } */
             $data = array('tour_type' => \Admin\Model\TourTales::tour_type_Bunched_tour, 'display' => 1, 'country_id' => $countryId);
             if ($checkTaleAdded) {
                 $data['place_id'] = implode(",", array_unique(explode(',', $place)));
@@ -1988,13 +2005,32 @@ class AdminController extends BaseController
             } else {
                 $data['place_id'] = '';
             }
+            if ($taleName) {
+                $data['tale_name'] = $taleName;
+            }
             $success = true;
-            if ($success) {
-                return new JsonModel(array('success' => true, 'message' => 'Updated City Tour Successfully'));
+            if (!count($checkTaleAdded)) {
+                $saveData = $this->tourTalesTable->addTourTale($data);
+                if (!$saveData['success']) {
+                    $success = false;
+                }
             } else {
-                return new JsonModel(array('success' => false, 'message' => 'unable to add city tour'));
+                if($taleId == $checkTaleAdded['id']){
+                    $updateData = $this->tourTalesTable->updateTourTale($data, array('id' => $taleId));
+                    if (!$updateData) {
+                        $success = false;
+                    }
+                }else{
+                    return new JsonModel(array('success' => false, 'message' => 'unable to update Bunched Tales'));
+                }
+            }
+            if ($success) {
+                return new JsonModel(array('success' => true, 'message' => 'Updated Bunched Tales Successfully'));
+            } else {
+                return new JsonModel(array('success' => false, 'message' => 'unable to update Bunched Tales'));
             }
         }
+
         $paramId = $this->params()->fromRoute('id', '');
         if (!$paramId) {
             return $this->redirect()->toUrl($this->getBaseUrl());
@@ -2003,18 +2039,18 @@ class AdminController extends BaseController
         $taleIdString = base64_decode($taleIdString);
         $taleIdString = explode("=", $taleIdString);
         $taleId = array_key_exists(1, $taleIdString) ? $taleIdString[1] : 0;
-
-        $taleDetails = $this->tourTalesTable->getTourTales(array('id' => $taleId));
-        if (!count($taleDetails)) {
-            return $this->redirect()->toUrl($this->getBaseUrl() . '/a_dMin/bunched-tour-list');
+        $countryList = $this->countriesTable->getCountries();
+        $tourDetails = $this->tourTalesTable->getTourTales(array('id'=>$taleId));
+        $stateList = array();
+        $citiesList = array();
+        if (strtolower($tourDetails['country_id']) == '101') {
+            $stateList = $this->statesTable->getStates(array('display' => 1, 'country_id' => $tourDetails['country_id']));
+            $citiesList = $this->citiesTable->getCities(array('state_id' => $tourDetails['state_id']));
+        } else {
+            $citiesList = $this->citiesTable->getCities(array('country_id' => $tourDetails['country_id']));
         }
-        $countryList = $this->countriesTable->getActiveCountriesListAdmin(array('tour_type' => \Admin\Model\TourTales::tour_type_Bunched_tour));
-        $citiesList = $this->citiesTable->getActiveCitiesListAdmin(array('country_id' => $taleDetails[0]['country_id'], 'tour_type' => \Admin\Model\TourTales::tour_type_Bunched_tour));
-        $placesList = $this->placesTable->getPlacesAdmin(array('city_id' => $taleDetails[0]['city_id'], 'tour_type' => \Admin\Model\TourTales::tour_type_Bunched_tour));
-        $taleDetails = $taleDetails[0];
-        $taleDetails['place_id'] = array_filter(explode(',', $taleDetails['place_id']));
-
-        return new ViewModel(array('countryList' => $countryList, 'cityList' => $citiesList, 'placesList' => $placesList, 'tourDetails' => $taleDetails));
+        $placesList = $this->placesTable->getPlaces(['city_id' => $tourDetails['city_id']]);
+        return new ViewModel(array('countryList' => $countryList, 'stateList'=>$stateList, 'citiesList'=>$citiesList, 'placesList'=>$placesList, 'tourDetails'=>$tourDetails));
     }
 
     // Bunched Tales - End

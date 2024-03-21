@@ -28,8 +28,8 @@ class TourTalesTable extends  BaseTable
                 return array("success" => false);
             }
         } catch (\Exception $e) {
-            print_r($e->getMessage());
-            exit;
+            /* print_r($e->getMessage());
+            exit; */
             return array("success" => false);
         }
     }
@@ -65,43 +65,6 @@ class TourTalesTable extends  BaseTable
             return array();
         }
     }
-    public function getPlacesForPrivilageUser($data)
-    {
-        try {
-            $where = new Where();
-            $where->equalTo('p.tour_type', $data['tour_type'])->equalTo('p.status', 1);
-            $sql = $this->getSql();
-            $query = $sql->select()
-                ->from($this->tableName)
-                ->columns(array("id", "price", 'place_id'));
-            if ($data['tour_type'] == \Admin\Model\TourTales::tour_type_City_tour) {
-                //   $query=$query->join(array('tp' => 'place'), new \Laminas\Db\Sql\Expression("FIND_IN_SET(`tp`.`tourism_place_id`,`p`.`place_id`)"), array('place_name' => new \Laminas\Db\Sql\Expression("GROUP_CONCAT(`tp`.`place_name`)"), 'tourism_place_id'));
-
-            } else {
-                $query = $query->join(array('tp' => 'place'), new \Laminas\Db\Sql\Expression("FIND_IN_SET(`tp`.`tourism_place_id`,`p`.`place_id`)"), array('place_name', 'tourism_place_id'));
-            }
-            $query = $query->join(array('c' => 'country'), 'p.country_id=c.id', array('country_name'))
-                ->join(array('s' => 'state'), 'p.state_id=s.id', array('state_name'), Select::JOIN_LEFT)
-                ->join(array('ci' => 'city'), 'p.city_id=ci.id', array('city_name'))
-                ->where($where);
-            if ($data['tour_type'] == \Admin\Model\TourTales::tour_type_City_tour) {
-                $query = $query->group('p.id');
-            }
-            $query = $query->order(array('p.updated_at desc'));
-
-
-
-            $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
-            $countries = array();
-
-            foreach ($resultSet as $row) {
-                $countries[] = $row;
-            }
-            return $countries;
-        } catch (\Exception $e) {
-            return array();
-        }
-    }
     public function getPlacesList($data = array('limit' => 10, 'offset' => 0), $gc = 0)
     {
         try {
@@ -111,6 +74,9 @@ class TourTalesTable extends  BaseTable
             } else {
                 $where->equalTo('p.display', 1)->and->equalTo('tour_type', $data['tour_type']);
             }
+            if (array_key_exists('id', $data)) {
+                $where->equalTo('p.id', $data["id"]);
+            } 
             $order = array();
             if (array_key_exists('country', $data)) {
                 $where->and->like(new \Laminas\Db\Sql\Expression("LOWER(c.country_name)"), '%' . strtolower($data['country']) . "%");
@@ -123,6 +89,9 @@ class TourTalesTable extends  BaseTable
             }
             if (array_key_exists('place_name', $data)) {
                 $where->and->like(new \Laminas\Db\Sql\Expression("LOWER(tp.place_name)"), '%' . strtolower($data['place_name']) . "%");
+            }
+            if (array_key_exists('tale_name', $data)) {
+                $where->and->like(new \Laminas\Db\Sql\Expression("LOWER(tp.tale_name)"), '%' . strtolower($data['tale_name']) . "%");
             }
 
             if (array_key_exists('country_order', $data)) {
@@ -153,13 +122,20 @@ class TourTalesTable extends  BaseTable
                     $order[] = 'tp.place_name desc';
                 }
             }
+            if (array_key_exists('tale_name_order', $data)) {
+                if ($data['tale_name_order'] == 1) {
+                    $order[] = 'tp.tale_name asc';
+                } else if ($data['tale_name_order'] == -1) {
+                    $order[] = 'tp.tale_name desc';
+                }
+            }
             if (!count($order)) {
                 $order = array('p.updated_at desc');
             }
             $sql = $this->getSql();
             $query = $sql->select()
                 ->from($this->tableName)
-                ->columns(array("id"));
+                ->columns(array("id", "tale_name"));
             if ($data['tour_type'] == \Admin\Model\TourTales::tour_type_Bunched_tour) {
                 /* $query = $query->join(array('tp' => 'place'), new \Laminas\Db\Sql\Expression("FIND_IN_SET(`tp`.`id`,`p`.`place_id`)"), array('place_name' => new \Laminas\Db\Sql\Expression("GROUP_CONCAT(`tp`.`place_name`)"), 'place_id' => 'id'), Select::JOIN_LEFT); */
                 $query = $query->join(array('tp' => 'place'), new \Laminas\Db\Sql\Expression("FIND_IN_SET(`tp`.`id`,`p`.`place_id`)"), array('place_name' => new \Laminas\Db\Sql\Expression("GROUP_CONCAT(`tp`.`place_name`)"), 'place_id' => new \Laminas\Db\Sql\Expression("GROUP_CONCAT(`tp`.`id`)")), Select::JOIN_LEFT);
@@ -189,62 +165,8 @@ class TourTalesTable extends  BaseTable
             }
             return $countries;
         } catch (\Exception $e) {
-            print_r($e->getMessage());
-            exit;
-            return array();
-        }
-    }
-    public function getPlacesListCount($data = array())
-    {
-        try {
-            $where = new Where();
-            $where->and->equalTo('p.status', 1)->and->equalTo('tour_type', $data['tour_type']);
-            $order = array();
-            if (array_key_exists('country', $data)) {
-                $where->and->like(new \Laminas\Db\Sql\Expression("LOWER(c.country_name)"), '%' . strtolower($data['country']) . "%");
-            }
-            if (array_key_exists('state', $data)) {
-                $where->and->like(new \Laminas\Db\Sql\Expression("LOWER(s.state_name)"), '%' . strtolower($data['state']) . "%");
-            }
-            if (array_key_exists('city', $data)) {
-                $where->and->like(new \Laminas\Db\Sql\Expression("LOWER(ci.city_name)"), '%' . strtolower($data['city']) . "%");
-            }
-            if (array_key_exists('place_name', $data)) {
-                $where->and->like(new \Laminas\Db\Sql\Expression("LOWER(tp.place_name)"), '%' . strtolower($data['place_name']) . "%");
-            }
-
-            $sql = $this->getSql();
-            $query = $sql->select()
-                ->from($this->tableName)
-                ->columns(array("id", "price"));
-            if ($data['tour_type'] == \Admin\Model\TourTales::tour_type_City_tour) {
-                $query = $query->join(array('tp' => 'place'), new \Laminas\Db\Sql\Expression("FIND_IN_SET(`tp`.`tourism_place_id`,`p`.`place_id`)"), array('place_name' => new \Laminas\Db\Sql\Expression("GROUP_CONCAT(`tp`.`place_name`)"), 'tourism_place_id'), Select::JOIN_LEFT);
-            } else {
-                $query = $query->join(array('tp' => 'place'), new \Laminas\Db\Sql\Expression("FIND_IN_SET(`tp`.`tourism_place_id`,`p`.`place_id`)"), array('place_name', 'tourism_place_id'), Select::JOIN_LEFT);
-            }
-            $query = $query->join(array('c' => 'country'), 'tp.country_id=c.id', array('country_name'))
-                ->join(array('s' => 'state'), 'tp.state_id=s.id', array('state_name'), Select::JOIN_LEFT)
-                ->join(array('ci' => 'city'), 'tp.city_id=ci.id', array('city_name'))
-                ->where($where);
-            if ($data['tour_type'] == \Admin\Model\TourTales::tour_type_City_tour) {
-                $query = $query->group('p.id');
-            }
-
-
-            $query = $query->order('p.updated_at desc');
-            /*echo $sql->getSqlStringForSqlObject($query);
-                        exit;*/
-
-            $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
-            $countries = array();
-
-            foreach ($resultSet as $row) {
-                $countries[] = $row;
-            }
-
-            return $countries;
-        } catch (\Exception $e) {
-
+            /* print_r($e->getMessage());
+            exit; */
             return array();
         }
     }
@@ -272,48 +194,20 @@ class TourTalesTable extends  BaseTable
             return "";
         }
     }
-    public function getCityTourPrice($cityIds)
-    {
-        try {
-            $sql = $this->getSql();
-            $where = new Where();
-
-            $query = $sql->select()
-                ->from($this->tableName)
-                ->columns(array('price' => new \Laminas\Db\Sql\Expression('sum(`p`.`price`)')))
-                ->where($where->in('city_id', $cityIds));
-
-            $field = array();
-            $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
-            foreach ($resultSet as $row) {
-                $field = $row['price'];
-            }
-
-            if ($field) {
-                return $field;
-            } else {
-                return 0;
-            }
-        } catch (\Exception $e) {
-            return 0;
-        }
-    }
     public function getTourTales($where)
     {
         try {
             $sql = $this->getSql();
             $query = $sql->select()
                 ->from($this->tableName)
-                ->columns(array("id", 'country_id', 'city_id', "place_id"))
+                //->columns(array("id", 'country_id', 'city_id', "place_id", "tale_name"))
                 ->where($where);
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             foreach ($resultSet as $row) {
-                $placePrices[] = $row;
+                $tourTale = $row;
             }
-            return $placePrices;
+            return $tourTale;
         } catch (\Exception $e) {
-            print_r($e->getMessage());
-            exit;
             return array();
         }
     }
@@ -348,8 +242,8 @@ class TourTalesTable extends  BaseTable
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             return true;
         } catch (\Exception $e) {
-            print_r($e->getMessage());
-            exit;
+            /* print_r($e->getMessage());
+            exit; */
             return false;
         }
     }

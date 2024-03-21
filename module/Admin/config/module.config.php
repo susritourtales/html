@@ -462,7 +462,11 @@ return [
             'edit-bunched-tour' => [
                 'type' => Segment::class,
                 'options' => [
-                    'route' => '/a_dMin/edit-bunched-tour',
+                    'route' => '/a_dMin/edit-bunched-tour[/:id]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-zA-Z0-9_~\-!@#\$%\^&*\(\)=]*[/]*',
+                    ],
                     'defaults' => [
                         'controller' => Controller\AdminController::class,
                         'action' => 'edit-bunched-tour',

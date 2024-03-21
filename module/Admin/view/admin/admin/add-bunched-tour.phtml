@@ -9,13 +9,13 @@
 <link rel="stylesheet" href="<?php echo $this->basePath() ?>/css/vendor/select2.min.css">
 <link rel="stylesheet" href="<?php echo $this->basePath() ?>/css/main.css">
 <script src="<?php echo $this->basePath(); ?>/js/vendor/select2.full.min.js"></script>
-<script src="<?php echo $this->basePath(); ?>/js/admin/add-bunched-tour.js?v=1.0"></script>
+<script src="<?php echo $this->basePath(); ?>/js/admin/add-bunched-tour.js"></script>
 
 <div class="wrapper">
     <div class="main-panel ">
         <?php echo $this->partial("/application/index/app-header"); ?>
         <div class="main-container p-lg-4">
-            <div class="main-heading mb-3"><a href="<?php echo $this->basePath() . '/a_dMin/bunched-tour-list' ?>"><i class="fa fa-arrow-left mr-2"></i></a> Add Bunched Tour</div>
+            <div class="main-heading mb-3"><a href="<?php echo $this->basePath() . '/a_dMin/bunched-tour-list' ?>"><i class="fa fa-arrow-left mr-2"></i></a> Add Bunched Tale</div>
             <div class="row">
                 <div class="col-12 col-lg-10">
                     <div class="row adding-form">
@@ -41,13 +41,16 @@
                             <div class="col-12">
                                 <div class="tags-container"></div>
                             </div>
+                            <div class="col-12"><label class="text-black-50">Tale Name</label>
+                                <input type="text" class="form-control" id="tname" />
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="mt-2">
                 <div class="row">
-                    <div class="col-sm-12 text-left"> <button type="button" class="btn submit-btn" id="addCityTour">Submit</button></div>
+                    <div class="col-sm-12 text-left"> <button type="button" class="btn submit-btn" id="addbt">Submit</button></div>
                 </div>
             </div>
         </div>

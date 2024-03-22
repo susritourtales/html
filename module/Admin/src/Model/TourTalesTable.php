@@ -158,8 +158,6 @@ class TourTalesTable extends  BaseTable
             }
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             if ($gc == 1){
-                var_dump($gc); exit;
-                var_dump(count($resultSet));exit;
                 return count($resultSet);
             }
             $countries = array();

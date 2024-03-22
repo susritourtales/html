@@ -23,6 +23,7 @@
 
             </div>
             <?php if ($totalCount > 10) {
+                var_dump($totalCount);exit;
                 $paginationCount = ceil($totalCount / 10); ?>
                 <ul class="pagination float-end" id="listPager"></ul>
             <?php } ?>

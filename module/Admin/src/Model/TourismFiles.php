@@ -15,12 +15,13 @@ class TourismFiles
     const file_extension_type_image=1;
     const file_extension_type_video=2;
     const file_extension_type_audio=3;
+    const file_extension_type_thumbnail=4;
     
     const file_data_type_country=1;
     const file_data_type_state=2;
     const file_data_type_city=3;
     const file_data_type_places=4;
-    const file_data_type_seasonal_files=5;
+    const file_data_type_bunched_tales=5;
     const file_data_type_sample_files=6;
     const file_data_type_itinerary_files=7;
     const file_data_type_ta_logo=8;

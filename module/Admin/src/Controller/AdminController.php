@@ -1510,7 +1510,6 @@ class AdminController extends BaseController
         $this->checkAdmin();
         $placesList = $this->tourTalesTable->getPlacesList(array('tour_type' => \Admin\Model\TourTales::tour_type_India_tour, 'limit' => 10, 'offset' => 0));
         $totalCount = $this->tourTalesTable->getPlacesList(array('tour_type' => \Admin\Model\TourTales::tour_type_India_tour, 'limit' => 0, 'offset' => 0), 1);
-        var_dump($totalCount);exit;
         return new ViewModel(array('placesList' => $placesList, 'totalCount' => $totalCount));
     }
 

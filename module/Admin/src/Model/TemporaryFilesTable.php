@@ -75,18 +75,22 @@ class TemporaryFilesTable extends BaseTable
                 ->where($where);
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             $imageFiles=array();
+            $tnFiles=array();
             $audioFiles=array();
             foreach ($resultSet as $row)
             {
                 if($row['file_extension_type']==\Admin\Model\TourismFiles::file_extension_type_image)
                 {
                     $imageFiles[]=$row;
+                }elseif($row['file_extension_type']==\Admin\Model\TourismFiles::file_extension_type_thumbnail)
+                {
+                    $tnFiles[]=$row;
                 }else{
                     $audioFiles[$row['temporary_files_id']]=$row;
                 }
 
             }
-            return array('images'=>$imageFiles,'audioFiles'=>$audioFiles);
+            return array('images'=>$imageFiles,'audioFiles'=>$audioFiles,'thumbnails'=>$tnFiles);
         }catch (\Exception $e)
         {
                  print_r($e->getMessage());

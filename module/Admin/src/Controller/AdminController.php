@@ -1119,6 +1119,22 @@ class AdminController extends BaseController
                     $uploadFiles[] = array('old_path' => $images['file_path'], 'new_path' => $images['file_path'], 'id' => $images['temporary_files_id']);
                 }
             }
+            foreach ($getFiles['thumbnails'] as $images) {
+                $uploadFileDetails[] = array(
+                    'file_path' => $images['file_path'],
+                    'file_data_type' => \Admin\Model\TourismFiles::file_data_type_places,
+                    'file_extension_type' => \Admin\Model\TourismFiles::file_extension_type_thumbnail,
+                    'file_extension' => $images['file_extension'],
+                    'display' => 1,
+                    'duration' => 0,
+                    'file_language_id' => 0,
+                    'hash' => '',
+                    'file_name' => $images['file_name']
+                );
+                if ($images['status'] == \Admin\Model\TemporaryFiles::status_file_not_copied) {
+                    $uploadFiles[] = array('old_path' => $images['file_path'], 'new_path' => $images['file_path'], 'id' => $images['temporary_files_id']);
+                }
+            }
             $audioFiles = $getFiles['audioFiles'];
             foreach ($fileDetails as $fileDetail) {
                 $fileName = $fileDetail['file_name'];
@@ -1204,8 +1220,9 @@ class AdminController extends BaseController
             $fileDetails = json_decode($fileDetails, true);
             $uploadFileDetails = array();
             $deletedImages = json_decode($request['deleted_images'], true);
+            $deletedThumbnails = json_decode($request['deleted_thumbnails'], true);
             $deletedAudio = json_decode($request['deleted_audio'], true);
-            $deleteFiles = array_merge($deletedAudio, $deletedImages);
+            $deleteFiles = array_merge($deletedAudio, $deletedImages,$deletedThumbnails);
             $placeName = trim($placeName);
             if ($placeName == '') {
                 return new JsonModel(array("success" => false, "message" => "Please enter Place name"));
@@ -1221,6 +1238,22 @@ class AdminController extends BaseController
                     'file_path' => $images['file_path'],
                     'file_data_type' => \Admin\Model\TourismFiles::file_data_type_places,
                     'file_extension_type' => \Admin\Model\TourismFiles::file_extension_type_image,
+                    'file_extension' => $images['file_extension'],
+                    'display' => 1,
+                    'duration' => 0,
+                    'file_language_id' => 0,
+                    'hash' => '',
+                    'file_name' => $images['file_name']
+                );
+                if ($images['status'] == \Admin\Model\TemporaryFiles::status_file_not_copied) {
+                    $uploadFiles[] = array('old_path' => $images['file_path'], 'new_path' => $images['file_path'], 'id' => $images['temporary_files_id']);
+                }
+            }
+            foreach ($getFiles['thumbnails'] as $images) {
+                $uploadFileDetails[] = array(
+                    'file_path' => $images['file_path'],
+                    'file_data_type' => \Admin\Model\TourismFiles::file_data_type_places,
+                    'file_extension_type' => \Admin\Model\TourismFiles::file_extension_type_thumbnail,
                     'file_extension' => $images['file_extension'],
                     'display' => 1,
                     'duration' => 0,
@@ -1338,6 +1371,7 @@ class AdminController extends BaseController
         $imageFiles = array();
         $audioFiles = array();
         $imageCounter = -1;
+        $tnCounter = -1;
         $audioCounter = -1;
         $placeInfo = array();
         foreach ($placeDetails as $place) {
@@ -1348,18 +1382,24 @@ class AdminController extends BaseController
             $placeInfo['place_name'] = $place['place_name'];
             $placeInfo['place_description'] = $place['place_description'];
             $placeInfo['country_name'] = $place['country_name'];
-            if ($place['file_extension_type'] != 1) {
-                $audioCounter++;
-                $audioFiles[$audioCounter]['file_path'] = $place['file_path'];
-                $audioFiles[$audioCounter]['file_language_id'] = $place['file_language_id'];
-                $audioFiles[$audioCounter]['tourism_file_id'] = $place['tourism_file_id'];
-                $audioFiles[$audioCounter]['file_name'] = $place['file_name'];
-            } else {
+            if ($place['file_extension_type'] == \Admin\Model\TourismFiles::file_extension_type_image) {
                 $imageCounter++;
                 $imageFiles[$imageCounter]['file_path'] = $place['file_path'];
                 $imageFiles[$imageCounter]['file_language_id'] = $place['file_language_id'];
                 $imageFiles[$imageCounter]['tourism_file_id'] = $place['tourism_file_id'];
                 $imageFiles[$imageCounter]['file_name'] = $place['file_name'];
+            } elseif ($place['file_extension_type'] == \Admin\Model\TourismFiles::file_extension_type_thumbnail) {
+                $tnCounter++;
+                $tnFiles[$tnCounter]['file_path'] = $place['file_path'];
+                $tnFiles[$tnCounter]['file_language_id'] = $place['file_language_id'];
+                $tnFiles[$tnCounter]['tourism_file_id'] = $place['tourism_file_id'];
+                $tnFiles[$tnCounter]['file_name'] = $place['file_name'];
+            } else {
+                $audioCounter++;
+                $audioFiles[$audioCounter]['file_path'] = $place['file_path'];
+                $audioFiles[$audioCounter]['file_language_id'] = $place['file_language_id'];
+                $audioFiles[$audioCounter]['tourism_file_id'] = $place['tourism_file_id'];
+                $audioFiles[$audioCounter]['file_name'] = $place['file_name'];
             }
         }
         $stateList = array();
@@ -1370,7 +1410,7 @@ class AdminController extends BaseController
         } else {
             $citiesList = $this->citiesTable->getCities(array('country_id' => $placeInfo['country_id']));
         }
-        return new ViewModel(array('countries' => $countriesList, "languages" => $languagesList, 'stateList' => $stateList, 'cityList' => $citiesList, 'imageUrl' => $this->filesUrl(), 'placeDetails' => $placeInfo, 'audioFiles' => $audioFiles, 'imageFiles' => $imageFiles));
+        return new ViewModel(array('countries' => $countriesList, "languages" => $languagesList, 'stateList' => $stateList, 'cityList' => $citiesList, 'imageUrl' => $this->filesUrl(), 'placeDetails' => $placeInfo, 'audioFiles' => $audioFiles, 'imageFiles' => $imageFiles, 'tnFiles' => $tnFiles));
     }
 
     public function deletePlaceAction()
@@ -1411,7 +1451,7 @@ class AdminController extends BaseController
     public function uploadFilesAction()
     {
         if ($this->getRequest()->isXmlHttpRequest()) {
-            $request = $this->getRequest()->getPost();
+            //$request = $this->getRequest()->getPost();
             $files = $this->getRequest()->getFiles();
 
             $validFiles = array('mp3', 'mp4', 'wav', 'mpeg', 'avi');
@@ -1429,14 +1469,10 @@ class AdminController extends BaseController
                 $filenameWithoutExt = $this->generateRandomString() . "_" . strtotime(date("Y-m-d H:i:s"));
                 $filename = $filenameWithoutExt . "." . $ext;
                 $filePath = "data/images";
-                //@mkdir(getcwd() . "/public/" . "tmp/".$filePath, 0777, true);
-
                 $filePath = $filePath . "/" . $filename;
-
                 if (!in_array(strtolower($ext), $validImageFiles)) {
                     return new JsonModel(array("success" => false, "message" => $ext . " file format is not supported !"));
                 }
-                //$flagImagePath = $filePath;
                 $uploadStatus = $this->pushFiles("tmp/" . $filePath, $attachment['tmp_name'], $attachment['type']);
                 if (!$uploadStatus) {
                     return new JsonModel(array('success' => false, "messsage" => 'something went wrong try agian'));
@@ -1444,6 +1480,29 @@ class AdminController extends BaseController
                 $uploadFileDetails = array(
                     'file_path' => $filePath,
                     'file_extension_type' => \Admin\Model\TourismFiles::file_extension_type_image, 'file_extension' => $ext, 'status' => \Admin\Model\TemporaryFiles::status_file_not_copied, 'duration' => 0, 'hash' => '', 'file_name' => $attachment['name']
+                );
+            }
+
+            if (isset($files['thumbnail'])) {
+                $attachment = $files['thumbnail'];
+                $filename = $attachment['name'];
+                $fileExt = explode(".", $filename);
+                $ext = end($fileExt) ? end($fileExt) : "";
+                $ext = strtolower($ext);
+                $filenameWithoutExt = $this->generateRandomString() . "_" . strtotime(date("Y-m-d H:i:s"));
+                $filename = $filenameWithoutExt . "." . $ext;
+                $filePath = "data/images";
+                $filePath = $filePath . "/" . $filename;
+                if (!in_array(strtolower($ext), $validImageFiles)) {
+                    return new JsonModel(array("success" => false, "message" => $ext . " file format is not supported !"));
+                }
+                $uploadStatus = $this->pushFiles("tmp/" . $filePath, $attachment['tmp_name'], $attachment['type']);
+                if (!$uploadStatus) {
+                    return new JsonModel(array('success' => false, "messsage" => 'something went wrong try agian'));
+                }
+                $uploadFileDetails = array(
+                    'file_path' => $filePath,
+                    'file_extension_type' => \Admin\Model\TourismFiles::file_extension_type_thumbnail, 'file_extension' => $ext, 'status' => \Admin\Model\TemporaryFiles::status_file_not_copied, 'duration' => 0, 'hash' => '', 'file_name' => $attachment['name']
                 );
             }
 
@@ -2197,10 +2256,8 @@ class AdminController extends BaseController
     // Login - START
     public function logoutAction()
     {
-        if ($this->authService->hasIdentity()) {
-            $this->authService->clearIdentity();
-            return $this->redirect()->toUrl($this->getBaseUrl() . '/a_dMin/login');
-        }
+        $this->authService->clearIdentity();
+        return $this->redirect()->toUrl($this->getBaseUrl() . '/a_dMin/login');
     }
 
     public function loginAction()

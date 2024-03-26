@@ -10,7 +10,7 @@
 </div>
 <link rel="stylesheet" href="<?php echo $this->basePath() ?>/css/main.css">
 <script src="<?php echo $this->basePath() ?>/js/radialIndicator.min.js"></script>
-<script src="<?php echo $this->basePath(); ?>/js/admin/add-place.js"></script>
+<script src="<?php echo $this->basePath(); ?>/js/admin/add-place.js?v=1.03"></script>
 <div class="wrapper">
     <div class="main-panel ">
         <?php echo $this->partial("/application/index/app-header"); ?>
@@ -53,8 +53,16 @@
                                         <input type="file" class="image-upload" name="image-file" multiple>
                                         <span class="position-absolute upload_btn"><img class="w-100" src="<?php echo $this->basePath(); ?>/img/upload-img.svg"> </span>
                                     </div>
-
                                     <div class="image-preview-wrapper row">
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <label class="text-black-50">Thumbnail File</label>
+                                    <div class="position-relative w-100 image-upload-wrapper">
+                                        <input type="file" class="tn-upload" name="thumbnail" id="thumbnail">
+                                        <span class="position-absolute upload_btn"><img class="w-100" src="<?php echo $this->basePath(); ?>/img/upload-img.svg"> </span>
+                                    </div>
+                                    <div class="tn-preview-wrapper row">
                                     </div>
                                 </div>
                             </div>
@@ -63,15 +71,11 @@
                             <div class="text-capitalize heading mb-3">Audio</div>
                             <div class="" id="file-upload-wrapper">
                                 <?php echo $this->partial("/admin/admin/file-upload-row", array('languages' => $languages, 'numberOfrows' => 0, "rowNumber" => 1)); ?>
-
                             </div>
                             <div class="row">
                                 <div class="col-12 text-right"> <a class="add-control"><i class="fas fa-plus-circle"></i>Add Audio</a></div>
                             </div>
-
                         </div>
-
-
                     </div>
                 </div>
             </div>

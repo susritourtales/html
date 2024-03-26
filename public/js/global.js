@@ -122,13 +122,16 @@ AjaxCallFiles.prototype.ajaxCall=function(fileType,file,fileID,callback)
     var formData=new FormData();
     if(fileType==1)
     {
-
         formData.append("image_files",file);
-    } if(fileType==2)
-{
-
-    formData.append("attachments",file);
-}
+    } 
+    if(fileType==2)
+    {
+        formData.append("attachments",file);
+    }
+    if(fileType==3)
+    {
+        formData.append("thumbnail",file);
+    }
     try
     {
 

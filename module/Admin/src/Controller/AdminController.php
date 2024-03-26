@@ -1864,7 +1864,7 @@ class AdminController extends BaseController
                 return new JsonModel(array('success' => false, 'message' => 'unable to add world tour'));
             }
         }
-        $countryList = $this->countriesTable->getCountries();
+        $countryList = $this->countriesTable->getCountries(1, $where = ['display' => 1]);
         return new ViewModel(array('countryList' => $countryList));
     }
     // World Tales - End

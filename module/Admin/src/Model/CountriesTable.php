@@ -35,15 +35,26 @@ class CountriesTable extends  BaseTable
         }
     }
     // can be used for dropdowns - to get active/inactive countries list using $where=['display'=>1/0]
-    public function getCountries($where = ['display' => 1])
+    public function getCountries($wt=0, $data = ['display' => 1])
     {
         try {
             $sql = $this->getSql();
-            $query = $sql->select()
+            if($wt == 1){
+                $where = new Where();
+                $where->equalTo('display', 1);
+                $where->and->notEqualTo("id", '101');
+                $query = $sql->select()
                 ->from($this->tableName)
                 ->columns(["id", "country_name"])
                 ->where($where)
                 ->order('c.country_name asc');
+            }else{
+            $query = $sql->select()
+                ->from($this->tableName)
+                ->columns(["id", "country_name"])
+                ->where($data)
+                ->order('c.country_name asc');
+            }
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             $countries = array();
 

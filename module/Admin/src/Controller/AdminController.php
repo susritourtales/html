@@ -1369,6 +1369,7 @@ class AdminController extends BaseController
         $placeId = array_key_exists(1, $placeIdString) ? $placeIdString[1] : 0;
         $placeDetails = $this->placesTable->getPlaceDetails($placeId);
         $imageFiles = array();
+        $tnFiles = array();
         $audioFiles = array();
         $imageCounter = -1;
         $tnCounter = -1;

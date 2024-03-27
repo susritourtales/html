@@ -44,10 +44,10 @@
             </tr>
         <?php } ?>
         <?php if (isset($type) && ($type == 'initialize' || $type == "search")) { ?>
-
         </tbody>
     <?php } ?>
-    <?php if (isset($type) && $type == 'initialize') { ?>
-
+    <?php $ofsVal = (isset($offset)) ? $offset :"0";
+        if (isset($type) && $type == 'initialize') { ?>
     </table>
+    <input type="hidden" id="offset" value="<?php echo $ofsVal; ?>">
 <?php } ?>

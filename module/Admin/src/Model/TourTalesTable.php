@@ -28,8 +28,20 @@ class TourTalesTable extends  BaseTable
                 return array("success" => false);
             }
         } catch (\Exception $e) {
-            /* print_r($e->getMessage());
-            exit; */
+            return array("success" => false);
+        }
+    }
+
+    public function addMulipleTourTales(array $data)
+    {
+        try {
+            $insert = $this->multiInsert($data);
+            if ($insert) {
+                return array("success" => true);
+            } else {
+                return array("success" => false);
+            }
+        } catch (\Exception $e) {
             return array("success" => false);
         }
     }
@@ -37,30 +49,18 @@ class TourTalesTable extends  BaseTable
     {
         try {
             $where = new Where();
-            $where = $where->equalTo('p.display', 1)->equalTo('p.tour_type', $data['tour_type']);
-            if ($data['tour_type'] == \Admin\Model\TourTales::tour_type_India_tour) {
-                $where->equalTo('p.state_id', $data['state_id']);
-            } else {
-                $where->equalTo('p.country_id', $data['country_id']);
-            }
-            if (!isset($data['city_id'])) {
-                $where->equalTo('p.city_id', 0);
-            } else if (isset($data['city_id'])) {
-                $where->equalTo('p.city_id', $data['city_id']);
-            }
+            $where = $where->equalTo('p.display', 1)->equalTo('p.tour_type', $data['tour_type'])->in('p.place_id', $data['place_id']);
             $sql = $this->getSql();
             $query = $sql->select()
                 ->from($this->tableName)
-                ->columns(array("id", 'city_id', 'place_id'))
+                ->columns(array("id", 'place_id'))
                 ->where($where);
-            $field = array();
-            /*echo $sql->getSqlStringForSqlObject($query);
-            exit;*/
+            $tales = array();
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             foreach ($resultSet as $row) {
-                $field = $row;
+                $tales[] = $row;
             }
-            return $field;
+            return $tales;
         } catch (\Exception $e) {
             return array();
         }
@@ -137,7 +137,6 @@ class TourTalesTable extends  BaseTable
                 ->from($this->tableName)
                 ->columns(array("id", "tale_name"));
             if ($data['tour_type'] == \Admin\Model\TourTales::tour_type_Bunched_tour) {
-                /* $query = $query->join(array('tp' => 'place'), new \Laminas\Db\Sql\Expression("FIND_IN_SET(`tp`.`id`,`p`.`place_id`)"), array('place_name' => new \Laminas\Db\Sql\Expression("GROUP_CONCAT(`tp`.`place_name`)"), 'place_id' => 'id'), Select::JOIN_LEFT); */
                 $query = $query->join(array('tp' => 'place'), new \Laminas\Db\Sql\Expression("FIND_IN_SET(`tp`.`id`,`p`.`place_id`)"), array('place_name' => new \Laminas\Db\Sql\Expression("GROUP_CONCAT(`tp`.`place_name`)"), 'place_id' => new \Laminas\Db\Sql\Expression("GROUP_CONCAT(`tp`.`id`)")), Select::JOIN_LEFT);
             } else {
                 $query = $query->join(array('tp' => 'place'), new \Laminas\Db\Sql\Expression("FIND_IN_SET(`tp`.`id`,`p`.`place_id`)"), array('place_name' => 'place_name', 'place_id' => 'id'), Select::JOIN_LEFT);
@@ -166,8 +165,6 @@ class TourTalesTable extends  BaseTable
             }
             return $countries;
         } catch (\Exception $e) {
-            /* print_r($e->getMessage());
-            exit; */
             return array();
         }
     }
@@ -185,7 +182,6 @@ class TourTalesTable extends  BaseTable
             foreach ($resultSet as $row) {
                 $field = $row['' . $column . ''];
             }
-
             if ($field) {
                 return $field;
             } else {
@@ -201,7 +197,6 @@ class TourTalesTable extends  BaseTable
             $sql = $this->getSql();
             $query = $sql->select()
                 ->from($this->tableName)
-                //->columns(array("id", 'country_id', 'city_id', "place_id", "tale_name"))
                 ->where($where);
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             foreach ($resultSet as $row) {
@@ -225,7 +220,7 @@ class TourTalesTable extends  BaseTable
         try {
             $sql = $this->getSql();
             $where = new Where();
-            $query = $sql->update('tour_tale')->set(array('display' => 0, 'updated_at' => date("Y-m-d H:i:s")))->where($where->like('place_id', "%," . $deleteIds . ",%"));
+            $query = $sql->update('tour_tale')->set(array('display' => 0, 'updated_at' => date("Y-m-d H:i:s")))->where($where->like('place_id', "%," . $deleteIds . ",%")->and->notEqualTo('tour_type', \Admin\Model\TourTales::tour_type_Bunched_tour));
             /* echo $sql->getSqlStringForSqlObject($query);
              exit;*/
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
@@ -246,6 +241,31 @@ class TourTalesTable extends  BaseTable
             /* print_r($e->getMessage());
             exit; */
             return false;
+        }
+    }
+
+    public function getPlacesList4BT($tourType)
+    {
+        try {
+            $where = new Where();
+            $where->equalTo('p.display', 1)->and->equalTo('tour_type', $tourType);
+            $sql = $this->getSql();
+            $query = $sql->select()
+                ->from($this->tableName)
+                ->columns(array("id", "tale_name"))
+                ->join(array('tp' => 'place'), new \Laminas\Db\Sql\Expression("FIND_IN_SET(`tp`.`id`,`p`.`place_id`)"), array('place_name' => 'place_name', 'place_id' => 'id'), Select::JOIN_LEFT)
+                ->join(array('c' => 'country'), 'p.country_id=c.id', array('country_name'), Select::JOIN_LEFT)
+                ->join(array('s' => 'state'), 'p.state_id=s.id', array('state_name'), Select::JOIN_LEFT)
+                ->join(array('ci' => 'city'), 'p.city_id=ci.id', array('city_name'), Select::JOIN_LEFT)
+                ->where($where);
+            $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
+            $tales = array();
+            foreach ($resultSet as $row) {
+                $tales[] = $row;
+            }
+            return $tales;
+        } catch (\Exception $e) {
+            return array();
         }
     }
 }

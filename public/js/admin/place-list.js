@@ -45,13 +45,14 @@ $(document).ready(function () {
                               $("tbody").html(data);
                           },
                           error: function (){
+                            messageDisplay("unknown error");
                           }
                       });
                   }
               });
           }
       }
-    initPagination()
+    initPagination();
     $("body").on("click", ".delete-place", function() {
 		var id = $(this).data("id");
 		$(".delete-conform-button").attr("data-id", id);
@@ -59,6 +60,7 @@ $(document).ready(function () {
 	}).on("click", '.delete-conform-button', function() {
 		$(this).prop("disabled", true);
 		var id = $(this).attr("data-id");
+        var pn = parseInt($('.current')[0].innerHTML);
 		postData("/a_dMin/delete-place", {'id': id}, function(response) {
 			var jsonRespnse = parseJsonData(response);
 			messageDisplay(jsonRespnse.message);

@@ -483,6 +483,16 @@ return [
                     ],
                 ],
             ],
+            'get-tales' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/admin/get-tales',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'get-tales',
+                    ],
+                ],
+            ],
             'free-tour-list' => [
                 'type' => Segment::class,
                 'options' => [

@@ -1418,7 +1418,7 @@ class AdminController extends BaseController
     {
         $this->checkAdmin();
         if ($this->getRequest()->isXmlHttpRequest()) {
-            //  $request = json_decode(file_get_contents("php://input"),true);
+            return new JsonModel(array('success' => true, "message" => 'Deleted successfully'));
             $request = $this->getRequest()->getPost();
             $placeId = $request['id'];
             $response = $this->placesTable->updatePlace(array('display' => 0), array('id' => $placeId));
@@ -1644,56 +1644,36 @@ class AdminController extends BaseController
         $this->checkAdmin();
         if ($this->getRequest()->isXmlHttpRequest()) {
             $request = $this->getRequest()->getPost();
-            $place = $request['place_name'];
+            $placeId = $request['place_id'];
             $stateId = $request['state_id'];
             $cityId = $request['city_id'];
             $ft = $request['free'] ? $request['free'] : '0';
             if ($stateId == '') {
                 return new JsonModel(array("success" => false, "message" => "Please select state"));
             }
-            $where = array('state_id' => $stateId, 'tour_type' => \Admin\Model\TourTales::tour_type_India_tour);
-            if ($cityId) {
-                $where['city_id'] = $cityId;
+            if ($cityId == '') {
+                return new JsonModel(array("success" => false, "message" => "Please select city"));
             }
-            if (is_null($place)) {
-                $place = '';
+            if (is_null($placeId)) {
+                return new JsonModel(array("success" => false, "message" => "Please select the place"));
             }
+            $placeIdArr = explode(",", $placeId);
+            $where = array('place_id' => $placeIdArr, 'tour_type' => \Admin\Model\TourTales::tour_type_India_tour);
             $checkTaleAdded = $this->tourTalesTable->checkTaleAdded($where);
             if ($checkTaleAdded)
                 return new JsonModel(array("success" => false, "message" => "Tale already added"));
-            $data = array('tour_type' => \Admin\Model\TourTales::tour_type_India_tour, 'display' => 1, 'state_id' => $stateId, 'free' => $ft);
-            if ($checkTaleAdded && $place) {
-                $placesList = array_unique(array_merge(explode(',', $place), explode(",", $checkTaleAdded['place_id'])));
-                $data['place_id'] = "," . implode(",", $placesList) . ",";
-            } else if ($place) {
-                $data['place_id'] = "," . $place . ",";
-            }
-            if ($cityId) {
-                $data['city_id'] = $cityId;
-            } else {
-                $data['city_id'] = 0;
-            }
-            if (!$place) {
-                $data['place_id'] = '';
-            }
             $countryId = $this->countriesTable->getField(array('country_name' => 'india', 'display' => 1), 'id');
-            $data['country_id'] = $countryId;
-            $success = true;
+            $data = [];
+            foreach($placeIdArr as $pid) {
+                $data[] = ['tour_type' => \Admin\Model\TourTales::tour_type_India_tour, 'display' => 1, 'country_id' => $countryId, 'state_id' => $stateId,'city_id'=> $cityId, 'free' => $ft, 'place_id' => $pid];
+            }
             if (!count($checkTaleAdded)) {
-                $saveData = $this->tourTalesTable->addTourTale($data);
-                if (!$saveData['success']) {
-                    $success = false;
+                $saveData = $this->tourTalesTable->addMulipleTourTales($data);
+                if ($saveData['success']) {
+                    return new JsonModel(array('success' => true, 'message' => 'India Tale added Successfully'));
+                }else {
+                    return new JsonModel(array('success' => false, 'message' => 'unable to add India tale'));
                 }
-            } /* else {
-                $updateData = $this->tourTalesTable->updateTourTale($data, array('id' => $checkTaleAdded['id']));
-                if (!$updateData) {
-                    $success = false;
-                }
-            } */
-            if ($success) {
-                return new JsonModel(array('success' => true, 'message' => 'India Tale added Successfully'));
-            } else {
-                return new JsonModel(array('success' => false, 'message' => 'unable to add India tale'));
             }
         }
         $statesList = $this->statesTable->getActiveIndianStates();
@@ -1706,17 +1686,7 @@ class AdminController extends BaseController
         if ($this->getRequest()->isXmlHttpRequest()) {
             $request = $this->getRequest()->getPost();
             $taleId = $request['tale_id'];
-            $placeId = $request['place_id'];
-            if (!$placeId) {
-                $response = $this->tourTalesTable->updateTourTale(array('display' => 0), array('id' => $taleId));
-            } else {
-                $response = $this->tourTalesTable->deletePlace($placeId, $taleId);
-                $checkCountry = $this->tourTalesTable->getField(array('id' => $taleId), 'place_id');
-                $placeList = array_filter(explode(",", $checkCountry));
-                if (!count($placeList)) {
-                    $this->tourTalesTable->updateTourTale(array('display' => 0), array('id' => $taleId));
-                }
-            }
+            $response = $this->tourTalesTable->updateTourTale(array('display' => 0), array('id' => $taleId));
             if ($response) {
                 return new JsonModel(array('success' => true, "message" => 'Deleted successfully'));
             } else {
@@ -1818,50 +1788,33 @@ class AdminController extends BaseController
             $request = $this->getRequest()->getPost();
             $countryId = $request['country_id'];
             $cityId = $request['city_id'];
-            $place = $request['place_id'];
+            $placeId = $request['place_id'];
             $ft = $request['free'] ? $request['free'] : '0';
             if ($countryId == '') {
                 return new JsonModel(array("success" => false, "message" => "Please select country"));
             }
-            $where = array('country_id' => $countryId, 'tour_type' => \Admin\Model\TourTales::tour_type_World_tour);
-            if ($cityId) {
-                $where['city_id'] = $cityId;
+            if ($cityId == '') {
+                return new JsonModel(array("success" => false, "message" => "Please select city"));
             }
-            $checkCountryAdded = $this->tourTalesTable->checkTaleAdded($where);
-            $data = array('tour_type' => \Admin\Model\TourTales::tour_type_World_tour, 'display' => 1, 'country_id' => $countryId, 'free' => $ft);
-            if (is_null($place)) {
-                $place = '';
+            if (is_null($placeId)) {
+                return new JsonModel(array("success" => false, "message" => "Please select the place"));
             }
-            if ($checkCountryAdded && $place) {
-                $placesList = array_unique(array_merge(explode(',', $place), explode(",", $checkCountryAdded['place_id'])));
-                $data['place_id'] = "," . implode(",", $placesList) . ",";
-            } else if ($place) {
-                $data['place_id'] = "," . $place . ",";
+            $placeIdArr = explode(",", $placeId);
+            $where = array('place_id' => $placeIdArr, 'tour_type' => \Admin\Model\TourTales::tour_type_World_tour);
+            $checkTaleAdded = $this->tourTalesTable->checkTaleAdded($where);
+            if ($checkTaleAdded)
+                return new JsonModel(array("success" => false, "message" => "Tale already added"));
+            $data = [];
+            foreach($placeIdArr as $pid) {
+                $data[] = ['tour_type' => \Admin\Model\TourTales::tour_type_World_tour, 'display' => 1, 'country_id' => $countryId, 'city_id'=> $cityId, 'free' => $ft, 'place_id' => $pid];
             }
-            if ($cityId) {
-                $data['city_id'] = $cityId;
-            } else {
-                $data['city_id'] = 0;
-            }
-            if (!$place) {
-                $data['place_id'] = '';
-            }
-            $success = true;
-            if (!count($checkCountryAdded)) {
-                $saveData = $this->tourTalesTable->addTourTale($data);
-                if (!$saveData['success']) {
-                    $success = false;
+            if (!count($checkTaleAdded)) {
+                $saveData = $this->tourTalesTable->addMulipleTourTales($data);
+                if ($saveData['success']) {
+                    return new JsonModel(array('success' => true, 'message' => 'World Tale added Successfully'));
+                }else {
+                    return new JsonModel(array('success' => false, 'message' => 'unable to add World tale'));
                 }
-            } else {
-                $updateData = $this->tourTalesTable->updateTourTale($data, array('id' => $checkCountryAdded['id']));
-                if (!$updateData) {
-                    $success = false;
-                }
-            }
-            if ($success) {
-                return new JsonModel(array('success' => true, 'message' => 'World Tour added Successfully'));
-            } else {
-                return new JsonModel(array('success' => false, 'message' => 'unable to add world tour'));
             }
         }
         $countryList = $this->countriesTable->getCountries(1, $where = ['display' => 1]);
@@ -2015,6 +1968,15 @@ class AdminController extends BaseController
         return new ViewModel(array('countryList' => $countryList));
     }
 
+    public function getTalesAction() {
+        $this->checkAdmin();
+        if ($this->getRequest()->isXmlHttpRequest()) {
+            $request = $this->getRequest()->getPost();
+            $taleType = $request['tt'];
+            $talesList = $this->tourTalesTable->getPlacesList4BT($taleType);
+            return new JsonModel(array('success' => true, 'tales' => $talesList));
+        }
+    }    
     public function getPlacesAction()
     {
         $this->checkAdmin();

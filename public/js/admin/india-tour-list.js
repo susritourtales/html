@@ -55,14 +55,12 @@ $(document).ready(function () {
     initPagination();
     $("body").on("click",".delete-place",function () {
         var taleId=$(this).data("id");
-        var placeId=$(this).data("place");
-        $(".delete-conform-button").attr("data-id",taleId).attr("data-place",placeId);
+        $(".delete-conform-button").attr("data-id",taleId);
         $("#deleteEntityModal").modal("show");
     }).on("click",'.delete-conform-button',function(){
         $(this).prop("disabled",true);
         var taleId = $(this).attr("data-id");
-        var placeId = $(this).attr("data-place");
-        postData("/admin/delete-tour-tale", {tale_id:taleId,place_id:placeId},function (response){
+        postData("/admin/delete-tour-tale", {tale_id:taleId},function (response){
             var jsonRespnse = parseJsonData(response);
             messageDisplay(jsonRespnse.message);
             if(jsonRespnse.success){
@@ -80,7 +78,6 @@ $(document).ready(function () {
         let dataId=$(this).data("id");
         for(var keys in filter)
         {
-
             if(keys!=dataId)
             {
                 filter[keys]['order']="";
@@ -89,20 +86,16 @@ $(document).ready(function () {
                 filter[keys]['order']=1;
             }
         }
-
         $(this).addClass('d-none');
         $(this).parent(".arrows").find('.fa-sort-up').removeClass('d-none');
         filterData();
-
     }).on('click', '.fa-sort-up',  function(){
         $(this).addClass('d-none');
         let dataId=$(this).data("id");
         for(let keys in filter)
         {
-
             if(keys!=dataId)
             {
-
                 filter[keys]['order']="";
             }else{
                 filter[keys]['order']=-1;
@@ -110,7 +103,6 @@ $(document).ready(function () {
         }
         $(this).parent(".arrows").find('.fa-sort-down').removeClass('d-none');
         filterData();
-
     }).on('click', '.fa-sort-down',function(){
         $(this).addClass('d-none');
         let dataId=$(this).data("id");
@@ -150,15 +142,11 @@ $(document).ready(function () {
             {
                 ajaxCall=null;
                 $(".records").remove();
-
                 $("tbody").html(data);
                 initPagination()
             },
             error: function()
-            {
-
-
-            }
+            { }
         });
     }
 });

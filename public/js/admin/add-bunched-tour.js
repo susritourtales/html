@@ -9,10 +9,45 @@ $(document).ready(function ()
     $("#places").select2();
     $("body").on("change","#country",function(){
         var countryId=$(this).val();
+        var countryText=$('#country option:selected').text();
+        countryText=countryText.toLowerCase();
+        countryText=countryText.toLowerCase();
+        var options='<option value="">--select city--</option>';
+        $("#cities").html(options);
+        if(countryText=='india') {
+               $("#state-wrapper").removeClass('d-none');
+            postData('/admin/get-states', {"country_id": countryId}, function (response) {
+                var options = '<option value="">--select state--</option>';
+                if (response.success) {
+                    var list = response.states;
+                    for (var s = 0; s < list.length; s++) {
+                        options += '<option value="' + list[s].id + '" data-id="' + list[s].state_id + '">' + list[s].state_name + '</option>'
+                    }
+                    $('#states').html(options);
+                    $(".state-wrapper").removeClass("hidden");
+                }
+            });
+        }else
+        {
+            $("#state-wrapper").addClass('d-none');
+            postData('/admin/get-cities',{"country_id":countryId},function(response){
+                if(response.success)
+                {
+                    var list=response.cities;
+                    for(var s=0;s<list.length;s++)
+                    {
+                        options +='<option value="'+list[s].id+'">'+list[s].city_name+'</option>'
+                    }
+                    $('#cities').html(options);
+                }
+            });
+        }
+
+    }).on("change","#states",function(){
+        var stateId=$(this).val();
+        var countryId=$("#country").val();
         $(".city-wrapper").removeClass("hidden");
-        $('#places').html('');
-        $('.tags-container').html('');
-        postData('/admin/get-cities',{"country_id":countryId},function(response){
+        postData('/admin/get-cities',{"state_id":stateId,"country_id":countryId},function(response){
             var options='<option value="">--select city--</option>';
             if(response.success)
             {
@@ -38,6 +73,39 @@ $(document).ready(function ()
                 }
                 $('#places').html(options);
                 $("#places").select2({
+                }).on('change', function() {
+                    var $selected = $(this).find('option:selected');
+                    var $container = $('.tags-container');
+                     console.log($container.length);
+                    var $list = $('<ul>');
+                    $selected.each(function(k, v) {
+                        var $li = $('<li class="tag-selected">' + $(v).text() + '<a class="destroy-tag-selected">×</a></li>');
+                        $li.children('a.destroy-tag-selected')
+                            .off('click.select2-copy')
+                            .on('click.select2-copy', function(e) {
+                                var $opt = $(this).data('select2-opt');
+                                $opt.prop('selected', false);
+                                $opt.parents('select').trigger('change');
+                            }).data('select2-opt', $(v));
+                        $list.append($li);
+                    });
+                    $container.html('').append($list);
+                }).trigger('change');
+            }
+        });
+    }).on("change","#taletype",function(){
+        var tt=$(this).val();
+        postData('/admin/get-tales',{"tt":tt},function(response){
+            var options='';
+            if(response.success)
+            {
+                var list=response.tales;
+                for(var s=0;s<list.length;s++)
+                {
+                    options +='<option value="'+list[s].id+'">'+list[s].place_name+'</option>'
+                }
+                $('#tales').html(options);
+                $("#tales").select2({
                 }).on('change', function() {
                     var $selected = $(this).find('option:selected');
                     var $container = $('.tags-container');

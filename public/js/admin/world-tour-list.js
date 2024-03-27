@@ -58,14 +58,12 @@ $(document).ready(function () {
     initPagination();
     $("body").on("click",".delete-place",function () {
         var taleId=$(this).data("id");
-        var placeId=$(this).data("place");
-        $(".delete-conform-button").attr("data-id",taleId).attr("data-place",placeId);
+        $(".delete-conform-button").attr("data-id",taleId);
         $("#deleteEntityModal").modal("show");
     }).on("click",'.delete-conform-button',function(){
         $(this).prop("disabled",true);
         var taleId = $(this).attr("data-id");
-        var placeId = $(this).attr("data-place");
-        postData("/admin/delete-tour-tale", {tale_id:taleId,place_id:placeId},function (response){
+        postData("/admin/delete-tour-tale", {tale_id:taleId},function (response){
             var jsonRespnse = parseJsonData(response);
             messageDisplay(jsonRespnse.message);
             if(jsonRespnse.success){

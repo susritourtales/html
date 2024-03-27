@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="<?php echo $this->basePath() ?>/css/vendor/select2.min.css">
 <link rel="stylesheet" href="<?php echo $this->basePath() ?>/css/main.css">
 <script src="<?php echo $this->basePath(); ?>/js/vendor/select2.full.min.js"></script>
-<script src="<?php echo $this->basePath(); ?>/js/admin/add-bunched-tour.js"></script>
+<script src="<?php echo $this->basePath(); ?>/js/admin/add-bunched-tour.js?v=1.0.1"></script>
 
 <div class="wrapper">
     <div class="main-panel ">
@@ -20,12 +20,31 @@
                 <div class="col-12 col-lg-10">
                     <div class="row adding-form">
                         <div class="col-6">
-                            <div class="col-12 mb-3"><label class="text-black-50">Country</label>
+                            <div class="col-12 mb-3"><label class="text-black-50">Tale Type</label>
+                                <select class="form-control" id="taletype">
+                                    <option value="<?php echo \Admin\Model\TourTales::tour_type_India_tour; ?>">World Tales</option>
+                                    <option value="<?php echo \Admin\Model\TourTales::tour_type_India_tour; ?>">India Tales</option>
+                                </select>
+                            </div>
+                            <div class="col-12 mb-3 "><label class="text-black-50 text-capitalize">tales</label>
+                                <select class="form-control" id="tales" multiple>
+                                    <option value=""></option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <div class="tags-container"></div>
+                            </div>
+                            <!-- <div class="col-12 mb-3"><label class="text-black-50">Country</label>
                                 <select class="form-control" id="country">
                                     <option value="">--select country--</option>
                                     <?php foreach ($countryList as $country) { ?>
                                         <option value="<?php echo $country['id']; ?>"><?php echo $country['country_name']; ?></option>
                                     <?php } ?>
+                                </select>
+                            </div>
+                            <div class="col-12" id="state-wrapper"><label class="text-black-50" for="states">State</label>
+                                <select class="form-control" id="states">
+                                    <option value=""></option>
                                 </select>
                             </div>
                             <div class="col-12 mb-3"><label class="text-black-50">City</label>
@@ -40,7 +59,7 @@
                             </div>
                             <div class="col-12">
                                 <div class="tags-container"></div>
-                            </div>
+                            </div> -->
                             <div class="col-12"><label class="text-black-50">Tale Name</label>
                                 <input type="text" class="form-control" id="tname" />
                             </div>

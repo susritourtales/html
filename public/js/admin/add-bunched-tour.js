@@ -1,99 +1,12 @@
-var mediaFilesacceptedExtensions = ["mp3", "mp4","wav","mpeg",'avi','mpg'];
 var imageacceptedExtensions = ["jpg", "png","jpeg"];
 var imageFiles={};
-var mediaFiles={};
 var imageId=0;
-var addedRow=1;
+var uploadClicked=false;
+var uploadFiles={'images':{}};
+var circle={};
 $(document).ready(function ()
 {
-    $("#places").select2();
-    $("body").on("change","#country",function(){
-        var countryId=$(this).val();
-        var countryText=$('#country option:selected').text();
-        countryText=countryText.toLowerCase();
-        countryText=countryText.toLowerCase();
-        var options='<option value="">--select city--</option>';
-        $("#cities").html(options);
-        if(countryText=='india') {
-               $("#state-wrapper").removeClass('d-none');
-            postData('/admin/get-states', {"country_id": countryId}, function (response) {
-                var options = '<option value="">--select state--</option>';
-                if (response.success) {
-                    var list = response.states;
-                    for (var s = 0; s < list.length; s++) {
-                        options += '<option value="' + list[s].id + '" data-id="' + list[s].state_id + '">' + list[s].state_name + '</option>'
-                    }
-                    $('#states').html(options);
-                    $(".state-wrapper").removeClass("hidden");
-                }
-            });
-        }else
-        {
-            $("#state-wrapper").addClass('d-none');
-            postData('/admin/get-cities',{"country_id":countryId},function(response){
-                if(response.success)
-                {
-                    var list=response.cities;
-                    for(var s=0;s<list.length;s++)
-                    {
-                        options +='<option value="'+list[s].id+'">'+list[s].city_name+'</option>'
-                    }
-                    $('#cities').html(options);
-                }
-            });
-        }
-
-    }).on("change","#states",function(){
-        var stateId=$(this).val();
-        var countryId=$("#country").val();
-        $(".city-wrapper").removeClass("hidden");
-        postData('/admin/get-cities',{"state_id":stateId,"country_id":countryId},function(response){
-            var options='<option value="">--select city--</option>';
-            if(response.success)
-            {
-                var list=response.cities;
-                for(var s=0;s<list.length;s++)
-                {
-                    options +='<option value="'+list[s].id+'">'+list[s].city_name+'</option>'
-                }
-                $('#cities').html(options);
-            }
-        });
-    }).on("change","#cities",function(){
-        var cityId=$(this).val();
-        $(".city-wrapper").removeClass("hidden");
-        postData('/admin/get-places',{"city_id":cityId},function(response){
-            var options='';
-            if(response.success)
-            {
-                var list=response.places;
-                for(var s=0;s<list.length;s++)
-                {
-                    options +='<option value="'+list[s].id+'">'+list[s].place_name+'</option>'
-                }
-                $('#places').html(options);
-                $("#places").select2({
-                }).on('change', function() {
-                    var $selected = $(this).find('option:selected');
-                    var $container = $('.tags-container');
-                     console.log($container.length);
-                    var $list = $('<ul>');
-                    $selected.each(function(k, v) {
-                        var $li = $('<li class="tag-selected">' + $(v).text() + '<a class="destroy-tag-selected">×</a></li>');
-                        $li.children('a.destroy-tag-selected')
-                            .off('click.select2-copy')
-                            .on('click.select2-copy', function(e) {
-                                var $opt = $(this).data('select2-opt');
-                                $opt.prop('selected', false);
-                                $opt.parents('select').trigger('change');
-                            }).data('select2-opt', $(v));
-                        $list.append($li);
-                    });
-                    $container.html('').append($list);
-                }).trigger('change');
-            }
-        });
-    }).on("change","#taletype",function(){
+    $("body").on("change","#taletype",function(){
         var tt=$(this).val();
         postData('/admin/get-tales',{"tt":tt},function(response){
             var options='';
@@ -104,61 +17,154 @@ $(document).ready(function ()
                 {
                     options +='<option value="'+list[s].id+'">'+list[s].place_name+'</option>'
                 }
-                $('#tales').html(options);
-                $("#tales").select2({
-                }).on('change', function() {
-                    var $selected = $(this).find('option:selected');
-                    var $container = $('.tags-container');
-                     console.log($container.length);
-                    var $list = $('<ul>');
-                    $selected.each(function(k, v) {
-                        var $li = $('<li class="tag-selected">' + $(v).text() + '<a class="destroy-tag-selected">×</a></li>');
-                        $li.children('a.destroy-tag-selected')
-                            .off('click.select2-copy')
-                            .on('click.select2-copy', function(e) {
-                                var $opt = $(this).data('select2-opt');
-                                $opt.prop('selected', false);
-                                $opt.parents('select').trigger('change');
-                            }).data('select2-opt', $(v));
-                        $list.append($li);
-                    });
-                    $container.html('').append($list);
-                }).trigger('change');
+                $(".sol-container").remove();
+                $("#tales").html(options).val('').removeAttr('class').prop("multiple",true).searchableOptionList();
             }
         });
-    }).on("click","#addbt",function(){
-        var countryElement=$("#country");
-        var cityElement=$("#cities");
-        var error=false;
-        var placeElement=$("#places");
-        var tnameElement=$("#tname");
-        var cityId=cityElement.val();
-        var countryId=countryElement.val();
-        var placeName=placeElement.val();
-        var taleName = tnameElement.val();
-        if(countryId=='')
+    }).on("change",".image-upload",function(e){
+        var files = e.target.files;
+        var element=$(this);
+        var incerement=0;
+        $.each(files, function (i, file)
         {
-            messageDisplay("Please select country");
+            var reader = new FileReader();
+            reader.onload = function (e)
+            {
+                var FileType = files[i].type;
+                var filename = files[i].name;
+                var fileExtension = FileType.substr((FileType.lastIndexOf('/') + 1));
+                var Extension = fileExtension.toLowerCase();
+                if ($.inArray(Extension, imageacceptedExtensions) === -1)
+                {
+                    files=[];
+                    messageDisplay("Invalid File");
+                    return false;
+                }
+                incerement++;
+                imageId++;
+                imageFiles[imageId]=[];
+                imageFiles[imageId].push(file);
+                uploadFiles['images'][imageId]={"uploaded":false};
+                let classId='circlechart_img_'+imageId;
+                $(".image-preview-wrapper").append('<div class="col-sm-4 mt-2 position-relative image-preview overflow-hidden" data-id="'+imageId+'"><div class="position-absolute circlechart '+classId+'" style="width: 100%;height: 100%" data-id="'+imageId+'"></div><img src="'+e.target.result+'" style="width: 100%;height: 100%"><span class="bg-white circle close-icon" data-id="'+imageId+'"><i class="fas fa-times position-absolute " data-id="'+imageId+'" ></i></span></div>');
+                circle[imageId] = radialIndicator('.'+classId,{
+                    radius: 50,
+                    barColor : '#6dd873',
+                    barWidth : 8,
+                    initValue : 0,
+                    barBgColor: '#e4e4e4',
+                    percentage: true
+                });
+                filesData.ajaxCall(1,file,imageId,function(progress,fileID,response)
+                {
+                    console.log( circle[fileID]);
+                    if(progress)
+                    {
+                        circle[fileID].animate((fileID * 100));
+                    }
+                    if(!progress)
+                    {
+                        if(response.success)
+                        {
+                            if(uploadFiles['images'][fileID]!=undefined)
+                            {
+                                uploadFiles['images'][fileID] = {
+                                    "uploaded": true,
+                                    'id': response.id
+                                };
+                                if (uploadClicked) {
+                                    var countryElement = $("#addPlace");
+                                    countryElement.prop('disabled', false);
+                                    countryElement.click();
+                                }
+                            }
+                        }
+                    }
+                });
+                if(files.length == incerement)
+                {
+                    element.val("");
+                }
+            };
+            reader.readAsDataURL(file);
+        });
+        setTimeout(function(){},10);
+    }).on("click",".close-icon",function () {
+        var id=$(this).data("id");
+        $(".image-preview[data-id='"+id+"']").remove();
+        if(imageFiles[id]!=undefined)
+        {
+            delete imageFiles[id];
+        }
+        if(uploadFiles['images'][id] !=undefined) {
+            delete uploadFiles['images'][id];
+        }
+    }).on("click","#addbt",function(){
+        var ttElement=$("#taletype");
+        var error=false;
+        var talesElement=$("#tales");
+        var tnameElement=$("#tname");
+        var tDescElement=$("#description");
+        var taletype=ttElement.val();
+        var talesList=talesElement.val();
+        var taleName = tnameElement.val();
+        var taleDesc = tDescElement.val();
+        if(taletype=='')
+        {
+            messageDisplay("Please select tale type");
             return  false;
         }
-        if(placeName==null)
+        if(talesList==null)
         {
-            placeName ="";
+            messageDisplay("Please select tales to be added to bunched tale");
+            return  false;
         }
         if(taleName==''){
             messageDisplay("Please enter Tale Name");
             return  false;
         }
-        var formData=new FormData();
-
-        formData.append("country_id",countryId);
-        formData.append("city_id",cityId);
-        formData.append("place_name",placeName);
-        formData.append("tale_name",taleName);
+        if(taleDesc==''){
+            messageDisplay("Please enter Tale Description");
+            return  false;
+        }
         var element=$(this);
         element.html('Please wait...');
         element.prop('disabled',true);
-
+        var imageFileIds=[];
+        var fileIds=[];
+        uploadClicked=true;
+        for(var k in uploadFiles['images'])
+        {
+            if(!uploadFiles['images'][k]['uploaded'])
+            {
+                error=true;
+                break;
+            }
+            imageFileIds.push(uploadFiles['images'][k]['id']);
+            fileIds.push(uploadFiles['images'][k]['id']);
+        }
+        if(error)
+        {
+            messageDisplay("image upload error",2000);
+            element.html('Submit');
+            element.prop('disabled',false);
+            return  false;
+        }
+        if(jQuery.isEmptyObject(imageFiles))
+        {
+            element.html('submit');
+            element.prop('disabled',false);
+            uploadClicked=false;
+            messageDisplay("Please Upload Image Files");
+            return false;
+        }
+        var formData=new FormData();
+        formData.append("tale_type",taletype);
+        formData.append("tales_list",talesList);
+        formData.append("tale_name",taleName);
+        formData.append("tale_desc",taleDesc);
+        formData.append("images",imageFileIds);
+        formData.append("file_Ids",fileIds);
         ajaxData('/a_dMin/add-bunched-tour',formData,function(response){
             if(response.success)
             {
@@ -166,10 +172,8 @@ $(document).ready(function ()
                 setTimeout(function(){
                     window.location.href=BASE_URL+"/a_dMin/bunched-tour-list";
                 },2000);
-
             }else{
                 messageDisplay(response.message,3000);
-
                 element.prop('disabled',false);
                 element.html('Submit');
             }

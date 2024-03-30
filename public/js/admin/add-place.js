@@ -50,7 +50,6 @@ $(document).ready(function ()
     }).on("change","#states",function(){
         var stateId=$(this).val();
         var countryId=$("#country").val();
-        $(".city-wrapper").removeClass("hidden");
         postData('/admin/get-cities',{"state_id":stateId,"country_id":countryId},function(response){
             var options='<option value="">--select city--</option>';
             if(response.success)
@@ -160,7 +159,6 @@ $(document).ready(function ()
                         barBgColor: '#e4e4e4',
                         percentage: true
                     });
-                    
                     filesData.ajaxCall(1,file,imageId,function(progress,fileID,response)
                     {
                         console.log( circle[fileID]);

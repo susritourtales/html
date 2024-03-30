@@ -1418,7 +1418,6 @@ class AdminController extends BaseController
     {
         $this->checkAdmin();
         if ($this->getRequest()->isXmlHttpRequest()) {
-            return new JsonModel(array('success' => true, "message" => 'Deleted successfully'));
             $request = $this->getRequest()->getPost();
             $placeId = $request['id'];
             $response = $this->placesTable->updatePlace(array('display' => 0), array('id' => $placeId));
@@ -1658,7 +1657,7 @@ class AdminController extends BaseController
                 return new JsonModel(array("success" => false, "message" => "Please select the place"));
             }
             $placeIdArr = explode(",", $placeId);
-            $where = array('place_id' => $placeIdArr, 'tour_type' => \Admin\Model\TourTales::tour_type_India_tour);
+            $where = array('place_id' => $placeIdArr, 'tour_type' => \Admin\Model\TourTales::tour_type_India_tour, 'display' => 1);
             $checkTaleAdded = $this->tourTalesTable->checkTaleAdded($where);
             if ($checkTaleAdded)
                 return new JsonModel(array("success" => false, "message" => "Tale already added"));
@@ -1800,7 +1799,7 @@ class AdminController extends BaseController
                 return new JsonModel(array("success" => false, "message" => "Please select the place"));
             }
             $placeIdArr = explode(",", $placeId);
-            $where = array('place_id' => $placeIdArr, 'tour_type' => \Admin\Model\TourTales::tour_type_World_tour);
+            $where = array('place_id' => $placeIdArr, 'tour_type' => \Admin\Model\TourTales::tour_type_World_tour, 'display' => 1);
             $checkTaleAdded = $this->tourTalesTable->checkTaleAdded($where);
             if ($checkTaleAdded)
                 return new JsonModel(array("success" => false, "message" => "Tale already added"));
@@ -1909,63 +1908,80 @@ class AdminController extends BaseController
         $this->checkAdmin();
         if ($this->getRequest()->isXmlHttpRequest()) {
             $request = $this->getRequest()->getPost();
-            $countryId = $request['country_id'];
-            $cityId = $request['city_id'];
-            $place = $request['place_name'];
+            set_time_limit(0);
+            ini_set('mysql.connect_timeout', '0');
+            ini_set('max_execution_time', '0');
+            ini_set("memory_limit", "-1");
+            $taleType = $request['tale_type'];
             $taleName = $request['tale_name'];
-            if ($countryId == '') {
-                return new JsonModel(array("success" => false, "message" => "Please select country"));
+            $taleDesc = $request['tale_desc'];
+            $talesList = $request['tales_list'];
+            if ($taleType == '') {
+                return new JsonModel(array("success" => false, "message" => "Please select tale type"));
             }
-            $where = array('country_id' => $countryId, 'tour_type' => \Admin\Model\TourTales::tour_type_Bunched_tour);
-            if (is_null($place)) {
-                $place = '';
+            if (is_null($talesList)) {
+                return new JsonModel(array("success" => false, "message" => "Please select tales to be added to bunched tale"));
             }
-            if ($cityId) {
-                $where['city_id'] = $cityId;
+            if ($taleName == '') {
+                return new JsonModel(array("success" => false, "message" => "Please select tale name"));
             }
-            $checkCountryAdded = $this->tourTalesTable->checkTaleAdded($where);
-            if ($cityId && count($checkCountryAdded)) {
-                return new JsonModel(array('success' => false, 'message' => 'city already added'));
+            if ($taleDesc == '') {
+                return new JsonModel(array("success" => false, "message" => "Please select tale description"));
             }
-            $data = array('tour_type' => \Admin\Model\TourTales::tour_type_Bunched_tour, 'display' => 1, 'country_id' => $countryId);
-            if ($checkCountryAdded) {
-                $data['place_id'] = implode(",", array_unique(explode(',', $place)));
-            } else if ($place) {
-                $data['place_id'] = "," . $place . ",";
-            }
-            if ($cityId) {
-                $data['city_id'] = $cityId;
-            } else {
-                $data['city_id'] = 0;
-            }
-            if ($place) {
-                $data['place_id'] = "," . $place . ",";
-            } else {
-                $data['place_id'] = '';
-            }
-            if ($taleName) {
-                $data['tale_name'] = $taleName;
-            }
-            $success = true;
-            if (!count($checkCountryAdded)) {
-                $saveData = $this->tourTalesTable->addTourTale($data);
-                if (!$saveData['success']) {
-                    $success = false;
-                }
-            } else {
-                $updateData = $this->tourTalesTable->updateTourTale($data, array('id' => $checkCountryAdded['id']));
-                if (!$updateData) {
-                    $success = false;
+            $fileIds = explode(",", $request['file_Ids']);
+            $getFiles = $this->temporaryFiles->getFiles($fileIds);
+            $uploadFiles = array();
+            foreach ($getFiles['images'] as $images) {
+                $uploadFileDetails[] = array(
+                    'file_path' => $images['file_path'],
+                    'file_data_type' => \Admin\Model\TourismFiles::file_data_type_bunched_tales,
+                    'file_extension_type' => \Admin\Model\TourismFiles::file_extension_type_image,
+                    'file_extension' => $images['file_extension'],
+                    'display' => 1,
+                    'duration' => 0,
+                    'file_language_id' => 0,
+                    'hash' => '',
+                    'file_name' => $images['file_name']
+                );
+                if ($images['status'] == \Admin\Model\TemporaryFiles::status_file_not_copied) {
+                    $uploadFiles[] = array('old_path' => $images['file_path'], 'new_path' => $images['file_path'], 'id' => $images['temporary_files_id']);
                 }
             }
-            if ($success) {
-                return new JsonModel(array('success' => true, 'message' => 'Added to Bunched Tales Successfully'));
-            } else {
-                return new JsonModel(array('success' => false, 'message' => 'unable to add Bunched Tour'));
+            $copyFiles = $this->copypushFiles($uploadFiles);
+            if (count($copyFiles['copied'])) {
+                $this->temporaryFiles->updateCopiedFiles($copyFiles['copied']);
             }
+            if (!$copyFiles['status']) {
+                return new JsonModel(array('success' => false, 'message' => 'unable to add bunched tale'));
+            }
+            $btId = "";
+            $data = array(
+                'tour_type' => \Admin\Model\TourTales::tour_type_Bunched_tour,
+                'place_id' => $talesList,
+                'tale_name' => $taleName,
+                'tale_description' => $taleDesc,
+                'free' => 0,
+                'display' => 1
+            );
+            $response = $this->tourTalesTable->addTourTale($data);
+            if ($response['success']) {
+                $btId = $response['id'];
+            } else {
+                return new JsonModel(array('success' => false, 'message' => 'unable to add Bunched Tale'));
+            }
+            $counter = -1;
+            if (count($uploadFileDetails)) {
+                foreach ($uploadFileDetails as $details) {
+                    $counter++;
+                    $uploadFileDetails[$counter]['file_data_id'] = "BT_" . $btId;
+                    $uploadFileDetails[$counter]["created_at"] = date("Y-m-d H:i:s");
+                    $uploadFileDetails[$counter]["updated_at"] = date("Y-m-d H:i:s");
+                }
+                $this->tourismFilesTable->addMutipleTourismFiles($uploadFileDetails);
+            }
+            return new JsonModel(array('success' => true, 'message' => 'added successfully'));
         }
-        $countryList = $this->countriesTable->getCountries();
-        return new ViewModel(array('countryList' => $countryList));
+        return new ViewModel();
     }
 
     public function getTalesAction() {
@@ -1994,65 +2010,84 @@ class AdminController extends BaseController
         $this->checkAdmin();
         if ($this->getRequest()->isXmlHttpRequest()) {
             $request = $this->getRequest()->getPost();
+            set_time_limit(0);
+            ini_set('mysql.connect_timeout', '0');
+            ini_set('max_execution_time', '0');
+            ini_set("memory_limit", "-1");
             $taleId = $request['id'];
-            $countryId = $request['country_id'];
-            $cityId = $request['city_id'];
-            $place = $request['place_name'];
+            $taleType = $request['tale_type'];
             $taleName = $request['tale_name'];
-            if ($countryId == '') {
-                return new JsonModel(array("success" => false, "message" => "Please select country"));
+            $taleDesc = $request['tale_desc'];
+            $talesList = $request['tales_list'];
+            if ($taleType == '') {
+                return new JsonModel(array("success" => false, "message" => "Please select tale type"));
             }
-            $where = array('country_id' => $countryId, 'tour_type' => \Admin\Model\TourTales::tour_type_Bunched_tour);
-            if (is_null($place)) {
-                $place = '';
+            if (is_null($talesList)) {
+                return new JsonModel(array("success" => false, "message" => "Please select tales to be added to bunched tale"));
             }
-            if ($cityId) {
-                $where['city_id'] = $cityId;
+            if ($taleName == '') {
+                return new JsonModel(array("success" => false, "message" => "Please select tale name"));
             }
+            if ($taleDesc == '') {
+                return new JsonModel(array("success" => false, "message" => "Please select tale description"));
+            }
+            $where = array('id' => $taleId, 'tour_type' => \Admin\Model\TourTales::tour_type_Bunched_tour, 'display' => 1);
             $checkTaleAdded = $this->tourTalesTable->checkTaleAdded($where);
-            /* if ($cityId && count($checkTaleAdded)) {
-                return new JsonModel(array('success' => false, 'message' => 'city already added'));
-            } */
-            $data = array('tour_type' => \Admin\Model\TourTales::tour_type_Bunched_tour, 'display' => 1, 'country_id' => $countryId);
+            $deletedImages = json_decode($request['deleted_images'], true);
+            $fileIds = explode(",", $request['file_Ids']);
+            $getFiles = $this->temporaryFiles->getFiles($fileIds);
+            $uploadFiles = array();
+            foreach ($getFiles['images'] as $images) {
+                $uploadFileDetails[] = array(
+                    'file_path' => $images['file_path'],
+                    'file_data_type' => \Admin\Model\TourismFiles::file_data_type_places,
+                    'file_extension_type' => \Admin\Model\TourismFiles::file_extension_type_image,
+                    'file_extension' => $images['file_extension'],
+                    'display' => 1,
+                    'duration' => 0,
+                    'file_language_id' => 0,
+                    'hash' => '',
+                    'file_name' => $images['file_name']
+                );
+                if ($images['status'] == \Admin\Model\TemporaryFiles::status_file_not_copied) {
+                    $uploadFiles[] = array('old_path' => $images['file_path'], 'new_path' => $images['file_path'], 'id' => $images['temporary_files_id']);
+                }
+            }
+            $copyFiles = $this->copypushFiles($uploadFiles);
+            if (count($copyFiles['copied'])) {
+                $this->temporaryFiles->updateCopiedFiles($copyFiles['copied']);
+            }
+            if (!$copyFiles['status']) {
+                return new JsonModel(array('success' => false, 'message' => 'unable to add bunched tale'));
+            }
+            $btId = "";
+            $data = array(
+                'tour_type' => \Admin\Model\TourTales::tour_type_Bunched_tour,
+                'place_id' => $talesList,
+                'tale_name' => $taleName,
+                'tale_description' => $taleDesc,
+                'free' => 0,
+                'display' => 1
+            );
             if ($checkTaleAdded) {
-                $data['place_id'] = implode(",", array_unique(explode(',', $place)));
-            }
-            if ($cityId) {
-                $data['city_id'] = $cityId;
-            } else {
-                $data['city_id'] = 0;
-            }
-            if ($place) {
-                $data['place_id'] = "," . $place . ",";
-            } else {
-                $data['place_id'] = '';
-            }
-            if ($taleName) {
-                $data['tale_name'] = $taleName;
-            }
-            $success = true;
-            if (!count($checkTaleAdded)) {
-                $saveData = $this->tourTalesTable->addTourTale($data);
-                if (!$saveData['success']) {
-                    $success = false;
+                $response = $this->tourTalesTable->updateTourTale($data, ['id' => $taleId]);
+                if ($response) {
+                    $counter = -1;
+            if (count($uploadFileDetails)) {
+                foreach ($uploadFileDetails as $details) {
+                    $counter++;
+                    $uploadFileDetails[$counter]['file_data_id'] = $taleId;
+                    $uploadFileDetails[$counter]["created_at"] = date("Y-m-d H:i:s");
+                    $uploadFileDetails[$counter]["updated_at"] = date("Y-m-d H:i:s");
                 }
-            } else {
-                if($taleId == $checkTaleAdded['id']){
-                    $updateData = $this->tourTalesTable->updateTourTale($data, array('id' => $taleId));
-                    if (!$updateData) {
-                        $success = false;
-                    }
-                }else{
-                    return new JsonModel(array('success' => false, 'message' => 'unable to update Bunched Tales'));
-                }
+                $this->tourismFilesTable->addMutipleTourismFiles($uploadFileDetails);
             }
-            if ($success) {
-                return new JsonModel(array('success' => true, 'message' => 'Updated Bunched Tales Successfully'));
-            } else {
-                return new JsonModel(array('success' => false, 'message' => 'unable to update Bunched Tales'));
+            return new JsonModel(array('success' => true, 'message' => 'added successfully'));
+                } else {
+                    return new JsonModel(array('success' => false, 'message' => 'unable to add Bunched Tale'));
+                }
             }
         }
-
         $paramId = $this->params()->fromRoute('id', '');
         if (!$paramId) {
             return $this->redirect()->toUrl($this->getBaseUrl());
@@ -2061,18 +2096,8 @@ class AdminController extends BaseController
         $taleIdString = base64_decode($taleIdString);
         $taleIdString = explode("=", $taleIdString);
         $taleId = array_key_exists(1, $taleIdString) ? $taleIdString[1] : 0;
-        $countryList = $this->countriesTable->getCountries();
-        $tourDetails = $this->tourTalesTable->getTourTales(array('id'=>$taleId));
-        $stateList = array();
-        $citiesList = array();
-        if (strtolower($tourDetails['country_id']) == '101') {
-            $stateList = $this->statesTable->getStates(array('display' => 1, 'country_id' => $tourDetails['country_id']));
-            $citiesList = $this->citiesTable->getCities(array('state_id' => $tourDetails['state_id']));
-        } else {
-            $citiesList = $this->citiesTable->getCities(array('country_id' => $tourDetails['country_id']));
-        }
-        $placesList = $this->placesTable->getPlaces(['city_id' => $tourDetails['city_id']]);
-        return new ViewModel(array('countryList' => $countryList, 'stateList'=>$stateList, 'citiesList'=>$citiesList, 'placesList'=>$placesList, 'tourDetails'=>$tourDetails));
+        $tourDetails = $this->tourTalesTable->getBunchedTaleDetailsById($taleId);
+        return new ViewModel(array('tourDetails'=>$tourDetails));
     }
 
     // Bunched Tales - End

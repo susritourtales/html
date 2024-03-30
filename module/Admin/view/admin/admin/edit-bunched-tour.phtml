@@ -6,65 +6,56 @@
         )); ?>
     </div>
 </div>
-<link rel="stylesheet" href="<?php echo $this->basePath()?>/css/vendor/select2.min.css">
+<link rel="stylesheet" href="<?php echo $this->basePath() ?>/css/vendor/sol.css">
 <link rel="stylesheet" href="<?php echo $this->basePath()?>/css/main.css">
-<script src="<?php echo $this->basePath(); ?>/js/vendor/select2.full.min.js"></script>
-<script src="<?php echo $this->basePath(); ?>/js/admin/edit-bunched-tour.js"></script>
-
+<script src="<?php echo $this->basePath(); ?>/js/vendor/sol.js"></script>
+<script src="<?php echo $this->basePath(); ?>/js/admin/edit-bunched-tour.js?v=1.0.3"></script>
 <div class="wrapper">
     <div class="main-panel ">
         <?php echo $this->partial("/application/index/app-header"); ?>
-
         <div class="main-container p-lg-4">
             <div class="main-heading mb-3"><a href="<?php echo $this->basePath().'/a_dMin/bunched-tour-list'?>"><i class="fa fa-arrow-left mr-2"></i></a> Edit Bunched Tale</div>
             <div class="row">
                 <div class="col-12 col-lg-10">
                     <div class="row adding-form">
-                        <div class="col-6">
-                            <div class="col-12 mb-3"><label class="text-black-50">Country</label>
-                                <select  class="form-control" id="country"> <option value="">--select country--</option>
-                                    <?php foreach ($countryList as $country ) { ?>
-                                        <option value="<?php echo $country['id']; ?>" <?php echo ($tourDetails['country_id']==$country['id']?'selected':'');?>><?php echo $country['country_name']; ?></option>
-                                    <?php } ?>
+                        <div class="col-lg-6 col-12">
+                            <div class="col-12 mb-3"><label class="text-black-50">Tale Type</label>
+                                <select class="form-control" id="taletype">
+                                    <option value="">--select tale type--</option>
+                                    <option value="<?php echo \Admin\Model\TourTales::tour_type_World_tour; ?>">World Tales</option>
+                                    <option value="<?php echo \Admin\Model\TourTales::tour_type_India_tour; ?>">India Tales</option>
                                 </select>
                             </div>
-                            <div class="col-12 mb-3"><label class="text-black-50">City</label>
-                                <select  class="form-control" id="cities">
-                                    <option value="">--Select City--</option>
-                                    <?php foreach ($citiesList as $city ) { ?>
-                                        <option value="<?php echo $city['id']; ?>" <?php echo ($tourDetails['city_id']==$city['id']?'selected':'');?>><?php echo $city['city_name']; ?></option>
-                                    <?php } ?>
+                            <?php $places = explode(",",$tourDetails[0]["place_name"]);
+                                $placeids = explode(",",$tourDetails[0]["place_id"]); 
+                                $i=0;?>
+                            <div class="col-12 mb-3"><label class="text-black-50 text-capitalize">tales</label>
+                                <select class="form-control" id="tales" name="tales" multiple>
+                                    <?php foreach ($places as $place) { ?>
+                                        <option value="<?php echo $placeids[$i]; ?>" selected><?php echo $place; ?></option>
+                                    <?php $i++;} ?>
                                 </select>
-                            </div>
-                            <div class="col-12 mb-3 "><label class="text-black-50 text-capitalize">place name</label>
-                                <select  class="form-control" id="places" multiple>
-                                <?php 
-                                    $pids = explode(",", $tourDetails['place_id']);
-                                    $placeids = [];
-                                    foreach ($pids as $pid ) {
-                                        if($pid)
-                                            $placeids[] = $pid;
-                                    }
-                                    if(count($placesList)){
-                                    foreach ($placesList as $place){?>
-                                            <option value="<?php echo $place['id']; ?>" <?php echo (in_array($place['id'],$placeids)?'selected':"")?>><?php echo $place['place_name']; ?></option>
-                                        <?php  }
-                                    }else{?>
-                                        <option value=""></option>
-                                        <?php }?>
-                                        <option value=""></option>
-                                </select>
-                            </div>
-                            <div class="col-12">
-                                <div class="tags-container"></div>
                             </div>
                             <div class="col-12"><label class="text-black-50">Tale Name</label>
-                                <input type="text" class="form-control" id="tname" value="<?php echo $tourDetails["tale_name"];?>" />
+                                <input type="text" class="form-control" id="tname" value="<?php echo $tourDetails[0]["tale_name"]; ?>"/>
                             </div>
-                            <input type="hidden" value="<?php echo $tourDetails['id']; ?>" id="taleId">
+                            <div class="col-12">
+                                <label class="text-black-50">Description</label>
+                                <textarea class="form-control" id="description"><?php echo $tourDetails[0]["tale_description"]; ?></textarea>
+                            </div>
+                            <div class="col-12">
+                                <label class="text-black-50">Image Files</label>
+                                <div class="position-relative w-100 image-upload-wrapper">
+                                    <input type="file" class="image-upload" name="image-file" multiple>
+                                    <span class="position-absolute upload_btn"><img class="w-100" src="<?php echo $this->basePath(); ?>/img/upload-img.svg"> </span>
+                                </div>
+                                <div class="image-preview-wrapper row">
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
+                <input type="hidden" value="<?php echo $tourDetails[0]['id']; ?>" id="taleId">
             </div>
             <div class="mt-2">
                 <div class="row">

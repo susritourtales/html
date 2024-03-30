@@ -4,9 +4,7 @@
             <tr>
                 <th>S.no</th>
                 <th data-placeholder="tale name" data-input="tale_name">Tale Name</th>
-                <th data-placeholder="country" data-input="country">Country</th>
-                <th data-placeholder="city" data-input="city">City</th>
-                <th data-placeholder="place name" data-input="place_name">Place Name</th>
+                <th data-placeholder="tale description">Tale Description</th>
                 <th>Action</th>
             </tr>
         <?php } ?>
@@ -24,17 +22,13 @@
                 <tr>
                     <td><?php echo $i + 1; ?></td>
                     <td><?php echo $places['tale_name']; ?></td>
-                    <td><?php echo $places['country_name']; ?></td>
-                    <td><?php echo $places['city_name']; ?></td>
-                    <td><?php echo $places['place_name']; ?></td>
+                    <td><?php echo $places['tale_description']; ?></td>
                     <td>
                         <div class="d-flex">
-                            <a class="action-icon" href="<?php echo $this->basePath() . '/a_dMin/edit-bunched-tour/' . base64_encode('tourismPlaceId=' . $places['id']) 
-                                                                ?>">
-                                <img src="<?php echo $this->basePath(); 
-                                            ?>/img/edit.png" class="img-fluid">
+                            <a class="action-icon" href="<?php echo $this->basePath() . '/a_dMin/edit-bunched-tour/' . base64_encode('tourismPlaceId=' . $places['id']) ?>">
+                                <img src="<?php echo $this->basePath(); ?>/img/edit.png" class="img-fluid">
                             </a>
-                            <div class="action-icon delete-place" data-id="<?php echo $places['id']; ?>" data-place="<?php echo $places['place_id']; ?>">
+                            <div class="action-icon delete-place" data-id="<?php echo $places['id']; ?>" data-place="<?php echo $places['id']; ?>">
                                 <img src="<?php echo $this->basePath(); ?>/img/delete.png" class="img-fluid">
                             </div>
                         </div>

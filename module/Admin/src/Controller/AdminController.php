@@ -2097,6 +2097,7 @@ class AdminController extends BaseController
         $taleIdString = base64_decode($taleIdString);
         $taleIdString = explode("=", $taleIdString);
         $taleId = array_key_exists(1, $taleIdString) ? $taleIdString[1] : 0;
+        echo $taleId; exit;
         $tourDetails = $this->tourTalesTable->getBunchedTaleDetailsById($taleId);
         return new ViewModel(array('tourDetails'=>$tourDetails, 'imageUrl' => $this->filesUrl()));
     }

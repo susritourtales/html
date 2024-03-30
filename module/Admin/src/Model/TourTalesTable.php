@@ -65,6 +65,27 @@ class TourTalesTable extends  BaseTable
             return array();
         }
     }
+
+    public function checkBTAdded($data)
+    {
+        try {
+            $where = new Where();
+            $where = $where->equalTo('p.display', 1)->equalTo('p.tour_type', $data['tour_type'])->equalTo('p.id', $data['id']);
+            $sql = $this->getSql();
+            $query = $sql->select()
+                ->from($this->tableName)
+                ->columns(array("id", 'place_id'))
+                ->where($where);
+            $tales = array();
+            $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
+            foreach ($resultSet as $row) {
+                $tales[] = $row;
+            }
+            return $tales;
+        } catch (\Exception $e) {
+            return array();
+        }
+    }
     public function getPlacesList($data = array('limit' => 10, 'offset' => 0), $gc = 0)
     {
         try {
@@ -212,14 +233,8 @@ class TourTalesTable extends  BaseTable
     public function getBunchedTaleDetailsById($id){
         try{
             $where = new Where();
-            //$tfwhere = new Where();
             $where->equalTo('p.id', $id)->and->equalTo('p.display', 1)->and->equalTo('tour_type', \Admin\Model\TourTales::tour_type_Bunched_tour);
             $sql = $this->getSql();
-            /* $tourismFiles = $sql->select()
-                ->from(array('tf' => 'tourism_files'))
-                //->columns(array("files_count" => new \Laminas\Db\Sql\Expression('COUNT(tourism_file_id)'), 'file_data_id'))
-                ->where($tfwhere->equalTo('tf.file_data_type', \Admin\Model\TourismFiles::file_data_type_bunched_tales))
-                ->group(array('tf.file_data_id')); */
             $query = $sql->select()
                 ->from($this->tableName)
                 ->columns(array("id", "tale_name", 'tale_description'))
@@ -227,7 +242,7 @@ class TourTalesTable extends  BaseTable
                 ->join(array('c' => 'country'), 'p.country_id=c.id', array('country_name'), Select::JOIN_LEFT)
                 ->join(array('s' => 'state'), 'p.state_id=s.id', array('state_name'), Select::JOIN_LEFT)
                 ->join(array('ci' => 'city'), 'p.city_id=ci.id', array('city_name'), Select::JOIN_LEFT)
-                ->join(array('tf' => 'tourism_files'), new \Laminas\Db\Sql\Expression("`tf`.`file_data_id` LIKE CONCAT('BT_', `p`.`id`, '%')"), array('tourism_file_id','file_data_id','file_path', 'file_name'), Select::JOIN_LEFT)
+                ->join(array('tf' => 'tourism_files'), new \Laminas\Db\Sql\Expression("`tf`.`file_data_id` LIKE CONCAT('BT_', `p`.`id`, '%') AND `tf`.`display` = '1'"), array('tourism_file_id','file_data_id','file_path', 'file_name'), Select::JOIN_LEFT)
                 ->where($where);
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             $tales = array();

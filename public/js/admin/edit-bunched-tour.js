@@ -131,11 +131,11 @@ $(document).ready(function ()
         var talesList=talesElement.val();
         var taleName = tnameElement.val();
         var taleDesc = tDescElement.val();
-        if(taletype=='')
+        /* if(taletype=='')
         {
             messageDisplay("Please select tale type");
             return  false;
-        }
+        } */
         if(talesList==null)
         {
             messageDisplay("Please select tales to be added to bunched tale");
@@ -149,6 +149,8 @@ $(document).ready(function ()
             messageDisplay("Please enter Tale Description");
             return  false;
         }
+        var imageFileIds=[];
+        var fileIds=[];
         var element=$(this);
         element.html('Please wait...');
         element.prop('disabled',true);
@@ -178,9 +180,10 @@ $(document).ready(function ()
         formData.append("tale_name",taleName);
         formData.append("id",tId);
         formData.append("tale_desc",taleDesc);
+        formData.append("deleted_images",JSON.stringify(deletedImages));
         formData.append("images",imageFileIds);
         formData.append("file_Ids",fileIds);
-        ajaxData('/a_dMin/add-bunched-tour',formData,function(response){
+        ajaxData('/a_dMin/edit-bunched-tour',formData,function(response){
             if(response.success)
             {
                 messageDisplay(response.message);

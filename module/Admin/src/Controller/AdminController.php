@@ -2015,13 +2015,12 @@ class AdminController extends BaseController
             ini_set('max_execution_time', '0');
             ini_set("memory_limit", "-1");
             $taleId = $request['id'];
-            $taleType = $request['tale_type'];
             $taleName = $request['tale_name'];
             $taleDesc = $request['tale_desc'];
             $talesList = $request['tales_list'];
-            if ($taleType == '') {
-                return new JsonModel(array("success" => false, "message" => "Please select tale type"));
-            }
+            $deletedImages = json_decode($request['deleted_images'], true);
+            $deleteFiles = array_merge($deletedImages);
+            $uploadFileDetails = array();
             if (is_null($talesList)) {
                 return new JsonModel(array("success" => false, "message" => "Please select tales to be added to bunched tale"));
             }
@@ -2031,8 +2030,8 @@ class AdminController extends BaseController
             if ($taleDesc == '') {
                 return new JsonModel(array("success" => false, "message" => "Please select tale description"));
             }
-            $where = array('id' => $taleId, 'tour_type' => \Admin\Model\TourTales::tour_type_Bunched_tour, 'display' => 1);
-            $checkTaleAdded = $this->tourTalesTable->checkTaleAdded($where);
+            $where = array('id' => $taleId, 'tour_type' => \Admin\Model\TourTales::tour_type_Bunched_tour);
+            $checkTaleAdded = $this->tourTalesTable->checkBTAdded($where);
             $deletedImages = json_decode($request['deleted_images'], true);
             $fileIds = explode(",", $request['file_Ids']);
             $getFiles = $this->temporaryFiles->getFiles($fileIds);
@@ -2040,7 +2039,7 @@ class AdminController extends BaseController
             foreach ($getFiles['images'] as $images) {
                 $uploadFileDetails[] = array(
                     'file_path' => $images['file_path'],
-                    'file_data_type' => \Admin\Model\TourismFiles::file_data_type_places,
+                    'file_data_type' => \Admin\Model\TourismFiles::file_data_type_bunched_tales,
                     'file_extension_type' => \Admin\Model\TourismFiles::file_extension_type_image,
                     'file_extension' => $images['file_extension'],
                     'display' => 1,
@@ -2060,7 +2059,6 @@ class AdminController extends BaseController
             if (!$copyFiles['status']) {
                 return new JsonModel(array('success' => false, 'message' => 'unable to add bunched tale'));
             }
-            $btId = "";
             $data = array(
                 'tour_type' => \Admin\Model\TourTales::tour_type_Bunched_tour,
                 'place_id' => $talesList,
@@ -2073,18 +2071,21 @@ class AdminController extends BaseController
                 $response = $this->tourTalesTable->updateTourTale($data, ['id' => $taleId]);
                 if ($response) {
                     $counter = -1;
-            if (count($uploadFileDetails)) {
-                foreach ($uploadFileDetails as $details) {
-                    $counter++;
-                    $uploadFileDetails[$counter]['file_data_id'] = $taleId;
-                    $uploadFileDetails[$counter]["created_at"] = date("Y-m-d H:i:s");
-                    $uploadFileDetails[$counter]["updated_at"] = date("Y-m-d H:i:s");
-                }
-                $this->tourismFilesTable->addMutipleTourismFiles($uploadFileDetails);
-            }
-            return new JsonModel(array('success' => true, 'message' => 'added successfully'));
+                    if (count($uploadFileDetails)) {
+                        foreach ($uploadFileDetails as $details) {
+                            $counter++;
+                            $uploadFileDetails[$counter]['file_data_id'] = "BT_" . $taleId;
+                            $uploadFileDetails[$counter]["created_at"] = date("Y-m-d H:i:s");
+                            $uploadFileDetails[$counter]["updated_at"] = date("Y-m-d H:i:s");
+                        }
+                        $this->tourismFilesTable->addMutipleTourismFiles($uploadFileDetails);
+                    }
+                    if (count($deleteFiles)) {
+                        $this->tourismFilesTable->deletePlaceFiles($deleteFiles);
+                    }
+                    return new JsonModel(array('success' => true, 'message' => 'updated successfully'));
                 } else {
-                    return new JsonModel(array('success' => false, 'message' => 'unable to add Bunched Tale'));
+                    return new JsonModel(array('success' => false, 'message' => 'unable to modify Bunched Tale'));
                 }
             }
         }

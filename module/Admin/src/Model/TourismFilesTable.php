@@ -216,8 +216,8 @@ class TourismFilesTable extends  BaseTable
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             return true;
         } catch (\Exception $e) {
-            print_r($e->getMessage());
-            exit;
+            /* print_r($e->getMessage());
+            exit; */
             return false;
         }
     }

@@ -78,7 +78,7 @@ $(document).ready(function ()
                                     'id': response.id
                                 };
                                 if (uploadClicked) {
-                                    var countryElement = $("#addPlace");
+                                    var countryElement = $("#editbt");
                                     countryElement.prop('disabled', false);
                                     countryElement.click();
                                 }

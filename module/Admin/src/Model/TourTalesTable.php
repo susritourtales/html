@@ -244,6 +244,7 @@ class TourTalesTable extends  BaseTable
                 ->join(array('ci' => 'city'), 'p.city_id=ci.id', array('city_name'), Select::JOIN_LEFT)
                 ->join(array('tf' => 'tourism_files'), new \Laminas\Db\Sql\Expression("`tf`.`file_data_id` LIKE CONCAT('BT_', `p`.`id`, '%') AND `tf`.`display` = '1'"), array('tourism_file_id','file_data_id','file_path', 'file_name'), Select::JOIN_LEFT)
                 ->where($where);
+            echo $sql->getSqlStringForSqlObject($query);exit;
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             $tales = array();
             foreach ($resultSet as $row) {

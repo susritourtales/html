@@ -242,7 +242,7 @@ class TourTalesTable extends  BaseTable
                 ->join(array('c' => 'country'), 'p.country_id=c.id', array('country_name'), Select::JOIN_LEFT)
                 ->join(array('s' => 'state'), 'p.state_id=s.id', array('state_name'), Select::JOIN_LEFT)
                 ->join(array('ci' => 'city'), 'p.city_id=ci.id', array('city_name'), Select::JOIN_LEFT)
-                ->join(array('tf' => 'tourism_files'), new \Laminas\Db\Sql\Expression("`tf`.`file_data_id` LIKE CONCAT('BT_', `p`.`id`, '%') AND `tf`.`display` = '1'"), array('tourism_file_id','file_data_id','file_path', 'file_name'), Select::JOIN_LEFT)
+                ->join(array('tf' => 'tourism_files'), new \Laminas\Db\Sql\Expression("`tf`.`file_data_id` LIKE CONCAT('BT_', `p`.`id`, '%') AND `tf`.`display` = '1'"), array('tourism_file_id'=> new \Laminas\Db\Sql\Expression("MAX(`tf`.`tourism_file_id`)"),'file_data_id','file_path', 'file_name'), Select::JOIN_LEFT)
                 ->group(array('tf.file_data_id'))
                 ->where($where);
             echo $sql->getSqlStringForSqlObject($query);exit;

@@ -126,7 +126,7 @@ class Module implements ConfigProviderInterface
                     $dbAdapter = $container->get(AdapterInterface::class);
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new Model\SubscriptionPlan());
-                    return new TableGateway('app_parameter', $dbAdapter, null, $resultSetPrototype);
+                    return new TableGateway('subscription_plan', $dbAdapter, null, $resultSetPrototype);
                 },
             ],
         ];

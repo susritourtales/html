@@ -14,8 +14,7 @@
             <thead>
                 <tr>
                     <th scope="col" class="sticky">Parameters</th>
-                    <?php foreach ($splansList as $pricing){ ?>
-                    <th scope="col" data-id="<?php echo base64_encode("pid=" . $pricing['id']); ?>"><?php echo $pricing['plan_name']; ?></th>
+                    <?php foreach ($splansList as $pricing){ ?><th scope="col"><span><?php echo $pricing['plan_name']; ?></span><a class="action-icon mx-2" href="<?php echo $this->basePath() . '/a_dMin/edit-subscription-plan/' . base64_encode("pid=" . $pricing['id']) ?>" style="display: inline-flex;align-items: center;"><img src="<?php echo $this->basePath(); ?>/img/edit.png" class="img-fluid"></a></th>
                     <?php } ?>
                 </tr>
             </thead>
@@ -33,6 +32,8 @@
                 'qrp_usd' => 'QUESTT RENEWAL PRICE (US$)',
                 'questt_duration' => 'QUESTT Duration',
                 'twistt_duration' => 'TWISTT Duration',
+                'MTL' => 'Max. Tales Limit (MTL)',
+                'ADP' => 'Auto-Deletion Period (ADP) of Tales in Library (days)',
                 'topp_inr' => 'TWISTT on-line purchase price (INR)',
                 'topp_usd' => 'TWISTT on-line purchase price (US$)',
                 'stsp_inr' => 'Seasonal Price of TWISTT Subscription - INR',
@@ -49,14 +50,16 @@
                 'tax' => 'Taxes (%) on payable amount',
                 'app_text' => 'App Text',
                 'web_text' => 'Web Text',
-                'cd_percentage' => 'Discount offered against Coupon on Price Amount',
-                'active' => 'Active'
+                'cd_percentage' => 'Discount offered against Coupon on Price Amount'
             ];
-            $plancCount = count($splansList);
+            $planCount = count($splansList);
             foreach ($parameterNames as $key => $value) { ?>
                 <tr>
                     <th scope="row" class="sticky bg-white"><?php echo $parameterNames[$key];?></th>
-                <?php for ($i = 0; $i < $plancCount; $i++) { ?>
+                <?php for ($i = 0; $i < $planCount; $i++) { 
+                    if (strpos($key, 'date') !== false){
+                        $splansList[$i][$key] = date('d-m-Y',strtotime($splansList[$i][$key]));
+                    }?>
                     <td><?php echo $splansList[$i][$key];?></td>
                 <?php } ?>
                 </tr>

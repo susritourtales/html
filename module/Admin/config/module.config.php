@@ -576,7 +576,11 @@ return [
             'edit-subscription-plan' => [
                 'type' => Segment::class,
                 'options' => [
-                    'route' => '/a_dMin/edit-subscription-plan',
+                    'route' => '/a_dMin/edit-subscription-plan[/:id]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-zA-Z0-9_~\-!@#\$%\^&*\(\)=]*[/]*',
+                    ],
                     'defaults' => [
                         'controller' => Controller\AdminController::class,
                         'action' => 'edit-subscription-plan',

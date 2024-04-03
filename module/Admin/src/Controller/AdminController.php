@@ -2187,6 +2187,69 @@ class AdminController extends BaseController
         $totalCount = $this->subscriptionPlanTable->getPlansCount(\Admin\Model\SubscriptionPlan::ActivePlans);
         return new ViewModel(array('splansList' => $plansList, 'totalCount' => $totalCount));
     }
+    public function editSubscriptionPlanAction(){
+        $this->checkAdmin();
+        if ($this->getRequest()->isXmlHttpRequest()) {
+            $request = $this->getRequest()->getPost();
+            $pid = $request['pid'];
+            $data['qsp_inr'] = $request['qsp_inr'];
+            $data['qsp_usd'] = $request['qsp_usd'];
+            $data['sqsp_inr'] = $request['sqsp_inr'];
+            $data['sqsp_usd'] = $request['sqsp_usd'];
+            $data['sqs_start_date'] = date('Y-m-d',strtotime($request['sqs_sd']));
+            $data['sqs_end_date'] = date('Y-m-d',strtotime($request['sqs_ed']));
+            $data['qrp_inr'] = $request['qrp_inr'];
+            $data['qrp_usd'] = $request['qrp_usd'];
+            $data['questt_duration'] = $request['qd'];
+            $data['twistt_duration'] = $request['td'];
+            $data['MTL'] = $request['mtl'];
+            $data['ADP'] = $request['adp'];
+            $data['topp_inr'] = $request['topp_inr'];
+            $data['topp_usd'] = $request['topp_usd'];
+            $data['stsp_inr'] = $request['stsp_inr'];
+            $data['stsp_usd'] = $request['stsp_usd'];
+            $data['sts_start_date'] = date('Y-m-d',strtotime($request['sts_sd']));
+            $data['sts_end_date'] = date('Y-m-d',strtotime($request['sts_ed']));
+            $data['tppp_inr'] = $request['tppp_inr'];
+            $data['tppp_usd'] = $request['tppp_usd'];
+            $data['max_pwds'] = $request['max_pwds'];
+            $data['dp_inr'] = $request['dp_inr'];
+            $data['dp_usd'] = $request['dp_usd'];
+            $data['ccp_inr'] = $request['ccp_inr'];
+            $data['ccp_usd'] = $request['ccp_usd'];
+            $data['tax'] = $request['tax'];
+            $data['cd_percentage'] = $request['cdp'];
+            $data['web_text'] = $request['wt'];
+            $data['app_text'] = $request['at'];
+            
+            // $data = $request->getArrayCopy();
+            $nullKeys = [];
+            foreach ($data as $key => $value) {
+                if ($value === null || $value === '') {
+                    $nullKeys[] = $key;
+                }
+            }
+            $csvString = implode(',', $nullKeys);
+            if($csvString)
+                return new JsonModel(array('success' => false, 'message' => 'please provide all the required values')); //'please provide values for ' . $csvString));
+            $response = $this->subscriptionPlanTable->setPlan($data, array('id' => $pid));
+            if ($response) {
+                return new JsonModel(array('success' => true, 'message' => 'updated successfully'));
+            } else {
+                return new JsonModel(array('success' => false, 'message' => 'unable to update'));
+            }
+        }
+        $paramId = $this->params()->fromRoute('id', '');
+        if (!$paramId) {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        $planIdString = rtrim($paramId, "=");
+        $planIdString = base64_decode($planIdString);
+        $planIdString = explode("=", $planIdString);
+        $planId = array_key_exists(1, $planIdString) ? $planIdString[1] : 0;
+        $plansDetails = $this->subscriptionPlanTable->getPlans(['active' => \Admin\Model\SubscriptionPlan::ActivePlans, 'id' => $planId], ['limit' => -1, 'offset' => 0]);
+        return new ViewModel(array('plan' => $plansDetails[0]));
+    }
     // Subcription Plans - END
 
     // Parameters - Start

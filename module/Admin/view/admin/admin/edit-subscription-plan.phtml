@@ -1,0 +1,149 @@
+<div class="sidebar">
+    <div class="side-panel" id="collapsibleNavbar">
+        <?php echo $this->partial('/application/index/left-menu', array(
+            'mainActiveTab' => \Application\Constants\Constants::Users,
+            'activeTab' => \Application\Constants\Constants::Subscription_plans
+        )); ?>
+    </div>
+</div>
+<link rel="stylesheet" href="<?php echo $this->basePath()?>/css/vendor/sol.css">
+<link rel="stylesheet" href="<?php echo $this->basePath(); ?>/css/vendor/bootstrap-datetimepicker.min.css"/>
+
+<link rel="stylesheet" href="<?php echo $this->basePath()?>/css/main.css">
+<script src="<?php echo $this->basePath(); ?>/js/vendor/sol.js"></script>
+<script type="text/javascript" src="<?php echo $this->basePath(); ?>/js/vendor/moment.min.js"></script>
+<script type="text/javascript" src="<?php echo $this->basePath(); ?>/js/vendor/bootstrap-datetimepicker.min.js"></script>
+<script src="<?php echo $this->basePath(); ?>/js/admin/edit-subscription-plan.js?v=1.0"></script>
+
+<div class="wrapper">
+    <div class="main-panel ">
+        <?php echo $this->partial("/application/index/app-header"); ?>
+
+        <div class="main-container pl-3 p-lg-4">
+            <div class="main-heading mb-3"><a href="<?php echo $this->basePath().'/a_dMin/subscription-plans'?>"><i class="fa fa-arrow-left mr-2"></i></a> Edit Subscription Plan </div>
+            <div class="row adding-form">
+                <div class="col-lg-6 col-12">
+                    <div class="col-10 mt-3"><label class="text-black-50 text-capitalize">Plan name</label>
+                        <input type="text" class="form-control" id="pn" value="<?php echo $plan['plan_name']; ?>"/>
+                    </div>
+                    <div class="col-10 mt-3"><label class="text-black-50 text-capitalize">QUESTT Subscription (INR)</label>
+                        <input type="text" class="form-control" id="qsp_inr" value="<?php echo $plan['qsp_inr']; ?>"/>
+                    </div>
+                    <div class="col-10 mt-3"><label class="text-black-50 text-capitalize">QUESTT Subscription (US$)</label>
+                        <input type="text" class="form-control" id="qsp_usd" value="<?php echo $plan['qsp_usd']; ?>"/>
+                    </div>
+                    <div class="col-10 mt-3"><label class="text-black-50 text-capitalize">Seasonal Price on QUESTT Subscription - INR</label>
+                        <input type="text" class="form-control" id="sqsp_inr" value="<?php echo $plan['sqsp_inr']; ?>"/>
+                    </div>
+                    <div class="col-10 mt-3"><label class="text-black-50 text-capitalize">Seasonal Price on QUESTT Subscription - US$</label>
+                        <input type="text" class="form-control" id="sqsp_usd" value="<?php echo $plan['sqsp_usd']; ?>"/>
+                    </div>
+                    <?php 
+                    if(!is_null($plan['sqs_start_date']) && $plan['sqs_start_date'] != "0000-00-00 00:00:00")
+                        $startDate1 = date("d-m-Y",strtotime($plan['sqs_start_date'])); 
+                    else 
+                        $startDate1 = "";?>
+                    <div class="col-10 mt-3" style="position:relative"><label class="text-black-50">Seasonal Price on QUESTT Subscription - Start Date</label>
+                        <input type="text" class="form-control datetimepicker" id="sqs_sd" value="<?php //echo $startDate1; ?>"/>
+                        <script> var sqs_sd = moment("<?php echo $startDate1; ?>", 'DD-MM-YYYY');</script>
+                    </div>
+                    <?php 
+                    if(!is_null($plan['sqs_end_date']) && $plan['sqs_end_date'] != "0000-00-00 00:00:00")
+                        $endDate1 = date("d-m-Y",strtotime($plan['sqs_end_date'])); 
+                    else 
+                        $endDate1 = "";?>
+                    <div class="col-10 mt-3" style="position:relative"><label class="text-black-50">Seasonal Price on QUESTT Subscription - End Date</label>
+                        <input type="text" class="form-control datetimepicker" id="sqs_ed" value="<?php //echo $endDate1; ?>"/>
+                        <script> var sqs_ed = moment("<?php echo $endDate1; ?>", 'DD-MM-YYYY');</script>
+                    </div>
+                    <div class="col-10 mt-3"><label class="text-black-50 text-capitalize">Seasonal Price of TWISTT Subscription - INR</label>
+                        <input type="text" class="form-control" id="stsp_inr" value="<?php echo $plan['stsp_inr']; ?>"/>
+                    </div>
+                    <div class="col-10 mt-3"><label class="text-black-50 text-capitalize">Seasonal Price of TWISTT Subscription - US$</label>
+                        <input type="text" class="form-control" id="stsp_usd" value="<?php echo $plan['stsp_usd']; ?>"/>
+                    </div>
+                    <?php 
+                    if(!is_null($plan['sts_start_date']) && $plan['sts_start_date'] != "0000-00-00 00:00:00")
+                        $startDate2 = date("d-m-Y",strtotime($plan['sts_start_date'])); 
+                    else 
+                        $startDate2 = "";?>
+                    <div class="col-10 mt-3" style="position:relative"><label class="text-black-50">Seasonal Price on TWISTT Subscription - Start Date</label>
+                        <input type="text" class="form-control datetimepicker" id="sts_sd" value="<?php //echo $startDate2; ?>"/>
+                        <script> var sts_sd = moment("<?php echo $startDate2; ?>", 'DD-MM-YYYY');</script>
+                    </div>
+                    <?php 
+                    if(!is_null($plan['sts_end_date']) && $plan['sts_end_date'] != "0000-00-00 00:00:00")
+                        $endDate2 = date("d-m-Y",strtotime($plan['sts_end_date'])); 
+                    else 
+                        $endDate2 = "";?>
+                    <div class="col-10 mt-3" style="position:relative"><label class="text-black-50">Seasonal Price on TWISTT Subscription - End Date</label>
+                        <input type="text" class="form-control datetimepicker" id="sts_ed" value="<?php //echo $endDate2; ?>"/>
+                        <script> var sts_ed = moment("<?php echo $endDate2; ?>", 'DD-MM-YYYY');</script>
+                    </div>
+                    <div class="col-10 mt-3"><label class="text-black-50 text-capitalize">QUESTT RENEWAL PRICE (INR)</label>
+                        <input type="text" class="form-control" id="qrp_inr" value="<?php echo $plan['qrp_inr']; ?>"/>
+                    </div>
+                    <div class="col-10 mt-3"><label class="text-black-50 text-capitalize">QUESTT RENEWAL PRICE (US$)</label>
+                        <input type="text" class="form-control" id="qrp_usd" value="<?php echo $plan['qrp_usd']; ?>"/>
+                    </div>
+                    <div class="col-10 mt-3"><label class="text-black-50 text-capitalize">QUESTT Duration</label>
+                        <input type="text" class="form-control" id="qd" value="<?php echo $plan['questt_duration']; ?>"/>
+                    </div>
+                    <div class="col-10 mt-3"><label class="text-black-50 text-capitalize">TWISTT Duration</label>
+                        <input type="text" class="form-control" id="td" value="<?php echo $plan['twistt_duration']; ?>"/>
+                    </div>
+                    <div class="col-10 mt-3"><label class="text-black-50 text-capitalize">Max. Tales Limit (MTL)</label>
+                        <input type="text" class="form-control" id="mtl" value="<?php echo $plan['MTL']; ?>"/>
+                    </div>
+                    <div class="col-10 mt-3"><label class="text-black-50 text-capitalize">Auto-Deletion Period (ADP) of Tales in Library (days)</label>
+                        <input type="text" class="form-control" id="adp" value="<?php echo $plan['ADP']; ?>"/>
+                    </div>
+                    <div class="col-10 mt-3"><label class="text-black-50 text-capitalize">TWISTT on-line purchase price (INR)</label>
+                        <input type="text" class="form-control" id="topp_inr" value="<?php echo $plan['topp_inr']; ?>"/>
+                    </div>
+                    <div class="col-10 mt-3"><label class="text-black-50 text-capitalize">TWISTT on-line purchase price (US$)</label>
+                        <input type="text" class="form-control" id="topp_usd" value="<?php echo $plan['topp_usd']; ?>"/>
+                    </div>
+                    <div class="col-10 mt-3"><label class="text-black-50 text-capitalize">TWISTT PW Purchase price (INR)</label>
+                        <input type="text" class="form-control" id="tppp_inr" value="<?php echo $plan['tppp_inr']; ?>"/>
+                    </div>
+                    <div class="col-10 mt-3"><label class="text-black-50 text-capitalize">TWISTT PW Purchase price (US$)</label>
+                        <input type="text" class="form-control" id="tppp_usd" value="<?php echo $plan['tppp_usd']; ?>"/>
+                    </div>
+                    <div class="col-10 mt-3"><label class="text-black-50 text-capitalize">Max. Number of PWs to be entered for future ‘redeem’</label>
+                        <input type="text" class="form-control" id="max_pwds" value="<?php echo $plan['max_pwds']; ?>"/>
+                    </div>
+                    <div class="col-10 mt-3"><label class="text-black-50 text-capitalize">Price of one discount coupon (INR)</label>
+                        <input type="text" class="form-control" id="dp_inr" value="<?php echo $plan['dp_inr']; ?>"/>
+                    </div>
+                    <div class="col-10 mt-3"><label class="text-black-50 text-capitalize">Price of one discount coupon (US$)</label>
+                        <input type="text" class="form-control" id="dp_usd" value="<?php echo $plan['dp_usd']; ?>"/>
+                    </div>
+                    <div class="col-10 mt-3"><label class="text-black-50 text-capitalize">Price of one complementary coupon (INR)</label>
+                        <input type="text" class="form-control" id="ccp_inr" value="<?php echo $plan['ccp_inr']; ?>"/>
+                    </div>
+                    <div class="col-10 mt-3"><label class="text-black-50 text-capitalize">Price of one complimentary coupon (US$)</label>
+                        <input type="text" class="form-control" id="ccp_usd" value="<?php echo $plan['ccp_usd']; ?>"/>
+                    </div>
+                    <div class="col-10 mt-3"><label class="text-black-50 text-capitalize">Taxes (%) on payable amount</label>
+                        <input type="text" class="form-control" id="tax" value="<?php echo $plan['tax']; ?>"/>
+                    </div>
+                    <div class="col-10 mt-3"><label class="text-black-50 text-capitalize">Discount offered against Coupon on Price Amount</label>
+                        <input type="text" class="form-control" id="cdp" value="<?php echo $plan['cd_percentage']; ?>"/>
+                    </div>
+                    <div class="col-10 mt-3"><label class="text-black-50 text-capitalize">App Text</label>
+                        <input type="text" class="form-control" id="atxt" value="<?php echo $plan['app_text']; ?>"/>
+                    </div>
+                    <div class="col-10 mt-3"><label class="text-black-50 text-capitalize">Web Text</label>
+                        <input type="text" class="form-control" id="wtxt" value="<?php echo $plan['web_text']; ?>"/>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" id="plan_id" value="<?php echo $plan['id']; ?>">
+
+            <div class="mt-3">
+                <div class="col-sm-9 text-left"> <button type="button" class="btn submit-btn" id="updatePricng">Submit</button></div>
+            </div>
+        </div>
+    </div>
+</div>

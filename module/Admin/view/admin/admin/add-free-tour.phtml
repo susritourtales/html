@@ -13,12 +13,13 @@
         <?php echo $this->partial("/application/index/app-header"); ?>
 
         <div class="main-container p-lg-4">
-            <div class="d-flex justify-content-between mb-4">
-                <div class="main-heading">Free Tour List</div> <a class="text-end" href="<?php echo $this->basePath() . '/a_dMin/add-free-tour/' . base64_encode('tt=2') ?>"><button type="button" class="btn add-btn">Add/Edit Free Tour </button></a>
+            <div class="d-flex justify-content-between mb-4 row">
+            <div class="main-heading">Add/Edit Free Tour List</div> <a class="text-end" href="<?php echo $this->basePath() . '/a_dMin/add-free-tour/' . base64_encode('tt=' . $ttq) ?>"><button type="button" class="btn add-btn"><?php echo ($ttq == '1') ? 'India Tales' : 'World Tales';?></button></a>
+            <input type="hidden" value="<?php echo $ttc; ?>" id="taletype">
             </div>
             <div class="" id="recordsList">
-                <?php echo $this->partial('/admin/admin/load-free-tour-list', array(
-                    'tourismList' => $placesList, 'totalCount' => $totalCount, 'type' => 'initialize'
+                <?php echo $this->partial('/admin/admin/add-free-tour-list', array(
+                    'tourismList' => $placesList, 'totalCount' => $totalCount, 'type' => 'initialize','ttc' => $ttc
                 )); ?>
 
             </div>
@@ -31,4 +32,4 @@
 </div>
 <?php echo $this->partial('/admin/admin/deleteModal', ['entityName' => 'Free Tale']); ?>
 <script src="<?php echo $this->basePath(); ?>/js/pagination.js"></script>
-<script src="<?php echo $this->basePath() . '/js/admin/free-list.js' ?>"></script>
+<script src="<?php echo $this->basePath() . '/js/admin/add-free-list.js?v=1.0.1' ?>"></script>

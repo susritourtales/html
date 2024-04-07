@@ -22,11 +22,50 @@ $(document).ready(function ()
                 {
                     options +='<option value="'+list[s].id+'">'+list[s].place_name+'</option>'
                 }
+                if(tt == '1'){ // India Tales
+                    $("#state-wrapper").removeClass('d-none');
+                    $("#country-wrapper").addClass('d-none');
+                }else{ // World Tales
+                    $("#state-wrapper").addClass('d-none');
+                    $("#country-wrapper").removeClass('d-none');
+                }
                 $(".sol-container").remove();
                 $("#tales").html(options).val('').removeAttr('class').prop("multiple",true).searchableOptionList();
             }
         });
+    }).on("change","#country",function(){
+        var countryId=$(this).val();
+        postData('/admin/get-cities',{"country_id":countryId,'tour_type':2},function(response){
+            var options='<option value="">--select city--</option>';
+            if(response.success)
+            {
+                var list=response.cities;
+                for(var s=0;s<list.length;s++)
+                {
+                    options +='<option value="'+list[s].id+'">'+list[s].city_name+'</option>'
+                }
+                $('#cities').html(options);
+            }
+        });
+    }).on("change","#states",function(){
+        var stateId=$(this).val();
+        postData('/admin/get-cities',{"state_id":stateId,"country_id":"101"},function(response){
+            var options='<option value="">--select city--</option>';
+            if(response.success)
+            {
+                var list=response.cities;
+                for(var s=0;s<list.length;s++)
+                {
+                    options +='<option value="'+list[s].id+'">'+list[s].city_name+'</option>'
+                }
+                $('#cities').html(options);
+            }
+        });
     }).on("change",".image-upload",function(e){
+        var elements = document.getElementsByClassName("close-icon");
+        for (var i = 0; i < elements.length; i++) {
+            elements[i].click();
+        }
         var files = e.target.files;
         var element=$(this);
         var incerement=0;
@@ -125,6 +164,9 @@ $(document).ready(function ()
     }).on("click","#editbt",function(){
         var ttElement=$("#taletype");
         var error=false;
+        var countryElement=$("#country");
+        var stateElement=$("#states");
+        var cityElement=$("#cities");
         var talesElement=$("#tales");
         var tnameElement=$("#tname");
         var tDescElement=$("#description");
@@ -132,14 +174,32 @@ $(document).ready(function ()
         var talesList=talesElement.val();
         var taleName = tnameElement.val();
         var taleDesc = tDescElement.val();
-        /* if(taletype=='')
+        var country = countryElement.val();
+        var state = stateElement.val();
+        var city = cityElement.val();
+        if(taletype=='')
         {
             messageDisplay("Please select tale type");
             return  false;
-        } */
+        }
         if(talesList==null)
         {
             messageDisplay("Please select tales to be added to bunched tale");
+            return  false;
+        }
+        if(taletype=='1'){
+            if(state == ''){
+                messageDisplay("Please select Provincial State");
+                return  false;
+            }
+        }else{
+            if(country==''){
+                messageDisplay("Please select Provincial Country");
+                return  false;
+            }
+        }
+        if(city==''){
+            messageDisplay("Please select Provincial City");
             return  false;
         }
         if(taleName==''){
@@ -181,6 +241,9 @@ $(document).ready(function ()
         formData.append("tale_name",taleName);
         formData.append("id",tId);
         formData.append("tale_desc",taleDesc);
+        formData.append("country",country);
+        formData.append("state",state);
+        formData.append("city",city);
         formData.append("deleted_images",JSON.stringify(deletedImages));
         formData.append("images",imageFileIds);
         formData.append("file_Ids",fileIds);

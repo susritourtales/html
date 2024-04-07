@@ -516,10 +516,24 @@ return [
             'add-free-tour' => [
                 'type' => Segment::class,
                 'options' => [
-                    'route' => '/a_dMin/add-free-tour',
+                    'route' => '/a_dMin/add-free-tour[/:id]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-zA-Z0-9_~\-!@#\$%\^&*\(\)=]*[/]*',
+                    ],
                     'defaults' => [
                         'controller' => Controller\AdminController::class,
                         'action' => 'add-free-tour',
+                    ],
+                ],
+            ],
+            'add-free-tour-list' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route'    => '/admin/add-free-tour-list',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action'     => 'add-free-tour-list',
                     ],
                 ],
             ],

@@ -216,6 +216,10 @@ $(document).ready(function ()
         }
 })
     .on("change",".tn-upload",function(e){
+        var elements = document.getElementsByClassName("tn-close-icon");
+        for (var i = 0; i < elements.length; i++) {
+            elements[i].click();
+        }
         var files = e.target.files;
         var element=$(this);
         var incerement=0;

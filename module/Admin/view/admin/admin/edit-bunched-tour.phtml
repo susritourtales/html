@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="<?php echo $this->basePath()?>/css/main.css">
 <script src="<?php echo $this->basePath() ?>/js/radialIndicator.min.js"></script>
 <script src="<?php echo $this->basePath(); ?>/js/vendor/sol.js"></script>
-<script src="<?php echo $this->basePath(); ?>/js/admin/edit-bunched-tour.js?v=1.0.5"></script>
+<script src="<?php echo $this->basePath(); ?>/js/admin/edit-bunched-tour.js?v=1.0.6"></script>
 <div class="wrapper">
     <div class="main-panel ">
         <?php echo $this->partial("/application/index/app-header"); ?>
@@ -22,9 +22,8 @@
                         <div class="col-lg-6 col-12">
                             <div class="col-12 mb-3"><label class="text-black-50">Tale Type</label>
                                 <select class="form-control" id="taletype">
-                                    <option value="">--select tale type--</option>
-                                    <option value="<?php echo \Admin\Model\TourTales::tour_type_World_tour; ?>">World Tales</option>
-                                    <option value="<?php echo \Admin\Model\TourTales::tour_type_India_tour; ?>">India Tales</option>
+                                    <option value="<?php echo \Admin\Model\TourTales::tour_type_World_tour; ?>" <?php echo ($tourDetails[0]['country_id'] != "101" ? "selected" : ""); ?>>World Tales</option>
+                                    <option value="<?php echo \Admin\Model\TourTales::tour_type_India_tour; ?>" <?php echo ($tourDetails[0]['country_id'] == "101" ? "selected" : ""); ?>>India Tales</option>
                                 </select>
                             </div>
                             <?php $places = explode(",",$tourDetails[0]["place_name"]);
@@ -35,6 +34,30 @@
                                     <?php foreach ($places as $place) { ?>
                                         <option value="<?php echo $placeids[$i]; ?>" selected><?php echo $place; ?></option>
                                     <?php $i++;} ?>
+                                </select>
+                            </div>
+                            <div class="col-12 mb-3" id="country-wrapper"><label class="text-black-50">Provincial Country</label>
+                                <select class="form-control" id="country">
+                                    <option value="">--select country--</option>
+                                    <?php foreach ($countryList as $country) { ?>
+                                        <option value="<?php echo $country['id']; ?>" <?php echo ($country['id'] == $tourDetails[0]['country_id'] ? "selected" : ""); ?>><?php echo $country['country_name']; ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                            <div class="col-12 mb-3 d-none" id="state-wrapper"><label class="text-black-50" for="states">Provincial State</label>
+                                    <select class="form-control" id="states">
+                                    <option value="">--select state--</option>
+                                    <?php foreach ($statesList as $states) { ?>
+                                        <option value="<?php echo $states['id']; ?>" <?php echo ($state['id'] == $tourDetails[0]['state_id'] ? "selected" : ""); ?>><?php echo $states['state_name']; ?></option>
+                                    <?php } ?>
+                                    </select>
+                                </div>
+                            <div class="col-12 mb-3"><label class="text-black-50">Provincial City</label>
+                                <select class="form-control" id="cities">
+                                    <option value="">--Select City--</option>
+                                    <?php foreach ($citiesList as $city) { ?>
+                                        <option value="<?php echo $city['id']; ?>" <?php echo ($city['id'] == $tourDetails[0]['city_id'] ? "selected" : ""); ?>><?php echo $city['city_name']; ?></option>
+                                    <?php } ?>
                                 </select>
                             </div>
                             <div class="col-12"><label class="text-black-50">Tale Name</label>
@@ -55,7 +78,8 @@
                                         <div class="col-sm-4 mt-2 position-relative image-preview overflow-hidden" data-id="<?php echo $tourDetails[0]['tourism_file_id']; ?>">
                                             <img src="<?php echo $imageUrl . $tourDetails[0]['file_path']; ?>" style="width: 100%;height: 100%">
                                             <span class="bg-white circle close-icon" data-id="<?php echo $tourDetails[0]['tourism_file_id']; ?>" data-edit="1">
-                                                <i class="fas fa-times position-absolute " data-id="<?php echo $tourDetails[0]['tourism_file_id']; ?>" data-edit="1"></i></span>
+                                                <i class="fas fa-times position-absolute " data-id="<?php echo $tourDetails[0]['tourism_file_id']; ?>" data-edit="1"></i>
+                                            </span>
                                         </div>
                                     </div>
                                 </div>

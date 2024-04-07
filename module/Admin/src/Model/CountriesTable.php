@@ -93,7 +93,8 @@ class CountriesTable extends  BaseTable
                 $query = $sql->select()
                     ->from($this->tableName)
                     ->columns(array("id", "country_name"))
-                    ->where($where);
+                    ->where($where)
+                    ->order($order);
             } else {
                 $query = $sql->select()
                     ->from($this->tableName)

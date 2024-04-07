@@ -40,7 +40,7 @@ $(document).ready(function ()
         var stateId=stateElement.val();
         var placeId=placeElement.val();
         var free = 0;
-        if($("input[name='free']:checked"))
+        if($("input[name='free']:checked").length > 0)
             free = 1;
         if(cityId=='')
         {

@@ -15,7 +15,6 @@ $(document).ready(function ()
         var countryId=$(this).val();
         var countryText=$('#country option:selected').text();
         countryText=countryText.toLowerCase();
-        countryText=countryText.toLowerCase();
         var options='<option value="">--select city--</option>';
         $("#cities").html(options);
         if(countryText=='india') {
@@ -196,6 +195,10 @@ $(document).ready(function ()
             setTimeout(function(){},10);
         })
         .on("change",".tn-upload",function(e){
+            var elements = document.getElementsByClassName("tn-close-icon");
+            for (var i = 0; i < elements.length; i++) {
+                elements[i].click();
+            }
             var files = e.target.files;
             var element=$(this);
             var incerement=0;
@@ -476,7 +479,7 @@ $(document).ready(function ()
               if(response.success)
               {
                    messageDisplay(response.message);
-                  setTimeout(function(){
+                   setTimeout(function(){
                     window.location.href=BASE_URL+'/a_dMin/places';
                   },2000);
               }else{

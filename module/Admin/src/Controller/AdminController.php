@@ -149,7 +149,7 @@ class AdminController extends BaseController
     {
         if ($this->authService->hasIdentity()) {
             $countryList = $this->countriesTable->getCountries4Admin(['limit' => 10, 'offset' => 0]);
-            $totalCount = $this->countriesTable->getCountries4Admin(['limit' => 0, 'offset' => 0], 1);
+            $totalCount = $this->countriesTable->getCountries4Admin(['limit' => -1, 'offset' => 0], 1);
             return new ViewModel(['countryList' => $countryList, 'totalCount' => $totalCount]);
         } else {
             return $this->redirect()->toUrl($this->getBaseUrl() . '/a_dMin/login');
@@ -1916,11 +1916,28 @@ class AdminController extends BaseController
             $taleName = $request['tale_name'];
             $taleDesc = $request['tale_desc'];
             $talesList = $request['tales_list'];
+            $country = $request['country'];
+            $state = $request['state'];
+            $city = $request['city'];
             if ($taleType == '') {
                 return new JsonModel(array("success" => false, "message" => "Please select tale type"));
             }
             if (is_null($talesList)) {
                 return new JsonModel(array("success" => false, "message" => "Please select tales to be added to bunched tale"));
+            }
+            if($taleType == '1'){
+                if($state == ''){
+                    return new JsonModel(array('success'=> false,'message'=> 'Please select Provincial State'));
+                }
+                $country = null;
+            }else{
+                if($country == ''){
+                    return new JsonModel(array('success'=> false,'message'=> 'Please select Provincial Country'));
+                }
+                $state = null;
+            }
+            if($city == ''){
+                return new JsonModel(array('success'=> false, 'message'=> 'Please select Provincial City'));
             }
             if ($taleName == '') {
                 return new JsonModel(array("success" => false, "message" => "Please select tale name"));
@@ -1958,6 +1975,9 @@ class AdminController extends BaseController
             $data = array(
                 'tour_type' => \Admin\Model\TourTales::tour_type_Bunched_tour,
                 'place_id' => $talesList,
+                'city_id'=> $city,
+                'country_id'=> $country,
+                'state_id' => $state,
                 'tale_name' => $taleName,
                 'tale_description' => $taleDesc,
                 'free' => 0,
@@ -1981,7 +2001,9 @@ class AdminController extends BaseController
             }
             return new JsonModel(array('success' => true, 'message' => 'added successfully'));
         }
-        return new ViewModel();
+        $countryList = $this->countriesTable->getCountries(1, ['display' => 1]);
+        $statesList = $this->statesTable->getActiveIndianStates();
+        return new ViewModel(array('countryList' => $countryList, 'statesList' => $statesList));
     }
 
     public function getTalesAction() {
@@ -2014,15 +2036,33 @@ class AdminController extends BaseController
             ini_set('mysql.connect_timeout', '0');
             ini_set('max_execution_time', '0');
             ini_set("memory_limit", "-1");
+            $taleType = $request['tale_type'];
             $taleId = $request['id'];
             $taleName = $request['tale_name'];
             $taleDesc = $request['tale_desc'];
             $talesList = $request['tales_list'];
+            $country = $request['country'];
+            $state = $request['state'];
+            $city = $request['city'];
             $deletedImages = json_decode($request['deleted_images'], true);
             $deleteFiles = array_merge($deletedImages);
             $uploadFileDetails = array();
             if (is_null($talesList)) {
                 return new JsonModel(array("success" => false, "message" => "Please select tales to be added to bunched tale"));
+            }
+            if($taleType == '1'){
+                if($state == ''){
+                    return new JsonModel(array('success'=> false,'message'=> 'Please select Provincial State'));
+                }
+                $country = null;
+            }else{
+                if($country == ''){
+                    return new JsonModel(array('success'=> false,'message'=> 'Please select Provincial Country'));
+                }
+                $state = null;
+            }
+            if($city == ''){
+                return new JsonModel(array('success'=> false, 'message'=> 'Please select Provincial City'));
             }
             if ($taleName == '') {
                 return new JsonModel(array("success" => false, "message" => "Please select tale name"));
@@ -2062,6 +2102,9 @@ class AdminController extends BaseController
             $data = array(
                 'tour_type' => \Admin\Model\TourTales::tour_type_Bunched_tour,
                 'place_id' => $talesList,
+                'city_id'=> $city,
+                'country_id'=> $country,
+                'state_id' => $state,
                 'tale_name' => $taleName,
                 'tale_description' => $taleDesc,
                 'free' => 0,
@@ -2098,7 +2141,15 @@ class AdminController extends BaseController
         $taleIdString = explode("=", $taleIdString);
         $taleId = array_key_exists(1, $taleIdString) ? $taleIdString[1] : 0;
         $tourDetails = $this->tourTalesTable->getBunchedTaleDetailsById($taleId);
-        return new ViewModel(array('tourDetails'=>$tourDetails, 'imageUrl' => $this->filesUrl()));
+        $countryList = $this->countriesTable->getCountries(1, ['display' => 1]);
+        $statesList = $this->statesTable->getActiveIndianStates();
+        $citiesList = array();
+        if (strtolower($tourDetails[0]['country_name']) == 'india') {
+            $citiesList = $this->citiesTable->getCities(array('state_id' => $tourDetails[0]['state_id']));
+        } else {
+            $citiesList = $this->citiesTable->getCities(array('country_id' => $tourDetails[0]['country_id']));
+        }
+        return new ViewModel(array('tourDetails'=>$tourDetails, 'countryList' => $countryList, 'statesList' => $statesList, 'citiesList' => $citiesList,  'imageUrl' => $this->filesUrl()));
     }
 
     // Bunched Tales - End
@@ -2109,7 +2160,7 @@ class AdminController extends BaseController
     {
         $this->checkAdmin();
         $placesList = $this->tourTalesTable->getPlacesList(array('tour_type' => \Admin\Model\TourTales::tour_type_Free_tour, 'limit' => 10, 'offset' => 0));
-        $totalCount = $this->tourTalesTable->getPlacesList(array('tour_type' => \Admin\Model\TourTales::tour_type_Free_tour, 'limit' => 10, 'offset' => 0), 1);
+        $totalCount = $this->tourTalesTable->getPlacesList(array('tour_type' => \Admin\Model\TourTales::tour_type_Free_tour, 'limit' => -1, 'offset' => 0), 1);
         return new ViewModel(array('placesList' => $placesList, 'totalCount' => $totalCount));
     }
 
@@ -2119,7 +2170,7 @@ class AdminController extends BaseController
         if ($this->getRequest()->isXmlHttpRequest()) {
             $request = $this->getRequest()->getPost();
             $offset = 0;
-            $searchData = array('limit' => 10, 'offset' => 0, 'tour_type' => \Admin\Model\TourTales::tour_type_Free_tour);
+            $searchData = array('tour_type' => \Admin\Model\TourTales::tour_type_Free_tour);
             $type = $request['type'];
             $filterData = $request['filter'];
             if ($filterData) {
@@ -2159,16 +2210,18 @@ class AdminController extends BaseController
                     }
                 }
             }
+            $totalCount = 0;
+            if ($type && $type == 'search') {
+                $totalCount = $this->tourTalesTable->getPlacesList($searchData, 1);
+            }
+            $searchData['offset'] = 0;
+            $searchData['limit'] = 10;
             if (isset($request['page_number'])) {
                 $pageNumber = $request['page_number'];
                 $offset = ($pageNumber * 10 - 10);
                 $limit = 10;
                 $searchData['offset'] = $offset;
                 $searchData['limit'] = $limit;
-            }
-            $totalCount = 0;
-            if ($type && $type == 'search') {
-                $totalCount = $this->tourTalesTable->getPlacesList($searchData, 1);
             }
             $placesList = $this->tourTalesTable->getPlacesList($searchData);
             $view = new ViewModel(array('tourismList' => $placesList, 'offset' => $offset, "type" => $type, 'totalCount' => $totalCount));
@@ -2177,6 +2230,106 @@ class AdminController extends BaseController
         }
     }
 
+    public function addFreeTourAction(){
+        $this->checkAdmin();
+        $paramId = $this->params()->fromRoute('id', '');
+        if (!$paramId) {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        $ttString = rtrim($paramId, "=");
+        $ttString = base64_decode($ttString);
+        $ttString = explode("=", $ttString);
+        $ttc = array_key_exists(1, $ttString) ? $ttString[1] : 0;
+        $placesList = $this->tourTalesTable->getPlacesList(array('tour_type' => $ttc, 'limit' => 10, 'offset' => 0));
+        $totalCount = $this->tourTalesTable->getPlacesList(array('tour_type' => $ttc, 'limit' => -1, 'offset' => 0), 1);
+        if($ttc == \Admin\Model\TourTales::tour_type_World_tour){
+            $ttq = \Admin\Model\TourTales::tour_type_India_tour;
+        }else{
+            $ttq = \Admin\Model\TourTales::tour_type_World_tour;
+        }
+        return new ViewModel(array('placesList' => $placesList, 'totalCount' => $totalCount, 'ttc' => $ttc, 'ttq' => $ttq));
+    }
+
+    public function addFreeTourListAction()
+    {
+        $this->checkAdmin();
+        if ($this->getRequest()->isXmlHttpRequest()) {
+            $request = $this->getRequest()->getPost();
+            $ttc = $request['tt'];
+            $offset = 0;
+            $searchData = array('tour_type' => $ttc);
+            $type = $request['type'];
+            $filterData = $request['filter'];
+            if($request['edit'] == '1'){
+                $id = base64_decode($request['tale_id']);
+                $free = $request['free'] == 'true' ? '1' : '0';
+                $editResp = $this->tourTalesTable->updateTourTale(['free' => $free],['id' => $id]);
+                if($editResp)
+                    return new JsonModel(array('success' => true, 'message' => 'updated successfully'));
+                else
+                    return new JsonModel(array('success'=> false,'message'=> 'unable to update'));
+            }
+            if ($filterData) {
+                $filterData = json_decode($filterData, true);
+                if (isset($filterData['country'])) {
+                    if (isset($filterData['country']['text']) && $filterData['country']['text']) {
+                        $searchData['country'] = $filterData['country']['text'];
+                    }
+                    if (isset($filterData['country']['order']) && $filterData['country']['order']) {
+                        $searchData['country_order'] = $filterData['country']['order'];
+                    }
+                }
+                if (isset($filterData['state'])) {
+                    if (isset($filterData['state']['text']) && $filterData['state']['text']) {
+                        $searchData['state'] = $filterData['state']['text'];
+                    }
+                    if (isset($filterData['state']['order']) && $filterData['state']['order']) {
+                        $searchData['state_order'] = $filterData['state']['order'];
+                    }
+                }
+                if (isset($filterData['city'])) {
+
+                    if (isset($filterData['city']['text']) && $filterData['city']['text']) {
+                        $searchData['city'] = $filterData['city']['text'];
+                    }
+                    if (isset($filterData['city']['order']) && $filterData['city']['order']) {
+                        $searchData['city_order'] = $filterData['city']['order'];
+                    }
+                }
+                if (isset($filterData['place_name'])) {
+
+                    if (isset($filterData['place_name']['text']) && $filterData['place_name']['text']) {
+                        $searchData['place_name'] = $filterData['place_name']['text'];
+                    }
+                    if (isset($filterData['place_name']['order']) && $filterData['place_name']['order']) {
+                        $searchData['place_name_order'] = $filterData['place_name']['order'];
+                    }
+                }
+            }
+            $totalCount = 0;
+            if ($type && $type == 'search') {
+                $totalCount = $this->tourTalesTable->getPlacesList($searchData, 1);
+            }
+            $searchData['offset'] = 0;
+            $searchData['limit'] = 10;
+            if (isset($request['page_number'])) {
+                $pageNumber = $request['page_number'];
+                $offset = ($pageNumber * 10 - 10);
+                $limit = 10;
+                $searchData['offset'] = $offset;
+                $searchData['limit'] = $limit;
+            }
+            $placesList = $this->tourTalesTable->getPlacesList($searchData);
+            if($ttc == \Admin\Model\TourTales::tour_type_World_tour){
+                $ttq = \Admin\Model\TourTales::tour_type_India_tour;
+            }else{
+                $ttq = \Admin\Model\TourTales::tour_type_World_tour;
+            }
+            $view = new ViewModel(array('tourismList' => $placesList, 'offset' => $offset, "type" => $type, 'totalCount' => $totalCount, 'ttc' => $ttc, 'ttq' => $ttq));
+            $view->setTerminal(true);
+            return $view;
+        }
+    }
     // Free Tales - End
 
     // Subcription Plans - START

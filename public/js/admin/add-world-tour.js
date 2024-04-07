@@ -41,7 +41,7 @@ $(document).ready(function ()
         var cityName=cityElement.val();
         var placeName=placeNameElement.val();
         var free = 0;
-        if($("input[name='free']:checked"))
+        if($("input[name='free']:checked").length > 0)
             free = 1;
 
         if(countryName=='')

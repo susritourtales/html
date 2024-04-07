@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="<?php echo $this->basePath() ?>/css/main.css">
 <script src="<?php echo $this->basePath(); ?>/js/vendor/sol.js"></script>
 <script src="<?php echo $this->basePath() ?>/js/radialIndicator.min.js"></script>
-<script src="<?php echo $this->basePath(); ?>/js/admin/add-bunched-tour.js?v=1.0.6"></script>
+<script src="<?php echo $this->basePath(); ?>/js/admin/add-bunched-tour.js?v=1.0.8"></script>
 
 <div class="wrapper">
     <div class="main-panel ">
@@ -35,6 +35,27 @@
                             </div>
                             <div class="col-12">
                                 <div class="tags-container"></div>
+                            </div>
+                            <div class="col-12 mb-3" id="country-wrapper"><label class="text-black-50">Provincial Country</label>
+                                <select class="form-control" id="country">
+                                    <option value="">--select country--</option>
+                                    <?php foreach ($countryList as $country) { ?>
+                                        <option value="<?php echo $country['id']; ?>"><?php echo $country['country_name']; ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                            <div class="col-12 mb-3 d-none" id="state-wrapper"><label class="text-black-50" for="states">Provincial State</label>
+                                    <select class="form-control" id="states">
+                                    <option value="">--select state--</option>
+                                    <?php foreach ($statesList as $states) { ?>
+                                        <option value="<?php echo $states['id']; ?>"><?php echo $states['state_name']; ?></option>
+                                    <?php } ?>
+                                    </select>
+                                </div>
+                            <div class="col-12 mb-3"><label class="text-black-50">Provincial City</label>
+                                <select class="form-control" id="cities">
+                                    <option value=""></option>
+                                </select>
                             </div>
                             <div class="col-12"><label class="text-black-50">Tale Name</label>
                                 <input type="text" class="form-control" id="tname" />

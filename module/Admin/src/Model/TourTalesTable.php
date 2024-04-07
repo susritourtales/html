@@ -156,7 +156,7 @@ class TourTalesTable extends  BaseTable
             $sql = $this->getSql();
             $query = $sql->select()
                 ->from($this->tableName)
-                ->columns(array("id", "tale_name", 'tale_description'));
+                ->columns(array("id", "tale_name", 'tale_description', 'free'));
             if ($data['tour_type'] == \Admin\Model\TourTales::tour_type_Bunched_tour) {
                 $query = $query->where($where)
                         ->group('p.id');
@@ -169,11 +169,9 @@ class TourTalesTable extends  BaseTable
                     ->where($where);
             }
             $query = $query->order($order);
-            if ($data['limit'] != -1) {
-                if ($gc == 0) {
-                    $query->limit($data['limit'])
-                        ->offset($data['offset']);
-                }
+            if ($gc == 0) {
+                $query->limit($data['limit'])
+                    ->offset($data['offset']);
             }
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             if ($gc == 1){
@@ -237,7 +235,7 @@ class TourTalesTable extends  BaseTable
             $sql = $this->getSql();
             $query = $sql->select()
                 ->from($this->tableName)
-                ->columns(array("id", "tale_name", 'tale_description'))
+                ->columns(array("id", "tale_name", 'tale_description', 'place_id', 'city_id', 'state_id', 'country_id'))
                 ->join(array('tp' => 'place'), new \Laminas\Db\Sql\Expression("FIND_IN_SET(`tp`.`id`, `p`.`place_id`)"), array('place_name' => new \Laminas\Db\Sql\Expression("GROUP_CONCAT(`tp`.`place_name`)"), 'place_id' => new \Laminas\Db\Sql\Expression("GROUP_CONCAT(`tp`.`id`)")), Select::JOIN_LEFT)
                 ->join(array('c' => 'country'), 'p.country_id=c.id', array('country_name'), Select::JOIN_LEFT)
                 ->join(array('s' => 'state'), 'p.state_id=s.id', array('state_name'), Select::JOIN_LEFT)

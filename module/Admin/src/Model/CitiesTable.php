@@ -89,7 +89,8 @@ class CitiesTable extends BaseTable
                     ->columns(array("id", "city_name"))
                     ->join(array('co' => 'country'), 'co.id=c.country_id', array('country_name'))
                     ->join(array('s' => 'state'), 's.id=c.state_id', array('state_name'), Select::JOIN_LEFT)
-                    ->where($where);
+                    ->where($where)
+                    ->order($order);
             } else {
                 $query = $sql->select()
                     ->from($this->tableName)

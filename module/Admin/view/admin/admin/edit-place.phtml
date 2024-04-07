@@ -20,7 +20,7 @@
                         <div class="col-12 col-md-6 pt-md-5 mb-4 mt-n1">
                             <div class="col-12">
                                 <label class="text-black-50">Country</label>
-                                <select class="form-control" id="country">
+                                <select class="form-control" id="country" disabled>
                                     <option value="">--select country--</option>
                                     <?php foreach ($countries as $country) { ?>
                                         <option value="<?php echo $country['id']; ?>" <?php echo ($country['id'] == $placeDetails['country_id'] ? "selected" : ""); ?>><?php echo $country['country_name']; ?></option>
@@ -28,7 +28,7 @@
                                 </select>
                             </div>
                             <div class="col-12 <?php echo (!count($stateList) ? "d-none" : "") ?>" id="state-wrapper"><label class="text-black-50">State</label>
-                                <select class="form-control" id="states">
+                                <select class="form-control" id="states" disabled>
                                     <option value="">--Select State--</option>
                                     <?php foreach ($stateList as $state) { ?>
                                         <option value="<?php echo $state['id']; ?>" <?php echo ($state['id'] == $placeDetails['state_id'] ? "selected" : ""); ?>><?php echo $state['state_name']; ?></option>
@@ -36,7 +36,7 @@
                                 </select>
                             </div>
                             <div class="col-12"><label class="text-black-50">City</label>
-                                <select class="form-control" id="cities">
+                                <select class="form-control" id="cities" disabled>
                                     <option value="">--Select City--</option>
                                     <?php foreach ($cityList as $city) { ?>
                                         <option value="<?php echo $city['id']; ?>" <?php echo ($city['id'] == $placeDetails['city_id'] ? "selected" : ""); ?>><?php echo $city['city_name']; ?></option>

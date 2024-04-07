@@ -14,7 +14,7 @@
 
         <div class="main-container p-lg-4">
             <div class="d-flex justify-content-between mb-4">
-                <div class="main-heading">Free Tour List</div> <a class="text-end" href="<?php echo $this->basePath() . '/a_dMin/add-free-tour/' . base64_encode('tt=2') ?>"><button type="button" class="btn add-btn">Add/Edit Free Tour </button></a>
+                <div class="main-heading"><?php echo "Free Tour List (Total: $totalCount)";?></div> <a class="text-end" href="<?php echo $this->basePath() . '/a_dMin/add-free-tour/' . base64_encode('tt=2') ?>"><button type="button" class="btn add-btn">Add/Edit Free Tour </button></a>
             </div>
             <div class="" id="recordsList">
                 <?php echo $this->partial('/admin/admin/load-free-tour-list', array(

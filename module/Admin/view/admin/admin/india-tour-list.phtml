@@ -14,7 +14,7 @@
 
         <div class="main-container p-lg-4">
             <div class="d-flex justify-content-between mb-4">
-                <div class="main-heading">India Tour List</div> <a class="text-end" href="<?php echo $this->basePath() . '/a_dMin/add-india-tour' ?>"><button type="button" class="btn add-btn">Add India Tour </button></a>
+                <div class="main-heading"><?php echo "India Tour List (Total: $totalCount)";?></div> <a class="text-end" href="<?php echo $this->basePath() . '/a_dMin/add-india-tour' ?>"><button type="button" class="btn add-btn">Add India Tour </button></a>
             </div>
             <div class="" id="recordsList">
                 <?php echo $this->partial('/admin/admin/load-india-tour-list', array(

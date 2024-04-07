@@ -13,7 +13,7 @@
 
         <div class="main-container p-lg-4">
             <div class="d-flex justify-content-between mb-4">
-                <div class="main-heading">World Tour List</div> <a class="text-end" href="<?php echo $this->basePath() . '/a_dMin/add-world-tour' ?>"><button type="button" class="btn add-btn">Add World Tour </button></a>
+                <div class="main-heading"><?php echo "World Tour List (Total: $totalCount)";?></div> <a class="text-end" href="<?php echo $this->basePath() . '/a_dMin/add-world-tour' ?>"><button type="button" class="btn add-btn">Add World Tour </button></a>
             </div>
             <div class="" id="recordsList">
                 <?php echo $this->partial('/admin/admin/load-world-tour-list', array(

@@ -14,7 +14,7 @@
 
         <div class="main-container p-lg-4">
             <div class="d-flex justify-content-between mb-4">
-                <div class="main-heading">City</div> <a class="text-end" href="<?php echo $this->basePath() . '/a_dMin/add-city' ?>"><button type="button" class="btn add-btn">Add City</button></a>
+                <div class="main-heading"><?php echo "City (Total: $totalCount)";?></div> <a class="text-end" href="<?php echo $this->basePath() . '/a_dMin/add-city' ?>"><button type="button" class="btn add-btn">Add City</button></a>
             </div>
             <div class="" id="recordsList">
                 <?php echo $this->partial('/admin/admin/load-city-list', ['cityList' => $cityList, 'totalCount' => $totalCount, 'type' => 'initialize']); ?>

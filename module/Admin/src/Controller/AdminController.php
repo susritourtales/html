@@ -1816,7 +1816,7 @@ class AdminController extends BaseController
                 }
             }
         }
-        $countryList = $this->countriesTable->getCountries(1, $where = ['display' => 1]);
+        $countryList = $this->countriesTable->getCountries4wt();
         return new ViewModel(array('countryList' => $countryList));
     }
     // World Tales - End
@@ -2001,7 +2001,7 @@ class AdminController extends BaseController
             }
             return new JsonModel(array('success' => true, 'message' => 'added successfully'));
         }
-        $countryList = $this->countriesTable->getCountries(1, ['display' => 1]);
+        $countryList = $this->countriesTable->getCountries4wt();
         $statesList = $this->statesTable->getActiveIndianStates();
         return new ViewModel(array('countryList' => $countryList, 'statesList' => $statesList));
     }
@@ -2141,7 +2141,7 @@ class AdminController extends BaseController
         $taleIdString = explode("=", $taleIdString);
         $taleId = array_key_exists(1, $taleIdString) ? $taleIdString[1] : 0;
         $tourDetails = $this->tourTalesTable->getBunchedTaleDetailsById($taleId);
-        $countryList = $this->countriesTable->getCountries(1, ['display' => 1]);
+        $countryList = $this->countriesTable->getCountries4wt();
         $statesList = $this->statesTable->getActiveIndianStates();
         $citiesList = array();
         if (strtolower($tourDetails[0]['country_name']) == 'india') {

@@ -58,7 +58,6 @@ class TourismFilesTable extends  BaseTable
             foreach ($resultSet as $row) {
                 if (in_array($row['file_language_id'], $languageID)) {
                     $languageCounter = array_search($row['file_language_id'], $languageID);
-
                     $tourismFiles[$languageCounter]['files'][] = array('file_path' => $row['file_path'], 'file_name' => $row['file_name'], 'duration' => $row['duration']);
                 } else {
                     $counter++;

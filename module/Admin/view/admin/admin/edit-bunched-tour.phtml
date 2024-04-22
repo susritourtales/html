@@ -7,36 +7,40 @@
     </div>
 </div>
 <link rel="stylesheet" href="<?php echo $this->basePath() ?>/css/vendor/sol.css">
-<link rel="stylesheet" href="<?php echo $this->basePath()?>/css/main.css">
+<link rel="stylesheet" href="<?php echo $this->basePath() ?>/css/main.css">
 <script src="<?php echo $this->basePath() ?>/js/radialIndicator.min.js"></script>
 <script src="<?php echo $this->basePath(); ?>/js/vendor/sol.js"></script>
-<script src="<?php echo $this->basePath(); ?>/js/admin/edit-bunched-tour.js?v=1.0.6"></script>
+<script src="<?php echo $this->basePath(); ?>/js/admin/edit-bunched-tour.js?v=1.0.7"></script>
 <div class="wrapper">
     <div class="main-panel ">
         <?php echo $this->partial("/application/index/app-header"); ?>
         <div class="main-container p-lg-4">
-            <div class="main-heading mb-3"><a href="<?php echo $this->basePath().'/a_dMin/bunched-tour-list'?>"><i class="fa fa-arrow-left mr-2"></i></a> Edit Bunched Tale</div>
+            <div class="main-heading mb-3"><a href="<?php echo $this->basePath() . '/a_dMin/bunched-tour-list' ?>"><i class="fa fa-arrow-left mr-2"></i></a> Edit Bunched Tale</div>
             <div class="row">
                 <div class="col-12 col-lg-10">
                     <div class="row adding-form">
                         <div class="col-lg-6 col-12">
                             <div class="col-12 mb-3"><label class="text-black-50">Tale Type</label>
-                                <select class="form-control" id="taletype">
+                                <select class="form-control" id="taletype" disabled>
                                     <option value="<?php echo \Admin\Model\TourTales::tour_type_World_tour; ?>" <?php echo ($tourDetails[0]['country_id'] != "101" ? "selected" : ""); ?>>World Tales</option>
                                     <option value="<?php echo \Admin\Model\TourTales::tour_type_India_tour; ?>" <?php echo ($tourDetails[0]['country_id'] == "101" ? "selected" : ""); ?>>India Tales</option>
                                 </select>
                             </div>
-                            <?php $places = explode(",",$tourDetails[0]["place_name"]);
-                                $placeids = explode(",",$tourDetails[0]["place_id"]); 
-                                $i=0;?>
+                            <?php //$places = explode(",", $tourDetails[0]["place_name"]);
+                            $placeids = [];
+                            if ($tourDetails[0]["place_id"])
+                                $placeids = explode(",", $tourDetails[0]["place_id"]);
+                            $i = 0; ?>
                             <div class="col-12 mb-3"><label class="text-black-50 text-capitalize">tales</label>
                                 <select class="form-control" id="tales" name="tales" multiple>
-                                    <?php foreach ($places as $place) { ?>
-                                        <option value="<?php echo $placeids[$i]; ?>" selected><?php echo $place; ?></option>
-                                    <?php $i++;} ?>
+                                    <?php foreach ($talesList as $tale) { //($places as $place) { 
+                                    ?>
+                                        <option value="<?php echo $tale['place_id']; ?>" <?php echo (in_array($tale['place_id'], $placeids) ? "selected" : ""); ?>><?php echo $tale['place_name']; ?></option>
+                                    <?php $i++;
+                                    } ?>
                                 </select>
                             </div>
-                            <div class="col-12 mb-3" id="country-wrapper"><label class="text-black-50">Provincial Country</label>
+                            <div class="col-12 mb-3 <?php echo ($tourDetails[0]['country_id'] == "101" ? "d-none" : ""); ?>" id="country-wrapper"><label class="text-black-50">Provincial Country</label>
                                 <select class="form-control" id="country">
                                     <option value="">--select country--</option>
                                     <?php foreach ($countryList as $country) { ?>
@@ -44,14 +48,14 @@
                                     <?php } ?>
                                 </select>
                             </div>
-                            <div class="col-12 mb-3 d-none" id="state-wrapper"><label class="text-black-50" for="states">Provincial State</label>
-                                    <select class="form-control" id="states">
+                            <div class="col-12 mb-3 <?php echo ($tourDetails[0]['country_id'] == "101" ? "" : "d-none"); ?>" id="state-wrapper"><label class="text-black-50" for="states">Provincial State</label>
+                                <select class="form-control" id="states">
                                     <option value="">--select state--</option>
                                     <?php foreach ($statesList as $states) { ?>
-                                        <option value="<?php echo $states['id']; ?>" <?php echo ($state['id'] == $tourDetails[0]['state_id'] ? "selected" : ""); ?>><?php echo $states['state_name']; ?></option>
+                                        <option value="<?php echo $states['id']; ?>" <?php echo ($states['id'] == $tourDetails[0]['state_id'] ? "selected" : ""); ?>><?php echo $states['state_name']; ?></option>
                                     <?php } ?>
-                                    </select>
-                                </div>
+                                </select>
+                            </div>
                             <div class="col-12 mb-3"><label class="text-black-50">Provincial City</label>
                                 <select class="form-control" id="cities">
                                     <option value="">--Select City--</option>
@@ -61,7 +65,7 @@
                                 </select>
                             </div>
                             <div class="col-12"><label class="text-black-50">Tale Name</label>
-                                <input type="text" class="form-control" id="tname" value="<?php echo $tourDetails[0]["tale_name"]; ?>"/>
+                                <input type="text" class="form-control" id="tname" value="<?php echo $tourDetails[0]["tale_name"]; ?>" />
                             </div>
                             <div class="col-12">
                                 <label class="text-black-50">Description</label>

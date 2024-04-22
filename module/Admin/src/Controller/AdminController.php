@@ -1925,11 +1925,11 @@ class AdminController extends BaseController
             if (is_null($talesList)) {
                 return new JsonModel(array("success" => false, "message" => "Please select tales to be added to bunched tale"));
             }
-            if ($taleType == '1') {
+            if ($taleType == \Admin\Model\TourTales::tour_type_India_tour) {
                 if ($state == '') {
                     return new JsonModel(array('success' => false, 'message' => 'Please select Provincial State'));
                 }
-                $country = null;
+                $country = '101';
             } else {
                 if ($country == '') {
                     return new JsonModel(array('success' => false, 'message' => 'Please select Provincial Country'));
@@ -2041,21 +2041,22 @@ class AdminController extends BaseController
             $taleId = $request['id'];
             $taleName = $request['tale_name'];
             $taleDesc = $request['tale_desc'];
-            $talesList = $request['tales_list'];
+            //$talesList = $request['tales_list'];
+            $placesList = $request['tales_list'];
             $country = $request['country'];
             $state = $request['state'];
             $city = $request['city'];
             $deletedImages = json_decode($request['deleted_images'], true);
             $deleteFiles = array_merge($deletedImages);
             $uploadFileDetails = array();
-            if (is_null($talesList)) {
+            if (is_null($placesList)) {
                 return new JsonModel(array("success" => false, "message" => "Please select tales to be added to bunched tale"));
             }
-            if ($taleType == '1') {
+            if ($taleType == \Admin\Model\TourTales::tour_type_India_tour) {
                 if ($state == '') {
                     return new JsonModel(array('success' => false, 'message' => 'Please select Provincial State'));
                 }
-                $country = null;
+                $country = '101';
             } else {
                 if ($country == '') {
                     return new JsonModel(array('success' => false, 'message' => 'Please select Provincial Country'));
@@ -2100,6 +2101,7 @@ class AdminController extends BaseController
             if (!$copyFiles['status']) {
                 return new JsonModel(array('success' => false, 'message' => 'unable to add bunched tale'));
             }
+            $talesList = $this->tourTalesTable->getTaleIdsFromPlacesList(explode(',', $placesList));
             $data = array(
                 'tour_type' => \Admin\Model\TourTales::tour_type_Bunched_tour,
                 'place_id' => $talesList,
@@ -2145,6 +2147,10 @@ class AdminController extends BaseController
         $countryList = $this->countriesTable->getCountries4wt();
         $statesList = $this->statesTable->getActiveIndianStates();
         $citiesList = array();
+        $tltype = \Admin\Model\TourTales::tour_type_World_tour;
+        if ($tourDetails[0]['country_id'] == "101")
+            $tltype = \Admin\Model\TourTales::tour_type_India_tour;
+        $talesList = $this->tourTalesTable->getPlacesList4BT($tltype);
         /* var_dump($tourDetails);
         exit; */
         if (strtolower($tourDetails[0]['country_name']) == 'india') {
@@ -2152,7 +2158,7 @@ class AdminController extends BaseController
         } else {
             $citiesList = $this->citiesTable->getCities(array('country_id' => $tourDetails[0]['country_id']));
         }
-        return new ViewModel(array('tourDetails' => $tourDetails, 'countryList' => $countryList, 'statesList' => $statesList, 'citiesList' => $citiesList,  'imageUrl' => $this->filesUrl()));
+        return new ViewModel(array('tourDetails' => $tourDetails, 'countryList' => $countryList, 'statesList' => $statesList, 'citiesList' => $citiesList, 'talesList' => $talesList,  'imageUrl' => $this->filesUrl()));
     }
 
     // Bunched Tales - End

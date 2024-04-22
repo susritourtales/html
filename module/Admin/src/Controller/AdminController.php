@@ -1222,7 +1222,7 @@ class AdminController extends BaseController
             $deletedImages = json_decode($request['deleted_images'], true);
             $deletedThumbnails = json_decode($request['deleted_thumbnails'], true);
             $deletedAudio = json_decode($request['deleted_audio'], true);
-            $deleteFiles = array_merge($deletedAudio, $deletedImages,$deletedThumbnails);
+            $deleteFiles = array_merge($deletedAudio, $deletedImages, $deletedThumbnails);
             $placeName = trim($placeName);
             if ($placeName == '') {
                 return new JsonModel(array("success" => false, "message" => "Please enter Place name"));
@@ -1663,14 +1663,14 @@ class AdminController extends BaseController
                 return new JsonModel(array("success" => false, "message" => "Tale already added"));
             $countryId = $this->countriesTable->getField(array('country_name' => 'india', 'display' => 1), 'id');
             $data = [];
-            foreach($placeIdArr as $pid) {
-                $data[] = ['tour_type' => \Admin\Model\TourTales::tour_type_India_tour, 'display' => 1, 'country_id' => $countryId, 'state_id' => $stateId,'city_id'=> $cityId, 'free' => $ft, 'place_id' => $pid];
+            foreach ($placeIdArr as $pid) {
+                $data[] = ['tour_type' => \Admin\Model\TourTales::tour_type_India_tour, 'display' => 1, 'country_id' => $countryId, 'state_id' => $stateId, 'city_id' => $cityId, 'free' => $ft, 'place_id' => $pid];
             }
             if (!count($checkTaleAdded)) {
                 $saveData = $this->tourTalesTable->addMulipleTourTales($data);
                 if ($saveData['success']) {
                     return new JsonModel(array('success' => true, 'message' => 'India Tale added Successfully'));
-                }else {
+                } else {
                     return new JsonModel(array('success' => false, 'message' => 'unable to add India tale'));
                 }
             }
@@ -1804,14 +1804,14 @@ class AdminController extends BaseController
             if ($checkTaleAdded)
                 return new JsonModel(array("success" => false, "message" => "Tale already added"));
             $data = [];
-            foreach($placeIdArr as $pid) {
-                $data[] = ['tour_type' => \Admin\Model\TourTales::tour_type_World_tour, 'display' => 1, 'country_id' => $countryId, 'city_id'=> $cityId, 'free' => $ft, 'place_id' => $pid];
+            foreach ($placeIdArr as $pid) {
+                $data[] = ['tour_type' => \Admin\Model\TourTales::tour_type_World_tour, 'display' => 1, 'country_id' => $countryId, 'city_id' => $cityId, 'free' => $ft, 'place_id' => $pid];
             }
             if (!count($checkTaleAdded)) {
                 $saveData = $this->tourTalesTable->addMulipleTourTales($data);
                 if ($saveData['success']) {
                     return new JsonModel(array('success' => true, 'message' => 'World Tale added Successfully'));
-                }else {
+                } else {
                     return new JsonModel(array('success' => false, 'message' => 'unable to add World tale'));
                 }
             }
@@ -1925,19 +1925,19 @@ class AdminController extends BaseController
             if (is_null($talesList)) {
                 return new JsonModel(array("success" => false, "message" => "Please select tales to be added to bunched tale"));
             }
-            if($taleType == '1'){
-                if($state == ''){
-                    return new JsonModel(array('success'=> false,'message'=> 'Please select Provincial State'));
+            if ($taleType == '1') {
+                if ($state == '') {
+                    return new JsonModel(array('success' => false, 'message' => 'Please select Provincial State'));
                 }
                 $country = null;
-            }else{
-                if($country == ''){
-                    return new JsonModel(array('success'=> false,'message'=> 'Please select Provincial Country'));
+            } else {
+                if ($country == '') {
+                    return new JsonModel(array('success' => false, 'message' => 'Please select Provincial Country'));
                 }
                 $state = null;
             }
-            if($city == ''){
-                return new JsonModel(array('success'=> false, 'message'=> 'Please select Provincial City'));
+            if ($city == '') {
+                return new JsonModel(array('success' => false, 'message' => 'Please select Provincial City'));
             }
             if ($taleName == '') {
                 return new JsonModel(array("success" => false, "message" => "Please select tale name"));
@@ -1975,8 +1975,8 @@ class AdminController extends BaseController
             $data = array(
                 'tour_type' => \Admin\Model\TourTales::tour_type_Bunched_tour,
                 'place_id' => $talesList,
-                'city_id'=> $city,
-                'country_id'=> $country,
+                'city_id' => $city,
+                'country_id' => $country,
                 'state_id' => $state,
                 'tale_name' => $taleName,
                 'tale_description' => $taleDesc,
@@ -2006,7 +2006,8 @@ class AdminController extends BaseController
         return new ViewModel(array('countryList' => $countryList, 'statesList' => $statesList));
     }
 
-    public function getTalesAction() {
+    public function getTalesAction()
+    {
         $this->checkAdmin();
         if ($this->getRequest()->isXmlHttpRequest()) {
             $request = $this->getRequest()->getPost();
@@ -2014,7 +2015,7 @@ class AdminController extends BaseController
             $talesList = $this->tourTalesTable->getPlacesList4BT($taleType);
             return new JsonModel(array('success' => true, 'tales' => $talesList));
         }
-    }    
+    }
     public function getPlacesAction()
     {
         $this->checkAdmin();
@@ -2050,19 +2051,19 @@ class AdminController extends BaseController
             if (is_null($talesList)) {
                 return new JsonModel(array("success" => false, "message" => "Please select tales to be added to bunched tale"));
             }
-            if($taleType == '1'){
-                if($state == ''){
-                    return new JsonModel(array('success'=> false,'message'=> 'Please select Provincial State'));
+            if ($taleType == '1') {
+                if ($state == '') {
+                    return new JsonModel(array('success' => false, 'message' => 'Please select Provincial State'));
                 }
                 $country = null;
-            }else{
-                if($country == ''){
-                    return new JsonModel(array('success'=> false,'message'=> 'Please select Provincial Country'));
+            } else {
+                if ($country == '') {
+                    return new JsonModel(array('success' => false, 'message' => 'Please select Provincial Country'));
                 }
                 $state = null;
             }
-            if($city == ''){
-                return new JsonModel(array('success'=> false, 'message'=> 'Please select Provincial City'));
+            if ($city == '') {
+                return new JsonModel(array('success' => false, 'message' => 'Please select Provincial City'));
             }
             if ($taleName == '') {
                 return new JsonModel(array("success" => false, "message" => "Please select tale name"));
@@ -2102,8 +2103,8 @@ class AdminController extends BaseController
             $data = array(
                 'tour_type' => \Admin\Model\TourTales::tour_type_Bunched_tour,
                 'place_id' => $talesList,
-                'city_id'=> $city,
-                'country_id'=> $country,
+                'city_id' => $city,
+                'country_id' => $country,
                 'state_id' => $state,
                 'tale_name' => $taleName,
                 'tale_description' => $taleDesc,
@@ -2144,12 +2145,14 @@ class AdminController extends BaseController
         $countryList = $this->countriesTable->getCountries4wt();
         $statesList = $this->statesTable->getActiveIndianStates();
         $citiesList = array();
+        var_dump($tourDetails);
+        exit;
         if (strtolower($tourDetails[0]['country_name']) == 'india') {
             $citiesList = $this->citiesTable->getCities(array('state_id' => $tourDetails[0]['state_id']));
         } else {
             $citiesList = $this->citiesTable->getCities(array('country_id' => $tourDetails[0]['country_id']));
         }
-        return new ViewModel(array('tourDetails'=>$tourDetails, 'countryList' => $countryList, 'statesList' => $statesList, 'citiesList' => $citiesList,  'imageUrl' => $this->filesUrl()));
+        return new ViewModel(array('tourDetails' => $tourDetails, 'countryList' => $countryList, 'statesList' => $statesList, 'citiesList' => $citiesList,  'imageUrl' => $this->filesUrl()));
     }
 
     // Bunched Tales - End
@@ -2230,7 +2233,8 @@ class AdminController extends BaseController
         }
     }
 
-    public function addFreeTourAction(){
+    public function addFreeTourAction()
+    {
         $this->checkAdmin();
         $paramId = $this->params()->fromRoute('id', '');
         if (!$paramId) {
@@ -2242,9 +2246,9 @@ class AdminController extends BaseController
         $ttc = array_key_exists(1, $ttString) ? $ttString[1] : 0;
         $placesList = $this->tourTalesTable->getPlacesList(array('tour_type' => $ttc, 'limit' => 10, 'offset' => 0));
         $totalCount = $this->tourTalesTable->getPlacesList(array('tour_type' => $ttc, 'limit' => -1, 'offset' => 0), 1);
-        if($ttc == \Admin\Model\TourTales::tour_type_World_tour){
+        if ($ttc == \Admin\Model\TourTales::tour_type_World_tour) {
             $ttq = \Admin\Model\TourTales::tour_type_India_tour;
-        }else{
+        } else {
             $ttq = \Admin\Model\TourTales::tour_type_World_tour;
         }
         return new ViewModel(array('placesList' => $placesList, 'totalCount' => $totalCount, 'ttc' => $ttc, 'ttq' => $ttq));
@@ -2260,14 +2264,14 @@ class AdminController extends BaseController
             $searchData = array('tour_type' => $ttc);
             $type = $request['type'];
             $filterData = $request['filter'];
-            if($request['edit'] == '1'){
+            if ($request['edit'] == '1') {
                 $id = base64_decode($request['tale_id']);
                 $free = $request['free'] == 'true' ? '1' : '0';
-                $editResp = $this->tourTalesTable->updateTourTale(['free' => $free],['id' => $id]);
-                if($editResp)
+                $editResp = $this->tourTalesTable->updateTourTale(['free' => $free], ['id' => $id]);
+                if ($editResp)
                     return new JsonModel(array('success' => true, 'message' => 'updated successfully'));
                 else
-                    return new JsonModel(array('success'=> false,'message'=> 'unable to update'));
+                    return new JsonModel(array('success' => false, 'message' => 'unable to update'));
             }
             if ($filterData) {
                 $filterData = json_decode($filterData, true);
@@ -2320,9 +2324,9 @@ class AdminController extends BaseController
                 $searchData['limit'] = $limit;
             }
             $placesList = $this->tourTalesTable->getPlacesList($searchData);
-            if($ttc == \Admin\Model\TourTales::tour_type_World_tour){
+            if ($ttc == \Admin\Model\TourTales::tour_type_World_tour) {
                 $ttq = \Admin\Model\TourTales::tour_type_India_tour;
-            }else{
+            } else {
                 $ttq = \Admin\Model\TourTales::tour_type_World_tour;
             }
             $view = new ViewModel(array('tourismList' => $placesList, 'offset' => $offset, "type" => $type, 'totalCount' => $totalCount, 'ttc' => $ttc, 'ttq' => $ttq));
@@ -2340,7 +2344,8 @@ class AdminController extends BaseController
         $totalCount = $this->subscriptionPlanTable->getPlansCount(\Admin\Model\SubscriptionPlan::ActivePlans);
         return new ViewModel(array('splansList' => $plansList, 'totalCount' => $totalCount));
     }
-    public function editSubscriptionPlanAction(){
+    public function editSubscriptionPlanAction()
+    {
         $this->checkAdmin();
         if ($this->getRequest()->isXmlHttpRequest()) {
             $request = $this->getRequest()->getPost();
@@ -2349,8 +2354,8 @@ class AdminController extends BaseController
             $data['qsp_usd'] = $request['qsp_usd'];
             $data['sqsp_inr'] = $request['sqsp_inr'];
             $data['sqsp_usd'] = $request['sqsp_usd'];
-            $data['sqs_start_date'] = date('Y-m-d',strtotime($request['sqs_sd']));
-            $data['sqs_end_date'] = date('Y-m-d',strtotime($request['sqs_ed']));
+            $data['sqs_start_date'] = date('Y-m-d', strtotime($request['sqs_sd']));
+            $data['sqs_end_date'] = date('Y-m-d', strtotime($request['sqs_ed']));
             $data['qrp_inr'] = $request['qrp_inr'];
             $data['qrp_usd'] = $request['qrp_usd'];
             $data['questt_duration'] = $request['qd'];
@@ -2361,8 +2366,8 @@ class AdminController extends BaseController
             $data['topp_usd'] = $request['topp_usd'];
             $data['stsp_inr'] = $request['stsp_inr'];
             $data['stsp_usd'] = $request['stsp_usd'];
-            $data['sts_start_date'] = date('Y-m-d',strtotime($request['sts_sd']));
-            $data['sts_end_date'] = date('Y-m-d',strtotime($request['sts_ed']));
+            $data['sts_start_date'] = date('Y-m-d', strtotime($request['sts_sd']));
+            $data['sts_end_date'] = date('Y-m-d', strtotime($request['sts_ed']));
             $data['tppp_inr'] = $request['tppp_inr'];
             $data['tppp_usd'] = $request['tppp_usd'];
             $data['max_pwds'] = $request['max_pwds'];
@@ -2374,7 +2379,7 @@ class AdminController extends BaseController
             $data['cd_percentage'] = $request['cdp'];
             $data['web_text'] = $request['wt'];
             $data['app_text'] = $request['at'];
-            
+
             // $data = $request->getArrayCopy();
             $nullKeys = [];
             foreach ($data as $key => $value) {
@@ -2383,7 +2388,7 @@ class AdminController extends BaseController
                 }
             }
             $csvString = implode(',', $nullKeys);
-            if($csvString)
+            if ($csvString)
                 return new JsonModel(array('success' => false, 'message' => 'please provide all the required values')); //'please provide values for ' . $csvString));
             $response = $this->subscriptionPlanTable->setPlan($data, array('id' => $pid));
             if ($response) {

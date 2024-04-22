@@ -2145,8 +2145,8 @@ class AdminController extends BaseController
         $countryList = $this->countriesTable->getCountries4wt();
         $statesList = $this->statesTable->getActiveIndianStates();
         $citiesList = array();
-        var_dump($tourDetails);
-        exit;
+        /* var_dump($tourDetails);
+        exit; */
         if (strtolower($tourDetails[0]['country_name']) == 'india') {
             $citiesList = $this->citiesTable->getCities(array('state_id' => $tourDetails[0]['state_id']));
         } else {

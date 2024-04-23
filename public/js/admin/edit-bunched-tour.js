@@ -96,9 +96,15 @@ $(document).ready(function ()
             {
                 if(progress)
                 {
-                    if(circle[fileID]) {
-                        circle[fileID].animate((fileID * 100));
+                    var progressPercentage = progress.loaded / progress.total * 100;
+                    if (circle[fileID]) {
+
+                        circle[fileID].animate(progressPercentage);
+
                     }
+                    /* if(circle[fileID]) {
+                        circle[fileID].animate((fileID * 100));
+                    } */
                 }
                 if(!progress)
                 {

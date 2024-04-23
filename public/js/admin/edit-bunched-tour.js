@@ -92,6 +92,17 @@ $(document).ready(function ()
             imageFiles[imageId].push(ifile);
             uploadFiles['images'][imageId]={"uploaded":false};
             
+            let classId='circlechart_img_'+imageId;
+            $(".image-preview-wrapper").append('<div class="col-sm-4 mt-2 position-relative image-preview overflow-hidden" data-id="'+imageId+'"><div class="position-absolute circlechart '+classId+'" style="width: 100%;height: 100%" data-id="'+imageId+'"></div><img src="'+e.target.result+'" style="width: 100%;height: 100%"><span class="bg-white circle close-icon" data-id="'+imageId+'"><i class="fas fa-times position-absolute " data-id="'+imageId+'" ></i></span></div>');
+            circle[imageId] = radialIndicator('.'+classId,{
+                radius: 50,
+                barColor : '#6dd873',
+                barWidth : 8,
+                initValue : 0,
+                barBgColor: '#e4e4e4',
+                percentage: true
+            });
+            
             filesData.ajaxCall(1,ifile,imageId,function(progress,fileID,response)
             {
                 if(progress)
@@ -123,16 +134,6 @@ $(document).ready(function ()
                 }
             });
             element.val("");
-            let classId='circlechart_img_'+imageId;
-            $(".image-preview-wrapper").append('<div class="col-sm-4 mt-2 position-relative image-preview overflow-hidden" data-id="'+imageId+'"><div class="position-absolute circlechart '+classId+'" style="width: 100%;height: 100%" data-id="'+imageId+'"></div><img src="'+e.target.result+'" style="width: 100%;height: 100%"><span class="bg-white circle close-icon" data-id="'+imageId+'"><i class="fas fa-times position-absolute " data-id="'+imageId+'" ></i></span></div>');
-            circle[imageId] = radialIndicator('.'+classId,{
-                radius: 50,
-                barColor : '#6dd873',
-                barWidth : 8,
-                initValue : 0,
-                barBgColor: '#e4e4e4',
-                percentage: true
-            });
         };
         reader.readAsDataURL(ifile);
         setTimeout(function(){

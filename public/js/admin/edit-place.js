@@ -265,7 +265,7 @@ $(document).ready(function ()
                                     'id': response.id
                                 };
                                 if(circle[fileID]) {
-                                    circle[fileID].animate(100);
+                                    circle[fileID].animate((fileID * 100));
                                 }
                                 if (uploadClicked) {
                                     var countryElement = $("#addPlace");

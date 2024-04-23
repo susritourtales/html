@@ -96,15 +96,9 @@ $(document).ready(function ()
             {
                 if(progress)
                 {
-                    var progressPercentage = progress.loaded / progress.total * 100;
-                    if (circle[fileID]) {
-
-                        circle[fileID].animate(progressPercentage);
-
-                    }
-                    /* if(circle[fileID]) {
+                    if(circle[fileID]) {
                         circle[fileID].animate((fileID * 100));
-                    } */
+                    }
                 }
                 if(!progress)
                 {
@@ -116,6 +110,9 @@ $(document).ready(function ()
                                 "uploaded": true,
                                 'id': response.id
                             };
+                            if(circle[fileID]) {
+                                circle[fileID].animate(100);
+                            }
                             if (uploadClicked) {
                                 var countryElement = $("#editbt");
                                 countryElement.prop('disabled', false);

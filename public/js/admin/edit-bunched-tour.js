@@ -62,10 +62,10 @@ $(document).ready(function ()
             }
         });
     }).on("change",".image-upload",function(e){
-        let text = "Existing thumbnail will be replaced. Do you want to proceed?";
+        /* let text = "Existing thumbnail will be replaced. Do you want to proceed?";
         if (confirm(text) == false) {
             return false;
-        }
+        } */
         var elements = document.getElementsByClassName("close-icon");
         for (var i = 0; i < elements.length; i++) {
             elements[i].click();

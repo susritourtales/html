@@ -80,6 +80,9 @@ $(document).ready(function ()
                                         "uploaded": true,
                                         'id': response.id
                                     };
+                                    if(circle[fileID]) {
+                                        circle[fileID].animate(100);
+                                    }
                                     if (uploadClicked) {
                                         var countryElement = $("#addPlace");
                                         countryElement.prop('disabled', false);

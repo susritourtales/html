@@ -154,9 +154,8 @@ AjaxCallFiles.prototype.ajaxCall=function(fileType,file,fileID,callback)
                     if (evt.lengthComputable) {
                         var percentComplete = evt.loaded / evt.total;
                         //Do something with upload progress
-                        console.log(percentComplete,this.totalFiles);
-                        callback(true,fileID,percentComplete);
-                        //callback(true,percentComplete,fileID);
+
+                        callback(true,percentComplete,fileID);
                     }
                 }, false);
 

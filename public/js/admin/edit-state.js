@@ -14,86 +14,90 @@ $(document).ready(function ()
     addedRow=$(".file-uploads:last").data("id");
     imageId=$(".image-preview:last").data("id");
     $("body").on("change",".image-upload",function(e){
-            var files = e.target.files;
-            var element=$(this);
-            var incerement=0;
-            $.each(files, function (i, file){
-                var reader = new FileReader();
-                reader.onload = function (e)
-                {
-                    var FileType = files[i].type;
-                    var filename = files[i].name;
-                    var fileExtension = FileType.substr((FileType.lastIndexOf('/') + 1));
-                    var Extension = fileExtension.toLowerCase();
-                    if ($.inArray(Extension, imageacceptedExtensions) === -1)
-                    {
-                        files=[];
-                        messageDisplay("Invalid File");
-                        return false;
-                    }
-                    incerement++;
-                    imageId++;
-                    imageFiles[imageId]=[];
-                    imageFiles[imageId].push(file);
-                    uploadFiles['images'][imageId]={"uploaded":false};
-                    
-                    let classId='circlechart_img_'+imageId;
-                    $(".image-preview-wrapper").append('<div class="col-sm-4 mt-2 position-relative image-preview overflow-hidden" data-id="'+imageId+'"><div class="position-absolute circlechart '+classId+'" style="width: 100%;height: 100%" data-id="'+imageId+'"></div><img src="'+e.target.result+'" style="width: 100%;height: 100%"><span class="bg-white circle close-icon" data-id="'+imageId+'"><i class="fas fa-times position-absolute " data-id="'+imageId+'" ></i></span></div>');
-                    circle[imageId] = radialIndicator('.'+classId,{
-                        radius: 50,
-                        barColor : '#6dd873',
-                        barWidth : 8,
-                        initValue : 0,
-                        barBgColor: '#e4e4e4',
-                        percentage: true
-                    });
-                    
-                    filesData.ajaxCall(1,file,imageId,function(progress,fileID,response)
-                    {
-                        if(progress)
-                        {
-                            if(circle[fileID]) {
-                                circle[fileID].animate((fileID * 100));
-                            }
-                        }
-                        if(!progress)
-                        {
-                            if(response.success)
-                            {
-                                if(uploadFiles['images'][fileID]!=undefined)
-                                {
-                                    uploadFiles['images'][fileID] = {
-                                        "uploaded": true,
-                                        'id': response.id
-                                    };
-                                    if(circle[fileID]) {
-                                        circle[fileID].animate(100);
-                                    }
-                                    if (uploadClicked) {
-                                        var countryElement = $("#addPlace");
-                                        countryElement.prop('disabled', false);
-                                        countryElement.click();
-                                    }
-                                }
-                            }
-                        }
-                    });
-                    if(files.length == incerement)
-                    {
-                        element.val("");
-                    }
-                };
-                reader.readAsDataURL(file);
+        let text = "Existing thumbnail will be replaced. Do you want to proceed?";
+        if (confirm(text) == false) {
+            return false;
+        }
+        var elements = document.getElementsByClassName("close-icon");
+        for (var i = 0; i < elements.length; i++) {
+            elements[i].click();
+        }
+        var ifile = e.target.files[0];
+        var element=$(this);
+        var incerement=0;
+        var reader = new FileReader();
+        reader.onload = function (e)
+        {
+            var FileType = ifile.type;
+            var filename = ifile.name;
+            var fileExtension = FileType.substr((FileType.lastIndexOf('/') + 1));
+            var Extension = fileExtension.toLowerCase();
+            if ($.inArray(Extension, imageacceptedExtensions) === -1)
+            {
+                ifile=null;
+                messageDisplay("Invalid File");
+                return false;
+            }
+            incerement++;
+            imageId++;
+            imageFiles[imageId]=[];
+            imageFiles[imageId].push(ifile);
+            uploadFiles['images'][imageId]={"uploaded":false};
+            
+            let classId='circlechart_img_'+imageId;
+            $(".image-preview-wrapper").append('<div class="col-sm-4 mt-2 position-relative image-preview overflow-hidden" data-id="'+imageId+'"><div class="position-absolute circlechart '+classId+'" style="width: 100%;height: 100%" data-id="'+imageId+'"></div><img src="'+e.target.result+'" style="width: 100%;height: 100%"><span class="bg-white circle close-icon" data-id="'+imageId+'"><i class="fas fa-times position-absolute " data-id="'+imageId+'" ></i></span></div>');
+            circle[imageId] = radialIndicator('.'+classId,{
+                radius: 50,
+                barColor : '#6dd873',
+                barWidth : 8,
+                initValue : 0,
+                barBgColor: '#e4e4e4',
+                percentage: true
             });
-            setTimeout(function(){
-                var height=$(".image-preview-wrapper").height();
-                var parentHeight=$(".image-upload-wrapper").height();
-                if(parentHeight<height)
+            
+            filesData.ajaxCall(1,ifile,imageId,function(progress,fileID,response)
+            {
+                if(progress)
                 {
-                    $(".image-upload").css("height",height);
+                    if(circle[fileID]) {
+                        circle[fileID].animate((fileID * 100));
+                    }
                 }
-            },10);
-        }).on("click",".close-icon",function(){
+                if(!progress)
+                {
+                    if(response.success)
+                    {
+                        if(uploadFiles['images'][fileID]!=undefined)
+                        {
+                            uploadFiles['images'][fileID] = {
+                                "uploaded": true,
+                                'id': response.id
+                            };
+                            if(circle[fileID]) {
+                                circle[fileID].animate(100);
+                            }
+                            if (uploadClicked) {
+                                var countryElement = $("#editbt");
+                                countryElement.prop('disabled', false);
+                                countryElement.click();
+                            }
+                        }
+                    }
+                }
+            });
+            element.val("");
+        };
+        reader.readAsDataURL(ifile);
+        setTimeout(function(){
+            var height=$(".image-preview-wrapper").height();
+            var parentHeight=$(".image-upload-wrapper").height();
+            console.log(parentHeight,height);
+            if(parentHeight<height)
+            {
+                $(".image-upload").css("height",height);
+            }
+        },10);
+    }).on("click",".close-icon",function(){
         var id=$(this).data("id");
         var edit=$(this).data("edit");
         if(edit)

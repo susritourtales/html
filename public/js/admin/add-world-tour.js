@@ -40,9 +40,9 @@ $(document).ready(function ()
         var countryName=countryElement.val();
         var cityName=cityElement.val();
         var placeName=placeNameElement.val();
-        var free = 0;
+        /* var free = 0;
         if($("input[name='free']:checked").length > 0)
-            free = 1;
+            free = 1; */
 
         if(countryName=='')
         {
@@ -63,7 +63,7 @@ $(document).ready(function ()
         formData.append("country_id",countryName);
         formData.append("city_id",cityName);
         formData.append("place_id",placeName);
-        formData.append("free",free);
+        //formData.append("free",free);
         var element=$(this);
         element.html('Please wait...');
         element.prop('disabled',true);

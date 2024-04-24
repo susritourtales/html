@@ -39,9 +39,9 @@ $(document).ready(function ()
         var cityId=cityElement.val();
         var stateId=stateElement.val();
         var placeId=placeElement.val();
-        var free = 0;
+        /* var free = 0;
         if($("input[name='free']:checked").length > 0)
-            free = 1;
+            free = 1; */
         if(cityId=='')
         {
             messageDisplay("Please select city");
@@ -61,7 +61,7 @@ $(document).ready(function ()
         formData.append("state_id",stateId);
         formData.append("city_id",cityId);
         formData.append("place_id",placeId);
-        formData.append("free",free);
+        //formData.append("free",free);
         var element=$(this);
         element.html('Please wait...');
         element.prop('disabled',true);

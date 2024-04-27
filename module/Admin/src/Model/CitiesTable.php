@@ -80,7 +80,7 @@ class CitiesTable extends BaseTable
                 }
             }
             if (!count($order)) {
-                $order = array('c.updated_at desc');
+                $order = array('co.country_name asc', 's.state_name asc', 'c.city_name asc');
             }
             $sql = $this->getSql();
             if ($gc == 1) {
@@ -103,19 +103,14 @@ class CitiesTable extends BaseTable
                     ->offset($data['offset']);
             }
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
-
             if ($gc == 1)
                 return count($resultSet);
-
             $cities = array();
             foreach ($resultSet as $row) {
                 $cities[] = $row;
             }
-
             return $cities;
         } catch (\Exception $e) {
-            /* print_r($e->getMessage());
-            exit; */
             return array();
         }
     }
@@ -173,8 +168,6 @@ class CitiesTable extends BaseTable
             }
             return $cities;
         } catch (\Exception $e) {
-            /* print_r($e->getMessage());
-             exit;*/
             return array();
         }
     }
@@ -182,17 +175,12 @@ class CitiesTable extends BaseTable
     {
         try {
             $sql = $this->getSql();
-
             $where = new Where();
-
             $where->equalTo('c.display', 1);
-
             if (array_key_exists('search', $data) && $data['search'] != '') {
                 $where->and->like(new \Laminas\Db\Sql\Expression("LOWER(c.city_name)"), new \Laminas\Db\Sql\Expression('LOWER("%' . $data['search'] . '%")'));
-
                 // $where->and->like('c.city_name',"%".$data['search']."%");
             }
-
             if (array_key_exists('state_id', $data) && $data['state_id'] != '') {
                 $where->and->equalTo('c.state_id', $data['state_id']);
             } else if ($data['country_id'] != '') {
@@ -200,20 +188,17 @@ class CitiesTable extends BaseTable
             }
 
             $fileLanguageWhere = new Where();
-
             $places = $sql->select()
                 ->from(array('tp' => 'tourism_places'))
                 ->columns(array("city_id"))
                 ->join(array('p' => 'place_prices'), new \Laminas\Db\Sql\Expression("FIND_IN_SET(`tp`.`tourism_place_id`,`p`.`place_id`)"), array("tour_type", 'place_id'))
                 ->where(array('tp.display' => 1, 'p.tour_type' => $data['tour_type']))
                 ->group(array('tp.city_id'));
-
             $placeFiles = $sql->select()
                 ->from(array('tf' => 'tourism_files'))
                 ->columns(array("file_path", 'file_data_id'))
                 ->where(array('tf.display' => 1, 'tf.file_data_type' => \Admin\Model\TourismFiles::file_data_type_city, 'tf.file_extension_type' => \Admin\Model\TourismFiles::file_extension_type_image))
                 ->group(array('tf.file_data_id'));
-
             $placeLanguages = $sql->select()
                 ->from(array('tfl' => 'tourism_files'))
                 ->columns(array("file_path", 'file_data_id'))
@@ -257,8 +242,6 @@ class CitiesTable extends BaseTable
             }
             return $cities;
         } catch (\Exception $e) {
-            print_r($e->getMessage());
-            exit;
             return array();
         }
     }
@@ -298,7 +281,7 @@ class CitiesTable extends BaseTable
                 ->join(array('tpl' => $places), 'tpl.city_id = c.id', array())
                 ->join(array('tfl' => $placeFiles), 'tfl.file_data_id = c.id', array('file_path'))
                 ->where($where)
-                ->order('c.updated_at desc');
+                ->order('c.city_name asc');
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             $cities = array();
             foreach ($resultSet as $row) {
@@ -378,7 +361,6 @@ class CitiesTable extends BaseTable
             }
             return $cities;
         } catch (\Exception $e) {
-
             return array();
         }
     }
@@ -386,22 +368,16 @@ class CitiesTable extends BaseTable
     {
         try {
             $sql = $this->getSql();
-
             $where = new Where();
             $where->equalTo('c.display', 1)->equalTo('c.id', $cityId);
-
-
             $query = $sql->select()
                 ->from($this->tableName)
                 ->columns(array('city_id' => "id", "city_name", "city_description", "country_id", 'state_id'))
                 ->join(array('co' => 'country'), 'c.country_id = co.id', array('country_name'))
                 ->join(array('s' => 'state'), 'c.state_id = s.id', array('state_name'), Select::JOIN_LEFT)
                 ->where($where);
-
-
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             $countries = array();
-
             foreach ($resultSet as $row) {
                 $countries = $row;
             }
@@ -450,8 +426,6 @@ class CitiesTable extends BaseTable
             foreach ($resultSet as $row) {
                 $values = $row['id'];
             }
-
-
             return $values;
         } catch (\Exception $e) {
             return '';

@@ -28,14 +28,15 @@ $(document).ready(function () {
                 itemsOnPage: 10,
                 currentPage: 1,
                 onPageClick: function (pageNumber) {
-
                     if (ajaxCall != null) {
                         ajaxCall.abort();
                     }
+                    var ftt = $('#cftt').val();
                     var formData = new FormData();
                     formData.append('filter', JSON.stringify(filter));
                     formData.append('type', 'pagination');
                     formData.append('page_number', pageNumber);
+                    formData.append('ftt',ftt);
                     ajaxCall = $.ajax({
                         type: "POST",
                         url: BASE_URL + '/admin/load-free-tour-list',
@@ -127,6 +128,46 @@ $(document).ready(function () {
         var dataId=$(this).data("id");
         filter[dataId]['text']=$.trim($(this).val());
         filterData();
+    }).on("click","#ftt",function(){
+        var cftt = $('#cftt').val();
+        var ftt = '5';
+        if(cftt == '5')
+            ftt = '6';
+        if(ajaxCall!=null)
+        {
+            ajaxCall.abort();
+        }
+        var formData = new FormData();
+        formData.append('filter', JSON.stringify(filter));
+        formData.append('type', 'search');
+        //formData.append('page_number', 1);
+        formData.append('ftt',ftt);
+        ajaxCall = $.ajax({
+            type: "POST",
+            url: BASE_URL + '/admin/load-free-tour-list',
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function (data) {
+                ajaxCall=null;
+                $(".records").remove();
+                $("tbody").html(data);
+                initPagination();
+                $("#cftt").val(ftt);
+                if(ftt == '5'){
+                    $("#ftt").text("Free World Tales");
+                    $("#ttBtn").text("Add Free Indian Tales");
+                    $("#att").attr('href') = '/a_dMin/add-free-tour/' . $("#ttEncIT").val();
+                }else{
+                    $("#ftt").text("Free Indian Tales");
+                    $("#ttBtn").text("Add Free World Tales");
+                    $("#att").attr('href') = '/a_dMin/add-free-tour/' . $("#ttEncWT").val();
+                }
+            },
+            error: function () {
+            }
+        });
     });
     function filterData()
     {
@@ -134,9 +175,11 @@ $(document).ready(function () {
         {
             ajaxCall.abort();
         }
+        var ftt = $('#cftt').val();
         var formData=new FormData();
         formData.append('filter',JSON.stringify(filter));
         formData.append('type','search');
+        formData.append('ftt',ftt);
         ajaxCall=  $.ajax({
             type: "POST",
             url: BASE_URL+'/admin/load-free-tour-list',
@@ -148,15 +191,11 @@ $(document).ready(function () {
             {
                 ajaxCall=null;
                 $(".records").remove();
-
                 $("tbody").html(data);
                 initPagination()
             },
             error: function()
-            {
-
-
-            }
+            {   }
         });
     }
 });

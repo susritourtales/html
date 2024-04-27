@@ -92,6 +92,10 @@ class TourTalesTable extends  BaseTable
             $where = new Where();
             if ($data['tour_type'] == \Admin\Model\TourTales::tour_type_Free_tour) {
                 $where->equalTo('p.display', 1)->and->equalTo('free', '1');
+            } elseif($data['tour_type'] == \Admin\Model\TourTales::tour_type_Free_India_tour){
+                $where->equalTo('p.display', 1)->and->equalTo('free', '1')->and->equalTo('tour_type', '1');
+            } elseif($data['tour_type'] == \Admin\Model\TourTales::tour_type_Free_World_tour){
+                $where->equalTo('p.display', 1)->and->equalTo('free', '1')->and->equalTo('tour_type', '2');
             } else {
                 $where->equalTo('p.display', 1)->and->equalTo('tour_type', $data['tour_type']);
             }
@@ -151,7 +155,7 @@ class TourTalesTable extends  BaseTable
                 }
             }
             if (!count($order)) {
-                $order = array('p.updated_at desc');
+                $order = array('c.country_name asc', 's.state_name asc', 'ci.city_name asc','tp.place_name asc');
             }
             $sql = $this->getSql();
             $query = $sql->select()
@@ -159,16 +163,18 @@ class TourTalesTable extends  BaseTable
                 ->columns(array("id", "tale_name", 'tale_description', 'free'));
             if ($data['tour_type'] == \Admin\Model\TourTales::tour_type_Bunched_tour) {
                 $query = $query->where($where)
-                    ->group('p.id');
+                    ->group('p.id')
+                    ->order('p.tale_name asc');
                 //$query = $query->join(array('tp' => 'place'), new \Laminas\Db\Sql\Expression("FIND_IN_SET(`tp`.`id`, `p`.`place_id`)"), array('place_name' => new \Laminas\Db\Sql\Expression("GROUP_CONCAT(`tp`.`place_name`)"), 'place_id' => new \Laminas\Db\Sql\Expression("GROUP_CONCAT(`tp`.`id`)")), Select::JOIN_LEFT);
             } else {
                 $query = $query->join(array('tp' => 'place'), new \Laminas\Db\Sql\Expression("FIND_IN_SET(`tp`.`id`,`p`.`place_id`)"), array('place_name' => 'place_name', 'place_id' => 'id'), Select::JOIN_LEFT)
                     ->join(array('c' => 'country'), 'p.country_id=c.id', array('country_name'), Select::JOIN_LEFT)
                     ->join(array('s' => 'state'), 'p.state_id=s.id', array('state_name'), Select::JOIN_LEFT)
                     ->join(array('ci' => 'city'), 'p.city_id=ci.id', array('city_name'), Select::JOIN_LEFT)
-                    ->where($where);
+                    ->where($where)
+                    ->order($order);
             }
-            $query = $query->order($order);
+            //$query = $query->order($order);
             if ($gc == 0) {
                 $query->limit($data['limit'])
                     ->offset($data['offset']);

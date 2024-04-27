@@ -19,6 +19,8 @@ class TourTales
     const tour_type_World_tour = 2;
     const tour_type_Bunched_tour = 3;
     const tour_type_Free_tour = 4;
+    const tour_type_Free_India_tour = 5;
+    const tour_type_Free_World_tour = 6;
 
     const tour_type = [
         self::tour_type_All_tour => 'All Tour Tales', self::tour_type_India_tour => 'India Tour Tales', self::tour_type_World_tour => 'World Tour Tales', self::tour_type_Free_tour => 'Free Tour Tales'

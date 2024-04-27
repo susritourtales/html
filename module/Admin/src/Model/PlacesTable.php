@@ -30,8 +30,8 @@ class PlacesTable extends  BaseTable
                 return array("success" => false);
             }
         } catch (\Exception $e) {
-            print_r($e->getMessage());
-            exit;
+            /* print_r($e->getMessage());
+            exit; */
             return array("success" => false);
         }
     }
@@ -41,7 +41,6 @@ class PlacesTable extends  BaseTable
         try {
             return $this->update($data, $where);
         } catch (\Exception $e) {
-
             return false;
         }
     }
@@ -172,9 +171,9 @@ class PlacesTable extends  BaseTable
                 }
             }
             if (!count($order)) {
-                $order = array('updated_at desc');
+                $order = array('c.country_name asc', 's.state_name asc', 'ci.city_name asc','tp.place_name asc');
             }
-            if ($data['tour_type'] == \Admin\Model\TourTales::tour_type_India_tour || $data['tour_type'] == \Admin\Model\TourTales::tour_type_Spiritual_tour) {
+            if ($data['tour_type'] == \Admin\Model\TourTales::tour_type_India_tour) {
                 $order = array('s.state_name asc', 'ci.city_name asc', 'tp.place_name asc');
                 $query = $sql->select()
                     ->from($this->tableName)
@@ -222,8 +221,6 @@ class PlacesTable extends  BaseTable
             }
             return $tourisms;
         } catch (\Exception $e) {
-            print_r($e->getMessage());
-            exit;
             return array();
         }
     }
@@ -292,7 +289,7 @@ class PlacesTable extends  BaseTable
                 }
             }
             if (!count($order)) {
-                $order = array('updated_at desc');
+                $order = array('c.country_name asc', 's.state_name asc', 'ci.city_name asc','tp.place_name asc');
             }
             if ($gc == 1) {
                 $query = $sql->select()
@@ -331,8 +328,6 @@ class PlacesTable extends  BaseTable
             }
             return $tourisms;
         } catch (\Exception $e) {
-            print_r($e->getMessage());
-            exit;
             return array();
         }
     }
@@ -398,7 +393,6 @@ class PlacesTable extends  BaseTable
             }
             return $countries;
         } catch (\Exception $e) {
-            // print_r($e->getMessage());exit;
             return array();
         }
     }
@@ -439,7 +433,7 @@ class PlacesTable extends  BaseTable
                 ->join(array('tl' => $placeLanguages), 'tl.file_data_id = tp.id', array('language_name'))
                 ->where($where)
                 ->group(array('tp.id'))
-                ->order('tp.updated_at desc');
+                ->order(array('c.country_name asc', 's.state_name asc', 'ci.city_name asc','tp.place_name asc'));
             if ($data['limit'] != -1) {
                 $query->offset($data['offset'])
                     ->limit($data['limit']);
@@ -461,7 +455,6 @@ class PlacesTable extends  BaseTable
             }
             return $countries;
         } catch (\Exception $e) {
-            //  print_r($e->getMessage());exit;
             return array();
         }
     }
@@ -578,7 +571,6 @@ class PlacesTable extends  BaseTable
     {
         try {
             $sql = $this->getSql();
-
             $query = $sql->select()
                 ->from($this->tableName)
                 ->columns(array("id", 'place_name', 'place_description', 'country_id', 'state_id', 'city_id', 'created_at'))
@@ -591,8 +583,6 @@ class PlacesTable extends  BaseTable
             }
             return $tourisms;
         } catch (\Exception $e) {
-            /* print_r($e->getMessage());
-             exit;*/
             return array();
         }
     }

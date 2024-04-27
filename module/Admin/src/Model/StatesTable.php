@@ -28,8 +28,8 @@ class StatesTable extends BaseTable
                 return array("success" => false);
             }
         } catch (\Exception $e) {
-            print_r($e->getMessage());
-            exit;
+            /* print_r($e->getMessage());
+            exit; */
             return array("success" => false);
         }
     }
@@ -80,7 +80,7 @@ class StatesTable extends BaseTable
                 ->join(array('tpl' => $places), 'tpl.state_id = s.id', array('countstate', 'filesCount'))
                 ->join(array('tfl' => $placeFiles), 'tfl.file_data_id = s.id', array('file_path'))
                 ->where($where)
-                ->order('s.updated_at desc');
+                ->order('s.state_name asc');
             if ($data['limit'] != -1) {
                 $query->offset($data['offset'])
                     ->limit($data['limit']);
@@ -103,8 +103,6 @@ class StatesTable extends BaseTable
             }
             return $countries;
         } catch (\Exception $e) {
-            print_r($e->getMessage());
-            exit;
             return array();
         }
     }
@@ -113,16 +111,12 @@ class StatesTable extends BaseTable
     {
         try {
             $sql = $this->getSql();
-
             $where = new Where();
             $where->equalTo('s.display', 1)->and->equalTo('s.country_id', $data['country_id']);
             if (array_key_exists('search', $data) && $data['search'] != '') {
                 $where->and->like(new \Laminas\Db\Sql\Expression("LOWER(s.state_name)"), new \Laminas\Db\Sql\Expression('LOWER("%' . $data['search'] . '%")'));
-
                 //$where->and->like('s.state_name',"%".$data['search']."%");
             }
-
-
             $places = $sql->select()
                 ->from(array('tp' => 'tourism_places'))
                 ->columns(array("state_id"))
@@ -143,8 +137,6 @@ class StatesTable extends BaseTable
                 ->order('s.state_name asc')
                 ->offset($data['offset'])
                 ->limit($data['limit']);
-
-
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             $countries = array();
             $counter = -1;
@@ -161,8 +153,6 @@ class StatesTable extends BaseTable
             }
             return $countries;
         } catch (\Exception $e) {
-            print_r($e->getMessage());
-            exit;
             return array();
         }
     }
@@ -170,16 +160,11 @@ class StatesTable extends BaseTable
     {
         try {
             $sql = $this->getSql();
-
             $where = new Where();
             $where->equalTo('s.display', 1)->and->equalTo('s.country_id', $data['country_id']);
-
-
             if (array_key_exists('search', $data) && $data['search'] != '') {
                 $where->and->like('s.state_name', "%" . $data['search'] . "%");
             }
-
-
             $placesWhere = new Where();
             $prices = $sql->select()
                 ->from(array('p' => 'place_prices'))
@@ -202,9 +187,7 @@ class StatesTable extends BaseTable
                 ->join(array('tpl' => $places), 'tpl.state_id = s.id', array())
                 ->join(array('tfl' => $placeFiles), 'tfl.file_data_id = s.id', array('file_path'))
                 ->where($where)
-                ->order('s.updated_at desc');
-
-
+                ->order('s.state_name asc');
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             $countries = array();
 
@@ -213,8 +196,6 @@ class StatesTable extends BaseTable
             }
             return $countries;
         } catch (\Exception $e) {
-            print_r($e->getMessage());
-            exit;
             return array();
         }
     }
@@ -250,14 +231,11 @@ class StatesTable extends BaseTable
                 ->from($this->tableName)
                 ->columns(array("id", "state_name"))
                 ->where(array('status' => 1));
-
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             $countries = array();
-
             foreach ($resultSet as $row) {
                 $countries[] = $row;
             }
-
             return $countries;
         } catch (\Exception $e) {
             return array();
@@ -280,7 +258,7 @@ class StatesTable extends BaseTable
                 }
             }
             if (!count($order)) {
-                $order = array('updated_at desc');
+                $order = array('state_name asc');
             }
             $sql = $this->getSql();
             if ($gc == 1) {
@@ -322,24 +300,19 @@ class StatesTable extends BaseTable
         try {
             $where = new Where();
             $where->equalTo('status', 1);
-
             if (array_key_exists('state', $data)) {
                 $where->and->like(new \Laminas\Db\Sql\Expression("LOWER(s.state_name)"), '%' . $data['state'] . "%");
             }
-
             $sql = $this->getSql();
             $query = $sql->select()
                 ->from($this->tableName)
                 ->columns(array("id", "state_name"))
                 ->where($where);
-
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             $countries = array();
-
             foreach ($resultSet as $row) {
                 $countries[] = $row;
             }
-
             return $countries;
         } catch (\Exception $e) {
             return array();
@@ -359,7 +332,7 @@ class StatesTable extends BaseTable
                 ->columns(array("id", "state_name"))
                 ->join(array('c' => $countryTable), 's.country_id=c.id', array('country_name'))
                 ->where(array('s.display' => 1))
-                ->order('s.updated_at desc');
+                ->order('s.state_name asc');
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             $countries = array();
             foreach ($resultSet as $row) {
@@ -378,7 +351,6 @@ class StatesTable extends BaseTable
                 ->from(array('co' => 'countries'))
                 ->columns(array('id', 'country_name'))
                 ->where(array('co.display' => 1, 'co.country_name' => 'india'));
-
             $where = new Where();
             $where->equalTo('s.display', 1);
             if (array_key_exists('search', $data) && $data['search'] != '') {
@@ -404,11 +376,10 @@ class StatesTable extends BaseTable
                 ->from($this->tableName)
                 ->columns(array("id", "state_name"))
                 ->join(array('c' => $countryTable), 's.country_id=c.id', array('country_name'))
-
                 ->join(array('tpl' => $places), 'tpl.state_id = s.id', array())
                 ->join(array('tfl' => $placeFiles), 'tfl.file_data_id = s.id', array('file_path'))
                 ->where($where)
-                ->order('s.updated_at desc');
+                ->order('s.state_name asc');
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             $countries = array();
             foreach ($resultSet as $row) {
@@ -428,14 +399,11 @@ class StatesTable extends BaseTable
                 ->from($this->tableName)
                 ->columns(array("id", "state_name", 'country_id'))
                 ->where($where->greaterThan("id", $maxId));
-
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             $states = array();
-
             foreach ($resultSet as $row) {
                 $states[] = $row;
             }
-
             return $states;
         } catch (\Exception $e) {
             return array();
@@ -463,8 +431,6 @@ class StatesTable extends BaseTable
             }
             return $states;
         } catch (\Exception $e) {
-            /* print_r($e->getMessage());
-            exit; */
             return array();
         }
     }
@@ -479,7 +445,6 @@ class StatesTable extends BaseTable
                 ->from($this->tableName)
                 ->columns(array('state_id' => "id", "state_name", 'country_id', 'state_description'))
                 ->where($where);
-
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             $states = array();
             $counter = -1;
@@ -490,7 +455,6 @@ class StatesTable extends BaseTable
                 $states[$counter]['country_id'] = $row['country_id'];
                 $states[$counter]['state_description'] = $row['state_description'];
             }
-
             return $states;
         } catch (\Exception $e) {
             return array();
@@ -510,8 +474,6 @@ class StatesTable extends BaseTable
             foreach ($resultSet as $row) {
                 $values = $row['id'];
             }
-
-
             return $values;
         } catch (\Exception $e) {
             return '';

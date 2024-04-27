@@ -109,7 +109,7 @@ class CountriesTable extends  BaseTable
                 }
             }
             if (!count($order)) {
-                $order = array('updated_at desc');
+                $order = array('country_name asc');
             }
 
             $sql = $this->getSql();
@@ -199,7 +199,7 @@ class CountriesTable extends  BaseTable
                 ->join(array('tpl' => $places), 'tpl.country_id=c.id', array())
                 ->join(array('tfl' => $placeFiles), 'tfl.file_data_id = c.id', array('file_path'), Select::JOIN_LEFT)
                 ->where($where)
-                ->order('c.updated_at desc');
+                ->order('c.country_name asc');
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             $countries = array();
             foreach ($resultSet as $row) {
@@ -207,8 +207,6 @@ class CountriesTable extends  BaseTable
             }
             return $countries;
         } catch (\Exception $e) {
-            print_r($e->getMessage());
-            exit;
             return array();
         }
     }
@@ -247,14 +245,9 @@ class CountriesTable extends  BaseTable
                 $query->offset($data['offset'])
                     ->limit($data['limit']);
             }
-
-
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
-
             $countries = array();
-
             $counter = -1;
-
             foreach ($resultSet as $row) {
                 $counter++;
                 $countries[$counter]['country_id'] = $row['country_id'];
@@ -280,8 +273,6 @@ class CountriesTable extends  BaseTable
         try {
             return $this->update($data, $where);
         } catch (\Exception $e) {
-            print_r($e->getMessage());
-            exit;
             return false;
         }
     }
@@ -346,10 +337,6 @@ class CountriesTable extends  BaseTable
 
             $where = new Where();
             $where->equalTo('c.display', 1)->equalTo('c.id', $countryId);
-
-
-
-
             $placeFiles = $sql->select()
                 ->from(array('tf' => 'tourism_files'))
                 ->columns(array("file_path", 'tourism_file_id', 'file_data_id', 'file_extension_type', 'file_language_id', 'file_name'))
@@ -359,18 +346,13 @@ class CountriesTable extends  BaseTable
                 ->columns(array('country_id' => "id", "country_name", "country_description", 'flag_image'))
                 ->join(array('tfl' => $placeFiles), 'tfl.file_data_id = c.id', array('file_path', 'tourism_file_id', 'file_extension_type', 'file_language_id', 'file_name'), Select::JOIN_LEFT)
                 ->where($where);
-
-
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             $countries = array();
-
             foreach ($resultSet as $row) {
                 $countries[] = $row;
             }
             return $countries;
         } catch (\Exception $e) {
-            print_r($e->getMessage());
-            exit;
             return array();
         }
     }
@@ -383,8 +365,8 @@ class CountriesTable extends  BaseTable
             $query = $sql->select()
                 ->from($this->tableName)
                 ->columns(array('country_id' => "id", "country_name", 'country_description', 'flag_image'))
-                ->where($where);
-
+                ->where($where)//;
+                ->order('country_name asc');
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             $countries = array();
             $counter = -1;
@@ -395,10 +377,8 @@ class CountriesTable extends  BaseTable
                 $countries[$counter]['country_description'] = $row['country_description'];
                 $countries[$counter]['flag_image'] = $row['flag_image'];
             }
-
             return $countries;
         } catch (\Exception $e) {
-
             return array();
         }
     }
@@ -409,7 +389,6 @@ class CountriesTable extends  BaseTable
             $query = $sql->select()
                 ->from($this->tableName)
                 ->columns(array("country_name", "phone_code"));
-
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             $countryCodes = array();
             $counter = -1;
@@ -418,7 +397,6 @@ class CountriesTable extends  BaseTable
                 $countryCodes[$counter]['country_name'] = ucwords($row['country_name']);
                 $countryCodes[$counter]['phone_code'] = '+' . $row['phone_code'];
             }
-
             return $countryCodes;
         } catch (\Exception $e) {
 
@@ -458,8 +436,6 @@ class CountriesTable extends  BaseTable
             foreach ($resultSet as $row) {
                 $values = $row['id'];
             }
-
-
             return $values;
         } catch (\Exception $e) {
             return '';

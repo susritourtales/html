@@ -10,15 +10,24 @@
 
 <div class="wrapper">
     <div class="main-panel ">
-        <?php echo $this->partial("/application/index/app-header"); ?>
-
+        <?php echo $this->partial("/application/index/app-header"); 
+            $tt = \Admin\Model\TourTales::tour_type_World_tour;
+            $ttText = "Add Free World Tales";
+            if($ftt == \Admin\Model\TourTales::tour_type_Free_India_tour){
+                $tt = \Admin\Model\TourTales::tour_type_India_tour;
+            $ttText = "Add Free India Tales";
+            }
+        ?>
         <div class="main-container p-lg-4">
             <div class="d-flex justify-content-between mb-4">
-                <div class="main-heading"><?php echo "Free Tour List (Total: $totalCount)";?></div> <a class="text-end" href="<?php echo $this->basePath() . '/a_dMin/add-free-tour/' . base64_encode('tt=2') ?>"><button type="button" class="btn add-btn">Add/Edit Free Tour </button></a>
+                <div class="main-heading"><?php echo "Free Tour List (Total: $totalCount)";?><a class="text-end ms-3" href="#"><button type="button" class="btn add-btn" id="ftt"><?php echo ($ftt == \Admin\Model\TourTales::tour_type_Free_World_tour) ? 'Free Indian Tales' : 'Free World Tales';?></button></a></div><a id="att" class="text-end" href="<?php echo $this->basePath() . '/a_dMin/add-free-tour/' . base64_encode('tt='. $tt) ?>"><button type="button" class="btn add-btn" id="ttBtn"><?php echo $ttText;?></button></a>
+                <input type="hidden" id="cftt" value="<?php echo $ftt;?>">
+                <input type="hidden" id="ttEncIT" value="<?php echo base64_encode('tt='. \Admin\Model\TourTales::tour_type_India_tour);?>">
+                <input type="hidden" id="ttEncWT" value="<?php echo base64_encode('tt='. \Admin\Model\TourTales::tour_type_World_tour);?>">
             </div>
             <div class="" id="recordsList">
                 <?php echo $this->partial('/admin/admin/load-free-tour-list', array(
-                    'tourismList' => $placesList, 'totalCount' => $totalCount, 'type' => 'initialize'
+                    'placesList' => $placesList, 'totalCount' => $totalCount, 'type' => 'initialize', 'ftt' => $ftt
                 )); ?>
 
             </div>
@@ -31,4 +40,4 @@
 </div>
 <?php echo $this->partial('/admin/admin/deleteModal', ['entityName' => 'Free Tale']); ?>
 <script src="<?php echo $this->basePath(); ?>/js/pagination.js"></script>
-<script src="<?php echo $this->basePath() . '/js/admin/free-list.js' ?>"></script>
+<script src="<?php echo $this->basePath() . '/js/admin/free-list.js?v=1.0.1' ?>"></script>

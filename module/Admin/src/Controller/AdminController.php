@@ -2168,9 +2168,10 @@ class AdminController extends BaseController
     public function freeTourListAction()
     {
         $this->checkAdmin();
-        $placesList = $this->tourTalesTable->getPlacesList(array('tour_type' => \Admin\Model\TourTales::tour_type_Free_tour, 'limit' => 10, 'offset' => 0));
-        $totalCount = $this->tourTalesTable->getPlacesList(array('tour_type' => \Admin\Model\TourTales::tour_type_Free_tour, 'limit' => -1, 'offset' => 0), 1);
-        return new ViewModel(array('placesList' => $placesList, 'totalCount' => $totalCount));
+        $ftt = \Admin\Model\TourTales::tour_type_Free_World_tour;
+        $placesList = $this->tourTalesTable->getPlacesList(array('tour_type' => $ftt, 'limit' => 10, 'offset' => 0));
+        $totalCount = $this->tourTalesTable->getPlacesList(array('tour_type' => $ftt, 'limit' => -1, 'offset' => 0), 1);
+        return new ViewModel(array('placesList' => $placesList, 'totalCount' => $totalCount, 'ftt'=>$ftt));
     }
 
     public function loadFreeTourListAction()
@@ -2179,9 +2180,10 @@ class AdminController extends BaseController
         if ($this->getRequest()->isXmlHttpRequest()) {
             $request = $this->getRequest()->getPost();
             $offset = 0;
-            $searchData = array('tour_type' => \Admin\Model\TourTales::tour_type_Free_tour);
             $type = $request['type'];
             $filterData = $request['filter'];
+            $ftt = $request['ftt'];
+            $searchData = array('tour_type' => $ftt);
             if ($filterData) {
                 $filterData = json_decode($filterData, true);
                 if (isset($filterData['country'])) {
@@ -2233,7 +2235,7 @@ class AdminController extends BaseController
                 $searchData['limit'] = $limit;
             }
             $placesList = $this->tourTalesTable->getPlacesList($searchData);
-            $view = new ViewModel(array('tourismList' => $placesList, 'offset' => $offset, "type" => $type, 'totalCount' => $totalCount));
+            $view = new ViewModel(array('placesList' => $placesList, 'offset' => $offset, "type" => $type, 'totalCount' => $totalCount, 'ftt'=>$ftt));
             $view->setTerminal(true);
             return $view;
         }

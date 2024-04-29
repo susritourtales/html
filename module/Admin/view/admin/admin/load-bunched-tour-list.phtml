@@ -3,6 +3,9 @@
         <thead>
             <tr>
                 <th>S.no</th>
+                <th data-placeholder="country" data-input="country">Country</th>
+                <th data-placeholder="state" data-input="state">State</th>
+                <th data-placeholder="city" data-input="city">City</th>
                 <th data-placeholder="tale name" data-input="tale_name">Tale Name</th>
                 <th data-placeholder="tale description">Tale Description</th>
                 <th>Action</th>
@@ -21,6 +24,9 @@
             foreach ($tourismList as $places) { ?>
                 <tr>
                     <td><?php echo $i + 1; ?></td>
+                    <td><?php echo $places['country_name']; ?></td>
+                    <td><?php echo $places['state_name']; ?></td>
+                    <td><?php echo $places['city_name']; ?></td>
                     <td><?php echo $places['tale_name']; ?></td>
                     <td><?php echo $places['tale_description']; ?></td>
                     <td>

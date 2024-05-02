@@ -2,7 +2,7 @@
 $(document).ready(function () {
     var filter={};
     var ajaxCall=null;
-        console.log($("#table"));
+        //console.log($("#table"));
     $("#table").find('thead th').each(function(){
         let data=$(this).data();
         if(data.placeholder && data.input){

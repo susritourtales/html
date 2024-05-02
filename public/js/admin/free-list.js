@@ -158,11 +158,11 @@ $(document).ready(function () {
                 if(ftt == '5'){
                     $("#ftt").text("Free World Tales");
                     $("#ttBtn").text("Add Free Indian Tales");
-                    $("#att").attr('href') = '/a_dMin/add-free-tour/' . $("#ttEncIT").val();
+                    $("#att").attr('href') = '/a_dMin/add-free-tour/' + $("#ttEncIT").val();
                 }else{
                     $("#ftt").text("Free Indian Tales");
                     $("#ttBtn").text("Add Free World Tales");
-                    $("#att").attr('href') = '/a_dMin/add-free-tour/' . $("#ttEncWT").val();
+                    $("#att").attr('href') = '/a_dMin/add-free-tour/' + $("#ttEncWT").val();
                 }
             },
             error: function () {

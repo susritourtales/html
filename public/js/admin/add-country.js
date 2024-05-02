@@ -141,6 +141,9 @@ $(document).ready(function ()
 
         if(error)
         {
+            messageDisplay("Unable to upload image files");
+            element.prop('disabled',false);
+            element.html('Submit');
             return  false;
         }
         var formData=new FormData();

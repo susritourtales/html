@@ -15,7 +15,10 @@ $(document).ready(function ()
                 var list=response.tales;
                 for(var s=0;s<list.length;s++)
                 {
-                    options +='<option value="'+list[s].id+'">'+list[s].place_name+'</option>'
+                    if(tt == '1')
+                        options +='<option value="'+list[s].id+'">'+ list[s].state_name + " > " + list[s].city_name + " > " + list[s].place_name+'</option>'
+                    else
+                        options +='<option value="'+list[s].id+'">'+ list[s].country_name + " > " + list[s].city_name + " > " + list[s].place_name +'</option>'
                 }
                 if(tt == '1'){ // India Tales
                     $("#state-wrapper").removeClass('d-none');

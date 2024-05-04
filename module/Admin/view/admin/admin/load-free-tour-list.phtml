@@ -3,17 +3,17 @@
         <thead>
             <tr>
                 <th>S.No</th>
-                <?php if($ftt == \Admin\Model\TourTales::tour_type_Free_World_tour){?>
-                <th data-placeholder="country" data-input="country">Country</th>
+                <?php if ($ftt == \Admin\Model\TourTales::tour_type_Free_World_tour) { ?>
+                    <th data-placeholder="country" data-input="country">Country</th>
                 <?php } else { ?>
-                <th data-placeholder="state" data-input="state">State</th>
+                    <th data-placeholder="state" data-input="state">State</th>
                 <?php } ?>
                 <th data-placeholder="city" data-input="city">City</th>
                 <th data-placeholder="place" data-input="place">Place</th>
             </tr>
         <?php } ?>
         <?php if (isset($type) && ($type == 'initialize' || $type == "search")) { ?>
-            <input type="hidden" class="records" value="<?php echo $totalCount; ?>">
+            <input type="hidden" class="records" id="rcount" value="<?php echo $totalCount; ?>">
         <tbody>
         <?php } ?>
         <?php
@@ -25,15 +25,15 @@
             foreach ($placesList as $places) { ?>
                 <tr>
                     <td><?php echo $i + 1; ?></td>
-                    <?php if($ftt == \Admin\Model\TourTales::tour_type_Free_World_tour){ ?>
-                    <td class="text-capitalize"><?php echo $places['country_name']; ?></td>
+                    <?php if ($ftt == \Admin\Model\TourTales::tour_type_Free_World_tour) { ?>
+                        <td class="text-capitalize"><?php echo $places['country_name']; ?></td>
                     <?php } else { ?>
-                    <td class="text-capitalize"><?php echo $places['state_name']; ?></td>
+                        <td class="text-capitalize"><?php echo $places['state_name']; ?></td>
                     <?php } ?>
                     <td class="text-capitalize"><?php echo $places['city_name']; ?></td>
                     <td class="text-capitalize"><?php echo $places['place_name']; ?></td>
                 </tr>
-                <?php $i++;
+            <?php $i++;
             }
         } else { ?>
             <tr>

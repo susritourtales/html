@@ -14,12 +14,12 @@
 
         <div class="main-container p-lg-4">
             <div class="d-flex justify-content-between mb-4 row">
-            <div class="main-heading"><a class="me-3" href="<?php echo $this->basePath() . '/a_dMin/free-tour-list' ?>"><i class="fa fa-arrow-left mr-2"></i></a>Add/Edit Free Tour List</div> <a class="text-end" href="<?php echo $this->basePath() . '/a_dMin/add-free-tour/' . base64_encode('tt=' . $ttq) ?>"><button type="button" class="btn add-btn"><?php echo ($ttq == '1') ? 'Add/Edit Free India Tales' : 'Add/Edit Free World Tales';?></button></a>
-            <input type="hidden" value="<?php echo $ttc; ?>" id="taletype">
+                <div class="main-heading"><a class="me-3" href="<?php echo $this->basePath() . '/a_dMin/free-tour-list' ?>"><i class="fa fa-arrow-left mr-2"></i></a>Add/Edit Free Tour List</div> <a class="text-end" href="<?php echo $this->basePath() . '/a_dMin/add-free-tour/' . base64_encode('tt=' . $ttq) ?>"><button type="button" class="btn add-btn"><?php echo ($ttq == '1') ? 'Click to Add/Edit Free India Tales' : 'Click to Add/Edit Free World Tales'; ?></button></a>
+                <input type="hidden" value="<?php echo $ttc; ?>" id="taletype">
             </div>
             <div class="" id="recordsList">
                 <?php echo $this->partial('/admin/admin/add-free-tour-list', array(
-                    'tourismList' => $placesList, 'totalCount' => $totalCount, 'type' => 'initialize','ttc' => $ttc
+                    'tourismList' => $placesList, 'totalCount' => $totalCount, 'type' => 'initialize', 'ttc' => $ttc
                 )); ?>
             </div>
             <?php if ($totalCount > 10) {

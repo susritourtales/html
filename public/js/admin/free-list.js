@@ -156,13 +156,15 @@ $(document).ready(function () {
                 initPagination();
                 $("#cftt").val(ftt);
                 if(ftt == '5'){
-                    $("#ftt").text("Free World Tales");
-                    $("#ttBtn").text("Add Free Indian Tales");
-                    $("#att").attr('href') = '/a_dMin/add-free-tour/' + $("#ttEncIT").val();
+                    $("#ftt").text("Click for Free World Tales");
+                    $("#ttBtn").text("Click to Add Free Indian Tales");
+                    $("#att").attr('href', '/a_dMin/add-free-tour/' + $("#ttEncIT").val());
+                    $("#mh span").text("Free India Tour List (Total: "+ $("#rcount").val() + ")");
                 }else{
-                    $("#ftt").text("Free Indian Tales");
-                    $("#ttBtn").text("Add Free World Tales");
-                    $("#att").attr('href') = '/a_dMin/add-free-tour/' + $("#ttEncWT").val();
+                    $("#ftt").text("Click for Free Indian Tales");
+                    $("#ttBtn").text("Click to Add Free World Tales");
+                    $("#att").attr('href', '/a_dMin/add-free-tour/' + $("#ttEncWT").val());
+                    $("#mh span").text("Free World Tour List (Total: "+ $("#rcount").val() + ")");
                 }
             },
             error: function () {

@@ -13,4 +13,5 @@ return [
     'Laminas\Validator',
     'Application',
     'Admin',
+    'User',
 ];

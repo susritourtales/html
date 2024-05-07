@@ -39,6 +39,10 @@ class ComposerStaticInite5c0ec13caac948eb49f604210254756
             'Webmozart\\Assert\\' => 17,
             'Webimpress\\SafeWriter\\' => 22,
         ),
+        'U' => 
+        array (
+            'User\\' => 5,
+        ),
         'S' => 
         array (
             'Symfony\\Polyfill\\Mbstring\\' => 26,
@@ -131,7 +135,6 @@ class ComposerStaticInite5c0ec13caac948eb49f604210254756
             'ApplicationTest\\' => 16,
             'Amp\\ByteStream\\' => 15,
             'Amp\\' => 4,
-            'Album\\' => 6,
             'AdvancedJsonRpc\\' => 16,
             'Admin\\' => 6,
         ),
@@ -155,6 +158,10 @@ class ComposerStaticInite5c0ec13caac948eb49f604210254756
         'Webimpress\\SafeWriter\\' => 
         array (
             0 => __DIR__ . '/..' . '/webimpress/safe-writer/src',
+        ),
+        'User\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/module/User/src',
         ),
         'Symfony\\Polyfill\\Mbstring\\' => 
         array (
@@ -206,8 +213,8 @@ class ComposerStaticInite5c0ec13caac948eb49f604210254756
         ),
         'Psr\\Http\\Message\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/http-message/src',
-            1 => __DIR__ . '/..' . '/psr/http-factory/src',
+            0 => __DIR__ . '/..' . '/psr/http-factory/src',
+            1 => __DIR__ . '/..' . '/psr/http-message/src',
         ),
         'Psr\\Http\\Client\\' => 
         array (
@@ -396,10 +403,6 @@ class ComposerStaticInite5c0ec13caac948eb49f604210254756
         'Amp\\' => 
         array (
             0 => __DIR__ . '/..' . '/amphp/amp/lib',
-        ),
-        'Album\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/module/Album/src',
         ),
         'AdvancedJsonRpc\\' => 
         array (

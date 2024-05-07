@@ -32,7 +32,7 @@
         "psr-4": {
             "Application\\": "module/Application/src/",
             "Admin\\": "module/Admin/src/",
-            "Album\\": "module/Album/src/"
+            "User\\": "module/User/src/"
         }
     },
     "autoload-dev": {

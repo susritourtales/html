@@ -101,7 +101,10 @@
 a:hover {
     text-decoration: none;
 }
-
+.btn.submit-btn:hover {
+    background-color: #4862a8;
+    color: #fff;
+  }
 .pointer {
     cursor: pointer;
 }

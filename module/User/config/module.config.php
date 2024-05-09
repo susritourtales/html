@@ -20,7 +20,7 @@ return [
                     ],
                 ],
             ],
-            'home' => [
+            /* 'home' => [
                 'type' => Literal::class,
                 'options' => [
                     'route' => '/',
@@ -29,7 +29,7 @@ return [
                         'action' => 'index',
                     ],
                 ],
-            ],
+            ], */
             'about-us' => [
                 'type' => Segment::class,
                 'options' => [
@@ -207,6 +207,15 @@ return [
                     'defaults' => [
                         'controller' => Controller\IndexController::class,
                         'action' => 'executive-login',
+                    ],
+                ],
+            ], 'twistt-executive-auth' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/twistt/executive/auth',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'executive-auth',
                     ],
                 ],
             ],  'twistt-executive-home' => [

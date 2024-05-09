@@ -12,8 +12,8 @@ class IndexController extends AbstractActionController
 {
   public function indexAction()
   {
-    echo "User Index";
-    exit;
+   /*  echo "User Index";
+    exit; */
     return new ViewModel();
   }
 
@@ -28,6 +28,10 @@ class IndexController extends AbstractActionController
   }
 
   public function executiveLoginAction()
+  {
+    return new ViewModel();
+  }
+  public function executiveAuthAction()
   {
     return new ViewModel();
   }
@@ -53,5 +57,9 @@ class IndexController extends AbstractActionController
     /* echo "TWISTT Enabler Login";
     exit; */
     return new ViewModel();
+  }
+
+  public function termsPrivacyAction() {
+      return new ViewModel();
   }
 }

@@ -103,6 +103,10 @@ class ComposerStaticInite5c0ec13caac948eb49f604210254756
         array (
             'JmesPath\\' => 9,
         ),
+        'H' => 
+        array (
+            'Hybridauth\\' => 11,
+        ),
         'G' => 
         array (
             'GuzzleHttp\\Psr7\\' => 16,
@@ -343,6 +347,10 @@ class ComposerStaticInite5c0ec13caac948eb49f604210254756
         'JmesPath\\' => 
         array (
             0 => __DIR__ . '/..' . '/mtdowling/jmespath.php/src',
+        ),
+        'Hybridauth\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/hybridauth/hybridauth/src',
         ),
         'GuzzleHttp\\Psr7\\' => 
         array (
@@ -872,7 +880,7 @@ class ComposerStaticInite5c0ec13caac948eb49f604210254756
         'PHPUnit\\Framework\\MockObject\\Stub\\ReturnValueMap' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/MockObject/Runtime/Stub/ReturnValueMap.php',
         'PHPUnit\\Framework\\MockObject\\Stub\\Stub' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/MockObject/Runtime/Stub/Stub.php',
         'PHPUnit\\Framework\\NoChildTestSuiteException' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Exception/NoChildTestSuiteException.php',
-        'PHPUnit\\Framework\\PhptAssertionFailedError' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Exception/PhptAssertionFailedError.php',
+        'PHPUnit\\Framework\\PhptAssertionFailedError' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Exception/PHPTAssertionFailedError.php',
         'PHPUnit\\Framework\\ProcessIsolationException' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Exception/ProcessIsolationException.php',
         'PHPUnit\\Framework\\Reorderable' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Reorderable.php',
         'PHPUnit\\Framework\\SelfDescribing' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/SelfDescribing.php',

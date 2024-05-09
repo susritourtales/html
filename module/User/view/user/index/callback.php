@@ -53,7 +53,7 @@ try {
     /**
      * Redirects user to home page (i.e., index.php in our case)
      */
-    HttpClient\Util::redirect('http://localhost.sttandapp.com/twistt/executive/login');
+    HttpClient\Util::redirect('http://localhost.sttandapp.com/twistt/executive/auth');
 } catch (Exception $e) {
     echo $e->getMessage();
 }

@@ -105,7 +105,7 @@ return [
                 ],
             ],
             'terms-privacy' => [
-                'type' => Segment::class,
+                'type' => Literal::class,
                 'options' => [
                     'route' => '/terms-privacy',
                     'defaults' => [

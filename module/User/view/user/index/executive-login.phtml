@@ -27,7 +27,7 @@ if(isset($_GET['provider'])){
         $adapter = $hybridauth->getAdapter($_GET['logout']);
         $adapter->disconnect();
     }
-    HttpClient\Util::redirect('http://localhost.sttandapp.com/twistt/executive/login');
+    HttpClient\Util::redirect($this->basePath() .'/twistt/executive/login');
   } catch (Exception $e) {
       echo $e->getMessage();
   }

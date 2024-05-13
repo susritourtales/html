@@ -324,7 +324,6 @@ class BaseController extends AbstractActionController
 
     function randomNumericpassword($length = 8)
     {
-
         $chars = "0123456789";
         $password = substr(str_shuffle($chars), 0, $length);
         return $password;

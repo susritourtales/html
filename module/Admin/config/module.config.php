@@ -5,6 +5,7 @@ namespace Admin;
 use Laminas\Router\Http\Segment;
 use Laminas\Router\Http\Literal;
 use Laminas\ServiceManager\AbstractFactory\ReflectionBasedAbstractFactory;
+use Laminas\ServiceManager\Factory\InvokableFactory;
 
 return [
     'router' => [
@@ -617,8 +618,18 @@ return [
         ],
     ],
     'view_manager' => [
+        'display_not_found_reason' => true,
+        'display_exceptions' => true,
+        'doctype' => 'HTML5',
+        'not_found_template' => 'error/404',
+        'exception_template' => 'error/index',
+        'template_map' => [
+            'admin/admin/add' => __DIR__ . '/../view/admin/admin/add.phtml',
+            'admin/index/index' => __DIR__ . '/../view/admin/index/index.phtml',
+            'admin/tours/index' => __DIR__ . '/../view/admin/tours/index.phtml',
+        ],
         'template_path_stack' => [
-            'admin' => __DIR__ . '/../view',
+            __DIR__ . '/../view',
         ],
         'strategies' => [
             'ViewJsonStrategy',

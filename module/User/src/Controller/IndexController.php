@@ -2,20 +2,30 @@
 
 namespace User\Controller;
 
+use Application\Controller\BaseController;
 use Application\Handler\Aes;
 use Instamojo\Instamojo;
 use Laminas\View\Model\JsonModel;
 use Laminas\View\Model\ViewModel;
 use Laminas\Mvc\Controller\AbstractActionController;
 
-class IndexController extends AbstractActionController
-{
+class IndexController extends BaseController 
+{ //AbstractActionController
   public function indexAction()
   {
-   /*  echo "User Index";
-    exit; */
-    return new ViewModel();
+    $marqText = "Awareness enhances enjoyment... Know about the place you visit by listening to Susri Tour Tales...";
+    $banners=$this->bannerTable->getBanners();
+    return new ViewModel(['marqText'=>$marqText,'banners'=>$banners, 'imageUrl'=>$this->filesUrl()]);
   }
+  public function aboutUsAction() {
+    $this->layout()->setVariable('activeTab', \Application\Constants\Constants::MAIN_SITE_ABOUT_PAGE);
+    return new ViewModel();
+}
+
+public function contactAction() {
+  $this->layout()->setVariable('activeTab', \Application\Constants\Constants::MAIN_SITE_CONTACT_PAGE);
+  return new ViewModel();
+}
 
   public function twisttAction()
   {

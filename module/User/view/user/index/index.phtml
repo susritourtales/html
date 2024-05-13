@@ -1,0 +1,494 @@
+<div class="px-0 py-md-0 banner-fluid">
+    <div class="container-fluid px-0">
+        <div class="owl-carousel" id="home-banner">
+            <?php foreach ($banners as $banner) {?>
+            <div class="item">
+                <a href="javascript:void(0);">
+                    <div class="backgroung-img" style="background: url(<?php echo $imageUrl.$banner['image_path'];?>) no-repeat center/cover; height: 437px;border-radius: 10px;"></div>
+                </a>
+            </div>
+            <?php } ?>
+        </div>
+    </div>
+</div>
+
+<?php if($marqText != ""){?>
+<div class="promotion-fluid py-2" style="background-color:#304379;">
+    <div class="container">
+        <div class="row pt-2">
+        <marquee behavior="scroll" direction="left" class="font-22">
+            <strong><?php echo $marqText; ?></strong>
+        </marquee>
+        </div>
+    </div>
+</div>
+<?php } ?>
+
+<div class="container-fluid py-5 mission-fluid">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 col-sm-12 col-md-8 col-lg-8">
+                <div class="mb-2">
+                    <div class="color-000 mission-text">
+                        Susri Tour Tales (STT) - Mission
+                    </div>
+                    <div class="mission-caption color-red my-3">
+                        All the places you hear about, you may not be able to see.. <br>
+                        But what you intend to see, you should know about.
+                    </div>
+                </div>
+                
+                <p class="color-blue mission-caption"> 
+                SUSRI TOUR TALES is a mobile App that provides crisp but detailed audio narrations on the Indian and World tourist places in English, Hindi and other regional languages.  App works on ‘download’ and ‘listen’ style- enabling the user to listen to the narrations anytime and anywhere -
+                </p>
+                <p><span  class="color-red mission-caption">-the most convenient aid for a tourist on-the-go.</span></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid mt-5 pb-3">
+    <div class="container">
+        <div class="row mx-n2">
+            <div class="col-12 col-sm-12 col-md-6 mb-3 mb-md-0 px-2">
+                <div class="avant-md p-4 px-lg-5 bg-white border-radius-10 custom-shadow font-24 h-100 color-000 text-center align-items-center d-flex">
+                    <i>SUSRI TOUR TALES – help you hear the story of the place before you see its glory.</i>
+                </div>
+            </div>
+            <div class="col-12 col-sm-12 col-md-6 px-2">
+                <a href="https://play.google.com/store/apps/details?id=com.tvisha.susritourtales">
+                    <div class="avant-md p-3 p-lg-4 bg-white border-radius-10 custom-shadow font-24 h-100">
+                        <div class="d-flex align-items-center color-000">
+                            <div class="me-3">
+                                <img src="<?php echo $this->basePath(); ?>/img/user/google-play.png" class="img-fluid" alt="play-img">
+                            </div>
+                            Download Now on Google Play
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid hear-fluid py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-2 col-md-6 col-sm-12 py-4 order-lg-first">
+                <div class="text-uppercase color-000 avant-md hear-headding1">Sample Tales</div>
+                <div class="row">
+                    <div class="col-12 ad position-relative adrbg1">
+                        <div class="adtxt text-center">ENGLISH</div>
+                        <audio controls class="position-absolute bottom-0 start-0">
+                            <source src="../img/hmaudios/ENG-ST-1-1-1A-Subhadra-AP-Tirupati-Tirumala Sacred Temple.mp3" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 ad position-relative adrbg2">
+                        <div class="adtxt text-center">HINDI</div>
+                        <audio controls class="position-absolute bottom-0 start-0">
+                            <source src="../img/hmaudios/HIN-ST-14-1-1A-Rimka-J_K-Katra-Vaishnava Devi.mp3" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 ad position-relative adrbg3">
+                        <div class="adtxt text-center">ENGLISH</div>
+                        <audio controls class="position-absolute bottom-0 start-0">
+                            <source src="../img/hmaudios/ENG-CT-0-1-0-Pooja-Delhi-About Delhi.mp3" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 ad position-relative adrbg4">
+                        <div class="adtxt text-center">HINDI</div>
+                        <audio controls class="position-absolute bottom-0 start-0">
+                            <source src="../img/hmaudios/HIN-CT-0-21-0-Shaili-Karnataka-Mysuru-About Mysuru.mp3" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 ad position-relative adrbg5">
+                        <div class="adtxt text-center">ENGLISH</div>
+                        <audio controls class="position-absolute bottom-0 start-0">
+                            <source src="../img/hmaudios/ENG-SS-0-1-4-Jessy-Karnataka-Hampi-Glorious Hampi under Vijayanagara Empire.mp3" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 ad position-relative adrbg6">
+                        <div class="adtxt text-center">HINDI</div>
+                        <audio controls class="position-absolute bottom-0 start-0">
+                            <source src="../img/hmaudios/HIN-CT-0-5-1-Shaili-Odisha-Bhubaneswar-Raja Rani Mandir.mp3" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 ad position-relative adrbg7">
+                        <div class="adtxt text-center">ENGLISH</div>
+                        <audio controls class="position-absolute bottom-0 start-0">
+                            <source src="../img/hmaudios/ENG-WT-10-0-0A-Prashant-Vatican City State-Vatican city-Part1.mp3" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 ad position-relative adrbg8">
+                        <div class="adtxt text-center">HINDI</div>
+                        <audio controls class="position-absolute bottom-0 start-0">
+                            <source src="../img/hmaudios/HIN-WT-9-1-0-Rimka-Italy-Venice-City.mp3" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 ad position-relative adrbg9">
+                        <div class="adtxt text-center">ENGLISH</div>
+                        <audio controls class="position-absolute bottom-0 start-0">
+                            <source src="../img/hmaudios/ENG-ST-30-6-1-Subhadra-Tamilnadu-Tanjavuru-Brihadeeswara Temple.mp3" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 ad position-relative adrbg10">
+                        <div class="adtxt text-center">HINDI</div>
+                        <audio controls class="position-absolute bottom-0 start-0">
+                            <source src="../img/hmaudios/HIN-ST-30-8-1-Shaili-Tamilnadu-Srivilliputtur Town.mp3" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 ad position-relative adrbg11">
+                        <div class="adtxt text-center">ENGLISH</div>
+                        <audio controls class="position-absolute bottom-0 start-0">
+                            <source src="../img/hmaudios/ENG-IT-10-1-7-Pooja-Goa-Panjim-Goa Beaches-An Overview.mp3" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 ad position-relative adrbg12">
+                        <div class="adtxt text-center">HINDI</div>
+                        <audio controls class="position-absolute bottom-0 start-0">
+                            <source src="../img/hmaudios/HIN-IT-28-1-2A-Rimka-Rajastan-Mt Abu-Dilwara Temples.mp3" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 ad position-relative adrbg13">
+                        <div class="adtxt text-center">ENGLISH</div>
+                        <audio controls class="position-absolute bottom-0 start-0">
+                            <source src="../img/hmaudios/ENG-WT-69-0-1-Jessy-Thailand-Thai Heritage-Buddhist Temples in Thailand.mp3" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-6 col-sm-12 py-4 order-lg-last">
+                <div class="text-uppercase color-000 avant-md hear-headding1">Sample Tales</div>
+                <div class="row">
+                    <div class="col-12 ad position-relative adlbg1">
+                        <div class="adtxt text-center">ARABIC</div>
+                        <audio controls class="position-absolute bottom-0 start-0">
+                            <source src="../img/hmaudios/ARAB-WT-80-1-6-Kabeer-SA-Mecca-Hajj-Daywise Rituals.mp3" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 ad position-relative adlbg2">
+                        <div class="adtxt text-center">BENGALI</div>
+                        <audio controls class="position-absolute bottom-0 start-0">
+                            <source src="../img/hmaudios/BEN-CT-0-3-3-Sharmila-Rajastan-Jaipur-Jaigarh Fort.mp3" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 ad position-relative adlbg3">
+                        <div class="adtxt text-center">GUJARATI</div>
+                        <audio controls class="position-absolute bottom-0 start-0">
+                            <source src="../img/hmaudios/GUJ-ST-1-1-3-Jalpa-AP-Tirupati-Srinivasa Mangapuram.mp3" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 ad position-relative adlbg4">
+                        <div class="adtxt text-center">KANNADA</div>
+                        <audio controls class="position-absolute bottom-0 start-0">
+                            <source src="../img/hmaudios/KAN-FT-0-3-8-Aparna-India-Chardham-Sapta Badari.mp3" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 ad position-relative adlbg5">
+                        <div class="adtxt text-center">KOREAN</div>
+                        <audio controls class="position-absolute bottom-0 start-0">
+                            <source src="../img/hmaudios/KOR-CT-0-2-1A-Jimok-UP-Agra-Tajmamahal- An Epitome of Love.mp3" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 ad position-relative adlbg6">
+                        <div class="adtxt text-center">MALAYALAM</div>
+                        <audio controls class="position-absolute bottom-0 start-0">
+                            <source src="../img/hmaudios/MAL-WT-64-0-0-Nizamuddin-Dubai-About Dubai.mp3" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 ad position-relative adlbg7">
+                        <div class="adtxt text-center">MARATHI</div>
+                        <audio controls class="position-absolute bottom-0 start-0">
+                            <source src="../img/hmaudios/MAR-WT-78-3-1-Sneha-Srilanka-Nuwara Iliya-Seetha Temple.mp3" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 ad position-relative adlbg8">
+                        <div class="adtxt text-center">ODIYA</div>
+                        <audio controls class="position-absolute bottom-0 start-0">
+                            <source src="../img/hmaudios/ODI-CT-0-24-9-Lakshmi-Andamans-Portblair-Life style of Andaman Tribes.mp3" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 ad position-relative adlbg9">
+                        <div class="adtxt text-center">PUNJABI</div>
+                        <audio controls class="position-absolute bottom-0 start-0">
+                            <source src="../img/hmaudios/PUN-WT-1-1-3-Aarzoo-UK-London-Buckingham Palace.mp3" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 ad position-relative adlbg10">
+                        <div class="adtxt text-center">SINHALESE</div>
+                        <audio controls class="position-absolute bottom-0 start-0">
+                            <source src="../img/hmaudios/SIN-WT-78-0-8-Wazeer-Srilanka-Srilanka Heritage-Spice Gardens.mp3" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 ad position-relative adlbg11">
+                        <div class="adtxt text-center">TAMIL</div>
+                        <audio controls class="position-absolute bottom-0 start-0">
+                            <source src="../img/hmaudios/TAM-WT-2-1-2-Jessy-France-Paris-Versailles Museum.mp3" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 ad position-relative adlbg12">
+                        <div class="adtxt text-center">TELUGU</div>
+                        <audio controls class="position-absolute bottom-0 start-0">
+                            <source src="../img/hmaudios/TEL-ST-11-2-3-Ramakrishna-Gujarat-Dwaraka-Byet Dwaraka.mp3" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 ad position-relative adlbg13">
+                        <div class="adtxt text-center">URDU</div>
+                        <audio controls class="position-absolute bottom-0 start-0">
+                            <source src="../img/hmaudios/URD-CT-0-8-1-Rukhsana-Telangana-Hyderabad-Charminar.mp3" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-8 col-md-12 col-sm-12">
+                <div class="row display-flex mx-n2">
+                    <div class="col mb-4 mb-lg-0 px-2">
+                        <div class="row">
+                            <div class="col-md-12 mb-4 mb-lg-0 px-2 mb-3">
+                                <div class="text-center mb-3">
+                                    <div class="text-uppercase color-000 avant-md hear-headding1">
+                                        SUSRI TOUR TALES (STT)
+                                    </div>
+                                </div>
+                                <div class="whathear-box hear-text p-3 mx-2">
+                                    <p class="text-danger"><strong><u>CONTENT</u></strong></p>
+                                    <p>Each Monument/Tourist Place is described for its heritage, culture, importance, beauty, architecture and other high/low lights including anecdotes.</span></p>
+                                    <p>Content is derived from authentic sources and compiled in English by STT.</span></p>
+                                    <p class="text-danger"><strong><u>TRANSLATION</u></strong></p>
+                                    <p>Translation into other languages is done manually by native proficient persons.</span></p>
+                                    <p class="text-danger"><strong><u>NARRATION</u></strong></p>
+                                    <p>Audio Narrations are presented in a homely tone with focus on clarity and diction with soothing music in the background.</span></p>
+                                    <p class="text-danger"><strong><u>TOUR TALES</u></strong></p>
+                                    <p>The </span><em>tour-tales</span></em> are organised into five categories &ndash; </span><strong>Spiritual</strong>; </span><strong>City</strong>; </span><strong>Festival</strong>; </span><strong>India</strong> and </span><strong>World&nbsp;</strong><strong>tour-tales</strong>. New Tales are added every month. </span><em>Please see tour-tales page for details.</span></em></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row my-3">
+                            <div class="col-md-12 mb-4 mb-lg-0 px-2 mb-3">
+                                <div class="text-center mb-3">
+                                    <div class="text-uppercase color-000 avant-md hear-headding1">
+                                        FREE,  QUESTT  &  TWISTT  USERS
+                                    </div>
+                                </div>
+                                <div class="touroperator-box hear-text p-3 mx-2">
+                                    <p class="color-blue"><strong>All users can download and listen to the ‘Spiritual Tour Tales’ FREE.</strong></p>
+                                    <p class="text-danger"><strong><u>‘QUESTT’ USERS</u></strong></p>
+                                    <p>QUESTT Subscription is an annual on-line subscription at Rs 365/ or $10/ for unlimited downloads.</p>
+                                    <p>QUESTT is useful for all those interested in knowing the glory of India&rsquo;s heritage and culture.</p>
+                                    <p>QUESTT is recommended for- foreign tourists to India, curious Indian tourists, youth of India, aspirants of competitive exams and all those who may not be able to visit physically but keen to know about the monumental heritage and culture of India.</span></p>
+                                    <p>QUESTT also provides &lsquo;small scale, part time and even on-line business opportunity&rsquo; for entrepreneurs.</span></p>
+                                    <p>QUESTT subscriber can buy TWISTT passwords and sell them for profit.</p>
+                                    <p class="text-danger"><strong><u>‘TWISTT’ USERS</u></strong></p>
+                                    <p>TWISTT stands for &ldquo;</span><strong>T</strong>our </span><strong>WI</strong>th </span><strong>STT</strong>&rdquo; and it is a Short Duration Subscription (SDS) for 15 days.</p>
+                                    <p>TWISTT is the economical option for any tourist on-the-go.</p>
+                                    <p>TWISTT can be subscribed by using the TWISTT Password given/sold by any QUESTT subscriber.</p>
+                                    <p>TWISTT can also be enabled on your phone by any STT licensed Agency.</p>
+                                    <!-- <p class="color-blue"><em>For further details see TWISTT page.</span></em></p> -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mb-4 mb-lg-0 px-2 mb-3">
+                                <div class="text-center mb-3">
+                                    <div class="text-uppercase color-000 avant-md hear-headding1">
+                                        BUSINESS WITH TWISTT
+                                    </div>
+                                </div>
+                                <div class="howhear-box hear-text p-3 mx-2">
+                                    <p class="text-danger"><strong><u>LARGE SCALE TWISTT SPONSORS</u></strong></p>
+                                    <p>Any Agency associated with Tourism can buy bulk licenses for TWISTT from STT.  They are the large-scale Sales Sponsors of STT.</p>
+                                    <p>They simply enter the tourist’s mobile number and date of tour in the TWISTT portal and STT enables TWISTT subscription 3 days prior to that date.</p>
+                                    <p>Due recognition will be given to the Agency by displaying their logo and Name.</span></p>
+                                    <p>Bulk licenses can be bought at concessional price and frequent buyers get higher discounts.</span></p>
+                                    <p>STT recommends this to- Indian Embassies and Cultural associations abroad, Tourism Departments of Central and State Governments, <strong>Indian & Foreign</strong> - Tour Agencies, Tour Operators, Travel Agencies, Tour Coordinators, Hoteliers and other Freelance Entrepreneurs. They not only add value to their Service but can make a good business as well. Such Agencies/Individuals can be referred in short as “TWISTT Enablers”.</p>
+                                    <p class="text-danger"><strong><u>SMALL SCALE TWISTT SPONSORS</u></strong></p>
+                                    <p>All the QUESTT subscribers are by default small-scale sponsors of TWISTT.</p>
+                                    <p>They can buy TWISTT passwords in the App and gift/sell to the tourists for profit.</p>
+                                    <p>STT recommends this entrepreneurship to – Tour leaders, Tour Guides, Tour Managers, Transport conductors/drivers, Souvenir sellers and all individuals working at ground level in tourism industry. Any QUESTT Subscriber who provides the TWISTT passwords can also be referred to in short as “TWISTT Enablers”.</p>
+                                    <p class="color-blue"><strong>Sale of TWISTT passwords can even be a part-time pastime from home.</span></strong></p>
+                                    <p class="text-danger"><strong><u>STT-SE (SUSRI TOUR TALES PVT LTD- SALES EXECUTIVE)</u></strong></p>
+                                    <p>STT Sales Executive job is about “part-time promotional marketing of TWISTT”.</p>
+                                    <p>STT-SE needs to introduce the concept of TWISTT to Tour Agencies and others and explain the “value addition” it makes to the tourism service.</p>
+                                    <p>STT-SE gets commission on the purchase of every plan he facilitates.</p>
+                                    <p>STT-SE’s are directly recruited by Susri Tour Tales. Interested people can contact through the mail twistt.stt@gmail.com</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid pb-5">
+<div class="container">
+    <div class="row mx-n2">
+        <div class="col-12 col-sm-12 col-md-6 mb-3 mb-md-0 px-2">
+            <div class="d-flex align-items-center justify-content-center border-radius-10 custom-shadow font-22 bg-white p-4 text-center font-italic avant-md color-000 h-100">
+                You can listen in English or Hindi or in any regional language.
+            </div>
+        </div>
+        <div class="col-12 col-sm-12 col-md-6 px-2">
+            <div class="border-radius-10 custom-shadow bg-white d-flex flex-wrap p-3">
+                <button class="btn color-333 language-box">
+                    bengali
+                </button>
+                <button class="btn color-333 language-box">
+                    gujarathi
+                </button>
+                <button class="btn color-333 language-box">
+                    kannada
+                </button>
+                <button class="btn color-333 language-box">
+                    malayalam
+                </button>
+                <button class="btn color-333 language-box">
+                    marathi
+                </button>
+
+                <button class="btn color-333 language-box">
+                    Odiya
+                </button>
+                <button class="btn color-333 language-box">
+                    punjabi
+                </button>
+
+                <button class="btn color-333 language-box">
+                    tamil
+                </button>
+                <button class="btn color-333 language-box">
+                    telugu
+                </button>
+                <button class="btn color-333 language-box">
+                    urdu
+                </button>
+
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<script>
+$('#home-banner').owlCarousel({
+    stagePadding: 200,
+    autoplay: true,
+    loop: true,
+    margin: 10,
+    items: 1,
+    lazyLoad: true,
+    dots: false,
+    nav:true,
+    responsive: {
+        0: {
+            items: 1,
+            stagePadding: 20
+        },
+        768: {
+            items: 1,
+            stagePadding: 100
+        },
+        992: {
+            items: 1,
+            stagePadding: 100
+        },
+        1400: {
+            items: 1,
+            stagePadding: 300
+        },
+        1600: {
+            items: 1,
+            stagePadding: 200
+        },
+        1800: {
+            items: 1,
+            stagePadding: 230
+        }
+    }
+});
+</script>
+<script>
+    document.addEventListener('play', function(e){
+        var audios = document.getElementsByTagName('audio');
+        for(var i = 0, len = audios.length; i < len;i++){
+            if(audios[i] != e.target){
+                audios[i].pause();
+            }
+        }
+    }, true);
+</script>

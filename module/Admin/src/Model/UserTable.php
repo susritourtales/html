@@ -126,6 +126,54 @@ class UserTable extends BaseTable
             return false;
         }
     }
+
+    /* public function authenticateUser($username, $password='')
+    {
+        try {
+            $isEmail = explode("@", $username);
+            $column = "email";
+            if (count($isEmail) == 1) {
+                $column = "mobile";
+            }
+            $sql = $this->getSql();
+            $user = array();
+            $query = $sql->select()
+                ->from($this->tableName)
+                ->columns(array("id", "country_phone_code",'email','username','hash','password'))
+                ->where(array('' . $column . '' => $username));
+            $result = $sql->prepareStatementForSqlObject($query)->execute();
+            foreach ($result as $row) {
+                $user[] = $row;
+            }
+            if (count($user))
+            {
+                if($password!='')
+                {
+                    if ($user[0]['hash'] == "")
+                    {
+                        return array();
+                    }
+                    $aes = new Aes();
+                     // echo '<pre>'; print_r($user); exit;
+                    $decryptedPassword = $aes->decrypt($user[0]["password"], $user[0]["hash"]);
+                    //print_r($decryptedPassword);exit;
+                    if ($decryptedPassword == $password) {
+                        return $user[0];
+                    } else {
+                        return array();
+                    }
+                }else{
+                    return array();
+                }
+            }else{
+                return array();
+            }
+        } catch (\Exception $e) {
+            //print_r($e->getMessage());exit;
+            // $this->logger->err($e->getMessage());
+            return array();
+        }
+    } */
 }
 
     /* public function saveUser(User $user)

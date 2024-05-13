@@ -2,11 +2,13 @@
 
 namespace Application\Controller;
 
+use Admin\Model\BannerTable;
 use Admin\Model\CitiesTable;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\Authentication\AuthenticationService;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Session\Container as SessionContainer;
+use Laminas\Mvc\MvcEvent;
 use Aws\Exception\AwsException;
 use Aws\ResultInterface;
 use Aws\S3\S3Client;
@@ -28,6 +30,9 @@ class BaseController extends AbstractActionController
 {
     protected $authService;
     protected $dbAdapter;
+    protected $sessionSaveManager;
+    protected $authDbTable;
+    protected $sessionStorage;
     protected $sessionManager;
     protected $sessionContainer;
     protected $s3;
@@ -35,6 +40,7 @@ class BaseController extends AbstractActionController
 
     protected $userTable;
     protected $languageTable;
+    protected $bannerTable;
     protected $temporaryFiles;
     protected $tourismFilesTable;
     protected $countriesTable;
@@ -58,7 +64,8 @@ class BaseController extends AbstractActionController
         TourismFilesTable $tourism_files_table,
         AppParameterTable $app_parameter_table,
         SubscriptionPlanTable $subscriptio_plan_table,
-        UserTable $user_table
+        UserTable $user_table,
+        BannerTable $banner_table
     ) {
         $this->sessionContainer = new SessionContainer('stt_session');
         $this->sessionManager = $this->sessionContainer->getManager();
@@ -78,8 +85,16 @@ class BaseController extends AbstractActionController
         $this->appParameterTable = $app_parameter_table;
         $this->subscriptionPlanTable = $subscriptio_plan_table;
         $this->userTable = $user_table;
+        $this->bannerTable = $banner_table;
     }
 
+    /* public function onDispatch(MvcEvent $e){
+        error_reporting(E_ALL);
+        ini_set('display_error', 0);
+        date_default_timezone_set('Asia/Kolkata');
+        return parent::onDispatch($e);
+    } */
+    
     public function getLoggedInUserId()
     {
         try {
@@ -115,6 +130,47 @@ class BaseController extends AbstractActionController
         } catch (\Exception $e) {
             return array();
         }
+    }
+
+    public function getAuthDbTable()
+    {
+
+        if (!$this->authDbTable)
+        {
+            $sm = $this->getEvent()->getApplication()->getServiceManager();
+            $this->authDbTable = $sm->get('AuthDbTable');
+        }
+        return $this->authDbTable;
+    }
+
+    public function getSessionStorage()
+    {
+        if (!$this->sessionStorage)
+        {
+            $sm = $this->getEvent()->getApplication()->getServiceManager();
+            $this->sessionStorage = $sm->get('SessionStorage');
+        }
+        return $this->sessionStorage;
+    }
+
+    public function getSessionManager()
+    {
+        if (!$this->sessionManager)
+        {
+            $sm = $this->getEvent()->getApplication()->getServiceManager();
+            $this->sessionManager = $sm->get('SessionManager');
+        }
+        return $this->sessionManager;
+    }
+
+    public function getSessionSaveManager()
+    {
+        if (!$this->sessionSaveManager)
+        {
+            $sm = $this->getEvent()->getApplication()->getServiceManager();
+            $this->sessionSaveManager = $sm->get('SessionSaveManager');
+        }
+        return $this->sessionSaveManager;
     }
 
     public function getBaseUrl()
@@ -196,7 +252,7 @@ class BaseController extends AbstractActionController
             exit; */
             return false;
         }
-        return true;
+        //return true;
     }
 
     public function pushFiles($fileName, $filepath, $attachmentType)

@@ -5,6 +5,7 @@ namespace User;
 use User\Controller\IndexController;
 use Laminas\Router\Http\Literal;
 use Laminas\Router\Http\Segment;
+use Laminas\ServiceManager\AbstractFactory\ReflectionBasedAbstractFactory;
 use Laminas\ServiceManager\Factory\InvokableFactory;
 
 return [
@@ -20,7 +21,7 @@ return [
                     ],
                 ],
             ],
-            /* 'home' => [
+            'home' => [
                 'type' => Literal::class,
                 'options' => [
                     'route' => '/',
@@ -29,7 +30,7 @@ return [
                         'action' => 'index',
                     ],
                 ],
-            ], */
+            ],
             'about-us' => [
                 'type' => Segment::class,
                 'options' => [
@@ -448,11 +449,24 @@ return [
             ],
         ],
     ],
-    'controllers' => [
+    'service_manager' => [
+        'abstract_factories' => [
+            ReflectionBasedAbstractFactory::class,
+        ],
+        'factories' => [
+            Controller\IndexController::class => ReflectionBasedAbstractFactory::class,
+            'Laminas\Authentication\AuthenticationService' => function ($serviceManager) {
+                $dbAdapter = $serviceManager->get('Laminas\Db\Adapter\Adapter');
+                $authAdapter = new \Admin\Auth\Adapter\DbTable($dbAdapter);
+                return new \Laminas\Authentication\AuthenticationService(null, $authAdapter);
+            },
+        ],
+    ],
+    /* 'controllers' => [
         'factories' => [
             Controller\IndexController::class => InvokableFactory::class,
         ],
-    ],
+    ], */
     'view_manager' => [
         'display_not_found_reason' => true,
         'display_exceptions' => true,
@@ -460,6 +474,7 @@ return [
         'not_found_template' => 'error/404',
         'exception_template' => 'error/index',
         'template_map' => [
+            'layout/layout'   => __DIR__ . '/../view/layout/user-layout.phtml',
             'api/index/index' => __DIR__ . '/../view/user/index/index.phtml',
         ],
         'template_path_stack' => [

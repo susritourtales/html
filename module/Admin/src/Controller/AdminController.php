@@ -2478,6 +2478,62 @@ class AdminController extends BaseController
         return $this->redirect()->toUrl($this->getBaseUrl() . '/a_dMin/login');
     }
 
+    /* public function logoutAction()
+       {
+          session_unset();
+           return $this->redirect()->toUrl($this->getBaseUrl()."/a_dMin/login");
+       }
+
+    public function loginAction()
+     {
+         if ($this->getRequest()->isXmlHttpRequest())
+         {
+             $request = $this->getRequest()->getPost();
+            // var_dump($request);exit;
+            $userName=$request['user_name'];
+            $password=$request['password'];
+             $user = $this->userTable->authenticateUser($userName, $password);
+             if(count($user) && $user['role']==\Admin\Model\User::Admin)
+            {
+                if(ob_get_length())
+                {
+                    ob_end_clean();
+                }
+                session_unset();
+                $this->getAuthDbTable()
+                    ->setTableName('user')
+                    ->setIdentityColumn("email")
+                    ->setCredentialColumn('user_id')
+                    ->setIdentity($user["email"])
+                    ->setCredential($user['user_id']);
+                $this->getAuthService()
+                    ->setAdapter($this->getAuthDbTable())
+                    ->setStorage($this->getSessionStorage());
+                $this->getSessionManager()->rememberMe(60 * 60 * 24 * 30 * 3);
+                $result = $this->getAuthService()->authenticate();
+
+
+                if ($result->isValid()) {
+                    $resultRow = (array)$this->getAuthDbTable()->getResultRowObject(array('user_id', 'email', "role"));
+                    $this->getSessionStorage()->write($resultRow);
+                    $_SESSION['Zend_Auth']->storage['admin_name']=$user['user_name'];
+                    return new JsonModel(array("success" => true, "message" => "Valid Credentials"));
+                }
+                return new JsonModel(array("success" => false, "message" => "Invalid Credentials", "errorCode" => 4));
+            }else
+            {
+                return new JsonModel(array('success'=>false,'message'=>'invalid credentials'));
+            }
+         }
+
+
+         if($this->getLoggedInUserId())
+         {
+             return $this->redirect()->toUrl($this->getBaseUrl().'/a_dMin/places-list');
+         }
+
+     } */
+
     public function loginAction()
     {
         if ($this->getRequest()->isXmlHttpRequest()) {

@@ -42,8 +42,9 @@ class Constants
     const MAIN_SITE_TOUR_TALES_PAGE = 5;
     const MAIN_SITE_FAQ_PAGE = 6;
     const MAIN_SITE_CONTACT_PAGE = 7;
-    const MAIN_SITE_CONTRIBUTOR_PAGE = 8;
-    const MAIN_SITE_TWISTT = 9;
+    //const MAIN_SITE_CONTRIBUTOR_PAGE = 8;
+    const MAIN_SITE_TWISTT_PAGE = 8;
+    const MAIN_SITE_TERMS_PAGE = 9;
 
     const TWISTT_HOME_PAGE = 1;
     const TWISTT_TBE_PAGE = 2;

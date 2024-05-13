@@ -15,6 +15,7 @@ class IndexController extends BaseController
   {
     $marqText = "Awareness enhances enjoyment... Know about the place you visit by listening to Susri Tour Tales...";
     $banners=$this->bannerTable->getBanners();
+    $this->layout()->setVariable('activeTab', \Application\Constants\Constants::MAIN_SITE_HOME_PAGE);
     return new ViewModel(['marqText'=>$marqText,'banners'=>$banners, 'imageUrl'=>$this->filesUrl()]);
   }
   public function aboutUsAction() {
@@ -70,6 +71,7 @@ public function contactAction() {
   }
 
   public function termsPrivacyAction() {
+    $this->layout()->setVariable('activeTab', \Application\Constants\Constants::MAIN_SITE_TERMS_PAGE);
       return new ViewModel();
   }
 }

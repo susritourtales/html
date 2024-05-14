@@ -43,69 +43,62 @@
 </head>
 
 <body>
-    <div>
-        <nav class="navbar navbar-expand-md bg-white navbar-shadow">
-            <a class="navbar-brand" href="<?php echo $this->basePath(); ?>/"><img src="<?php echo $this->basePath(); ?>/img/user/logo.png" class="img-fluid" alt="logo"></a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+<div>
+    <nav class="navbar navbar-expand-md navbar-light bg-white navbar-shadow">
+        <a class="navbar-brand" href="/"><img src="/img/user/logo.png" class="img-fluid" alt="logo"></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-            <div class="collapse navbar-collapse justify-content-md-end" id="navbarTogglerDemo02">
-                <ul class="list-unstyled navbar-nav">
-                    <li>
-                        <a href="<?php echo $this->basePath(); ?>/" class="<?php echo (isset($activeTab) && $activeTab == \Application\Constants\Constants::MAIN_SITE_HOME_PAGE ? 'active' : '') ?>">
-                            home
-                        </a>
-                    </li>
-                    <li>
-                        <a href="<?php echo $this->basePath(); ?>/about-us" class="<?php echo (isset($activeTab) && $activeTab == \Application\Constants\Constants::MAIN_SITE_ABOUT_PAGE ? 'active' : '') ?>">
-                            about us
-                        </a>
-                    </li>
-                    <!-- <li>
-                        <a href="<?php echo $this->basePath(); ?>/tours" class="<?php echo (isset($activeTab) && $activeTab == \Application\Constants\Constants::MAIN_SITE_TOUR_TALES_PAGE ? 'active' : '') ?>">
-                            Tour Tales Menu
-                        </a>
-                    </li>
-                    <li>
-                        <a href="<?php echo $this->basePath(); ?>/twistt" class="<?php echo (isset($activeTab) && $activeTab == \Application\Constants\Constants::MAIN_SITE_TWISTT_PAGE ? 'active' : '') ?>">
-                            TWISTT
-                        </a>
-                    </li>
-                    <li>
-                        <a href="<?php echo $this->basePath(); ?>/help" class="<?php echo (isset($activeTab) && $activeTab == \Application\Constants\Constants::MAIN_SITE_HELP_PAGE ? 'active' : '') ?>">
-                            help
-                        </a>
-                    </li>
-                    <li>
-                        <a href="<?php echo $this->basePath(); ?>/faqs" class="<?php echo (isset($activeTab) && $activeTab == \Application\Constants\Constants::MAIN_SITE_FAQ_PAGE ? 'active' : '') ?>">
-                            faq's
-                        </a>
-                    </li>
-                    <li>
-                        <a href="<?php echo $this->basePath(); ?>/acknowledgements" class="<?php echo (isset($activeTab) && $activeTab == \Application\Constants\Constants::MAIN_SITE_CREDIT_PAGE ? 'active' : '') ?>">
-                            CREDITS
-                        </a>
-                    </li> -->
-                    <li>
-                        <a href="<?php echo $this->basePath(); ?>/terms-privacy" class="<?php echo (isset($activeTab) && $activeTab == \Application\Constants\Constants::MAIN_SITE_TERMS_PAGE ? 'active' : '') ?>">
-                            Terms & Privacy
-                        </a>
-                    </li>
-                    <li>
-                        <a href="<?php echo $this->basePath(); ?>/contact" class="<?php echo (isset($activeTab) && $activeTab == \Application\Constants\Constants::MAIN_SITE_CONTACT_PAGE ? 'active' : '') ?>">
-                            contact
-                        </a>
-                    </li>
-                    <!-- <li>
-                        <a href="<?php //echo $this->basePath(); ?>/contributor" class="contributor-link <?php //echo (isset($activeTab) && $activeTab == \Application\Constants\Constants::MAIN_SITE_CONTRIBUTOR_PAGE ? 'active' : '') ?>">
+        <div class="collapse navbar-collapse justify-content-md-end" id="navbarTogglerDemo02">
+            <ul class="navbar-nav mt-2 mt-md-0">
+                <li class="nav-item">
+                    <a href="<?php echo $this->basePath(); ?>/" class="<?php echo (isset($activeTab) && $activeTab == \Application\Constants\Constants::MAIN_SITE_HOME_PAGE ? 'active' : '') ?>">home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="<?php echo $this->basePath(); ?>/about-us" class="<?php echo (isset($activeTab) && $activeTab == \Application\Constants\Constants::MAIN_SITE_ABOUT_PAGE ? 'active' : '') ?>"> about us</a>
+                </li>
+                <!--
+                <li class="nav-item">
+                    <a class="nav-link" href="/tours">Tour Tales Menu</a>
+                    <a href="<?php echo $this->basePath(); ?>/tours" class="<?php echo (isset($activeTab) && $activeTab == \Application\Constants\Constants::MAIN_SITE_TOUR_TALES_PAGE ? 'active' : '') ?>">Tour Tales Menu</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/twistt">TWISTT</a>
+                    <a href="<?php echo $this->basePath(); ?>/twistt" class="<?php echo (isset($activeTab) && $activeTab == \Application\Constants\Constants::MAIN_SITE_TWISTT_PAGE ? 'active' : '') ?>">TWISTT</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/help">Help</a>
+                    <a href="<?php echo $this->basePath(); ?>/help" class="<?php echo (isset($activeTab) && $activeTab == \Application\Constants\Constants::MAIN_SITE_HELP_PAGE ? 'active' : '') ?>">help</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/faqs">FAQ's</a>
+                    <a href="<?php echo $this->basePath(); ?>/faqs" class="<?php echo (isset($activeTab) && $activeTab == \Application\Constants\Constants::MAIN_SITE_FAQ_PAGE ? 'active' : '') ?>">FAQs</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/acknowledgements">Credits</a>
+                    <a href="<?php echo $this->basePath(); ?>/acknowledgements" class="<?php echo (isset($activeTab) && $activeTab == \Application\Constants\Constants::MAIN_SITE_CREDIT_PAGE ? 'active' : '') ?>">CREDITS</a>
+                </li>
+                -->
+                <li class="nav-item">
+                    <a href="<?php echo $this->basePath(); ?>/terms-privacy" class="<?php echo (isset($activeTab) && $activeTab == \Application\Constants\Constants::MAIN_SITE_TERMS_PAGE ? 'active' : '') ?>">Terms &amp; Privacy</a>
+                </li>
+                <li class="nav-item">
+                    <a href="<?php echo $this->basePath(); ?>/contact" class="<?php echo (isset($activeTab) && $activeTab == \Application\Constants\Constants::MAIN_SITE_CONTACT_PAGE ? 'active' : '') ?>">contact</a>
+                </li>
+                <!--
+                <li class="nav-item">
+                    <a class="nav-link contributor-link" href="/contributor">Be a Contributor</a>
+                    <a href="<?php //echo $this->basePath(); ?>/contributor" class="contributor-link <?php //echo (isset($activeTab) && $activeTab == \Application\Constants\Constants::MAIN_SITE_CONTRIBUTOR_PAGE ? 'active' : '') ?>">
                             be a contributor
                         </a>
-                    </li> -->
-                </ul>
-            </div>
-        </nav>
-    </div>
+                </li>
+                -->
+            </ul>
+        </div>
+    </nav>
+</div>
+
     <div class="flex-fill">
         <?php echo $this->content; ?>
     </div>
@@ -156,7 +149,7 @@
                             </li> -->
                             <li class="list-inline-item">
                                 <a href="<?php echo $this->basePath(); ?>/terms-privacy">
-                                    terms
+                                    terms & privacy
                                 </a>
                             </li>
                             <!-- <li class="list-inline-item">

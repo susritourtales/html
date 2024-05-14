@@ -1,110 +1,91 @@
-<?php
-/* if($_SESSION['Laminas_Auth']->storage['suser_name']){
-    header("Location: " . $this->basePath() . "/se-home"); 
-    exit();
-} */
-?>
 <link rel="stylesheet" href="<?php echo $this->basePath(); ?>/css/login.css">
 <link rel="stylesheet" href="<?php echo $this->basePath(); ?>/css/twistt.css">
-<script>
-    $(document).ready(function() {
-        $('body').on("click", ".submit-btn", function() {
-            var userName = $("#userName").val();
-            var passsword = $("#password").val();
-            if (userName == '') {
-                messageDisplay("Please enter the username");
-                return false;
-            }
-            if (passsword == '') {
-                messageDisplay("Please Enter password");
-                return false;
-            }
-            postData('/a_dMin/twisttse-login', {
-                "user_name": userName,
-                "password": passsword
-            }, function(response) {
-                if (response.success) {
-                    messageDisplay(response.message);
-                    window.location.href = BASE_URL + '/twistt/executive/home';
-                } else {
-                    messageDisplay(response.message);
-                }
-            });
-            //  messageDisplay('Invalid credentials');
-        });
-        $("body").on("keydown", function(e) {
-            if (e.which == 13) {
-                $(".submit-btn").click();
-            }
-        });
-        $('body').on("click", "#btnFP", function() {
-            window.location.href = BASE_URL + '/twistt/executive/forgot-password';
-        });
-    });
-
-    function postData(url, parameters, callback) {
-        url = BASE_URL + url;
-        //  console.log(parameters);
-        try {
-            $.post(url, parameters, function(data) {
-
-                if (typeof callback == "function") {
-                    callback(data);
-                }
-            });
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
-    function messageDisplay(message, timeOut) {
-        if ($.trim(timeOut) == "") {
-            timeOut = 2500;
-        }
-        var element = $("#feedbackSection");
-        $("div#feedbackSection span").html(message);
-        if (timeOut == 0) {
-            element.hide();
-            return false;
-        }
-        element.animate({
-            height: 70
-        }, 300).show();
-        if (timeOut != -1) {
-            setTimeout(function() {
-                element.animate({
-                    height: 0
-                }, 300, function() {
-                    element.hide();
-                });
-            }, timeOut);
-        }
-    }
-</script>
-<div class="module-container">
-    <div class="module-wrapper">
-        <div class="display-table">
-            <div class="display-table-cell">
-                <div class="form-wrapper login-fields">
-                    <div class="d-flex justify-content-center">
-                        <img src="<?php echo $this->basePath(); ?>/img/susri.png" class="logo">
-                    </div>
-                    <div class="d-flex justify-content-center mt-3 mb-3">
-                        <h4 class="login-txt">TWISTT Executive Login</h4>
-                    </div>
-                    <div class="form-group">
-                        <input type="text" placeholder="Username" class="form-control " id="userName">
-                    </div>
-                    <div class="form-group">
-                        <input type="password" placeholder="Password" class="form-control " id="password">
-                    </div>
-                    <div class="my-3 d-flex justify-content-between">
-                        <button type="button" class="btn submit-btn">Login</button>
-                        <button type="button" class="btn stt-bg-primary ml-auto" id="btnFP">Forgot Password</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+<div class="container my-5">
+  <h1 class="text-center">TWISTT Executive Registration Form</h1>
+  <form id="registrationForm" novalidate>
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label for="name" class="form-label">Name*</label>
+        <input type="text" class="form-control" id="name" name="name" required>
+        <div class="invalid-feedback">Please provide your name.</div>
+      </div>
+      <div class="col-md-6">
+        <label for="gender" class="form-label">Gender</label>
+        <select class="form-select" id="gender" name="gender">
+          <option value="">Select...</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label for="mobile" class="form-label">Mobile*</label>
+        <input type="tel" class="form-control" id="mobile" name="mobile" required>
+        <div class="invalid-feedback">Please provide your mobile number.</div>
+      </div>
+      <div class="col-md-6">
+        <label for="email" class="form-label">Email*</label>
+        <input type="email" class="form-control" id="email" name="email" required>
+        <div class="invalid-feedback">Please provide a valid email address.</div>
+      </div>
+      <div class="col-md-6">
+        <label for="age" class="form-label">Age*</label>
+        <input type="number" class="form-control" id="age" name="age" required>
+        <div class="invalid-feedback">Please provide your age.</div>
+      </div>
+      <div class="col-md-6">
+        <label for="education" class="form-label">Education</label>
+        <input type="text" class="form-control" id="education" name="education">
+      </div>
+      <div class="col-md-6">
+        <label for="occupation" class="form-label">Occupation</label>
+        <input type="text" class="form-control" id="occupation" name="occupation">
+      </div>
+      <div class="col-md-6">
+        <label for="address" class="form-label">Address*</label>
+        <input type="text" class="form-control" id="address" name="address" required>
+        <div class="invalid-feedback">Please provide a valid Address.</div>
+      </div>
+      <div class="col-md-6">
+        <label for="city" class="form-label">City*</label>
+        <input type="text" class="form-control" id="city" name="city" required>
+        <div class="invalid-feedback">Please provide City name.</div>
+      </div>
+      <div class="col-md-6">
+        <label for="state" class="form-label">State*</label>
+        <input type="text" class="form-control" id="state" name="state" required>
+        <div class="invalid-feedback">Please provide State name.</div>
+      </div>
+      <div class="col-md-6">
+        <label for="bankAccount" class="form-label">Bank Account*</label>
+        <input type="text" class="form-control" id="bankAccount" name="bankAccount" required>
+        <div class="invalid-feedback">Please provide bank account number.</div>
+      </div>
+      <div class="col-md-6">
+        <label for="ifsc" class="form-label">IFSC*</label>
+        <input type="text" class="form-control" id="ifsc" name="ifsc" required>
+        <div class="invalid-feedback">Please provide a valid IFSC code.</div>
+      </div>
+      <div class="col-md-6">
+        <label for="passportPhoto" class="form-label">Passport Size Photo*</label>
+        <input type="file" class="form-control" id="passportPhoto" name="passportPhoto" required>
+        <div class="invalid-feedback">Please upload your photo.</div>
+      </div>
     </div>
+    <button type="submit" class="btn submit-btn mt-5">Submit</button>
+  </form>
 </div>
+
+<script>
+  const form = document.getElementById('registrationForm');
+  form.addEventListener('submit', function(event) {
+    // Check if the form is valid
+    if (!form.checkValidity()) {
+      event.preventDefault(); // Prevent form submission if invalid
+      event.stopPropagation(); // Stop event propagation
+    }
+    form.classList.add('was-validated'); // Add 'was-validated' class to show validation feedback
+  });
+</script>
+
 <div class="login-bg"></div>

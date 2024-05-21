@@ -64,8 +64,10 @@
     const form = document.getElementById('registrationForm');
     form.addEventListener('submit', function(event) {
         if($('#bankAccountConf').val() != $('#bankAccount').val()){
-            messageDisplay('Please check the Bank Account number you have entered..');
-            return false;
+            messageDisplay('Please check the Bank Account number you have entered..', 2000);
+            event.preventDefault(); 
+            event.stopPropagation(); 
+            return;
         }
         const fileInput = document.querySelector('input[type="file"]');
         const maxFileSize = 2 * 1024 * 1024; // 2MB in bytes
@@ -185,6 +187,7 @@
                     $('#userDetails').show();
                     $('#bankDetails').show();
                     $('#register').show();
+                    messageDisplay(response.message, 2000);
                 }else if(response.exists == '1'){
                     $('#divOtp').hide();
                     $('#divBtn').hide();
@@ -203,13 +206,13 @@
                     $("#city").val(response.details['city']);
                     $("#state").val(response.details['state']);
                     //response.details['photo_url']
+                    messageDisplay(response.message, 2000);
                 }else if(response.exists == '2'){
                     messageDisplay("Mobile number already registred as TWISTT Executive. Please login.");
                     setTimeout(function(){
                         window.location.href=BASE_URL+"/twistt/executive/login";
                     },2000);
                 }
-                messageDisplay(response.message);
             }else{
                 messageDisplay(response.message,3000);
             }

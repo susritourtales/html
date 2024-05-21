@@ -255,7 +255,16 @@ return [
                         'action' => 'executive-home',
                     ],
                 ],
-            ],  'twistt-executive-verify-mobile' => [
+            ], 'twistt-executive-profile' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/twistt/executive/profile',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'executive-profile',
+                    ],
+                ],
+            ], 'twistt-executive-verify-mobile' => [
                 'type' => Literal::class,
                 'options' => [
                     'route' => '/twistt/executive/verify-mobile',

@@ -5,7 +5,7 @@ use Hybridauth\Hybridauth;
 $hybridauth = new Hybridauth($config);
 $adapters = $hybridauth->getConnectedAdapters();
 ?>
-<div><?php echo "Welcome " . $userDetails[0]['username'] ?></div>
+<div><?php echo "Welcome " . $userDetails['username'] ?></div>
 <div><pre><?php var_dump($userDetails); ?></pre></div>
 <div class="col-12 col-lg-5 d-flex align-items-center">
     <div class="d-flex gap-3 flex-column w-100 ">

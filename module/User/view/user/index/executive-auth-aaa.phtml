@@ -67,11 +67,11 @@ try {
         $userProfile = $adapter->getUserProfile();
         $accessToken = $adapter->getAccessToken();
 
-        if (session_status() == PHP_SESSION_NONE) {
+       /*  if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
         $_SESSION['username'] = $userProfile->displayName;
-        $_SESSION['user_login_id'] = $userProfile->email;
+        $_SESSION['user_login_id'] = $userProfile->email; */
 
         // add your custom AUTH functions (if any) here
         // ...

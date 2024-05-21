@@ -93,7 +93,7 @@ class UserTable extends BaseTable
             foreach($resultSet as $row){
                 $user[] = $row;
             }
-            return $user;
+            return $user[0];
         }catch(\Exception $e){
             return array();
         }

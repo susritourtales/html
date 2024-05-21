@@ -199,6 +199,11 @@ class BaseController extends AbstractActionController
         return 'https://s3.amazonaws.com/files.susri/';
     }
 
+    public function getConfig(){
+        $serviceLocator = $this->getEvent()->getApplication()->getServiceManager();
+        $this->config = $serviceLocator->get('Config');
+        return $this->config;
+    }
     public function copypushFiles($files)
     {
         $serviceLocator = $this->getEvent()->getApplication()->getServiceManager();

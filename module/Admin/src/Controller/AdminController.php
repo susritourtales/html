@@ -1475,7 +1475,7 @@ class AdminController extends BaseController
                 }
                 $uploadStatus = $this->pushFiles("tmp/" . $filePath, $attachment['tmp_name'], $attachment['type']);
                 if (!$uploadStatus) {
-                    return new JsonModel(array('success' => false, "messsage" => 'something went wrong try agian'));
+                    return new JsonModel(array('success' => false, "message" => 'something went wrong try agian'));
                 }
                 $uploadFileDetails = array(
                     'file_path' => $filePath,
@@ -1498,7 +1498,7 @@ class AdminController extends BaseController
                 }
                 $uploadStatus = $this->pushFiles("tmp/" . $filePath, $attachment['tmp_name'], $attachment['type']);
                 if (!$uploadStatus) {
-                    return new JsonModel(array('success' => false, "messsage" => 'something went wrong try agian'));
+                    return new JsonModel(array('success' => false, "message" => 'something went wrong try agian'));
                 }
                 $uploadFileDetails = array(
                     'file_path' => $filePath,
@@ -1507,7 +1507,7 @@ class AdminController extends BaseController
             }
 
             if (isset($files['attachments'])) {
-                //return new JsonModel(array('success' => false, "messsage" => $files));
+                //return new JsonModel(array('success' => false, "message" => $files));
                 $uploadFile = $files['attachments'];
                 $filename = $uploadFile['name'];
                 $fileExt = explode(".", $filename);
@@ -1534,7 +1534,7 @@ class AdminController extends BaseController
                 $ext = strtolower($ext);
                 $uploadStatus =  $this->pushFiles("tmp/" . $filePath, getcwd() . "/public/" . $filePath, $ext);
                 if (!$uploadStatus) {
-                    return new JsonModel(array('success' => false, "messsage" => 'something went wrong try agian'));
+                    return new JsonModel(array('success' => false, "message" => 'something went wrong try agian'));
                 }
                 if (in_array($ext, $audioFiles)) {
                     $fileType = \Admin\Model\TourismFiles::file_extension_type_audio;
@@ -1554,9 +1554,9 @@ class AdminController extends BaseController
 
             $response = $this->temporaryFiles->addTemporaryFile($uploadFileDetails);
             if ($response['success']) {
-                return new JsonModel(array('success' => true, "messsage" => 'uploaded', 'id' => $response['id']));
+                return new JsonModel(array('success' => true, "message" => 'uploaded', 'id' => $response['id']));
             } else {
-                return new JsonModel(array('success' => false, "messsage" => 'something went wrong try agian'));
+                return new JsonModel(array('success' => false, "message" => 'something went wrong try agian'));
             }
         }
         return $this->redirect()->toUrl($this->getBaseUrl() . "/a_dMin/login");
@@ -2478,62 +2478,6 @@ class AdminController extends BaseController
         return $this->redirect()->toUrl($this->getBaseUrl() . '/a_dMin/login');
     }
 
-    /* public function logoutAction()
-       {
-          session_unset();
-           return $this->redirect()->toUrl($this->getBaseUrl()."/a_dMin/login");
-       }
-
-    public function loginAction()
-     {
-         if ($this->getRequest()->isXmlHttpRequest())
-         {
-             $request = $this->getRequest()->getPost();
-            // var_dump($request);exit;
-            $userName=$request['user_name'];
-            $password=$request['password'];
-             $user = $this->userTable->authenticateUser($userName, $password);
-             if(count($user) && $user['role']==\Admin\Model\User::Admin)
-            {
-                if(ob_get_length())
-                {
-                    ob_end_clean();
-                }
-                session_unset();
-                $this->getAuthDbTable()
-                    ->setTableName('user')
-                    ->setIdentityColumn("email")
-                    ->setCredentialColumn('user_id')
-                    ->setIdentity($user["email"])
-                    ->setCredential($user['user_id']);
-                $this->getAuthService()
-                    ->setAdapter($this->getAuthDbTable())
-                    ->setStorage($this->getSessionStorage());
-                $this->getSessionManager()->rememberMe(60 * 60 * 24 * 30 * 3);
-                $result = $this->getAuthService()->authenticate();
-
-
-                if ($result->isValid()) {
-                    $resultRow = (array)$this->getAuthDbTable()->getResultRowObject(array('user_id', 'email', "role"));
-                    $this->getSessionStorage()->write($resultRow);
-                    $_SESSION['Zend_Auth']->storage['admin_name']=$user['user_name'];
-                    return new JsonModel(array("success" => true, "message" => "Valid Credentials"));
-                }
-                return new JsonModel(array("success" => false, "message" => "Invalid Credentials", "errorCode" => 4));
-            }else
-            {
-                return new JsonModel(array('success'=>false,'message'=>'invalid credentials'));
-            }
-         }
-
-
-         if($this->getLoggedInUserId())
-         {
-             return $this->redirect()->toUrl($this->getBaseUrl().'/a_dMin/places-list');
-         }
-
-     } */
-
     public function loginAction()
     {
         if ($this->getRequest()->isXmlHttpRequest()) {
@@ -2553,10 +2497,4 @@ class AdminController extends BaseController
         }
     }
     // Login - END
-
-
-    /*********************-- TWISTT Login - START --************************/
-
-
-    /*********************-- TWISTT Login - END --************************/
 }

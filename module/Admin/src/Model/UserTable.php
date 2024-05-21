@@ -28,7 +28,27 @@ class UserTable extends BaseTable
             return false;
         }
     }
-
+    public function userExists($loginId){
+        try {
+            $sql = $this->getSql();
+            $query = $sql->select()
+                ->from($this->tableName)
+                ->columns(array("id"))
+                ->where(['user_login_id' => $loginId]);
+            $field = array();
+            $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
+            foreach ($resultSet as $row) {
+                $field = $row['id'];
+            }
+            if ($field) {
+                return $field;
+            } else {
+                return "";
+            }
+        } catch (\Exception $e) {
+            return "";
+        }
+    }
     public function getField($where, $column)
     {
         try {
@@ -58,6 +78,24 @@ class UserTable extends BaseTable
             return $this->update($data, $where);
         } catch (\Exception $e) {
             return false;
+        }
+    }
+
+    public function getUserDetails($where){
+        try{
+            $sql = $this->getSql();
+            $query = $sql->select()
+                ->from($this->tableName)
+                ->columns(array("id","username","email","country_phone_code", "mobile_number", "address", "city", "state", "age", "gender", "education", "occupation", "photo_url"))
+                ->where($where);
+            $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
+            $user = array();
+            foreach($resultSet as $row){
+                $user[] = $row;
+            }
+            return $user;
+        }catch(\Exception $e){
+            return array();
         }
     }
 
@@ -93,7 +131,7 @@ class UserTable extends BaseTable
             $query = $sql->select()
                 ->from($this->tableName)
                 ->columns(array("id", "password", "hash"))
-                ->where(array('display' => 1, 'id' => $userId));
+                ->where(array('display' => 1, 'user_login_id' => $userId));
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             $user = array();
             foreach ($resultSet as $row) {
@@ -102,19 +140,19 @@ class UserTable extends BaseTable
             if (count($user)) {
                 $aes = new Aes();
                 if ($user[0]['hash'] == "") {
-                    return array();
+                    return "";
                 }
                 $decryptedPassword = $aes->decrypt($user[0]['password'], $user[0]['hash']);
                 if ($decryptedPassword == $password) {
                     return $user[0];
                 } else {
-                    return array();
+                    return "";
                 }
             } else {
-                return array();
+                return "";
             }
         } catch (\Exception $e) {
-            return array();
+            return "";
         }
     }
 

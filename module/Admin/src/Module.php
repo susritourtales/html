@@ -6,15 +6,7 @@ use Laminas\Db\Adapter\AdapterInterface;
 use Laminas\Db\ResultSet\ResultSet;
 use Laminas\Db\TableGateway\TableGateway;
 use Laminas\ModuleManager\Feature\ConfigProviderInterface;
-use Laminas\Mvc\ModuleRouteListener;
-use Laminas\Session\Config\SessionConfig;
-use Laminas\Session\Container;
-use Laminas\Authentication\Storage\Session;
-use Laminas\Session\SaveHandler\DbTableGateway;
 use Laminas\Authentication\AuthenticationService;
-use Laminas\Session\SaveHandler\DbTableGatewayOptions;
-use Laminas\Session\SessionManager;
-use Laminas\Authentication\Adapter\DbTable as AuthDbTable;
 
 class Module implements ConfigProviderInterface
 {
@@ -145,21 +137,28 @@ class Module implements ConfigProviderInterface
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new Model\Banner());
                     return new TableGateway('banner', $dbAdapter, null, $resultSetPrototype);
+                }, Model\ExecutiveDetailsTable::class => function ($container) {
+                    $tableGateway = $container->get(Model\ExecutiveDetailsTableGateway::class);
+                    return new Model\ExecutiveDetailsTable($tableGateway);
+                },
+                Model\ExecutiveDetailsTableGateway::class => function ($container) {
+                    $dbAdapter = $container->get(AdapterInterface::class);
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Model\ExecutiveDetails());
+                    return new TableGateway('executive_details', $dbAdapter, null, $resultSetPrototype);
+                }, Model\OtpTable::class => function ($container) {
+                    $tableGateway = $container->get(Model\OtpTableGateway::class);
+                    return new Model\OtpTable($tableGateway);
+                },
+                Model\OtpTableGateway::class => function ($container) {
+                    $dbAdapter = $container->get(AdapterInterface::class);
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Model\Otp());
+                    return new TableGateway('Otp', $dbAdapter, null, $resultSetPrototype);
                 },
             ],
         ];
     }
-
-/*     public function onBootstrap($e)
-    {
-        $eventManager = $e->getApplication()->getEventManager();
-        $moduleRouteListener = new ModuleRouteListener();
-        $moduleRouteListener->attach($eventManager);
-        $container = $e->getApplication()->getServiceManager();
-        $sessionManager = $container->get('SessionSaveManager');
-        $sessionManager->start();
-    } */
-
     public function getControllerConfig()
     {
         return [
@@ -179,7 +178,9 @@ class Module implements ConfigProviderInterface
                         $container->get(Model\AppParameterTable::class),
                         $container->get(Model\SubscriptionPlanTable::class),
                         $container->get(Model\UserTable::class),
-                        $container->get(Model\BannerTable::class)
+                        $container->get(Model\BannerTable::class),
+                        $container->get(Model\ExecutiveDetailsTable::class),
+                        $container->get(Model\OtpTable::class)
                     );
                 },
             ],

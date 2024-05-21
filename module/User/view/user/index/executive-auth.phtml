@@ -31,13 +31,14 @@ try {
     // Event 2: User clicked LOGOUT link
     //
     if (isset($_GET['logout'])) {
+        echo $_GET['logout']; exit;
         if (in_array($_GET['logout'], $hybridauth->getProviders())) {
             // Disconnect the adapter
             $adapter = $hybridauth->getAdapter($_GET['logout']);
             $adapter->disconnect();
             session_unset();
             $storage->clear();
-            header("Location: https://susritourtales.com/twistt/executive/login");
+            header("Location: /twistt/executive/login");
             exit;
         } else {
             $error = $_GET['logout'];
@@ -50,13 +51,6 @@ try {
     if ($error) {
         error_log('Hybridauth Error: Provider ' . json_encode($error) . ' not found or not enabled in $config');
         echo 'Hybridauth Error: Provider ' . json_encode($error) . ' not found or not enabled in $config';
-        // Close the pop-up window
-        /* echo "
-            <script>
-                if (window.opener.closeAuthWindow) {
-                    window.opener.closeAuthWindow();
-                }
-            </script>"; */
         exit;
     }
 
@@ -77,6 +71,7 @@ try {
             session_start();
         }
         $_SESSION['username'] = $userProfile->displayName;
+        $_SESSION['user_login_id'] = $userProfile->email;
 
         // add your custom AUTH functions (if any) here
         // ...
@@ -92,15 +87,7 @@ try {
 
         // ...
 
-        // Close pop-up window
-        /* echo "
-            <script>
-                if (window.opener.closeAuthWindow) {
-                    window.opener.closeAuthWindow();
-                }
-            </script>"; */
-
-        header("Location: https://susritourtales.com/twistt/executive/home");
+        header("Location: /twistt/executive/home");
         exit;
     }
 

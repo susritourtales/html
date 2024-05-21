@@ -64,3 +64,14 @@ body {
     height: 50px;
     min-width: 340px;
   }
+
+  .primary-btn {
+    background-color: #20437b !important;
+    color: white;
+    font-family: "ITC Avant Garde Pro Bk", "arial" !important;
+    border-radius: 10px;
+  }
+
+  .primary-btn:hover {
+    color: white !important;
+  }

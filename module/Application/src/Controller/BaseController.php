@@ -2,29 +2,30 @@
 
 namespace Application\Controller;
 
-use Admin\Model\BannerTable;
-use Admin\Model\CitiesTable;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\Authentication\AuthenticationService;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Session\Container as SessionContainer;
-use Laminas\Mvc\MvcEvent;
 use Aws\Exception\AwsException;
 use Aws\ResultInterface;
-use Aws\S3\S3Client;
 use Aws\CommandPool;
 use Aws\Sdk;
+use Application\Channel\Sms;
 
 use Admin\Model\LanguageTable;
 use Admin\Model\CountriesTable;
 use Admin\Model\PlacesTable;
 use Admin\Model\StatesTable;
+use Admin\Model\CitiesTable;
 use Admin\Model\TemporaryFilesTable;
 use Admin\Model\TourismFilesTable;
 use Admin\Model\TourTalesTable;
 use Admin\Model\AppParameterTable;
 use Admin\Model\SubscriptionPlanTable;
 use Admin\Model\UserTable;
+use Admin\Model\BannerTable;
+use Admin\Model\ExecutiveDetailsTable;
+use Admin\Model\OtpTable;
 
 class BaseController extends AbstractActionController
 {
@@ -50,6 +51,8 @@ class BaseController extends AbstractActionController
     protected $tourTalesTable;
     protected $appParameterTable;
     protected $subscriptionPlanTable;
+    protected $executiveDetailsTable;
+    protected $otpTable;
 
     public function __construct(
         AuthenticationService $authService,
@@ -65,12 +68,13 @@ class BaseController extends AbstractActionController
         AppParameterTable $app_parameter_table,
         SubscriptionPlanTable $subscriptio_plan_table,
         UserTable $user_table,
-        BannerTable $banner_table
+        BannerTable $banner_table,
+        ExecutiveDetailsTable $executive_details,
+        OtpTable $otp_table
     ) {
         $this->sessionContainer = new SessionContainer('stt_session');
         $this->sessionManager = $this->sessionContainer->getManager();
         $this->sessionManager->rememberMe(604800); // = 60 * 60 * 24 * 7
-
         $this->authService = $authService;
         $this->dbAdapter = $dbAdapter;
 
@@ -86,15 +90,10 @@ class BaseController extends AbstractActionController
         $this->subscriptionPlanTable = $subscriptio_plan_table;
         $this->userTable = $user_table;
         $this->bannerTable = $banner_table;
+        $this->executiveDetailsTable = $executive_details;
+        $this->otpTable = $otp_table;
     }
 
-    /* public function onDispatch(MvcEvent $e){
-        error_reporting(E_ALL);
-        ini_set('display_error', 0);
-        date_default_timezone_set('Asia/Kolkata');
-        return parent::onDispatch($e);
-    } */
-    
     public function getLoggedInUserId()
     {
         try {
@@ -327,5 +326,50 @@ class BaseController extends AbstractActionController
         $chars = "0123456789";
         $password = substr(str_shuffle($chars), 0, $length);
         return $password;
+    }
+
+    public function generateOtp($length = 4){
+
+        try
+        {
+            if ($_SERVER['APPLICATION_ENV'] === 'development') {
+                return "1111";
+            }
+            $length = intval($length);
+            $characters = '0123456789';
+            $otp = "";
+            for ($i = 0; $i < $length; $i++)
+            {
+                $otp .= $characters[rand(0, strlen($characters) - 1)];
+            }
+            if(strlen($otp) < 4)
+            {
+                for($j = 0; $j < 4 - strlen($otp); $j++)
+                {
+                    $otp .= 0;
+                }
+            }
+            return $otp;
+        }catch(\Exception $e)
+        {
+            return "";
+        }
+    }
+
+    public function sendOtpSms($mobile, $otp,$smsAction='otp')
+    {
+        if ($_SERVER['APPLICATION_ENV'] === 'development') {
+            $mobile = '917330781638'; 
+        }
+        $smsObject = new Sms();
+        $response = $smsObject->send(
+            $mobile,
+            'sms-template',
+            array(
+                'action' => $smsAction,
+                "otp" => $otp
+            )
+        );
+        return $response;
     }
 }

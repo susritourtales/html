@@ -210,6 +210,15 @@ return [
                         'action' => 'executive-login',
                     ],
                 ],
+            ], 'twistt-executive-logout' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/twistt/executive/logout',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'executive-logout',
+                    ],
+                ],
             ], 'twistt-executive-auth' => [
                 'type' => Literal::class,
                 'options' => [
@@ -219,13 +228,58 @@ return [
                         'action' => 'executive-auth',
                     ],
                 ],
-            ],  'twistt-executive-home' => [
+            ], 'twistt-executive-stt-auth' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/twistt/executive/stt-auth',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'stt-auth',
+                    ],
+                ],
+            ], 'twistt-executive-add' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/twistt/executive/add',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'executive-add',
+                    ],
+                ],
+            ], 'twistt-executive-home' => [
                 'type' => Literal::class,
                 'options' => [
                     'route' => '/twistt/executive/home',
                     'defaults' => [
                         'controller' => Controller\IndexController::class,
                         'action' => 'executive-home',
+                    ],
+                ],
+            ],  'twistt-executive-verify-mobile' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/twistt/executive/verify-mobile',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'executive-verify-mobile',
+                    ],
+                ],
+            ],  'twistt-executive-send-otp' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/twistt/executive/send-otp',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'executive-send-otp',
+                    ],
+                ],
+            ],  'twistt-executive-verify-otp' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/twistt/executive/verify-otp',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'executive-verify-otp',
                     ],
                 ],
             ],  'twistt-executive-forgot-password' => [
@@ -253,6 +307,15 @@ return [
                     'defaults' => [
                         'controller' => Controller\IndexController::class,
                         'action' => 'enabler-login',
+                    ],
+                ],
+            ], 'twistt-enabler-logout' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/twistt/enabler/logout',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'enabler-logout',
                     ],
                 ],
             ], 'tbe-home' => [
@@ -462,11 +525,6 @@ return [
             },
         ],
     ],
-    /* 'controllers' => [
-        'factories' => [
-            Controller\IndexController::class => InvokableFactory::class,
-        ],
-    ], */
     'view_manager' => [
         'display_not_found_reason' => true,
         'display_exceptions' => true,

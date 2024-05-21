@@ -5,113 +5,21 @@
 } */
 include 'vendor/autoload.php';
 include 'config.php';
-
 ?>
 <link rel="stylesheet" href="<?php echo $this->basePath(); ?>/css/login.css?v=1.0.1">
 <link rel="stylesheet" href="<?php echo $this->basePath(); ?>/css/twistt.css?v=1.0.2">
 <link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.13/css/intlTelInput.css">
+<style>
+  .iti{
+    display: block;
+  }
+  .hide{
+    display: none;
+  }
+</style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.13/js/intlTelInput.min.js"></script>
-<script>
-  $(document).ready(function() {
-    $('body').on("click", ".submit-btn", function() {
-      var userName = $("#userName").val();
-      var passsword = $("#password").val();
-      if (userName == '') {
-        messageDisplay("Please enter the username");
-        return false;
-      }
-      if (passsword == '') {
-        messageDisplay("Please Enter password");
-        return false;
-      }
-      postData('/a_dMin/twisttse-login', {
-        "user_name": userName,
-        "password": passsword
-      }, function(response) {
-        if (response.success) {
-          messageDisplay(response.message);
-          window.location.href = BASE_URL + '/twistt/executive/home';
-        } else {
-          messageDisplay(response.message);
-        }
-      });
-      //  messageDisplay('Invalid credentials');
-    });
-    $("body").on("keydown", function(e) {
-      if (e.which == 13) {
-        $(".submit-btn").click();
-      }
-    });
-    $('body').on("click", "#btnFP", function() {
-      window.location.href = BASE_URL + '/twistt/executive/forgot-password';
-    });
-
-    // Initialize intlTelInput
-    var input = document.querySelector("#phone-number");
-    var iti = window.intlTelInput(input, {
-      strictMode:true,
-      utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.13/js/utils.js",
-      initialCountry: "in",
-      separateDialCode: true,
-      hiddenInput: "country"
-    });
-
-    // Update country code input field
-    input.addEventListener("countrychange", function() {
-      var countryCode = iti.getSelectedCountryData().dialCode;
-      $("#country-code").text(countryCode);
-    });
-  });
-
-  function postData(url, parameters, callback) {
-    url = BASE_URL + url;
-    //  console.log(parameters);
-    try {
-      $.post(url, parameters, function(data) {
-        if (typeof callback == "function") {
-          callback(data);
-        }
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  function messageDisplay(message, timeOut) {
-    if ($.trim(timeOut) == "") {
-      timeOut = 2500;
-    }
-    var element = $("#feedbackSection");
-    $("div#feedbackSection span").html(message);
-    if (timeOut == 0) {
-      element.hide();
-      return false;
-    }
-    element.animate({
-      height: 70
-    }, 300).show();
-    if (timeOut != -1) {
-      setTimeout(function() {
-        element.animate({
-          height: 0
-        }, 300, function() {
-          element.hide();
-        });
-      }, timeOut);
-    }
-  }
-
- /*  function auth_popup(provider) {
-      var authWindow = window.open('https://susritourtales.com/twistt/executive/auth?provider=' + provider, 'authWindow', 'width=600,height=400,scrollbars=yes');
-      window.closeAuthWindow = function () {
-        authWindow.close();
-      }
-      return false;
-  } */
-</script>
-
-<!-- Login 11 - Bootstrap Brain Component -->
+<script src="<?php echo $this->basePath(); ?>/js/user/executive-login.js?v=1.0.1"></script>
 <section class="py-3 py-md-5 py-xl-8">
   <div class="container">
     <div class="row">
@@ -121,7 +29,7 @@ include 'config.php';
             <img src="<?php echo $this->basePath(); ?>/img/susri.png" class="logo">
           </div>
           <h2 class="display-5 fw-bold text-center">TWISTT Executive Login</h2>
-          <p class="text-center m-0">Don't have an account? <a href="#!">Register as TWISTT Executive</a></p>
+          <p class="text-center m-0">Don't have an account? <a href="/twistt/executive/register">Register as TWISTT Executive</a></p>
         </div>
       </div>
     </div>
@@ -129,35 +37,30 @@ include 'config.php';
       <div class="col-12 col-lg-10 col-xl-8">
         <div class="row gy-5 justify-content-center">
           <div class="col-12 col-lg-5">
-            <form action="#!">
+            <form>
               <div class="row gy-3 overflow-hidden">
-                <div class="col-12">
-                  <div class="form-floating mb-3">
-                    <input type="tel" class="form-control border-0 border-bottom rounded-0" id="phone-number" name="phone-number" placeholder="Mobile Number" required>
+                <div class="col-12" id="divMobile">
+                  <div class="form-floating mb-2">
+                    <input type="tel" class="form-control border-0 border-bottom rounded-0 mb-1" id="mobile" name="mobile" placeholder="Mobile Number" autocomplete="username">
+                    <div id="valid-msg" class="hide text-success mt-2">✓ Valid</div>
+                    <div id="error-msg" class="hide text-danger mt-2"></div>
                     <input type="hidden" id="country">
-                    <!-- <div class="input-group mb-3 form-control">
-                      <input type="tel" class="" id="phone-number" placeholder="Phone Number">
-                      <input type="hidden" id="country">
-                    </div> -->
-                    <!-- <input type="email" class="form-control border-0 border-bottom rounded-0" name="email" id="email" placeholder="name@example.com" required>
-                    <label for="email" class="form-label">Email</label> -->
+                  </div>
+                </div>
+                <div class="col-12" id="divMail">
+                  <div class="mb-3">
+                    <input type="text" class="form-control border-0 border-bottom rounded-0" name="email" id="email"  placeholder="name@example.com" autocomplete="username">
                   </div>
                 </div>
                 <div class="col-12">
                   <div class="mb-3">
-                    <input type="password" class="form-control border-0 border-bottom rounded-0" name="password" id="password" value="" placeholder="Password" required>
-                    <!-- <label for="password" class="form-label">Password</label> -->
+                    <input type="password" class="form-control border-0 border-bottom rounded-0" name="password" id="password" placeholder="Password" autocomplete="current-password">
                   </div>
                 </div>
                 <div class="col-12">
                   <div class="row justify-content-between">
                     <div class="col-6">
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" name="remember_me" id="remember_me">
-                        <label class="form-check-label text-secondary" for="remember_me">
-                          Remember me
-                        </label>
-                      </div>
+                      <a href="#!" id="loginType">Login with Email id</a>
                     </div>
                     <div class="col-6">
                       <div class="text-end">
@@ -168,7 +71,7 @@ include 'config.php';
                 </div>
                 <div class="col-12">
                   <div class="d-grid">
-                    <button class="btn btn-primary btn-lg submit-btn" type="submit">Log in</button>
+                    <button type="button" class="btn primary-btn btn-lg text-white" id="btnLogin">Log in</button>
                   </div>
                 </div>
               </div>
@@ -221,7 +124,7 @@ include 'config.php';
           </div>
           <div class="form-group">
             <div class="input-group mb-3 form-control">
-              <input type="tel" class="" id="phone-number" placeholder="Phone Number">
+              <input type="tel" class="" id="mobile" placeholder="Phone Number">
               <input type="hidden" id="country">
             </div>
           </div>

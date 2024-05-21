@@ -136,14 +136,20 @@ public function contactAction() {
             ->setIdentity($userdetails['user_login_id'])
             ->setCredential($userdetails['password']);
         $ares = $this->authService->authenticate();
-        header("Location: /twistt/executive/profile");
-        exit;
+        
+        if ($this->authService->hasIdentity()) {
+          $config = $this->getConfig();
+          $loginId = $this->authService->getIdentity();
+          $userDetails = $this->userTable->getUserDetails(['user_login_id'=>$loginId['user_login_id']]);
+          return new ViewModel(['userDetails' => $userDetails, 'callbackUrl' => $config['hybridauth']['callback']]);
+        }else{
+          $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
+        }
       }
     } catch (Exception $e) {
         error_log($e->getMessage());
         echo $e->getMessage();
     }
-    //return new ViewModel();
   }
   public function sttAuthAction()
   {

@@ -2,7 +2,7 @@
 
 return [
     'hybridauth' => [
-        'callback' => 'http://localhost.sttandapp.com/twistt/executive/auth',
+        'callback' => 'https://susritourtales.com/twistt/executive/auth',
         'providers' => [
             'Google' => [
                 'enabled' => true,

@@ -52,6 +52,7 @@ public function contactAction() {
   public function executiveAuthAction()
   {
     try{
+      return new JsonModel(array('success' => true, "message" => 'Index controller'));
       $config = $this->getConfig();
       $hybridauth = new Hybridauth($config['hybridauth']);
       $storage = new Session();

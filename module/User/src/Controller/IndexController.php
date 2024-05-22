@@ -132,10 +132,6 @@ public function contactAction() {
         if(!$ures)
           return new JsonModel(array('success' => false, "message" => 'unknown error'));
 
-          $userDetails = $this->userTable->getUserDetails(['user_login_id'=>$loginId['user_login_id']]);
-          var_dump($userDetails);
-          exit;
-
         $this->authService->getAdapter()
             ->setIdentity($userdetails['user_login_id'])
             ->setCredential($userdetails['password']);

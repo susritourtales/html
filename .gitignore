@@ -5,3 +5,4 @@ module/User/view/user/index/config.php
 config/autoload/hybridauth.global.php
 config/autoload/hybridauth.global.php
 config/autoload/hybridauth.global.php
+config/autoload/hybridauth.global.php

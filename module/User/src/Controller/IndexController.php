@@ -366,7 +366,7 @@ public function contactAction() {
       }
     }
   }
-  public function executiveForgotPasswordAction()
+  public function forgotPasswordAction()
   {
     return new ViewModel();
   }

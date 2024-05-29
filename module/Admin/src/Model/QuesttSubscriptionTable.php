@@ -6,7 +6,7 @@ use Application\Model\BaseTable;
 use Laminas\Db\Sql\Where;
 use Laminas\Db\TableGateway\TableGateway;
 
-class ExecutiveDetailsTable extends BaseTable
+class QuesttSubscriptionTable extends BaseTable
 {
   protected $tableGateway;
   protected $tableName;
@@ -14,10 +14,10 @@ class ExecutiveDetailsTable extends BaseTable
   public function __construct(TableGateway $tableGateway)
   {
     $this->tableGateway = $tableGateway;
-    $this->tableName = array("p" => "executive_details");
+    $this->tableName = array("p" => "questt_subscription");
   }
 
-  public function addExecutive(array $data)
+  public function addQuesttSubscriptionDetails(array $data)
   {
     try {
       return $this->insert($data);
@@ -25,27 +25,6 @@ class ExecutiveDetailsTable extends BaseTable
       return false;
     }
   }
-  public function executiveExists($userId){
-    try {
-        $sql = $this->getSql();
-        $query = $sql->select()
-            ->from($this->tableName)
-            ->columns(array("id"))
-            ->where(['user_id' => $userId]);
-        $field = array();
-        $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
-        foreach ($resultSet as $row) {
-            $field = $row['id'];
-        }
-        if ($field) {
-            return $field;
-        } else {
-            return "";
-        }
-    } catch (\Exception $e) {
-        return "";
-    }
-}
 
   public function getField($where, $column)
   {
@@ -70,7 +49,33 @@ class ExecutiveDetailsTable extends BaseTable
     }
   }
 
-  public function getExecutiveDetails($where)
+  public function isValidQuesttUser($id){
+    try {
+        $sql = $this->getSql();
+        $query = $sql->select()
+          ->from($this->tableName)
+          ->where(['user_id' => $id])
+          ->order('end_date desc');
+        $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
+        $validity = false;
+        $subscription = [];
+        foreach ($resultSet as $row) {
+          $subscription[] = $row;
+        }   
+        if($subscription[0]){
+            $endDate = date('Y-m-d',strtotime($subscription[0]['end_date']));
+            $today = date('Y-m-d');
+            if($endDate >= $today){
+                $validity = true;
+            }
+        }
+        return $validity;
+      } catch (\Exception $e) {
+        return array();
+      }
+  }
+
+  public function getQuesttSubscriptionDetails($where)
   {
     try {
       $sql = $this->getSql();
@@ -78,17 +83,17 @@ class ExecutiveDetailsTable extends BaseTable
         ->from($this->tableName)
         ->where($where);
       $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
-      $executive = array();
+      $plans = array();
       foreach ($resultSet as $row) {
-        $executive[] = $row;
+        $plans[] = $row;
       }
-      return $executive[0];
+      return $plans;
     } catch (\Exception $e) {
       return array();
     }
   }
 
-  public function setExecutiveDetails($data, $where)
+  public function setQuesttSubscriptionDetails($data, $where)
   {
     try {
       return $this->update($data, $where);

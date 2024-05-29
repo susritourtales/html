@@ -22,6 +22,7 @@ use Admin\Model\TourismFilesTable;
 use Admin\Model\TourTalesTable;
 use Admin\Model\AppParameterTable;
 use Admin\Model\SubscriptionPlanTable;
+use Admin\Model\QuesttSubscriptionTable;
 use Admin\Model\UserTable;
 use Admin\Model\BannerTable;
 use Admin\Model\ExecutiveDetailsTable;
@@ -51,6 +52,7 @@ class BaseController extends AbstractActionController
     protected $tourTalesTable;
     protected $appParameterTable;
     protected $subscriptionPlanTable;
+    protected $questtSubscriptionTable;
     protected $executiveDetailsTable;
     protected $otpTable;
 
@@ -67,6 +69,7 @@ class BaseController extends AbstractActionController
         TourismFilesTable $tourism_files_table,
         AppParameterTable $app_parameter_table,
         SubscriptionPlanTable $subscriptio_plan_table,
+        QuesttSubscriptionTable $questt_subscription_table,
         UserTable $user_table,
         BannerTable $banner_table,
         ExecutiveDetailsTable $executive_details,
@@ -88,6 +91,7 @@ class BaseController extends AbstractActionController
         $this->tourismFilesTable = $tourism_files_table;
         $this->appParameterTable = $app_parameter_table;
         $this->subscriptionPlanTable = $subscriptio_plan_table;
+        $this->questtSubscriptionTable = $questt_subscription_table;
         $this->userTable = $user_table;
         $this->bannerTable = $banner_table;
         $this->executiveDetailsTable = $executive_details;

@@ -128,7 +128,18 @@ class Module implements ConfigProviderInterface
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new Model\SubscriptionPlan());
                     return new TableGateway('subscription_plan', $dbAdapter, null, $resultSetPrototype);
-                },Model\BannerTable::class => function ($container) {
+                },
+                Model\QuesttSubscriptionTable::class => function ($container) {
+                    $tableGateway = $container->get(Model\QuesttSubscriptionTableGateway::class);
+                    return new Model\QuesttSubscriptionTable($tableGateway);
+                },
+                Model\QuesttSubscriptionTableGateway::class => function ($container) {
+                    $dbAdapter = $container->get(AdapterInterface::class);
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Model\QuesttSubscription());
+                    return new TableGateway('questt_subscription', $dbAdapter, null, $resultSetPrototype);
+                },
+                Model\BannerTable::class => function ($container) {
                     $tableGateway = $container->get(Model\BannerTableGateway::class);
                     return new Model\BannerTable($tableGateway);
                 },
@@ -177,6 +188,7 @@ class Module implements ConfigProviderInterface
                         $container->get(Model\TourismFilesTable::class),
                         $container->get(Model\AppParameterTable::class),
                         $container->get(Model\SubscriptionPlanTable::class),
+                        $container->get(Model\QuesttSubscriptionTable::class),
                         $container->get(Model\UserTable::class),
                         $container->get(Model\BannerTable::class),
                         $container->get(Model\ExecutiveDetailsTable::class),

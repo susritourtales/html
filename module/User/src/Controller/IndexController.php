@@ -38,12 +38,14 @@ public function contactAction() {
 
   public function executiveRegisterAction()
   {
-    return new ViewModel();
+    $config = $this->getConfig();
+    return new ViewModel(['callbackUrl' => $config['hybridauth']['callback']]);
   }
 
   public function executiveLoginAction()
   {
-    return new ViewModel();
+    $config = $this->getConfig();
+    return new ViewModel(['callbackUrl' => $config['hybridauth']['callback']]);
   }
   public function executiveLogoutAction()
   {
@@ -107,10 +109,9 @@ public function contactAction() {
         $userdetails['username'] = $userProfile->displayName;
         $userdetails['user_login_id'] = $userProfile->email;
         $userdetails['email'] = $userProfile->email;
-        $userdetails['address'] = $userProfile->address;
+        $userdetails['country'] = $userProfile->country;
         $userdetails['city'] = $userProfile->city;
         $userdetails['state'] = $userProfile->region;
-        $userdetails['age'] = $userProfile->age;
         $userdetails['gender'] = $userProfile->gender;
         $userdetails['user_type_id'] = \Admin\Model\User::TWISTT_Executive;
         $userdetails['photo_url'] = strtok($userProfile->photoURL, '?');
@@ -154,7 +155,7 @@ public function contactAction() {
   public function sttAuthAction()
   {
     $postData = $this->params()->fromPost();
-    $userdetails['user_login_id'] = $postData['loginid'];
+    $userdetails['user_login_id'] = str_replace("+","",$postData['loginid']);
     $userdetails['password'] = $postData['password'];
     $res = $this->userTable->checkPasswordWithUserId($userdetails['user_login_id'], $userdetails['password']);
     if($res){
@@ -215,27 +216,25 @@ public function contactAction() {
     }
     
     $userdetails['username'] = $postData['name'];
-    $userdetails['user_login_id'] = $postData['ccmobile'];
+    $userdetails['user_login_id'] = $postData['lid'];
     $userdetails['mobile_number'] = $postData['mobile'];
-    $userdetails['country_phone_code'] = $postData['cc']; //str_replace($postData['mobile'], '', $postData['phone']);
+    $userdetails['country_phone_code'] = $postData['cc'];
     $userdetails['email'] = $postData['email'];
-    $userdetails['address'] = $postData['address'];
+    $userdetails['country'] = $postData['country'];
     $userdetails['city'] = $postData['city'];
     $userdetails['state'] = $postData['state'];
-    $userdetails['age'] = $postData['age'];
     $userdetails['gender'] = $postData['gender'];
-    $userdetails['education'] = $postData['education'];
-    $userdetails['occupation'] = $postData['occupation'];
     $userdetails['user_type_id'] = \Admin\Model\User::TWISTT_Executive;
+    $postData['ccmobile'] = str_replace("+","",$postData['ccmobile']);
     $aes = new Aes();
     $encodeContent = $aes->encrypt($postData['ccmobile']);
     $userdetails['password'] = $encodeContent['password'];
     $userdetails['hash'] = $encodeContent['hash'];
     $userId = $this->userTable->userExists($userdetails['user_login_id']);
-    if(!$userId){
-      $ures = $this->userTable->addUser($userdetails);
-    }else{
+    if($userId){
       $ures = $this->userTable->updateUser($userdetails, ['id' => $userId]);
+    }else{
+      return new JsonModel(array('success' => false, "message" => 'unknown error occurred.. please try after sometime..'));
     }
     if($ures){
       $execId = $this->executiveDetailsTable->executiveExists($userId);
@@ -243,18 +242,18 @@ public function contactAction() {
       $bankDetails['bank_name'] = $postData['bankName'];
       $bankDetails['bank_account_no'] = $postData['bankAccount'];
       $bankDetails['ifsc_code'] = $postData['ifsc'];
-      $bankDetails['commission_percentage'] = "10";
+      $bankDetails['commission_percentage'] = "20";
       if(!$execId){
         $bres = $this->executiveDetailsTable->addExecutive($bankDetails);
       }else{
         $bres = $this->executiveDetailsTable->setExecutiveDetails($bankDetails, ['id' => $execId]);
       }
       if($bres){
-        if (session_status() == PHP_SESSION_NONE) {
+        /* if (session_status() == PHP_SESSION_NONE) {
           session_start();
         }
         $_SESSION['username'] = $userdetails['username'];
-        $_SESSION['user_login_id'] = $userdetails['user_login_id'];
+        $_SESSION['user_login_id'] = $userdetails['user_login_id']; */
         $this->authService->getAdapter()
                 ->setIdentity($userdetails['user_login_id'])
                 ->setCredential($userdetails['password']);
@@ -273,7 +272,9 @@ public function contactAction() {
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
       $userDetails = $this->userTable->getUserDetails(['user_login_id'=>$loginId['user_login_id']]);
-      return new ViewModel(['userDetails' => $userDetails]);
+      $bankDetails = $this->executiveDetailsTable->getExecutiveDetails(['user_id' => $userDetails['id']]);
+      $config = $this->getConfig();
+      return new ViewModel(['userDetails' => $userDetails, 'bankDetails' => $bankDetails, 'config' => $config['hybridauth'], 'imageUrl'=>$this->filesUrl()]);
     }else{
       $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
     }
@@ -325,7 +326,12 @@ public function contactAction() {
           $verify=$this->otpTable->verifyOtp($data);
           if($verify){
             $updateResponse=$this->otpTable->setOtpDetails(array('sent_status_id'=>\Admin\Model\Otp::Is_verifed), $data);
-            $exists = '0';
+            if($updateResponse){
+              return new JsonModel(array("success"=>true,"message"=>"Otp verified succesfully.. please enter your details.."));
+            }else{
+              return new JsonModel(array("success"=>false,"message"=>"unable to verify otp.. please try again"));
+            }
+            /* $exists = '0';
             $ud = [];
             if($updateResponse){
               $ud = $this->userTable->getUserDetails(['user_login_id' => $ccmobile]);
@@ -340,7 +346,7 @@ public function contactAction() {
               return new JsonModel(array("success"=>true,"message"=>"Otp verified succesfully.. please enter your details..", "exists"=>$exists, "details"=>$ud));
             }else{
               return new JsonModel(array("success"=>false,"message"=>"unable to verify otp.. please try again"));
-            }
+            } */
           }else{
             return new JsonModel(array("success"=>false,"message"=>"otp not valid.. please try again"));
           }
@@ -366,9 +372,63 @@ public function contactAction() {
       }
     }
   }
+  public function questtValidityAction()
+  {
+    if ($this->getRequest()->isXmlHttpRequest()) {
+      $request = $this->getRequest()->getPost();
+      $lid = $request['lid'];
+      $userId = $this->userTable->getField(['user_login_id' => $lid], 'id');
+      if($userId){
+        $isValidQuesttUser = $this->questtSubscriptionTable->isValidQuesttUser($userId);
+        if($isValidQuesttUser)
+          return new JsonModel(array('success' => true, "message" => 'Valid QUESTT user.. may proceed with TWISTT exxecutive registration process..'));
+        else
+          return new JsonModel(array('success' => false, "message" => 'not a valid QUESTT user'));
+      }else{
+        return new JsonModel(array('success' => false, "message" => 'user not found'));
+      }
+    }
+  }
+  public function executiveTermsAction()
+  {
+    return new ViewModel();
+  }
   public function forgotPasswordAction()
   {
     return new ViewModel();
+  }
+
+  public function changePasswordAction()
+  {
+    if ($this->authService->hasIdentity()) {
+      $loginId = $this->authService->getIdentity();
+      return new ViewModel(['userId' => $loginId['user_login_id']]);
+    }else{
+      $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
+    }
+  }
+  public function resetPasswordAction()
+  {
+    $postData = $this->params()->fromPost();
+    if ($this->authService->hasIdentity()) {
+      $loginId = $this->authService->getIdentity();
+      $check = $this->userTable->checkPasswordWithUserId($loginId['user_login_id'], $postData['current_password']);
+      if($check){
+        $aes = new Aes();
+        $encodeContent = $aes->encrypt($postData['new_password']);
+        $userdetails['password'] = $encodeContent['password'];
+        $userdetails['hash'] = $encodeContent['hash'];
+        $res = $this->userTable->updateUser($userdetails,['id'=>$check['id']]);
+        if($res)
+          return new JsonModel(array('success' => true, "message" => 'password changed succesfully..'));
+        else
+          return  new JsonModel(array('success' => false, "message" => 'unable to change password.. try after sometime..'));
+      }else{
+        return new JsonModel(array('success' => false, "message" => 'Current password wrong'));
+      }
+    }else{
+      $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
+    }
   }
 
   public function enablerRegisterAction()

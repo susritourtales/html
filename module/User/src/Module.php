@@ -31,6 +31,7 @@ class Module implements ConfigProviderInterface
                         $container->get(\Admin\Model\TourismFilesTable::class),
                         $container->get(\Admin\Model\AppParameterTable::class),
                         $container->get(\Admin\Model\SubscriptionPlanTable::class),
+                        $container->get(\Admin\Model\QuesttSubscriptionTable::class),
                         $container->get(\Admin\Model\UserTable::class),
                         $container->get(\Admin\Model\BannerTable::class),
                         $container->get(\Admin\Model\ExecutiveDetailsTable::class),

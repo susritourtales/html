@@ -1,9 +1,13 @@
   $(document).ready(function() {
+    $('#divSL').hide();
     $('#divOtp').hide();
+    $('#divBtn').hide();
     $('#userDetails').hide();
-    $('#bankDetails').hide();
+    // $('#bankDetails').hide();
     $('#register').hide();
     $('#preview').hide();
+    $('.udetails').hide();
+    $('#divCM').hide();
     // Initialize intlTelInput
     var input = document.querySelector("#mobile");
     const errorMsg = document.querySelector("#error-msg");
@@ -46,6 +50,17 @@
     input.addEventListener("countrychange", function() {
       var countryCode = iti.getSelectedCountryData().dialCode;
       $("#country-code").text(countryCode);
+      if(countryCode !== "91"){
+        $('#divOtp').hide();
+        $('#divBtn').hide();
+        $('.udetails').show();
+        $('#register').show();
+      }else{
+        $('#divOtp').hide();
+        $('#divBtn').show();
+        $('.udetails').hide();
+        $('#register').hide();
+      }
     });
 
     $('#photo').change(function(event) {
@@ -91,15 +106,20 @@
             var countryData = iti.getSelectedCountryData();
             var countryCode = countryData.dialCode; 
 
+            $("#mobile").prop('disabled', false);
+            $("#lid").prop('disabled', false);
             const formData = new FormData(form);
             formData.append("ccmobile", ccmobile);
-            formData.append("countryData", countryData);
             formData.append("cc", countryCode);
             fetch('/twistt/executive/add', {
                 method: 'POST',
                 body: formData
             })
             .then(response => {
+                if(countryCode !== "91"){
+                    $("#mobile").prop('disabled', true);
+                }
+                $("#lid").prop('disabled', false);
                 const contentType = response.headers.get('content-type');
                 if (response.ok && contentType && contentType.includes('application/json')) {
                     return response.json(); 
@@ -119,7 +139,7 @@
                     messageDisplay('Executive registration successfull!');
                     console.log('Executive registration successfull!', data);
                     setTimeout(function(){
-                        window.location.href=BASE_URL+"/twistt/executive/home";
+                        window.location.href=BASE_URL+"/twistt/change-password";
                     },2000);
                 } else {
                     messageDisplay('Error submitting form: ' + data.message);
@@ -133,13 +153,29 @@
         }
         form.classList.add('was-validated');
     });
-
-    $("body").on("click","#btnOtp",function(){
+    $("body").on("click","#btnQUESTT",function(){
+        var lid=$("#lid").val();
+        if (lid.startsWith("+")) {
+            lid = lid.substring(1);
+            $('#lid').val(lid);
+        }
+        var formData=new FormData();
+        formData.append("lid", lid);
+        ajaxData('/twistt/questt-validity',formData,function(response){
+            if(response.success){
+                $('#btnQUESTT').hide();
+                $('#lid').prop('disabled', true);
+                $('#userDetails').show();
+                $('#divBtn').show();
+                messageDisplay(response.message, 2000);
+            }else{
+                messageDisplay(response.message,3000);
+            }
+        });
+    }).on("click","#btnOtp",function(){
         reset();
-        if (!input.value.trim()) {
-            showError("Please enter valid mobile number");
-            return false;
-        } else if (iti.isValidNumber()) {
+        var loginId = document.querySelector("#lid");
+        if (iti.isValidNumber()) {
             validMsg.classList.remove("hide");
         } else {
             const errorCode = iti.getValidationError();
@@ -159,12 +195,21 @@
         ajaxData('/twistt/executive/send-otp',formData,function(response){
             if(response.success){
                 $('#divBtn').hide();
+                $('#divCM').show();
                 $('#divOtp').show();
-                messageDisplay(response.message);
+                $("#mobile").prop('disabled', true);
+                messageDisplay(response.message, 2000);
             }else{
                 messageDisplay(response.message,3000);
             }
         });
+    }).on("click","#changeMobile",function(){
+        reset();
+        $('#divBtn').show();
+        $('#divCM').hide();
+        $('#divOtp').hide();
+        $("#mobile").prop('disabled', false);
+        $("#mobile").val('');
     }).on("click","#btnVerify",function(){
         var otp=$("#otp").val();
         var mobile=$("#mobile").val();
@@ -180,49 +225,16 @@
         formData.append("otp_type", '5');
         ajaxData('/twistt/executive/verify-otp',formData,function(response){
             if(response.success){
-                if(response.exists == '0'){
-                    $('#divOtp').hide();
-                    $('#divBtn').hide();
-                    $('#divMobile').hide();
-                    $('#userDetails').show();
-                    $('#bankDetails').show();
-                    $('#register').show();
-                    messageDisplay(response.message, 2000);
-                }else if(response.exists == '1'){
-                    $('#divOtp').hide();
-                    $('#divBtn').hide();
-                    $('#divMobile').hide();
-                    $('#userDetails').show();
-                    $('#bankDetails').show();
-                    $('#register').show();
-
-                    $("#name").val(response.details['username']);
-                    $("#gender").val(response.details['gender']);
-                    $("#email").val(response.details['email']);
-                    $("#age").val(response.details['age']);
-                    $("#education").val(response.details['education']);
-                    $("#occupation").val(response.details['occupation']);
-                    $("#address").val(response.details['address']);
-                    $("#city").val(response.details['city']);
-                    $("#state").val(response.details['state']);
-                    //response.details['photo_url']
-                    messageDisplay(response.message, 2000);
-                }else if(response.exists == '2'){
-                    messageDisplay("Mobile number already registred as TWISTT Executive. Please login.");
-                    setTimeout(function(){
-                        window.location.href=BASE_URL+"/twistt/executive/login";
-                    },2000);
-                }
+                $('#divOtp').hide();
+                $('#divBtn').hide();
+                $("#mobile").prop('disabled', true);
+                $("#changeMobile").hide();
+                $('.udetails').show();
+                $('#register').show();
+                messageDisplay(response.message, 2000);
             }else{
                 messageDisplay(response.message,3000);
             }
         });
-    }).on("focus","#mobile",function(){
-        $("#mobile").val('');
-        reset();
-        $('#divBtn').show();
-        $('#divOtp').hide();
-        $('#userDetails').hide();
-        $('#bankDetails').hide();
     });
 }); 

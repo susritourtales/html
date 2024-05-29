@@ -192,6 +192,15 @@ return [
                         'action' => 'twistt',
                     ],
                 ],
+            ], 'twistt-executive-terms' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/twistt/executive/terms',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'executive-terms',
+                    ],
+                ],
             ], 'twistt-executive-register' => [
                 'type' => Literal::class,
                 'options' => [
@@ -318,6 +327,15 @@ return [
                         'action' => 'enabler-logout',
                     ],
                 ],
+            ], 'questt-validity' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/twistt/questt-validity',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'questt-validity',
+                    ],
+                ],
             ], 'forgot-password' => [
                 'type' => Segment::class,
                 'options' => [
@@ -325,6 +343,15 @@ return [
                     'defaults' => [
                         'controller' => Controller\IndexController::class,
                         'action' => 'forgot-password',
+                    ],
+                ],
+            ], 'change-password' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/twistt/change-password',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'change-password',
                     ],
                 ],
             ], 'reset-password' => [

@@ -299,6 +299,49 @@ class BaseController extends AbstractActionController
         }
     }
 
+    public function fileExists($filepath){
+        try {
+            $serviceLocator = $this->getEvent()->getApplication()->getServiceManager();
+            if ($this->s3 == null || $this->config == null) {
+                $this->config = $serviceLocator->get('Config');
+                $this->config = isset($this->config['aws']) ? $this->config['aws'] : array();
+                $sdk = new Sdk($this->config);
+                $this->s3 = $sdk->createS3();
+            }
+            $result = $this->s3->headObject([
+                'Bucket' => $this->config["bucket"],
+                'Key'    => $filepath,
+            ]);
+            return true;
+        } catch (AwsException $e) {
+            if ($e->getStatusCode() == 404) {
+                //echo "The file does not exist.";
+                return false;
+            } else {
+                //echo "An error occurred: " . $e->getMessage();
+                return false;
+            }
+        }
+    }
+    public function deleteFile($filepath){
+        try {
+            $serviceLocator = $this->getEvent()->getApplication()->getServiceManager();
+            if ($this->s3 == null || $this->config == null) {
+                $this->config = $serviceLocator->get('Config');
+                $this->config = isset($this->config['aws']) ? $this->config['aws'] : array();
+                $sdk = new Sdk($this->config);
+                $this->s3 = $sdk->createS3();
+            }
+            $result = $this->s3->deleteObject([
+                'Bucket' => $this->config["bucket"],
+                'Key'    => $filepath,
+            ]);
+            return true;
+        } catch (AwsException $e) {
+            return false;
+        }
+    }
+
     function getDuration($file)
     {
         $dur = shell_exec("ffmpeg -i " . $file . " 2>&1");

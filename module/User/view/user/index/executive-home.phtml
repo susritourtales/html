@@ -1,100 +1,125 @@
 <?php
-include 'vendor/autoload.php';
-use Hybridauth\Hybridauth;
-$hybridauth = new Hybridauth($config);
-$adapters = $hybridauth->getConnectedAdapters();
+    include 'vendor/autoload.php';
+    use Hybridauth\Hybridauth;
+    $hybridauth = new Hybridauth($config);
+    $adapters = $hybridauth->getConnectedAdapters();
 ?>
-<!-- <div><?php //echo "Welcome " . $userDetails['username']; ?></div>
-<div><pre><?php //var_dump($userDetails); ?></pre></div> -->
-
-<link rel="stylesheet" href="<?php echo $this->basePath()?>/css/main.css">
-<link rel="stylesheet" href="<?php echo $this->basePath();?>/css/twistt.css">
-<link rel="stylesheet" href="<?php echo $this->basePath()?>/css/vendor/sol.css">
-<link rel="stylesheet" href="<?php echo $this->basePath(); ?>/css/vendor/bootstrap-datetimepicker.min.css"/>
-<script src="<?php echo $this->basePath(); ?>/js/vendor/sol.js"></script>
-<script type="text/javascript" src="<?php echo $this->basePath(); ?>/js/vendor/moment.min.js"></script>
-<script type="text/javascript" src="<?php echo $this->basePath(); ?>/js/vendor/bootstrap-datetimepicker.min.js"></script>
-
+<link rel="stylesheet" href="<?php echo $this->basePath();?>/css/twistt.css?v=1.0.1">
 <div class="container-fluid my-5">
     <div class="container">
-        <div class="col-12 text-end mb-3 me-3">
-            <div class="gap-3 flex-column w-100 ">
-                <?php if($adapters){ 
-                    if($userDetails['username'] == 'g'){?>
-                    <a href="<?php echo $config['callback'] . "?logout=Google"; ?>" class="btn btn-lg btn-danger" id="Google">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-google" viewBox="0 0 16 16">
-                            <path d="M15.545 6.558a9.42 9.42 0 0 1 .139 1.626c0 2.434-.87 4.492-2.384 5.885h.002C11.978 15.292 10.158 16 8 16A8 8 0 1 1 8 0a7.689 7.689 0 0 1 5.352 2.082l-2.284 2.284A4.347 4.347 0 0 0 8 3.166c-2.087 0-3.86 1.408-4.492 3.304a4.792 4.792 0 0 0 0 3.063h.003c.635 1.893 2.405 3.301 4.492 3.301 1.078 0 2.004-.276 2.722-.764h-.003a3.702 3.702 0 0 0 1.599-2.431H8v-3.08h7.545z" /></svg>
-                        <span class="ms-2 fs-6">Sign out Google</span>
-                    </a>
-                <?php }elseif($userDetails['username'] == 'f'){?>
-                    <a href="<?php echo $config['callback'] . "?logout=Facebook"; ?>" class="btn btn-lg btn-danger" id="Facebook">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-facebook" viewBox="0 0 16 16">
-                            <path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z" /></svg>
-                        <span class="ms-2 fs-6">Sign out Facebook</span>
-                    </a>
-                <?php }} else {?>
-                <a href="<?php echo $this->basePath() . '/twistt/executive/logout' ?>" class="btn btn-lg btn-danger" id="Stt">
-                    <span class="ms-2 fs-6">Sign out STT</span>
-                </a>
-                <?php } ?>
-            </div>
-        </div>
-        <?php echo $this->partial('/exec-sidebar', array('activeTab'=>\Application\Constants\Constants::TWISTT_EXEC_HOME_PAGE)); ?>
+        <?php 
+            $logoutUrl = $this->basePath() . '/twistt/executive/logout';
+            if($adapters){ 
+                if($userDetails['oauth_provider'] == 'g'){
+                    $logoutUrl = $config['callback'] . "?logout=Google";
+                }elseif($userDetails['oauth_provider'] == 'f'){
+                    $logoutUrl = $config['callback'] . "?logout=Facebook";
+                }elseif($userDetails['oauth_provider'] == 'a'){
+                    $logoutUrl = $config['callback'] . "?logout=Apple";
+                }
+            }
+            echo $this->partial('/exec-sidebar', array('activeTab'=>\Application\Constants\Constants::TWISTT_EXEC_PROFILE, 'logoutUrl'=>$logoutUrl)); ?>
         <div class="content bg-white custom-shadow p-4 color-333"> 
             <div class="bg-light border-radius-10 custom-shadow p-4 color-333">
                 <div class="user-page-name text-uppercase avant-md pb-3">
-                    <h5><?php echo "TWISTT Dashboard"; ?></h5>
+                    <h5><?php echo "TWISTT Executive Dashboard"; ?></h5>
                 </div>
                 <div class="stt-bg-primary border-radius-10 custom-shadow p-4 color-333">
                     <h6 class="font-weight-bold text-uppercase"><u>TWISTT Executive Details</u></h6>
                     <div class="row">
-                        <div class="col-sm-12 col-md-12 col-lg-9">
+                        <div class="col-12">
                             <div class="row pt-1">
-                                <div class="col-sm-12 col-md-6"><?php echo "Name: " . $userDetails['username']; ?></div>
-                                <div class="col-sm-12 col-md-6"><?php echo "Gender: " . $userDetails['gender']; ?></div>
-                            </div>
-                            <div class="row pt-1">
-                                <div class="col-sm-12 col-md-6"><?php echo "Mobile: (" . $userDetails['country_phone_code'] . ")" . $userDetails['mobile_number']; ?></div>
-                                <div class="col-sm-12 col-md-6"><?php echo "Email: " . $userDetails['email']; ?></div>
-                            </div>
-                            <div class="row pt-1">
-                                <div class="col-sm-12 col-md-6"><?php echo "Country: " . $userDetails['country']; ?></div>
-                                <div class="col-sm-12 col-md-6"><?php echo "State: " . $userDetails['state']; ?></div>
-                            </div>
-                            <div class="row pt-1">
-                                <div class="col-sm-12 col-md-6"><?php echo "City: " . $userDetails['city']; ?></div>
-                                <div class="col-sm-12 col-md-6"><?php echo "Commission: " . $bankDetails['commission_percentage'] . "%"; ?></div>
-                            </div>
-                            <div class="row pt-1">
-                                <div class="col-sm-12 col-md-6"><?php echo "Bank: " . $bankDetails['bank_name']; ?></div>
-                                <div class="col-sm-12 col-md-6"><?php echo "IFSC: " . $bankDetails['ifsc_code']; ?></div>
-                            </div>
-                            <div class="row pt-1">
-                                <div class="col-sm-12 col-md-6"><?php echo "Bank A/c: " . $bankDetails['bank_account_no']; ?></div>
-                                <div class="col-sm-12 col-md-6"><?php echo "QUESTT Expires on: dd/mm/yyyy"; ?></div>
+                                <div class="col-sm-12 col-md-4"><?php echo "Mobile: (" . $userDetails['country_phone_code'] . ")" . $userDetails['mobile_number']; ?></div>
+                                <div class="col-sm-12 col-md-4"><?php echo "QUESTT Expires on: dd/mm/yyyy"; ?></div>
+                                <div class="col-sm-12 col-md-4"><?php echo "Commission: " . $bankDetails['commission_percentage'] . "%"; ?></div>
                             </div>
                         </div>
-                        <div class="col-sm-12 col-md-12 col-lg-3">
-                            <div class="row pt-1">
-                                    <div class="col-12"><img src="<?php echo $imageUrl . $userDetails['photo_url']; ?>" height="100"/></div>
+                    </div>
+                </div>
+                <form id="profileForm" enctype="multipart/form-data" novalidate>
+                    <div class="bg-white border-radius-10 custom-shadow p-4 color-333 my-3">
+                        <h6 id="hdr" class="font-weight-bold text-uppercase my-3"><u>Edit Profile</u></h6>
+                        <div class="row">
+                            <div class="col">
+                                <div class="row pt-1">
+                                    <div class="col-sm-12 col-md-6">
+                                        <label for="name" class="form-label">Name*</label>
+                                        <input type="text" class="form-control" id="name" name="name" required value="<?php echo $userDetails['username']; ?>">
+                                        <div class="invalid-feedback">Please provide your name.</div>
+                                    </div>
+                                    <div class="col-sm-12 col-md-6">
+                                        <label for="city" class="form-label">City*</label>
+                                        <input type="text" class="form-control" id="city" name="city" required value="<?php echo $userDetails['city']; ?>">
+                                        <div class="invalid-feedback">Please provide City name.</div>
+                                    </div>
                                 </div>
+                                <div class="row pt-3">
+                                    <div class="col-sm-12 col-md-6">
+                                        <label for="state" class="form-label">State*</label>
+                                        <input type="text" class="form-control" id="state" name="state" required value="<?php echo $userDetails['state']; ?>">
+                                        <div class="invalid-feedback">Please provide State name.</div>
+                                    </div>
+                                    <div class="col-sm-12 col-md-6">
+                                        <label for="country" class="form-label">Country*</label>
+                                        <input type="text" class="form-control" id="country" name="country" required value="<?php echo $userDetails['country']; ?>">
+                                        <div class="invalid-feedback">Please provide a valid Country name.</div>
+                                    </div>
+                                </div>
+                                <div class="row pt-3">
+                                    <div class="col-sm-12 col-md-6">
+                                        <label for="ifsc" class="form-label">Bank Name*</label>
+                                        <input type="text" class="form-control" id="bankName" name="bankName" required value="<?php echo $bankDetails['bank_name']; ?>">
+                                        <div class="invalid-feedback">Please provide a valid Bank Name.</div>
+                                    </div>
+                                    <div class="col-sm-12 col-md-6">
+                                        <label for="ifsc" class="form-label">IFSC*</label>
+                                        <input type="text" class="form-control" id="ifsc" name="ifsc" required value="<?php echo $bankDetails['ifsc_code']; ?>">
+                                        <div class="invalid-feedback">Please provide a valid IFSC code.</div>
+                                    </div>
+                                </div>
+                                <div class="row pt-3">
+                                    <div class="col-sm-12 col-md-6">
+                                        <label for="bankAccount" class="form-label">Bank Account*</label>
+                                        <input type="password" class="form-control" id="bankAccountConf" name="bankAccountConf" required value="<?php echo $bankDetails['bank_account_no']; ?>">
+                                        <div class="invalid-feedback">Please provide bank account number.</div>
+                                    </div>
+                                    <div class="col-sm-12 col-md-6">
+                                        <label for="bankAccount" class="form-label">Confirm Bank Account*</label>
+                                        <input type="text" class="form-control" id="bankAccount" name="bankAccount" required value="<?php echo $bankDetails['bank_account_no']; ?>">
+                                        <div class="invalid-feedback">Please provide bank account number.</div>
+                                    </div>
+                                </div>
+                                <div class="row pt-3">
+                                    <div class="col-sm-12 col-md-6">
+                                        <label for="gender" class="form-label">Gender</label>
+                                            <select class="form-select" id="gender" name="gender">
+                                            <option value="">Select...</option>
+                                            <option value="male" <?php echo $userDetails['gender']== 'male' ? 'selected' : '' ?>>Male</option>
+                                            <option value="female" <?php echo $userDetails['gender']== 'female' ? 'selected' : '' ?>>Female</option>
+                                            <option value="other" <?php echo $userDetails['gender']== 'other' ? 'selected' : '' ?>>Other</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-12 col-md-6">
+                                        <label for="email" class="form-label">Email* <span class="text-danger" style="font-size:10px;">(all communication will be sent to this email)</span></label>
+                                        <input type="email" class="form-control" id="email" name="email" required value="<?php echo $userDetails['email']; ?>">
+                                        <div class="invalid-feedback">Please provide a valid email address.</div>
+                                    </div>
+                                </div>
+                                <div class="row pt-3">
+                                    <div class="col-sm-12 col-md-6">
+                                        <label class="form-label text-start">Profile Pic*</label>
+                                        <div><img src="<?php echo $imageUrl . $userDetails['photo_url']; ?>" id="preview" alt="Image Preview" height="100" width="100"></div>
+                                        <input type="file" class="form-control my-3" id="photo" name="photo">
+                                        <div class="invalid-feedback text-white">Please upload your photo.</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+                        <button type="submit" class="btn primary-btn text-white" id="submit">Submit</button>
                     </div>
-                </div>
-                <div class="bg-white border-radius-10 custom-shadow p-4 color-333 my-3">
-                    <h6 id="hdr" class="font-weight-bold text-uppercase my-3">SE Data</h6>
-                    <div class="" id="recordsList">
-                        <?php //echo $this->partial("/load-se-data", array('seData'=>$seData,'totalCount'=>$totalCount,'type'=>'initialize', 'id'=>$pdArr['id'])); ?>
-                    </div>
-                    <?php /* if($totalCount > 10){
-                        $paginationCount = ceil($totalCount / 10); ?>
-                        <ul class="pagination float-right" id="listPager"></ul>
-                    <?php }  */?>
-                </div>
-
+                </form>
             </div>
         </div>
     </div>
 </div>
-<script src="<?php echo $this->basePath(); ?>/js/pagination.js"></script>
-<script src="<?php echo $this->basePath().'/js/admin/se-data.js?v=1.0'?>"></script>
+<script src="<?php echo $this->basePath(); ?>/js/user/executive-home.js?v=1.0.1"></script>

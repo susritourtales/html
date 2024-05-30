@@ -258,12 +258,89 @@ public function contactAction() {
                 ->setIdentity($userdetails['user_login_id'])
                 ->setCredential($userdetails['password']);
         $ares = $this->authService->authenticate();
-        return new JsonModel(array('success' => true, "message" => 'you have succesfuly registered as TWISTT Executive.'));
+        return new JsonModel(array('success' => true, "message" => 'you have succesfully registered as TWISTT Executive.'));
       }else{
         return new JsonModel(array('success' => false, "message" => 'error saving user bank details.. please try after sometime..'));
       }
     }else{
       return new JsonModel(array('success' => false, "message" => 'error saving user details.. please try after sometime..'));
+    }
+  }
+
+  public function executiveEditAction(){
+    if ($this->authService->hasIdentity()) {
+      $loginId = $this->authService->getIdentity();
+      $userId = $this->userTable->userExists($loginId['user_login_id']);
+      $postData = $this->params()->fromPost();
+      $validImageFiles = array('png', 'jpg', 'jpeg');
+      $userdetails = [];
+      $bankDetails = [];
+      $uploadedFile = $this->params()->fromFiles('photo');
+      if (isset($uploadedFile)) {
+        if($uploadedFile['error'] !== UPLOAD_ERR_NO_FILE){
+            $attachment = $uploadedFile;
+            $filename = $attachment['name'];
+            $fileExt = explode(".", $filename);
+            $ext = end($fileExt) ? end($fileExt) : "";
+            $ext = strtolower($ext);
+            $filenameWithoutExt = $this->generateRandomString() . "_" . strtotime(date("Y-m-d H:i:s"));
+            $filename = $filenameWithoutExt . "." . $ext;
+            $filePath = "data/profiles";
+            $filePath = $filePath . "/" . $filename;
+            if (!in_array(strtolower($ext), $validImageFiles)) {
+              return new JsonModel(array("success" => false, "message" => $ext . " file format is not supported !"));
+            }
+            $uploadStatus = $this->pushFiles($filePath, $attachment['tmp_name'], $attachment['type']);
+            if (!$uploadStatus) {
+              return new JsonModel(array('success' => false, "message" => 'unable to upload photo.. try agian after sometime..'));
+            }else{ // new photo successfully uploaded - delete old photo
+              $oldPPUrl = $this->userTable->getField(['id'=>$userId], 'photo_url');
+              if ($this->fileExists($oldPPUrl)) {
+                if (!$this->deleteFile($oldPPUrl)) {
+                  return new JsonModel(array('success' => false, "message" => 'unable to delete old photo..'));
+                }
+              } else {
+                return new JsonModel(array('success' => false, "message" => 'unable to find old photo to be replaced..'));
+              }
+            }
+            $userdetails['photo_url'] = $filePath;
+          }
+      }else{
+        return new JsonModel(array('success' => false, "message" => 'Photo not submitted.'));
+      }
+      
+      $userdetails['username'] = $postData['name'];
+      $userdetails['email'] = $postData['email'];
+      $userdetails['country'] = $postData['country'];
+      $userdetails['city'] = $postData['city'];
+      $userdetails['state'] = $postData['state'];
+      $userdetails['gender'] = $postData['gender'];
+      if($userId){
+        $ures = $this->userTable->updateUser($userdetails, ['id' => $userId]);
+      }else{
+        return new JsonModel(array('success' => false, "message" => 'unknown error occurred.. please try after sometime..'));
+      }
+      if($ures){
+        $execId = $this->executiveDetailsTable->executiveExists($userId);
+        $bankDetails['user_id'] = $userId;
+        $bankDetails['bank_name'] = $postData['bankName'];
+        $bankDetails['bank_account_no'] = $postData['bankAccount'];
+        $bankDetails['ifsc_code'] = $postData['ifsc'];
+        if(!$execId){
+          $bres = $this->executiveDetailsTable->addExecutive($bankDetails);
+        }else{
+          $bres = $this->executiveDetailsTable->setExecutiveDetails($bankDetails, ['id' => $execId]);
+        }
+        if($bres){
+          return new JsonModel(array('success' => true, "message" => 'updated succesfully..'));
+        }else{
+          return new JsonModel(array('success' => false, "message" => 'error saving user bank details.. please try after sometime..'));
+        }
+      }else{
+        return new JsonModel(array('success' => false, "message" => 'error saving user details.. please try after sometime..'));
+      }
+    }else{
+      $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
     }
   }
 

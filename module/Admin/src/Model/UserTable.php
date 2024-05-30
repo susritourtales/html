@@ -86,7 +86,7 @@ class UserTable extends BaseTable
             $sql = $this->getSql();
             $query = $sql->select()
                 ->from($this->tableName)
-                ->columns(array("id","username","email","country_phone_code", "mobile_number", "country", "city", "state", "gender", "photo_url"))
+                ->columns(array("id","username","email","country_phone_code", "mobile_number", "country", "city", "state", "gender", "photo_url", "oauth_provider"))
                 ->where($where);
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             $user = array();

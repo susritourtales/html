@@ -1,5 +1,8 @@
 <div class="sidebar">
-    <a href="<?php echo $this->basePath();?>/twistt/executive/home" class="<?php echo ($activeTab==\Application\Constants\Constants::TWISTT_EXEC_HOME_PAGE?'active':'');?>">TWISTT Executive Details</a>
+    <a href="<?php echo $this->basePath();?>/twistt/change-password" class="<?php echo ($activeTab==\Application\Constants\Constants::TWISTT_BUY_COUPONS?'active':'');?>">Buy Coupons</a>
+    <a href="<?php echo $this->basePath();?>/twistt/change-password" class="<?php echo ($activeTab==\Application\Constants\Constants::TWISTT_TRACK_COUPONS?'active':'');?>">Track Coupons</a>
+    <a href="<?php echo $this->basePath();?>/twistt/change-password" class="<?php echo ($activeTab==\Application\Constants\Constants::TWISTT_TRACK_COMMISSION?'active':'');?>">Track Commission</a>
+    <a href="<?php echo $this->basePath();?>/twistt/executive/home" class="<?php echo ($activeTab==\Application\Constants\Constants::TWISTT_EXEC_PROFILE?'active':'');?>">Profile</a>
     <a href="<?php echo $this->basePath();?>/twistt/change-password" class="<?php echo ($activeTab==\Application\Constants\Constants::TWISTT_CHANGE_PASSWORD?'active':'');?>">Change Password</a> 
-    <a href="<?php echo $this->basePath();?>/twistt/executive/logout">Logout</a>
+    <a href="<?php echo $logoutUrl;?>" class="<?php echo ($activeTab==\Application\Constants\Constants::TWISTT_EXEC_LOGOUT?'active':'');?>">Logout</a>
 </div>

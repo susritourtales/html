@@ -51,5 +51,9 @@ class Constants
     const TWISTT_CHANGE_PASSWORD = 3;
     const TWISTT_UPC_PAGE = 4;
 
-    const TWISTT_EXEC_HOME_PAGE = 1;
+    const TWISTT_EXEC_PROFILE = 1;
+    const TWISTT_BUY_COUPONS = 2;
+    const TWISTT_TRACK_COUPONS = 3;
+    const TWISTT_TRACK_COMMISSION = 4;
+    const TWISTT_EXEC_LOGOUT = 5;
 }

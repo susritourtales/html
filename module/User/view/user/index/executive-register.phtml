@@ -11,7 +11,6 @@
   }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.13/js/intlTelInput.min.js"></script>
-<script src="<?php echo $this->basePath(); ?>/js/user/add-executive.js?v=1.0.15"></script>
 <div class="container my-5">
   <h1 class="text-center mb-5">TWISTT Executive Registration Form</h1>
   <form id="registrationForm" enctype="multipart/form-data" novalidate>
@@ -56,7 +55,7 @@
         </div>
       </div>
       <div class="col-md-6 udetails">
-        <label for="email" class="form-label">Email* <span class="text-danger" style="font-size:10px;">(all communication will be done to this email)</span></label>
+        <label for="email" class="form-label">Email* <span class="text-danger" style="font-size:10px;">(all communication will be sent to this email)</span></label>
         <input type="email" class="form-control" id="email" name="email" required>
         <div class="invalid-feedback">Please provide a valid email address.</div>
       </div>
@@ -112,19 +111,12 @@
       <div class="col-md-6 udetails">
         <label for="photo" class="form-label">Passport Size Photo*</label>
         <input type="file" class="form-control mb-3" id="photo" name="photo">
-        <img id="preview" alt="Image Preview" height="100">
+        <img id="preview" alt="Image Preview" height="100" width="100">
         <div class="invalid-feedback">Please upload your photo.</div>
       </div>
     </div>
- <!--    <div class="row g-3 mt-3" id="bankDetails">
-      
-    </div> -->
     <button type="submit" class="btn submit-btn mt-5" id="register">Register</button>
   </form>
 </div>
-
-<script>
-  
-</script>
-
 <div class="login-bg"></div>
+<script src="<?php echo $this->basePath(); ?>/js/user/add-executive.js?v=1.0.15"></script>

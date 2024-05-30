@@ -255,6 +255,15 @@ return [
                         'action' => 'executive-add',
                     ],
                 ],
+            ], 'twistt-executive-edit' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/twistt/executive/edit',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'executive-edit',
+                    ],
+                ],
             ], 'twistt-executive-home' => [
                 'type' => Literal::class,
                 'options' => [

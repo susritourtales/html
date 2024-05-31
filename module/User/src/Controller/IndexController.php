@@ -449,6 +449,42 @@ public function contactAction() {
       }
     }
   }
+  public function executiveBuyCouponsAction()
+  {
+    if ($this->authService->hasIdentity()) {
+      $loginId = $this->authService->getIdentity();
+      $userDetails = $this->userTable->getUserDetails(['user_login_id'=>$loginId['user_login_id']]);
+      $bankDetails = $this->executiveDetailsTable->getExecutiveDetails(['user_id' => $userDetails['id']]);
+      $config = $this->getConfig();
+      return new ViewModel(['userDetails' => $userDetails, 'bankDetails' => $bankDetails, 'config' => $config['hybridauth'], 'imageUrl'=>$this->filesUrl()]);
+    }else{
+      $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
+    }
+  }
+  public function executiveTrackCouponsAction()
+  {
+    if ($this->authService->hasIdentity()) {
+      $loginId = $this->authService->getIdentity();
+      $userDetails = $this->userTable->getUserDetails(['user_login_id'=>$loginId['user_login_id']]);
+      $bankDetails = $this->executiveDetailsTable->getExecutiveDetails(['user_id' => $userDetails['id']]);
+      $config = $this->getConfig();
+      return new ViewModel(['userDetails' => $userDetails, 'bankDetails' => $bankDetails, 'config' => $config['hybridauth'], 'imageUrl'=>$this->filesUrl()]);
+    }else{
+      $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
+    }
+  }
+  public function executiveTrackCommissionsAction()
+  {
+    if ($this->authService->hasIdentity()) {
+      $loginId = $this->authService->getIdentity();
+      $userDetails = $this->userTable->getUserDetails(['user_login_id'=>$loginId['user_login_id']]);
+      $bankDetails = $this->executiveDetailsTable->getExecutiveDetails(['user_id' => $userDetails['id']]);
+      $config = $this->getConfig();
+      return new ViewModel(['userDetails' => $userDetails, 'bankDetails' => $bankDetails, 'config' => $config['hybridauth'], 'imageUrl'=>$this->filesUrl()]);
+    }else{
+      $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
+    }
+  }
   public function questtValidityAction()
   {
     if ($this->getRequest()->isXmlHttpRequest()) {
@@ -464,6 +500,18 @@ public function contactAction() {
       }else{
         return new JsonModel(array('success' => false, "message" => 'user not found'));
       }
+    }
+  }
+  public function twisttExecutiveTermsAction()
+  {
+    if ($this->authService->hasIdentity()) {
+      $loginId = $this->authService->getIdentity();
+      $userDetails = $this->userTable->getUserDetails(['user_login_id'=>$loginId['user_login_id']]);
+      $bankDetails = $this->executiveDetailsTable->getExecutiveDetails(['user_id' => $userDetails['id']]);
+      $config = $this->getConfig();
+      return new ViewModel(['userDetails' => $userDetails, 'bankDetails' => $bankDetails, 'config' => $config['hybridauth'], 'imageUrl'=>$this->filesUrl()]);
+    }else{
+      $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
     }
   }
   public function executiveTermsAction()

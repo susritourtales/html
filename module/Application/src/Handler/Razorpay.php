@@ -10,13 +10,15 @@ class Razorpay
     public $KeySecret;
     public $api;
 
-    /** Production Keys */
-    const keyId = "rzp_live_8trOuK6q1abHxQ";
-    const keySecret='AOOBstIE8U00XArEDLSYOy5F';
-
-    /** Testing Keys **/
-    /* const keyId= "rzp_test_dn58ZwDYwvA7U3";
-    const keySecret= "HrVgTE3XS5LNMpD1dFdYoom4"; */
+    if ($_SERVER['APPLICATION_ENV'] === 'development') {
+        /** Testing Keys **/
+        const keyId= "rzp_test_dn58ZwDYwvA7U3";
+        const keySecret= "HrVgTE3XS5LNMpD1dFdYoom4";
+    }else{
+        /** Production Keys */
+        const keyId = "rzp_live_8trOuK6q1abHxQ";
+        const keySecret='AOOBstIE8U00XArEDLSYOy5F';
+    }
 
     public function __construct($endpoint=null)
     {

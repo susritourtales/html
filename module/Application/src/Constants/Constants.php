@@ -55,5 +55,6 @@ class Constants
     const TWISTT_BUY_COUPONS = 2;
     const TWISTT_TRACK_COUPONS = 3;
     const TWISTT_TRACK_COMMISSION = 4;
-    const TWISTT_EXEC_LOGOUT = 5;
+    const TWISTT_EXEC_TERMS = 5;
+    const TWISTT_EXEC_LOGOUT = 6;
 }

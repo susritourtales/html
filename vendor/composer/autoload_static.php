@@ -22,7 +22,9 @@ class ComposerStaticInite5c0ec13caac948eb49f604210254756
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
         'b067bc7112e384b61c701452d53a14a8' => __DIR__ . '/..' . '/mtdowling/jmespath.php/src/JmesPath.php',
         'ec07570ca5a812141189b1fa81503674' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Assert/Functions.php',
+        '941748b3c8cae4466c827dfb5ca9602a' => __DIR__ . '/..' . '/rmccue/requests/library/Deprecated.php',
         '8a9dc1de0ca7e01f3e08231539562f61' => __DIR__ . '/..' . '/aws/aws-sdk-php/src/functions.php',
+        '13906c19e3d8fcd1341b24ed4d51cf72' => __DIR__ . '/..' . '/razorpay/razorpay/Deprecated.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -36,6 +38,7 @@ class ComposerStaticInite5c0ec13caac948eb49f604210254756
         ),
         'W' => 
         array (
+            'WpOrg\\Requests\\' => 15,
             'Webmozart\\Assert\\' => 17,
             'Webimpress\\SafeWriter\\' => 22,
         ),
@@ -56,6 +59,11 @@ class ComposerStaticInite5c0ec13caac948eb49f604210254756
             'Symfony\\Component\\CssSelector\\' => 30,
             'Symfony\\Component\\Console\\' => 26,
             'Spatie\\ArrayToXml\\' => 18,
+        ),
+        'R' => 
+        array (
+            'Razorpay\\Tests\\' => 15,
+            'Razorpay\\Api\\' => 13,
         ),
         'P' => 
         array (
@@ -155,6 +163,10 @@ class ComposerStaticInite5c0ec13caac948eb49f604210254756
         array (
             0 => __DIR__ . '/..' . '/dnoegel/php-xdg-base-dir/src',
         ),
+        'WpOrg\\Requests\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/rmccue/requests/src',
+        ),
         'Webmozart\\Assert\\' => 
         array (
             0 => __DIR__ . '/..' . '/webmozart/assert/src',
@@ -210,6 +222,14 @@ class ComposerStaticInite5c0ec13caac948eb49f604210254756
         'Spatie\\ArrayToXml\\' => 
         array (
             0 => __DIR__ . '/..' . '/spatie/array-to-xml/src',
+        ),
+        'Razorpay\\Tests\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/razorpay/razorpay/tests',
+        ),
+        'Razorpay\\Api\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/razorpay/razorpay/src',
         ),
         'Psr\\Log\\' => 
         array (
@@ -1411,6 +1431,7 @@ class ComposerStaticInite5c0ec13caac948eb49f604210254756
         'PharIo\\Version\\VersionConstraintParser' => __DIR__ . '/..' . '/phar-io/version/src/VersionConstraintParser.php',
         'PharIo\\Version\\VersionConstraintValue' => __DIR__ . '/..' . '/phar-io/version/src/VersionConstraintValue.php',
         'PharIo\\Version\\VersionNumber' => __DIR__ . '/..' . '/phar-io/version/src/VersionNumber.php',
+        'Requests' => __DIR__ . '/..' . '/rmccue/requests/library/Requests.php',
         'SebastianBergmann\\CliParser\\AmbiguousOptionException' => __DIR__ . '/..' . '/sebastian/cli-parser/src/exceptions/AmbiguousOptionException.php',
         'SebastianBergmann\\CliParser\\Exception' => __DIR__ . '/..' . '/sebastian/cli-parser/src/exceptions/Exception.php',
         'SebastianBergmann\\CliParser\\OptionDoesNotAllowArgumentException' => __DIR__ . '/..' . '/sebastian/cli-parser/src/exceptions/OptionDoesNotAllowArgumentException.php',

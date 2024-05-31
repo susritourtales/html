@@ -1,0 +1,30 @@
+<?php
+    include 'vendor/autoload.php';
+    use Hybridauth\Hybridauth;
+    $hybridauth = new Hybridauth($config);
+    $adapters = $hybridauth->getConnectedAdapters();
+?>
+<link rel="stylesheet" href="<?php echo $this->basePath();?>/css/twistt.css?v=1.0.1">
+<div class="container-fluid my-5">
+    <div class="container">
+        <?php 
+            $logoutUrl = $this->basePath() . '/twistt/executive/logout';
+            if($adapters){ 
+                if($userDetails['oauth_provider'] == 'g'){
+                    $logoutUrl = $config['callback'] . "?logout=Google";
+                }elseif($userDetails['oauth_provider'] == 'f'){
+                    $logoutUrl = $config['callback'] . "?logout=Facebook";
+                }elseif($userDetails['oauth_provider'] == 'a'){
+                    $logoutUrl = $config['callback'] . "?logout=Apple";
+                }
+            }
+            echo $this->partial('/exec-sidebar', array('activeTab'=>\Application\Constants\Constants::TWISTT_TRACK_COUPONS, 'logoutUrl'=>$logoutUrl)); ?>
+        <div class="content bg-white custom-shadow p-4 color-333"> 
+            <div class="bg-light border-radius-10 custom-shadow p-4 color-333">
+                <div class="user-page-name text-uppercase avant-md pb-3">
+                    <h5><?php echo "TWISTT Executive Track Coupons"; ?></h5>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

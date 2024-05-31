@@ -228,6 +228,42 @@ return [
                         'action' => 'executive-logout',
                     ],
                 ],
+            ], 'twistt-executive-buy-coupons' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/twistt/executive/buy-coupons',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'executive-buy-coupons',
+                    ],
+                ],
+            ], 'twistt-executive-track-coupons' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/twistt/executive/track-coupons',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'executive-track-coupons',
+                    ],
+                ],
+            ], 'twistt-executive-track-commissions' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/twistt/executive/track-commissions',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'executive-track-commissions',
+                    ],
+                ],
+            ], 'twistt-executiveterms' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/twistt/executive-terms',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'twistt-executive-terms',
+                    ],
+                ],
             ], 'twistt-executive-auth' => [
                 'type' => Literal::class,
                 'options' => [

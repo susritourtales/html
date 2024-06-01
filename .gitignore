@@ -7,3 +7,4 @@ config/autoload/hybridauth.global.php
 config/autoload/hybridauth.global.php
 config/autoload/hybridauth.global.php
 config/autoload/hybridauth.global.php
+module/Application/src/Handler/Razorpay.php

@@ -27,13 +27,22 @@
                 <div class="row">
                     <div class="col col-lg-4 pt-3">
                         <label for="dc" class="form-label">No. of Discount Coupons</label>
-                        <input type="text" class="form-control w-100" id="dc" name="dc" value="0">
+                        <input type="text" class="form-control w-100" id="dc" name="dc" value="0" required>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col col-lg-4 pt-3">
                         <label for="cc" class="form-label">No. of Complimentary Coupons</label>
-                        <input type="text" class="form-control w-100" id="cc" name="cc" value="0">
+                        <input type="text" class="form-control w-100" id="cc" name="cc" value="0" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col col-lg-4 pt-3">
+                        <label class="form-label">Amount: Calculate from db values and display</label>
+                        <input type="hidden" id="username" name="username" value="<?php echo $userDetails['username'];?>">
+                        <input type="hidden" id="mobile" name="mobile" value="<?php echo "(" . $userDetails['country_phone_code'] . ")" . $userDetails['mobile_number'];;?>">
+                        <input type="hidden" id="email" name="email" value="<?php echo $userDetails['email'];?>">
+                        <input type="hidden" id="city" name="email" value="<?php echo $userDetails['city'];?>">
                     </div>
                 </div>
                 <div class="row">
@@ -45,3 +54,42 @@
         </div>
     </div>
 </div>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+document.getElementById('btnBuy').onclick = function(e){
+    var form = document.getElementById('coupons-form');
+
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+
+    var options = {
+        "key": "rzp_test_dn58ZwDYwvA7U3", // Enter the Key ID generated from the Dashboard
+        "amount": "5000", // Amount is in currency subunits. Default currency is INR. Hence, 50000 means 500 INR
+        "currency": "INR",
+        "name": "Susri Tour Tales",
+        "description": "Coupons Purchase",
+        "image": BASE_URL + "img/user/logo.png",
+        "handler": function (response){
+            // Handle the response from Razorpay here
+            alert(response.razorpay_payment_id);
+        },
+        "prefill": {
+            "name": $('#username').val(),
+            "email": $('#email').val(),
+            "contact": $('#mobile').val()
+        },
+        "notes": {
+            "city": $('#city').val()
+        },
+        "theme": {
+            "color": "#F37254"
+        }
+    };
+
+    var rzp1 = new Razorpay(options);
+    rzp1.open();
+    e.preventDefault();
+}
+</script>

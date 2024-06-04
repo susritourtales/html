@@ -426,20 +426,17 @@ return [
     ],
     'view_manager' => [
         'display_not_found_reason' => true,
-        'display_exceptions' => true,
-        'doctype' => 'HTML5',
-        'not_found_template' => 'error/404',
-        'exception_template' => 'error/index',
+        'display_exceptions'       => true,
+        'doctype'                  => 'HTML5',
+        'not_found_template'       => 'error/404',
+        'exception_template'       => 'error/index',
         'template_map' => [
-            'layout/layout'   => __DIR__ . '/../view/layout/user-layout.phtml',
-            'api/index/index' => __DIR__ . '/../view/user/index/index.phtml',
+            'layout/user-layout'   => __DIR__ . '/../../Application/view/layout/user-layout.phtml',
+            'user/index/index'     => __DIR__ . '/../view/user/index/index.phtml',
         ],
         'template_path_stack' => [
             __DIR__ . '/../view',
         ],
-        /*
-         * Con este array de parámetros permitimos enviar datos y no mostrar vista
-         */
         'strategies' => [
             'ViewJsonStrategy',
         ],

@@ -619,14 +619,12 @@ return [
     ],
     'view_manager' => [
         'display_not_found_reason' => true,
-        'display_exceptions' => true,
-        'doctype' => 'HTML5',
-        'not_found_template' => 'error/404',
-        'exception_template' => 'error/index',
+        'display_exceptions'       => true,
+        'doctype'                  => 'HTML5',
+        'not_found_template'       => 'error/404',
+        'exception_template'       => 'error/index',
         'template_map' => [
-            'admin/admin/add' => __DIR__ . '/../view/admin/admin/add.phtml',
-            'admin/index/index' => __DIR__ . '/../view/admin/index/index.phtml',
-            'admin/tours/index' => __DIR__ . '/../view/admin/tours/index.phtml',
+            'admin/admin/index' => __DIR__ . '/../view/admin/admin/index.phtml',
         ],
         'template_path_stack' => [
             __DIR__ . '/../view',
@@ -634,5 +632,8 @@ return [
         'strategies' => [
             'ViewJsonStrategy',
         ],
+    ],
+    'module_layouts' => [
+        'Admin' => 'layout/layout',
     ],
 ];

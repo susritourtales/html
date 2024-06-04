@@ -10,6 +10,7 @@ use Hybridauth\Exception\Exception;
 use Hybridauth\Hybridauth;
 use Hybridauth\Storage\Session;
 use Laminas\Mvc\Controller\AbstractActionController;
+use Application\Handler\Razorpay;
 
 class IndexController extends BaseController 
 { //AbstractActionController
@@ -266,7 +267,6 @@ public function contactAction() {
       return new JsonModel(array('success' => false, "message" => 'error saving user details.. please try after sometime..'));
     }
   }
-
   public function executiveEditAction(){
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
@@ -343,7 +343,6 @@ public function contactAction() {
       $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
     }
   }
-
   public function executiveHomeAction()
   {
     if ($this->authService->hasIdentity()) {
@@ -455,11 +454,46 @@ public function contactAction() {
       $loginId = $this->authService->getIdentity();
       $userDetails = $this->userTable->getUserDetails(['user_login_id'=>$loginId['user_login_id']]);
       $bankDetails = $this->executiveDetailsTable->getExecutiveDetails(['user_id' => $userDetails['id']]);
+      $questtValid = $this->questtSubscriptionTable->isValidQuesttUser($userDetails['id']);
       $config = $this->getConfig();
-      return new ViewModel(['userDetails' => $userDetails, 'bankDetails' => $bankDetails, 'config' => $config['hybridauth'], 'imageUrl'=>$this->filesUrl()]);
+      return new ViewModel(['userDetails' => $userDetails, 'bankDetails' => $bankDetails, 'config' => $config['hybridauth'], 'imageUrl'=>$this->filesUrl(), 'isQUESTTValid' => $questtValid]);
     }else{
       $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
     }
+  }
+  public function executivePayAction(){
+    if ($this->authService->hasIdentity()) {
+      $loginId = $this->authService->getIdentity();
+      $userDetails = $this->userTable->getUserDetails(['user_login_id'=>$loginId['user_login_id']]);
+      $config = $this->getConfig();
+      $request = $this->getRequest()->getPost();
+      $dc = $request['dc'];
+      $cc = $request['cc'];
+      if($dc == 0 && $cc ==0){
+        return new JsonModel(array('success' => false, "message" => 'Please mention the no of coupons to purchase..'));
+      }
+      if($userDetails['country_phone_code'] == '91'){
+        $udcp = $this->subscriptionPlanTable->getField(['id' => 1], 'dp_inr');
+        $uccp = $this->subscriptionPlanTable->getField(['id' => 1], 'dp_inr');
+      }else{
+        $udcp = $this->subscriptionPlanTable->getField(['id' => 1], 'dp_usd');
+        $uccp = $this->subscriptionPlanTable->getField(['id' => 1], 'dp_usd');
+      }
+      $totalAmount = $dc * $udcp + $cc * $uccp;
+      
+    }else{
+      $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
+    }
+    /* $api = new Razorpay();
+    $orderData = [
+        'receipt'         => 3456,
+        'amount'          => 50000, // 500 rupees in paise
+        'currency'        => 'INR',
+        'payment_capture' => 1 // auto capture
+    ];
+    $razorpayOrder = $api->order->create($orderData);
+    $razorpayOrderId = $razorpayOrder['id'];
+    $_SESSION['razorpay_order_id'] = $razorpayOrderId; */
   }
   public function executiveTrackCouponsAction()
   {

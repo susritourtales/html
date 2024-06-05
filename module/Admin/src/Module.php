@@ -148,7 +148,8 @@ class Module implements ConfigProviderInterface
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new Model\Banner());
                     return new TableGateway('banner', $dbAdapter, null, $resultSetPrototype);
-                }, Model\ExecutiveDetailsTable::class => function ($container) {
+                }, 
+                Model\ExecutiveDetailsTable::class => function ($container) {
                     $tableGateway = $container->get(Model\ExecutiveDetailsTableGateway::class);
                     return new Model\ExecutiveDetailsTable($tableGateway);
                 },
@@ -157,7 +158,18 @@ class Module implements ConfigProviderInterface
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new Model\ExecutiveDetails());
                     return new TableGateway('executive_details', $dbAdapter, null, $resultSetPrototype);
-                }, Model\OtpTable::class => function ($container) {
+                }, 
+                Model\ExecutivePurchaseTable::class => function ($container) {
+                    $tableGateway = $container->get(Model\ExecutivePurchaseTableGateway::class);
+                    return new Model\ExecutivePurchaseTable($tableGateway);
+                },
+                Model\ExecutivePurchaseTableGateway::class => function ($container) {
+                    $dbAdapter = $container->get(AdapterInterface::class);
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Model\ExecutivePurchase());
+                    return new TableGateway('executive_purchase', $dbAdapter, null, $resultSetPrototype);
+                },
+                Model\OtpTable::class => function ($container) {
                     $tableGateway = $container->get(Model\OtpTableGateway::class);
                     return new Model\OtpTable($tableGateway);
                 },
@@ -165,7 +177,17 @@ class Module implements ConfigProviderInterface
                     $dbAdapter = $container->get(AdapterInterface::class);
                     $resultSetPrototype = new ResultSet();
                     $resultSetPrototype->setArrayObjectPrototype(new Model\Otp());
-                    return new TableGateway('Otp', $dbAdapter, null, $resultSetPrototype);
+                    return new TableGateway('otp', $dbAdapter, null, $resultSetPrototype);
+                },
+                Model\CouponsTable::class => function ($container) {
+                    $tableGateway = $container->get(Model\CouponsTableGateway::class);
+                    return new Model\CouponsTable($tableGateway);
+                },
+                Model\CouponsTableGateway::class => function ($container) {
+                    $dbAdapter = $container->get(AdapterInterface::class);
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Model\Coupons());
+                    return new TableGateway('coupons', $dbAdapter, null, $resultSetPrototype);
                 },
             ],
         ];
@@ -192,7 +214,9 @@ class Module implements ConfigProviderInterface
                         $container->get(Model\UserTable::class),
                         $container->get(Model\BannerTable::class),
                         $container->get(Model\ExecutiveDetailsTable::class),
-                        $container->get(Model\OtpTable::class)
+                        $container->get(Model\ExecutivePurchaseTable::class),
+                        $container->get(Model\OtpTable::class),
+                        $container->get(Model\CouponsTable::class)
                     );
                 },
             ],

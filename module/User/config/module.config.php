@@ -354,6 +354,24 @@ return [
                         'action' => 'enabler-register',
                     ],
                 ],
+            ], 'twistt-executive-pay' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/twistt/executive/pay',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'executive-pay',
+                    ],
+                ],
+            ], 'twistt-executive-checkout' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/twistt/executive/checkout',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'executive-checkout',
+                    ],
+                ],
             ], 'twistt-enabler-login' => [
                 'type' => Literal::class,
                 'options' => [

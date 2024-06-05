@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Razorpay Payment</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head>
+<body>
+    <form id="razorpay-form" action="verify.php" method="POST">
+        <script
+            src="https://checkout.razorpay.com/v1/checkout.js"
+            data-key="<?php echo \Application\Handler\Razorpay::keyId; ?>"
+            data-amount="<?php echo $orderData['amount']; ?>"
+            data-currency="<?php echo $orderData['currency']; ?>"
+            data-order_id="<?php echo $orderId; ?>"
+            data-buttontext="Pay with Razorpay"
+            data-name="Susri Tour Tales"
+            data-description="Test transaction"
+            data-image="https://susritourtales.com/img/susri.png"
+            data-prefill.name="Customer Name"
+            data-prefill.email="customer@example.com"
+            data-theme.color="#F37254"
+        ></script>
+        <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id">
+        <input type="hidden" name="razorpay_order_id" id="razorpay_order_id">
+        <input type="hidden" name="razorpay_signature" id="razorpay_signature">
+    </form>
+
+    <script>
+        var options = {
+            "key": "<?php echo \Application\Handler\Razorpay::keyId; ?>",
+            "amount": "<?php echo $orderData['amount']; ?>",
+            "currency": "<?php echo $orderData['currency']; ?>",
+            "name": "Susri Tour Tales",
+            "description": "Test transaction",
+            "image": "https://susritourtales.com/img/susri.png",
+            "order_id": "<?php echo $orderId; ?>",
+            "handler": function (response){
+                document.getElementById('razorpay_payment_id').value = response.razorpay_payment_id;
+                document.getElementById('razorpay_order_id').value = response.razorpay_order_id;
+                document.getElementById('razorpay_signature').value = response.razorpay_signature;
+                //document.getElementById('razorpay-form').submit();
+            },
+            "prefill": {
+                "name": "Customer Name",
+                "email": "customer@example.com"
+            },
+            "theme": {
+                "color": "#F37254"
+            }
+        };
+        var rzp1 = new Razorpay(options);
+        rzp1.on('payment.failed', function (response){
+            alert(response.error.code);
+            alert(response.error.description);
+            alert(response.error.source);
+            alert(response.error.step);
+            alert(response.error.reason);
+            alert(response.error.metadata.order_id);
+            alert(response.error.metadata.payment_id);
+        });
+        rzp1.open();
+    </script>
+</body>
+</html>

@@ -26,7 +26,9 @@ use Admin\Model\QuesttSubscriptionTable;
 use Admin\Model\UserTable;
 use Admin\Model\BannerTable;
 use Admin\Model\ExecutiveDetailsTable;
+use Admin\Model\ExecutivePurchaseTable;
 use Admin\Model\OtpTable;
+use Admin\Model\CouponsTable;
 
 class BaseController extends AbstractActionController
 {
@@ -54,7 +56,9 @@ class BaseController extends AbstractActionController
     protected $subscriptionPlanTable;
     protected $questtSubscriptionTable;
     protected $executiveDetailsTable;
+    protected $executivePurchaseTable;
     protected $otpTable;
+    protected $couponsTable;
 
     public function __construct(
         AuthenticationService $authService,
@@ -73,7 +77,9 @@ class BaseController extends AbstractActionController
         UserTable $user_table,
         BannerTable $banner_table,
         ExecutiveDetailsTable $executive_details,
-        OtpTable $otp_table
+        ExecutivePurchaseTable $executive_purchase,
+        OtpTable $otp_table,
+        CouponsTable $coupons_table
     ) {
         $this->sessionContainer = new SessionContainer('stt_session');
         $this->sessionManager = $this->sessionContainer->getManager();
@@ -95,7 +101,9 @@ class BaseController extends AbstractActionController
         $this->userTable = $user_table;
         $this->bannerTable = $banner_table;
         $this->executiveDetailsTable = $executive_details;
+        $this->executivePurchaseTable = $executive_purchase;
         $this->otpTable = $otp_table;
+        $this->couponsTable = $coupons_table;
     }
 
     public function getLoggedInUserId()
@@ -378,6 +386,15 @@ class BaseController extends AbstractActionController
         $chars = "0123456789";
         $password = substr(str_shuffle($chars), 0, $length);
         return $password;
+    }
+    function generateCouponCode($couponType, $length = 10) {
+        $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length - 1; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+        return $couponType . "-" . $randomString;
     }
 
     public function generateOtp($length = 4){

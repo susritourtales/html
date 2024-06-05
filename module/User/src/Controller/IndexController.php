@@ -455,8 +455,19 @@ public function contactAction() {
       $userDetails = $this->userTable->getUserDetails(['user_login_id'=>$loginId['user_login_id']]);
       $bankDetails = $this->executiveDetailsTable->getExecutiveDetails(['user_id' => $userDetails['id']]);
       $questtValid = $this->questtSubscriptionTable->isValidQuesttUser($userDetails['id']);
+      $udcp = 0;
+      $uccp = 0;
+      if($questtValid && $bankDetails['banned'] == '0') {
+        if($userDetails['country_phone_code'] == '91'){
+          $udcp = $this->subscriptionPlanTable->getField(['id' => 1], 'dp_inr');
+          $uccp = $this->subscriptionPlanTable->getField(['id' => 1], 'dp_inr');
+        }else{
+          $udcp = $this->subscriptionPlanTable->getField(['id' => 1], 'dp_usd');
+          $uccp = $this->subscriptionPlanTable->getField(['id' => 1], 'dp_usd');
+        }
+      }
       $config = $this->getConfig();
-      return new ViewModel(['userDetails' => $userDetails, 'bankDetails' => $bankDetails, 'config' => $config['hybridauth'], 'imageUrl'=>$this->filesUrl(), 'isQUESTTValid' => $questtValid]);
+      return new ViewModel(['userDetails' => $userDetails, 'bankDetails' => $bankDetails, 'config' => $config['hybridauth'], 'imageUrl'=>$this->filesUrl(), 'isQUESTTValid' => $questtValid, 'udcp' => $udcp, 'uccp' => $uccp]);
     }else{
       $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
     }
@@ -465,35 +476,157 @@ public function contactAction() {
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
       $userDetails = $this->userTable->getUserDetails(['user_login_id'=>$loginId['user_login_id']]);
-      $config = $this->getConfig();
-      $request = $this->getRequest()->getPost();
-      $dc = $request['dc'];
-      $cc = $request['cc'];
-      if($dc == 0 && $cc ==0){
-        return new JsonModel(array('success' => false, "message" => 'Please mention the no of coupons to purchase..'));
-      }
-      if($userDetails['country_phone_code'] == '91'){
-        $udcp = $this->subscriptionPlanTable->getField(['id' => 1], 'dp_inr');
-        $uccp = $this->subscriptionPlanTable->getField(['id' => 1], 'dp_inr');
+      $bankDetails = $this->executiveDetailsTable->getExecutiveDetails(['user_id' => $userDetails['id']]);
+      $questtValid = $this->questtSubscriptionTable->isValidQuesttUser($userDetails['id']);
+      if($questtValid && $bankDetails['banned'] == '0') {
+        $request = $this->getRequest()->getPost();
+        $dc = $request['dc'];
+        $cc = $request['cc'];
+        
+        if($dc == 0 && $cc ==0){
+          return new JsonModel(array('success' => false, "message" => 'Please mention the no of coupons to purchase..'));
+        }
+        if($userDetails['country_phone_code'] == '91'){
+          $udcp = $this->subscriptionPlanTable->getField(['id' => 1], 'dp_inr');
+          $uccp = $this->subscriptionPlanTable->getField(['id' => 1], 'dp_inr');
+        }else{
+          $udcp = $this->subscriptionPlanTable->getField(['id' => 1], 'dp_usd');
+          $uccp = $this->subscriptionPlanTable->getField(['id' => 1], 'dp_usd');
+        }
+        $totalAmount = $dc * $udcp + $cc * $uccp;
+        if($totalAmount!=0 && round($totalAmount)!=0)
+        {                
+          $saveData['payment_status'] = \Admin\Model\ExecutivePurchase::payment_in_process;
+          $saveData['user_id'] = $userDetails['id'];
+          $saveData['executive_id'] = $bankDetails['id'];
+          $saveData['amount'] = number_format((float)$totalAmount, 2, '.', '');
+          if($userDetails['country_phone_code']=="91"){
+            $saveData['currency'] = "INR";
+          }else{
+            $saveData['currency'] = "USD";
+          }
+          $purchaseId = $this->executivePurchaseTable->addExecutivePurchase($saveData);
+          if($purchaseId){
+            $api = new Razorpay();
+            if($userDetails['country_phone_code']=="91"){
+              $orderData = [
+                  'amount'          => intval($totalAmount * 100),
+                  'currency'        => 'INR',
+                  'receipt' => 'TC_' . $purchaseId,
+                  'payment_capture' => 1 
+              ];
+            }
+            else{
+              $orderData = [
+                  'amount'          => intval($totalAmount * 100),
+                  'currency'        => 'USD',
+                  'receipt' => 'TC_' . $purchaseId,
+                  'payment_capture' => 1 
+              ];
+            }
+            $razorpayOrder = [];
+            try {
+              $response = $api->paymentRequestCreate($orderData); 
+              $razorpayOrder['id'] = $response['id'];
+              $razorpayOrder['amount'] = $response['amount'];
+              $razorpayOrder['currency'] = $response['currency'];
+              $razorpayOrder['receipt'] = $response['receipt'];
+            } catch (\Exception $e) {
+                return new JsonModel(array('success' => false, 'message' => $e->getMessage()));
+            }
+            if($response){
+              $setResp = $this->executivePurchaseTable->setExecutivePurchase(['receipt' => $razorpayOrder['receipt'], 'razorpay_order_id' => $razorpayOrder['id']], ['id' => $purchaseId]);
+              if (session_status() == PHP_SESSION_NONE) {
+                session_start();
+              }
+               $_SESSION['razorpay_order_id'] = $razorpayOrder['id'];
+              if($setResp){
+                return new JsonModel(array('success' => true, 'message' => 'order created', 'order' => $razorpayOrder));
+              }else{
+                return new JsonModel(array('success' => false, 'message' => 'unable to process your payment now.. please try after sometime..'));
+              }
+            }else{
+              return new JsonModel(array('success' => false, 'message' => 'unable to process your payment now.. please try after sometime..'));
+            }
+          }
+        }
       }else{
-        $udcp = $this->subscriptionPlanTable->getField(['id' => 1], 'dp_usd');
-        $uccp = $this->subscriptionPlanTable->getField(['id' => 1], 'dp_usd');
+        return new JsonModel(array('success' => false, "message" => 'coupons purchase not allowed..'));
       }
-      $totalAmount = $dc * $udcp + $cc * $uccp;
-      
     }else{
       $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
     }
-    /* $api = new Razorpay();
-    $orderData = [
-        'receipt'         => 3456,
-        'amount'          => 50000, // 500 rupees in paise
-        'currency'        => 'INR',
-        'payment_capture' => 1 // auto capture
-    ];
-    $razorpayOrder = $api->order->create($orderData);
-    $razorpayOrderId = $razorpayOrder['id'];
-    $_SESSION['razorpay_order_id'] = $razorpayOrderId; */
+  }
+  public function executiveCheckoutAction(){
+    if ($this->authService->hasIdentity()) {
+      $loginId = $this->authService->getIdentity();
+      $userDetails = $this->userTable->getUserDetails(['user_login_id'=>$loginId['user_login_id']]);
+      $bankDetails = $this->executiveDetailsTable->getExecutiveDetails(['user_id' => $userDetails['id']]);
+      $questtValid = $this->questtSubscriptionTable->isValidQuesttUser($userDetails['id']);
+
+      if($questtValid && $bankDetails['banned'] == '0') {
+        $request = $this->getRequest()->getPost();
+        $dc = $request['dc'];
+        $cc = $request['cc'];
+        $razorpay_payment_id = $request['razorpay_payment_id'];
+        $razorpay_order_id = $request['razorpay_order_id'];
+        $razorpay_signature = $request['razorpay_signature'];
+        
+        if (session_status() == PHP_SESSION_NONE) {
+          session_start();
+        }
+        $attributes = array(
+          'razorpay_order_id' => $_SESSION['razorpay_order_id'],
+          'razorpay_payment_id' => $razorpay_payment_id,
+          'razorpay_signature' => $razorpay_signature
+      );
+      $api = new Razorpay();
+      try {
+          $api->checkPaymentSignature($attributes);
+      } catch (\Exception $e) {
+          $success = false;
+          $error = 'Razorpay Error : ' . $e->getMessage();
+      }
+      if ($success === true) {
+          $setResp = $this->executivePurchaseTable->setExecutivePurchase(['razorpay_payment_id' => $razorpay_payment_id, 'razorpay_signature' => $razorpay_signature, 'payment_status' => \Admin\Model\ExecutivePurchase::payment_success], ['razorpay_order_id' => $_SESSION['razorpay_order_id']]);
+          if($setResp){
+            $purchase = $this->executivePurchaseTable->getExecutivePurchase(['razorpay_payment_id' => $razorpay_payment_id]);
+            $ved = $this->questtSubscriptionTable->getField(['id'=>$purchase['user_id']], 'end_date');
+            for ($i = 0; $i < $dc - 1; $i++) {
+              $coupons[$i]['executive_id'] = $purchase['executive_id'];
+              $coupons[$i]['purchase_id'] = $purchase['id'];
+              $coupons[$i]['coupon_type'] = \Admin\Model\Coupons::Coupon_Type_Discount;
+              $coupons[$i]['coupon_code'] = $this->generateCouponCode('D');
+              $coupons[$i]['validity_end_date'] = $ved;
+              $coupons[$i]['coupon_status'] = \Admin\Model\Coupons::Coupon_Status_Active;
+            }
+            $count = count($coupons);
+            for ($j = $count; $j < $count + $cc - 1; $j++) {
+              $coupons[$j]['executive_id'] = $purchase['executive_id'];
+              $coupons[$j]['purchase_id'] = $purchase['id'];
+              $coupons[$j]['coupon_type'] = \Admin\Model\Coupons::Coupon_Type_Complimentary;
+              $coupons[$j]['coupon_code'] = $this->generateCouponCode('C');
+              $coupons[$j]['validity_end_date'] = $ved;
+              $coupons[$j]['coupon_status'] = \Admin\Model\Coupons::Coupon_Status_Active;
+            }
+            $miresp = $this->couponsTable->addMutipleCoupons($coupons);
+            if($miresp){
+              return new JsonModel(array('success' => true, 'message' => 'payment successful'));
+            }else{
+              return new JsonModel(array('success' => false, 'message' => 'unknown error'));
+            }
+          }else{
+            return new JsonModel(array('success' => false, 'message' => 'unable to process.. please after sometime'));
+          }
+      } else {
+        return new JsonModel(array('success' => false, "message" => $error));
+      }
+      }else{
+        return new JsonModel(array('success' => false, "message" => 'coupons purchase not allowed..'));
+      }
+    }else{
+      $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
+    }
   }
   public function executiveTrackCouponsAction()
   {

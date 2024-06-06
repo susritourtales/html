@@ -1,8 +1,8 @@
-$(document).ready(function(){
-    function updateAmt(){
-        $('#amt').html($('#dc').val() * $('#udcp').val() + $('#cc').val() * $('#uccp').val());
-    }
+function updateAmt(){
+    $('#amt').html($('#dc').val() * $('#udcp').val() + $('#cc').val() * $('#uccp').val());
+}
 
+$(document).ready(function(){
     $("body").on("click", "#btnBuy", function() {
     //document.getElementById('btnBuy').onclick = function(e){
         var dc = $('#dc').val();
@@ -31,6 +31,7 @@ $(document).ready(function(){
                     "name": "Susri Tour Tales",
                     "description": "Coupons Purchase",
                     "image": "http://susritourtales.com/img/susri.png",
+                    "order_id": data.order['id'],
                     "handler": function (response){
                         /* alert(response.razorpay_payment_id);
                         alert(response.razorpay_order_id);
@@ -76,7 +77,6 @@ $(document).ready(function(){
                 };
                 var rzp1 = new Razorpay(options);
                 rzp1.open();
-                //e.preventDefault(); 
             },
             error: function(data)
             {

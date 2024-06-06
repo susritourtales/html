@@ -4,6 +4,7 @@ namespace Admin\Model;
 
 use Application\Model\BaseTable;
 use Laminas\Db\Sql\Where;
+use Laminas\Db\Sql\Select;
 use Laminas\Db\TableGateway\TableGateway;
 
 class CouponsTable extends BaseTable
@@ -73,6 +74,45 @@ class CouponsTable extends BaseTable
     } catch (\Exception $e) {
       return array();
     }
+  }
+
+  public function getCouponsList($data = array('limit' => 10, 'offset' => 0), $gc = 0)
+  {
+      try {
+          $where = new Where();
+          $order = ['p.created_at desc'];
+          
+          $sql = $this->getSql();
+          if ($gc == 1) {
+            $query = $sql->select()
+                  ->from($this->tableName)
+                  ->where($where)
+                  ->join(array('b' => 'executive_details'), 'b.id=p.executive_id', array('commission_percentage'))
+                  ->join(array('u' => 'user'), 'u.id=p.user_id', array('username'), Select::JOIN_LEFT)
+                  ->where($where)
+                  ->order($order);
+          } else {
+            $query = $sql->select()
+                  ->from($this->tableName)
+                  ->where($where)
+                  ->join(array('b' => 'executive_details'), 'b.id=p.executive_id', array('commission_percentage'))
+                  ->join(array('u' => 'user'), 'u.id=p.user_id', array('username'), Select::JOIN_LEFT)
+                  ->where($where)
+                  ->order($order)
+                  ->limit($data['limit'])
+                  ->offset($data['offset']);
+          }
+          $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
+          if ($gc == 1)
+              return count($resultSet);
+          $coupons = array();
+          foreach ($resultSet as $row) {
+              $coupons[] = $row;
+          }
+          return $coupons;
+      } catch (\Exception $e) {
+          return array();
+      }
   }
 
   public function setCoupons($data, $where)

@@ -1,0 +1,67 @@
+
+<?php if(isset($type) && $type =='initialize') { ?>
+<style>
+.table-condensed thead tr th{ color: unset !important;}
+.calign input{text-align: center !important;}
+</style>
+<div class="table-responsive">
+<table class="table table-bordered table-hover table-striped" id="extTable">
+    <thead  class="stt-bg-primary">
+    <tr>
+        <th>S.no</th>
+        <th class="text-center" data-placeholder="Date">Date</th>
+        <th class="text-center" data-placeholder="Coupon Code">Coupon Code</th>
+        <th class="text-center" data-placeholder="Coupon Type"">Coupon Type</th>
+        <th class="text-center" data-placeholder="Coupon Status"">Coupon Status</th>
+        <th class="text-center" data-placeholder="User">User</th>
+        <th class="text-center" data-placeholder="Enabler">Enabler</th>
+        <th class="text-center" data-placeholder="Amount">Amount</th>
+        <th class="text-center" data-placeholder="Commission">Commission</th>
+    </tr>
+    <?php } ?>
+
+    <?php if(isset($type) && ($type =='initialize' || $type=="search") ) {?>
+    <input type="hidden" class="records" value="<?php echo $totalCount; ?>">
+    <tbody>
+    <?php } ?>
+    
+    <?php if(count($coupons))
+      {
+        $i=0;
+        if(isset($offset))
+        {
+            $i=$offset;
+        }
+
+        foreach ($coupons as $cd) { 
+          $color = "";
+          /* if($cd['coupon_status'] == \Admin\Model\Coupons::Coupon_Status_Redeemed)
+              $color = "bg-danger text-white";
+          else
+              $color = "bg-success text-white"; */
+          if(1==1){ //if(!$cd['sr']){?>
+          <tr class="<?php echo $color; ?>">
+              <td><?php echo $i+1; ?></td>
+              <td class="text-center"><?php echo date("d-m-Y",strtotime($cd['validity_end_date'])); ?></td>
+              <td class="text-center"><?php echo $cd['coupon_code']; ?></td>
+              <td class="text-center"><?php echo $cd['coupon_type']; ?></td>
+              <td class="text-center"><?php echo $cd['coupon_status']; ?></td>
+              <td class="text-center"><?php echo ""; ?></td>
+              <td class="text-center"><?php echo ""; ?></td>
+              <td class="text-center"><?php echo $cd['amount']; ?></td>
+              <td class="text-center"><?php echo ""; ?></td>
+          </tr>
+          <?php $i++; } } } else { ?>
+        <tr ><td class="text-center" colspan="10">No data</td></tr>
+    <?php  } ?>
+    <?php if(isset($type) && ($type =='initialize' || $type=="search") ) {?>
+
+    </tbody>
+    <?php } ?>
+    <?php if(isset($type) && $type =='initialize') {?>
+
+</table>
+<?php //echo "id=".$id;?>
+<input type="hidden" id="hid" value="<?php echo base64_encode("id=".$id);?>" />
+</div>
+<?php } ?>

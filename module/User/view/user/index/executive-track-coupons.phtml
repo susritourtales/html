@@ -24,6 +24,16 @@
                 <div class="user-page-name text-uppercase avant-md pb-3">
                     <h5><?php echo "TWISTT Executive Track Coupons"; ?></h5>
                 </div>
+                <div class="bg-white border-radius-10 custom-shadow p-4 color-333 my-3">
+                    <div class="" id="recordsList">
+                        <?php echo $this->partial("/load-coupons-list", array('coupons'=>$coupons,'totalCount'=>$totalCount,'type'=>'initialize')); ?>
+                    </div>
+                    <?php if($totalCount > 10)
+                    {
+                        $paginationCount = ceil($totalCount / 10); ?>
+                        <ul class="pagination float-right" id="listPager"></ul>
+                    <?php } ?>
+                </div>
             </div>
         </div>
     </div>

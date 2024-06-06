@@ -33,7 +33,9 @@ class QuesttSubscriptionTable extends BaseTable
       $query = $sql->select()
         ->from($this->tableName)
         ->columns(array("" . $column . ""))
-        ->where($where);
+        ->where($where)
+        ->order('created_at desc')
+        ->limit(1);
       $field = array();
       $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
       foreach ($resultSet as $row) {

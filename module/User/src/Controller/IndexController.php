@@ -460,10 +460,10 @@ public function contactAction() {
       if($questtValid && $bankDetails['banned'] == '0') {
         if($userDetails['country_phone_code'] == '91'){
           $udcp = $this->subscriptionPlanTable->getField(['id' => 1], 'dp_inr');
-          $uccp = $this->subscriptionPlanTable->getField(['id' => 1], 'dp_inr');
+          $uccp = $this->subscriptionPlanTable->getField(['id' => 1], 'ccp_inr');
         }else{
           $udcp = $this->subscriptionPlanTable->getField(['id' => 1], 'dp_usd');
-          $uccp = $this->subscriptionPlanTable->getField(['id' => 1], 'dp_usd');
+          $uccp = $this->subscriptionPlanTable->getField(['id' => 1], 'ccp_usd');
         }
       }
       $config = $this->getConfig();
@@ -488,10 +488,10 @@ public function contactAction() {
         }
         if($userDetails['country_phone_code'] == '91'){
           $udcp = $this->subscriptionPlanTable->getField(['id' => 1], 'dp_inr');
-          $uccp = $this->subscriptionPlanTable->getField(['id' => 1], 'dp_inr');
+          $uccp = $this->subscriptionPlanTable->getField(['id' => 1], 'ccp_inr');
         }else{
           $udcp = $this->subscriptionPlanTable->getField(['id' => 1], 'dp_usd');
-          $uccp = $this->subscriptionPlanTable->getField(['id' => 1], 'dp_usd');
+          $uccp = $this->subscriptionPlanTable->getField(['id' => 1], 'ccp_usd');
         }
         $totalAmount = $dc * $udcp + $cc * $uccp;
         if($totalAmount!=0 && round($totalAmount)!=0)
@@ -583,16 +583,11 @@ public function contactAction() {
       $api = new Razorpay();
       try {
           $api->checkPaymentSignature($attributes);
-      } catch (\Exception $e) {
-          $success = false;
-          $error = 'Razorpay Error : ' . $e->getMessage();
-      }
-      if ($success === true) {
           $setResp = $this->executivePurchaseTable->setExecutivePurchase(['razorpay_payment_id' => $razorpay_payment_id, 'razorpay_signature' => $razorpay_signature, 'payment_status' => \Admin\Model\ExecutivePurchase::payment_success], ['razorpay_order_id' => $_SESSION['razorpay_order_id']]);
           if($setResp){
             $purchase = $this->executivePurchaseTable->getExecutivePurchase(['razorpay_payment_id' => $razorpay_payment_id]);
-            $ved = $this->questtSubscriptionTable->getField(['id'=>$purchase['user_id']], 'end_date');
-            for ($i = 0; $i < $dc - 1; $i++) {
+            $ved = $this->questtSubscriptionTable->getField(['user_id'=>$purchase['user_id']], 'end_date');
+            for ($i = 0; $i < $dc ; $i++) {
               $coupons[$i]['executive_id'] = $purchase['executive_id'];
               $coupons[$i]['purchase_id'] = $purchase['id'];
               $coupons[$i]['coupon_type'] = \Admin\Model\Coupons::Coupon_Type_Discount;
@@ -601,7 +596,7 @@ public function contactAction() {
               $coupons[$i]['coupon_status'] = \Admin\Model\Coupons::Coupon_Status_Active;
             }
             $count = count($coupons);
-            for ($j = $count; $j < $count + $cc - 1; $j++) {
+            for ($j = $count; $j < $count + $cc ; $j++) {
               $coupons[$j]['executive_id'] = $purchase['executive_id'];
               $coupons[$j]['purchase_id'] = $purchase['id'];
               $coupons[$j]['coupon_type'] = \Admin\Model\Coupons::Coupon_Type_Complimentary;
@@ -618,8 +613,8 @@ public function contactAction() {
           }else{
             return new JsonModel(array('success' => false, 'message' => 'unable to process.. please after sometime'));
           }
-      } else {
-        return new JsonModel(array('success' => false, "message" => $error));
+      } catch (\Exception $e) {
+        return new JsonModel(array('success' => false, "message" => 'Razorpay Error : ' . $e->getMessage()));
       }
       }else{
         return new JsonModel(array('success' => false, "message" => 'coupons purchase not allowed..'));
@@ -634,10 +629,45 @@ public function contactAction() {
       $loginId = $this->authService->getIdentity();
       $userDetails = $this->userTable->getUserDetails(['user_login_id'=>$loginId['user_login_id']]);
       $bankDetails = $this->executiveDetailsTable->getExecutiveDetails(['user_id' => $userDetails['id']]);
+      $coupons = $this->couponsTable->getCouponsList(['executive_id' => $bankDetails['id'], 'limit'=>10,'offset'=>0]);
+      $totalCount=$this->couponsTable->getCouponsList(['executive_id' => $bankDetails['id']], 1);
       $config = $this->getConfig();
-      return new ViewModel(['userDetails' => $userDetails, 'bankDetails' => $bankDetails, 'config' => $config['hybridauth'], 'imageUrl'=>$this->filesUrl()]);
+      return new ViewModel(['userDetails' => $userDetails, 'bankDetails' => $bankDetails, 'config' => $config['hybridauth'], 'coupons'=>$coupons, 'totalCount'=>$totalCount, 'imageUrl'=>$this->filesUrl()]);
     }else{
       $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
+    }
+  }
+  
+  public function loadCouponsListAction(){
+    if ($this->getRequest()->isXmlHttpRequest())
+    {
+        $request = $this->getRequest()->getPost();
+        $searchData=array('limit'=>10,'offset'=>0);
+        $type=$request['type'];
+        $offset=0;
+        $loginId = $this->authService->getIdentity();
+        $userDetails = $this->userTable->getUserDetails(['user_login_id'=>$loginId['user_login_id']]);
+        $bankDetails = $this->executiveDetailsTable->getExecutiveDetails(['user_id' => $userDetails['id']]);
+
+        if(isset($request['page_number']))
+        {
+            $pageNumber = $request['page_number'];
+            $offset = ($pageNumber * 10 - 10);
+            $limit = 10;
+            $searchData['offset']=$offset;
+            $searchData['limit']=$limit;
+        }
+        $searchData['executive_id']=$bankDetails['id'];
+        $totalCount=0;
+        
+        if($type && $type=='search')
+        {
+            $totalCount=$this->couponsTable->getCouponsList($searchData, 1);
+        }
+        $coupons = $this->couponsTable->getCouponsList(['executive_id' => $bankDetails['id'], 'limit'=>10,'offset'=>0]);
+        $view = new ViewModel(array('coupons'=>$coupons, 'totalCount'=>$totalCount));
+        $view->setTerminal(true);
+        return $view;
     }
   }
   public function executiveTrackCommissionsAction()

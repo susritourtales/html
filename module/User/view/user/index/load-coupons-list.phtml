@@ -4,15 +4,16 @@
 .table-condensed thead tr th{ color: unset !important;}
 .calign input{text-align: center !important;}
 </style>
-<div class="table-responsive">
+<div class="table-responsive-xxl">
 <table class="table table-hover" id="extTable">
     <thead  class="stt-bg-primary">
-    <tr>
+    <tr class="text-nowrap">
         <th>S.no</th>
-        <th class="text-center" data-placeholder="Date">Date</th>
+        <th class="text-center" data-placeholder="Purchase Date">Purchase Date</th>
         <th class="text-center" data-placeholder="Coupon Code">Coupon Code</th>
         <th class="text-center" data-placeholder="Coupon Type"">Coupon Type</th>
         <th class="text-center" data-placeholder="Coupon Status"">Coupon Status</th>
+        <th class="text-center" data-placeholder="Validity Date">Purchase Date</th>
         <th class="text-center" data-placeholder="User">User</th>
         <th class="text-center" data-placeholder="Enabler">Enabler</th>
         <th class="text-center" data-placeholder="Amount">Amount</th>
@@ -36,9 +37,9 @@
         foreach ($coupons as $cd) { 
           $color = "";
           if($cd['coupon_status'] == \Admin\Model\Coupons::Coupon_Status_Redeemed)
-              $color = "table-danger";
+              $color = "table-danger text-nowrap";
           else
-              $color = "table-success";
+              $color = "table-success text-nowrap";
           if(1==1){ //if(!$cd['sr']){?>
           <tr class="<?php echo $color; ?>">
               <td><?php echo $i+1; ?></td>
@@ -46,6 +47,7 @@
               <td class="text-center"><?php echo $cd['coupon_code']; ?></td>
               <td class="text-center"><?php echo $cd['coupon_type']; ?></td>
               <td class="text-center"><?php echo $cd['coupon_status']; ?></td>
+              <td class="text-center"><?php echo date("d-m-Y",strtotime($cd['created_at'])); ?></td>
               <td class="text-center"><?php echo ""; ?></td>
               <td class="text-center"><?php echo ""; ?></td>
               <td class="text-center"><?php echo $cd['amount']; ?></td>

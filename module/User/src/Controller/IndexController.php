@@ -612,8 +612,8 @@ public function contactAction() {
               $coupons[$j]['purchase_id'] = $purchase['id'];
               $coupons[$j]['coupon_type'] = \Admin\Model\Coupons::Coupon_Type_Complimentary;
               $coupons[$j]['coupon_code'] = $this->generateCouponCode('C');
-              $coupons[$i]['amount'] = $uccp;
-              $coupons[$i]['commission_receivable'] = ($uccp * $bankDetails['commission_percentage']) / 100;
+              $coupons[$j]['amount'] = $uccp;
+              $coupons[$j]['commission_receivable'] = ($uccp * $bankDetails['commission_percentage']) / 100;
               $coupons[$j]['validity_end_date'] = $ved;
               $coupons[$j]['coupon_status'] = \Admin\Model\Coupons::Coupon_Status_Active;
             }

@@ -176,7 +176,7 @@ public function contactAction() {
     } 
   }
 
-  public function executiveProfileAction(){
+  /* public function executiveProfileAction(){
     if ($this->authService->hasIdentity()) {
       $config = $this->getConfig();
       $loginId = $this->authService->getIdentity();
@@ -185,7 +185,7 @@ public function contactAction() {
     }else{
       $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
     }
-  }
+  } */
 
   public function executiveAddAction(){
     //return new JsonModel(array('success' => true, "message" => 'you have succesfuly registered as TWISTT Executive.'));
@@ -343,7 +343,7 @@ public function contactAction() {
       $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
     }
   }
-  public function executiveHomeAction()
+  public function executiveProfileAction()
   {
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
@@ -455,6 +455,8 @@ public function contactAction() {
       $userDetails = $this->userTable->getUserDetails(['user_login_id'=>$loginId['user_login_id']]);
       $bankDetails = $this->executiveDetailsTable->getExecutiveDetails(['user_id' => $userDetails['id']]);
       $questtValid = $this->questtSubscriptionTable->isValidQuesttUser($userDetails['id']);
+      $qed = $this->questtSubscriptionTable->getField(['user_id'=>$loginId['id']], 'end_date');
+      $qed = date('d-m-Y', strtotime($qed));
       $udcp = 0;
       $uccp = 0;
       if($questtValid && $bankDetails['banned'] == '0') {
@@ -467,7 +469,7 @@ public function contactAction() {
         }
       }
       $config = $this->getConfig();
-      return new ViewModel(['userDetails' => $userDetails, 'bankDetails' => $bankDetails, 'config' => $config['hybridauth'], 'imageUrl'=>$this->filesUrl(), 'isQUESTTValid' => $questtValid, 'udcp' => $udcp, 'uccp' => $uccp]);
+      return new ViewModel(['userDetails' => $userDetails, 'bankDetails' => $bankDetails, 'config' => $config['hybridauth'], 'imageUrl'=>$this->filesUrl(), 'isQUESTTValid' => $questtValid, 'udcp' => $udcp, 'uccp' => $uccp, 'qed'=>$qed]);
     }else{
       $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
     }
@@ -587,11 +589,20 @@ public function contactAction() {
           if($setResp){
             $purchase = $this->executivePurchaseTable->getExecutivePurchase(['razorpay_payment_id' => $razorpay_payment_id]);
             $ved = $this->questtSubscriptionTable->getField(['user_id'=>$purchase['user_id']], 'end_date');
+            if($userDetails['country_phone_code'] == '91'){
+              $udcp = $this->subscriptionPlanTable->getField(['id' => 1], 'dp_inr');
+              $uccp = $this->subscriptionPlanTable->getField(['id' => 1], 'ccp_inr');
+            }else{
+              $udcp = $this->subscriptionPlanTable->getField(['id' => 1], 'dp_usd');
+              $uccp = $this->subscriptionPlanTable->getField(['id' => 1], 'ccp_usd');
+            }
             for ($i = 0; $i < $dc ; $i++) {
               $coupons[$i]['executive_id'] = $purchase['executive_id'];
               $coupons[$i]['purchase_id'] = $purchase['id'];
               $coupons[$i]['coupon_type'] = \Admin\Model\Coupons::Coupon_Type_Discount;
               $coupons[$i]['coupon_code'] = $this->generateCouponCode('D');
+              $coupons[$i]['amount'] = $udcp;
+              $coupons[$i]['commission_receivable'] = ($udcp * $bankDetails['commission_percentage']) / 100;
               $coupons[$i]['validity_end_date'] = $ved;
               $coupons[$i]['coupon_status'] = \Admin\Model\Coupons::Coupon_Status_Active;
             }
@@ -601,6 +612,8 @@ public function contactAction() {
               $coupons[$j]['purchase_id'] = $purchase['id'];
               $coupons[$j]['coupon_type'] = \Admin\Model\Coupons::Coupon_Type_Complimentary;
               $coupons[$j]['coupon_code'] = $this->generateCouponCode('C');
+              $coupons[$i]['amount'] = $uccp;
+              $coupons[$i]['commission_receivable'] = ($uccp * $bankDetails['commission_percentage']) / 100;
               $coupons[$j]['validity_end_date'] = $ved;
               $coupons[$j]['coupon_status'] = \Admin\Model\Coupons::Coupon_Status_Active;
             }
@@ -629,10 +642,12 @@ public function contactAction() {
       $loginId = $this->authService->getIdentity();
       $userDetails = $this->userTable->getUserDetails(['user_login_id'=>$loginId['user_login_id']]);
       $bankDetails = $this->executiveDetailsTable->getExecutiveDetails(['user_id' => $userDetails['id']]);
+      $qed = $this->questtSubscriptionTable->getField(['user_id'=>$loginId['id']], 'end_date');
+      $qed = date('d-m-Y', strtotime($qed));
       $coupons = $this->couponsTable->getCouponsList(['executive_id' => $bankDetails['id'], 'limit'=>10,'offset'=>0]);
       $totalCount=$this->couponsTable->getCouponsList(['executive_id' => $bankDetails['id']], 1);
       $config = $this->getConfig();
-      return new ViewModel(['userDetails' => $userDetails, 'bankDetails' => $bankDetails, 'config' => $config['hybridauth'], 'coupons'=>$coupons, 'totalCount'=>$totalCount, 'imageUrl'=>$this->filesUrl()]);
+      return new ViewModel(['userDetails' => $userDetails, 'bankDetails' => $bankDetails, 'config' => $config['hybridauth'], 'coupons'=>$coupons, 'totalCount'=>$totalCount, 'qed' => $qed, 'imageUrl'=>$this->filesUrl()]);
     }else{
       $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
     }
@@ -676,8 +691,10 @@ public function contactAction() {
       $loginId = $this->authService->getIdentity();
       $userDetails = $this->userTable->getUserDetails(['user_login_id'=>$loginId['user_login_id']]);
       $bankDetails = $this->executiveDetailsTable->getExecutiveDetails(['user_id' => $userDetails['id']]);
+      $qed = $this->questtSubscriptionTable->getField(['user_id'=>$loginId['id']], 'end_date');
+      $qed = date('d-m-Y', strtotime($qed));
       $config = $this->getConfig();
-      return new ViewModel(['userDetails' => $userDetails, 'bankDetails' => $bankDetails, 'config' => $config['hybridauth'], 'imageUrl'=>$this->filesUrl()]);
+      return new ViewModel(['userDetails' => $userDetails, 'bankDetails' => $bankDetails, 'config' => $config['hybridauth'], 'qed' => $qed, 'imageUrl'=>$this->filesUrl()]);
     }else{
       $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
     }

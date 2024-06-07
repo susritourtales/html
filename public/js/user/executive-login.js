@@ -74,7 +74,7 @@ $(document).ready(function() {
             if(response.success){
                 messageDisplay(response.message, 2000);
                 setTimeout(function(){
-                    window.location.href=BASE_URL+"/twistt/executive/home";
+                    window.location.href=BASE_URL+"/twistt/executive/buy-coupons";
                 },3000);
             }else{
                 messageDisplay(response.message,3000);

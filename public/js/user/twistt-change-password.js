@@ -53,7 +53,7 @@ $(document).ready(function(){
                 messageDisplay(data.message, 2000);
                 ajaxCall=null;
                 setTimeout(function(){
-                    window.location.href=BASE_URL+"/twistt/executive/home";
+                    window.location.href=BASE_URL+"/twistt/executive/buy-coupons";
                 },2000);
             },
             error: function()

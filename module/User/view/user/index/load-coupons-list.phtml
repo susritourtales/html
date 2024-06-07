@@ -5,7 +5,7 @@
 .calign input{text-align: center !important;}
 </style>
 <div class="table-responsive">
-<table class="table table-bordered table-hover table-striped" id="extTable">
+<table class="table table-hover" id="extTable">
     <thead  class="stt-bg-primary">
     <tr>
         <th>S.no</th>
@@ -16,7 +16,7 @@
         <th class="text-center" data-placeholder="User">User</th>
         <th class="text-center" data-placeholder="Enabler">Enabler</th>
         <th class="text-center" data-placeholder="Amount">Amount</th>
-        <th class="text-center" data-placeholder="Commission">Commission</th>
+        <th class="text-center" data-placeholder="Commission">Commission receivable</th>
     </tr>
     <?php } ?>
 
@@ -35,10 +35,10 @@
 
         foreach ($coupons as $cd) { 
           $color = "";
-          /* if($cd['coupon_status'] == \Admin\Model\Coupons::Coupon_Status_Redeemed)
-              $color = "bg-danger text-white";
+          if($cd['coupon_status'] == \Admin\Model\Coupons::Coupon_Status_Redeemed)
+              $color = "table-danger";
           else
-              $color = "bg-success text-white"; */
+              $color = "table-success";
           if(1==1){ //if(!$cd['sr']){?>
           <tr class="<?php echo $color; ?>">
               <td><?php echo $i+1; ?></td>
@@ -49,7 +49,7 @@
               <td class="text-center"><?php echo ""; ?></td>
               <td class="text-center"><?php echo ""; ?></td>
               <td class="text-center"><?php echo $cd['amount']; ?></td>
-              <td class="text-center"><?php echo ""; ?></td>
+              <td class="text-center"><?php echo $cd['commission_receivable']; ?></td>
           </tr>
           <?php $i++; } } } else { ?>
         <tr ><td class="text-center" colspan="10">No data</td></tr>

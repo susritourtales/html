@@ -24,6 +24,19 @@
                 <div class="user-page-name text-uppercase avant-md pb-3">
                     <h5><?php echo "Buy Coupons"; ?></h5>
                 </div>
+                <div class="stt-bg-primary border-radius-10 custom-shadow p-4 color-333">
+                    <h6 class="font-weight-bold text-uppercase"><u>TWISTT Executive Details</u></h6>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="row pt-1">
+                                <div class="col-sm-12 col-md-6"><?php echo "Name: " . $userDetails['username']; ?></div>
+                                <div class="col-sm-12 col-md-6"><?php echo "Mobile: (" . $userDetails['country_phone_code'] . ")" . $userDetails['mobile_number']; ?></div>
+                                <div class="col-sm-12 col-md-6"><?php echo "QUESTT Expires on: " . $qed; ?></div>
+                                <div class="col-sm-12 col-md-6"><?php echo "Commission: " . $bankDetails['commission_percentage'] . "%"; ?></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <?php if($isQUESTTValid) {?>
                 <div class="row">
                     <div class="col col-lg-4 pt-3">

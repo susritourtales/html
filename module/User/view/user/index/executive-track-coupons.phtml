@@ -4,7 +4,14 @@
     $hybridauth = new Hybridauth($config);
     $adapters = $hybridauth->getConnectedAdapters();
 ?>
-<link rel="stylesheet" href="<?php echo $this->basePath();?>/css/twistt.css?v=1.0.1">
+<link rel="stylesheet" href="<?php echo $this->basePath() ?>/css/main.css">
+<link rel="stylesheet" href="<?php echo $this->basePath();?>/css/twistt.css?v=1.0.2">
+<style>
+    body{
+        background-color: #f5f5f5 !important;
+        font-size: 14px !important;
+    }
+</style>
 <div class="container-fluid my-5">
     <div class="container">
         <?php 
@@ -25,7 +32,7 @@
                     <h5><?php echo "TWISTT Executive Track Coupons"; ?></h5>
                 </div>
                 <div class="stt-bg-primary border-radius-10 custom-shadow p-4 color-333">
-                    <h6 class="font-weight-bold text-uppercase"><u>TWISTT Executive Details</u></h6>
+                    <h6 class="font-weight-bold text-uppercase p-2"><u>TWISTT Executive Details</u></h6>
                     <div class="row">
                         <div class="col-12">
                             <div class="row pt-1">
@@ -44,10 +51,12 @@
                     <?php if($totalCount > 10)
                     {
                         $paginationCount = ceil($totalCount / 10); ?>
-                        <ul class="pagination float-right" id="listPager"></ul>
+                        <ul class="pagination justify-content-end mt-3" id="listPager"></ul>
                     <?php } ?>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<script src="<?php echo $this->basePath(); ?>/js/pagination.js"></script>
+<script src="<?php echo $this->basePath(); ?>/js/user/executive-track-coupons.js"></script>

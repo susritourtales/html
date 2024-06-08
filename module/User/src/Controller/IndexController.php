@@ -679,7 +679,7 @@ public function contactAction() {
         {
             $totalCount=$this->couponsTable->getCouponsList($searchData, 1);
         }
-        $coupons = $this->couponsTable->getCouponsList(['executive_id' => $bankDetails['id'], 'limit'=>10,'offset'=>0]);
+        $coupons = $this->couponsTable->getCouponsList($searchData);
         $view = new ViewModel(array('coupons'=>$coupons, 'totalCount'=>$totalCount));
         $view->setTerminal(true);
         return $view;

@@ -30,6 +30,10 @@ body {
     background-color: #555;
     color: white;
   }
+  th {
+    background-color: #304379 !important;
+    color: white !important;
+  }
 
   .stt-bg-primary{
     background-color: #304379;

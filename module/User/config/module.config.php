@@ -246,6 +246,15 @@ return [
                         'action' => 'executive-track-coupons',
                     ],
                 ],
+            ],  'twistt-executive-load-coupons' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/twistt/executive/load-coupons-list',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'load-coupons-list',
+                    ],
+                ],
             ], 'twistt-executive-track-commissions' => [
                 'type' => Literal::class,
                 'options' => [

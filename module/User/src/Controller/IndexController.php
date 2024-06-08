@@ -538,10 +538,10 @@ public function contactAction() {
             }
             if($response){
               $setResp = $this->executivePurchaseTable->setExecutivePurchase(['receipt' => $razorpayOrder['receipt'], 'razorpay_order_id' => $razorpayOrder['id']], ['id' => $purchaseId]);
-              if (session_status() == PHP_SESSION_NONE) {
+              /* if (session_status() == PHP_SESSION_NONE) {
                 session_start();
               }
-               $_SESSION['razorpay_order_id'] = $razorpayOrder['id'];
+               $_SESSION['razorpay_order_id'] = $razorpayOrder['id']; */
               if($setResp){
                 return new JsonModel(array('success' => true, 'message' => 'order created', 'order' => $razorpayOrder));
               }else{
@@ -574,18 +574,22 @@ public function contactAction() {
         $razorpay_order_id = $request['razorpay_order_id'];
         $razorpay_signature = $request['razorpay_signature'];
         
-        if (session_status() == PHP_SESSION_NONE) {
+        /* if (session_status() == PHP_SESSION_NONE) {
           session_start();
-        }
+        } */
         $attributes = array(
-          'razorpay_order_id' => $_SESSION['razorpay_order_id'],
+          'razorpay_order_id' => $razorpay_order_id, //$_SESSION['razorpay_order_id'],
           'razorpay_payment_id' => $razorpay_payment_id,
           'razorpay_signature' => $razorpay_signature
       );
       $api = new Razorpay();
       try {
           $api->checkPaymentSignature($attributes);
-          $setResp = $this->executivePurchaseTable->setExecutivePurchase(['razorpay_payment_id' => $razorpay_payment_id, 'razorpay_signature' => $razorpay_signature, 'payment_status' => \Admin\Model\ExecutivePurchase::payment_success], ['razorpay_order_id' => $_SESSION['razorpay_order_id']]);
+          $orderResp = $api->checkOrderStatus($razorpay_order_id);
+          if($orderResp['status'] !== "paid")
+            return new JsonModel(array('success' => false, 'message' => 'payment not successful'));
+
+          $setResp = $this->executivePurchaseTable->setExecutivePurchase(['razorpay_payment_id' => $razorpay_payment_id, 'razorpay_signature' => $razorpay_signature, 'payment_status' => \Admin\Model\ExecutivePurchase::payment_success], ['razorpay_order_id' => $razorpay_order_id]);
           if($setResp){
             $purchase = $this->executivePurchaseTable->getExecutivePurchase(['razorpay_payment_id' => $razorpay_payment_id]);
             $ved = $this->questtSubscriptionTable->getField(['user_id'=>$purchase['user_id']], 'end_date');
@@ -602,7 +606,6 @@ public function contactAction() {
               $coupons[$i]['coupon_type'] = \Admin\Model\Coupons::Coupon_Type_Discount;
               $coupons[$i]['coupon_code'] = $this->generateCouponCode('D');
               $coupons[$i]['amount'] = $udcp;
-              $coupons[$i]['commission_receivable'] = ($udcp * $bankDetails['commission_percentage']) / 100;
               $coupons[$i]['validity_end_date'] = $ved;
               $coupons[$i]['coupon_status'] = \Admin\Model\Coupons::Coupon_Status_Active;
             }
@@ -613,7 +616,6 @@ public function contactAction() {
               $coupons[$j]['coupon_type'] = \Admin\Model\Coupons::Coupon_Type_Complimentary;
               $coupons[$j]['coupon_code'] = $this->generateCouponCode('C');
               $coupons[$j]['amount'] = $uccp;
-              $coupons[$j]['commission_receivable'] = ($uccp * $bankDetails['commission_percentage']) / 100;
               $coupons[$j]['validity_end_date'] = $ved;
               $coupons[$j]['coupon_status'] = \Admin\Model\Coupons::Coupon_Status_Active;
             }

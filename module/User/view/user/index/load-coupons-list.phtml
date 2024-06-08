@@ -12,11 +12,11 @@
         <th class="text-center" data-placeholder="Purchase Date">Purchase Date</th>
         <th class="text-center" data-placeholder="Coupon Code">Coupon Code</th>
         <th class="text-center" data-placeholder="Coupon Type"">Coupon Type</th>
-        <th class="text-center" data-placeholder="Coupon Status"">Coupon Status</th>
+        <th class="text-center" data-placeholder="Coupon Amount"">Coupon Amount</th>
         <th class="text-center" data-placeholder="Validity End Date">Validity End Date</th>
-        <th class="text-center" data-placeholder="User">User</th>
-        <th class="text-center" data-placeholder="Enabler">Enabler</th>
-        <th class="text-center" data-placeholder="Amount">Amount</th>
+        <th class="text-center" data-placeholder="Redeemer Mobile">Redeemer Mobile</th>
+        <th class="text-center" data-placeholder="Redeemer Paid">Redeemer Paid</th>
+        <th class="text-center" data-placeholder="Actual Price">Actual Price</th>
         <th class="text-center" data-placeholder="Commission">Commission receivable</th>
     </tr>
     <?php } ?>
@@ -46,11 +46,11 @@
               <td class="text-center"><?php echo date("d-m-Y",strtotime($cd['created_at'])); ?></td>
               <td class="text-center"><?php echo $cd['coupon_code']; ?></td>
               <td class="text-center"><?php echo $cd['coupon_type']; ?></td>
-              <td class="text-center"><?php echo $cd['coupon_status']; ?></td>
-              <td class="text-center"><?php echo date("d-m-Y",strtotime($cd['validity_end_date'])); ?></td>
-              <td class="text-center"><?php echo ""; ?></td>
-              <td class="text-center"><?php echo ""; ?></td>
               <td class="text-center"><?php echo $cd['amount']; ?></td>
+              <td class="text-center"><?php echo date("d-m-Y",strtotime($cd['validity_end_date'])); ?></td>
+              <td class="text-center"><?php echo $cd['redeemer_mobile']; ?></td>
+              <td class="text-center"><?php echo $cd['redeemer_paid']; ?></td>
+              <td class="text-center"><?php echo $cd['redeemer_actual_amount']; ?></td>
               <td class="text-center"><?php echo $cd['commission_receivable']; ?></td>
           </tr>
           <?php $i++; } } } else { ?>

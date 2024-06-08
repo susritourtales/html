@@ -79,4 +79,13 @@ class Razorpay
             return array();
         }
     }
+
+    public function checkOrderStatus($orderId){
+        try{
+            return $this->api->order->fetch($orderId);
+        }catch (\Exception $e)
+        {
+            return array();
+        }
+    }
 }

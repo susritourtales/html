@@ -20,9 +20,14 @@ class ExecutivePurchaseTable extends BaseTable
   public function addExecutivePurchase(array $data)
   {
     try {
-      return $this->insert($data);
+      $insert = $this->insert($data);
+      if ($insert) {
+          return array("success" => true, "id" => $this->tableGateway->lastInsertValue);
+      } else {
+          return array("success" => false);
+      }
     } catch (\Exception $e) {
-      return false;
+        return array("success" => false);
     }
   }
 

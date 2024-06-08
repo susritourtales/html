@@ -88,7 +88,7 @@ class CouponsTable extends BaseTable
                   ->from($this->tableName)
                   ->where($where)
                   ->join(array('b' => 'executive_details'), 'b.id=p.executive_id', array('commission_percentage'))
-                  ->join(array('u' => 'user'), 'u.id=p.user_id', array('username'), Select::JOIN_LEFT)
+                  //->join(array('u' => 'user'), 'u.id=p.redeemer_id', array('username'), Select::JOIN_LEFT)
                   ->where($where)
                   ->order($order);
           } else {
@@ -96,7 +96,7 @@ class CouponsTable extends BaseTable
                   ->from($this->tableName)
                   ->where($where)
                   ->join(array('b' => 'executive_details'), 'b.id=p.executive_id', array('commission_percentage'))
-                  ->join(array('u' => 'user'), 'u.id=p.user_id', array('username'), Select::JOIN_LEFT)
+                  //->join(array('u' => 'user'), 'u.id=p.redeemer_id', array('username','mobile_number', 'country_phone_code'), Select::JOIN_LEFT)
                   ->where($where)
                   ->order($order)
                   ->limit($data['limit'])

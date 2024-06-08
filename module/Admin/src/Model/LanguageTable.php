@@ -21,10 +21,15 @@ class LanguageTable extends BaseTable
     public function addLanguages(Array $data)
     {
         try {
-            return $this->insert($data);
-        } catch (\Exception $e) {
-            return false;
-        }
+            $insert = $this->insert($data);
+            if ($insert) {
+                return array("success" => true, "id" => $this->tableGateway->lastInsertValue);
+            } else {
+                return array("success" => false);
+            }
+          } catch (\Exception $e) {
+              return array("success" => false);
+          }
     }
 
     public function getActiveLanguagesCount(){

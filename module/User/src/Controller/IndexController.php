@@ -487,7 +487,9 @@ public function contactAction() {
           }else{
             $saveData['currency'] = "USD";
           }
-          $purchaseId = $this->executivePurchaseTable->addExecutivePurchase($saveData);
+          $purchaseResp = $this->executivePurchaseTable->addExecutivePurchase($saveData);
+          if($purchaseResp['success'])
+            $purchaseId = $purchaseResp['id'];
           if($purchaseId){
             $api = new Razorpay();
             if($userDetails['country_phone_code']=="91"){

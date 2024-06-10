@@ -57,14 +57,15 @@ class QuesttSubscriptionTable extends BaseTable
         $query = $sql->select()
           ->from($this->tableName)
           ->where(['user_id' => $id])
-          ->order('end_date desc');
+          ->order('end_date desc')
+          ->limit(1);
         $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
         $validity = false;
         $subscription = [];
         foreach ($resultSet as $row) {
           $subscription[] = $row;
         }   
-        if($subscription[0]){
+        if($subscription){
             $endDate = date('Y-m-d',strtotime($subscription[0]['end_date']));
             $today = date('Y-m-d');
             if($endDate >= $today){

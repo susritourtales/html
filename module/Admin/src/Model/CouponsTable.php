@@ -80,6 +80,7 @@ class CouponsTable extends BaseTable
   {
       try {
           $where = new Where();
+          $where->equalTo('p.executive_id', $data['executive_id']);
           $order = ['p.created_at desc'];
           
           $sql = $this->getSql();
@@ -89,7 +90,7 @@ class CouponsTable extends BaseTable
                   ->where($where)
                   ->join(array('b' => 'executive_details'), 'b.id=p.executive_id', array('commission_percentage'))
                   //->join(array('u' => 'user'), 'u.id=p.redeemer_id', array('username'), Select::JOIN_LEFT)
-                  ->where($where)
+                  //->where($where)
                   ->order($order);
           } else {
             $query = $sql->select()
@@ -97,7 +98,7 @@ class CouponsTable extends BaseTable
                   ->where($where)
                   ->join(array('b' => 'executive_details'), 'b.id=p.executive_id', array('commission_percentage'))
                   //->join(array('u' => 'user'), 'u.id=p.redeemer_id', array('username','mobile_number', 'country_phone_code'), Select::JOIN_LEFT)
-                  ->where($where)
+                  //->where($where)
                   ->order($order)
                   ->limit($data['limit'])
                   ->offset($data['offset']);

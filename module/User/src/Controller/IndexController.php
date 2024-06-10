@@ -107,8 +107,8 @@ public function contactAction() {
         $userProfile = $adapter->getUserProfile();
         $accessToken = $adapter->getAccessToken();
 
-        $userdetails['username'] = $userProfile->displayName;
         $userdetails['user_login_id'] = $userProfile->email;
+        $userdetails['username'] = $userProfile->displayName;
         $userdetails['email'] = $userProfile->email;
         $userdetails['country'] = $userProfile->country;
         $userdetails['city'] = $userProfile->city;
@@ -122,31 +122,38 @@ public function contactAction() {
         $encodeContent = $aes->encrypt($accessToken['access_token']);
         $userdetails['password'] = $encodeContent['password'];
         $userdetails['hash'] = $encodeContent['hash'];
-        $userId = $this->userTable->userExists($userdetails['user_login_id']);
-        if(!$userId){
-          $ures = $this->userTable->addUser($userdetails);
+        $userId = $this->userTable->getField(['user_login_id' => $userdetails['user_login_id']], 'id');
+        if($userId){
+          $execId = $this->executiveDetailsTable->executiveExists($userId);
+          if($execId){
+            $updateValues['access_token'] = $userdetails['access_token'];
+            $updateValues['password'] = $userdetails['password'];
+            $updateValues['hash'] = $userdetails['hash'];
+            $ures = $this->userTable->updateUser($updateValues, ['id' => $userId]);
+            if(!$ures)
+              return new ViewModel(['success' => false, "message" => 'unknown error.. please try again later..']);
+              //return new JsonModel(array('success' => false, "message" => 'unknown error.. please try again later..'));
+            $this->authService->getAdapter()
+                ->setIdentity($userdetails['user_login_id'])
+                ->setCredential($userdetails['password']);
+            $this->authService->authenticate();
+            if ($this->authService->hasIdentity()) {
+              $config = $this->getConfig();
+              $loginId = $this->authService->getIdentity();
+              $userDetails = $this->userTable->getUserDetails(['user_login_id'=>$loginId['user_login_id']]);
+              $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/buy-coupons');
+              //return new ViewModel(['userDetails' => $userDetails, 'callbackUrl' => $config['hybridauth']['callback']]);
+            }else{
+              $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
+            }
+          }else{
+            //return new JsonModel(array('success' => false, "message" => 'not a valid TWISTT executive'));
+            return new ViewModel(['success' => false, "message" => 'not a valid TWISTT executive']);
+          }
         }else{
-          $updateValues['access_token'] = $userdetails['access_token'];
-          $updateValues['password'] = $userdetails['password'];
-          $updateValues['hash'] = $userdetails['hash'];
-          $ures = $this->userTable->updateUser($updateValues, ['id' => $userId]);
-        }
-        if(!$ures)
-          return new JsonModel(array('success' => false, "message" => 'unknown error'));
-
-        $this->authService->getAdapter()
-            ->setIdentity($userdetails['user_login_id'])
-            ->setCredential($userdetails['password']);
-        $ares = $this->authService->authenticate();
-        
-        if ($this->authService->hasIdentity()) {
-          $config = $this->getConfig();
-          $loginId = $this->authService->getIdentity();
-          $userDetails = $this->userTable->getUserDetails(['user_login_id'=>$loginId['user_login_id']]);
-          return new ViewModel(['userDetails' => $userDetails, 'callbackUrl' => $config['hybridauth']['callback']]);
-        }else{
-          $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
-        }
+          //return new JsonModel(array('success' => false, "message" => 'user not found'));
+          return new ViewModel(['success' => false, "message" => 'user not found']);
+        } 
       }
     } catch (Exception $e) {
         error_log($e->getMessage());
@@ -160,12 +167,6 @@ public function contactAction() {
     $userdetails['password'] = $postData['password'];
     $res = $this->userTable->checkPasswordWithUserId($userdetails['user_login_id'], $userdetails['password']);
     if($res){
-      /* if (session_status() == PHP_SESSION_NONE) {
-        session_start();
-      }
-     $username = $this->userTable->getField(["user_login_id" => $userdetails['user_login_id']], "username");
-       $_SESSION['username'] = $username;
-      $_SESSION['user_login_id'] = $postData['user_login_id']; */
       $this->authService->getAdapter()
               ->setIdentity($userdetails['user_login_id'])
               ->setCredential($userdetails['password']);
@@ -175,17 +176,6 @@ public function contactAction() {
       return new JsonModel(array('success' => false, "message" => 'invalid credentials'));
     } 
   }
-
-  /* public function executiveProfileAction(){
-    if ($this->authService->hasIdentity()) {
-      $config = $this->getConfig();
-      $loginId = $this->authService->getIdentity();
-      $userDetails = $this->userTable->getUserDetails(['user_login_id'=>$loginId['user_login_id']]);
-      return new ViewModel(['userDetails' => $userDetails, 'callbackUrl' => $config['hybridauth']['callback']]);
-    }else{
-      $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
-    }
-  } */
 
   public function executiveAddAction(){
     //return new JsonModel(array('success' => true, "message" => 'you have succesfuly registered as TWISTT Executive.'));
@@ -250,11 +240,6 @@ public function contactAction() {
         $bres = $this->executiveDetailsTable->setExecutiveDetails($bankDetails, ['id' => $execId]);
       }
       if($bres){
-        /* if (session_status() == PHP_SESSION_NONE) {
-          session_start();
-        }
-        $_SESSION['username'] = $userdetails['username'];
-        $_SESSION['user_login_id'] = $userdetails['user_login_id']; */
         $this->authService->getAdapter()
                 ->setIdentity($userdetails['user_login_id'])
                 ->setCredential($userdetails['password']);

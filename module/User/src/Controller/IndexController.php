@@ -132,7 +132,6 @@ public function contactAction() {
             $ures = $this->userTable->updateUser($updateValues, ['id' => $userId]);
             if(!$ures)
               return new ViewModel(['success' => false, "message" => 'unknown error.. please try again later..']);
-              //return new JsonModel(array('success' => false, "message" => 'unknown error.. please try again later..'));
             $this->authService->getAdapter()
                 ->setIdentity($userdetails['user_login_id'])
                 ->setCredential($userdetails['password']);
@@ -142,16 +141,13 @@ public function contactAction() {
               $loginId = $this->authService->getIdentity();
               $userDetails = $this->userTable->getUserDetails(['user_login_id'=>$loginId['user_login_id']]);
               $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/buy-coupons');
-              //return new ViewModel(['userDetails' => $userDetails, 'callbackUrl' => $config['hybridauth']['callback']]);
             }else{
               $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
             }
           }else{
-            //return new JsonModel(array('success' => false, "message" => 'not a valid TWISTT executive'));
             return new ViewModel(['success' => false, "message" => 'not a valid TWISTT executive']);
           }
         }else{
-          //return new JsonModel(array('success' => false, "message" => 'user not found'));
           return new ViewModel(['success' => false, "message" => 'user not found']);
         } 
       }
@@ -178,7 +174,6 @@ public function contactAction() {
   }
 
   public function executiveAddAction(){
-    //return new JsonModel(array('success' => true, "message" => 'you have succesfuly registered as TWISTT Executive.'));
     $postData = $this->params()->fromPost();
     $validImageFiles = array('png', 'jpg', 'jpeg');
     $userdetails = [];

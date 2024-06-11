@@ -187,22 +187,34 @@
         var ccmobile=iti.getNumber();
         var countryData = iti.getSelectedCountryData();
         var countryCode = countryData.dialCode; 
-        var formData=new FormData();
-        formData.append("mobile", mobile);
-        formData.append("ccmobile", ccmobile);
-        formData.append("countryData", countryData);
-        formData.append("cc", countryCode);
-        ajaxData('/twistt/executive/send-otp',formData,function(response){
-            if(response.success){
-                $('#divBtn').hide();
-                $('#divCM').show();
-                $('#divOtp').show();
-                $("#mobile").prop('disabled', true);
-                messageDisplay(response.message, 2000);
-            }else{
-                messageDisplay(response.message,3000);
-            }
-        });
+        if(countryCode == "91"){
+            var formData=new FormData();
+            formData.append("mobile", mobile);
+            formData.append("ccmobile", ccmobile);
+            formData.append("countryData", countryData);
+            formData.append("cc", countryCode);
+            formData.append("otpType", "5");
+            formData.append("vm", "1");
+            formData.append("rb", "3");
+            ajaxData('/twistt/executive/send-otp',formData,function(response){
+                if(response.success){
+                    $('#divBtn').hide();
+                    $('#divCM').show();
+                    $('#divOtp').show();
+                    $("#mobile").prop('disabled', true);
+                    messageDisplay(response.message, 2000);
+                }else{
+                    messageDisplay(response.message,3000);
+                }
+            });
+        }else{
+            $('#divOtp').hide();
+            $('#divBtn').hide();
+            $("#mobile").prop('disabled', true);
+            $("#changeMobile").hide();
+            $('.udetails').show();
+            $('#register').show();
+        }
     }).on("click","#changeMobile",function(){
         reset();
         $('#divBtn').show();
@@ -223,6 +235,7 @@
         formData.append("cc", countryCode);
         formData.append("otp", otp);
         formData.append("otp_type", '5');
+        formData.append('rb','3');
         ajaxData('/twistt/executive/verify-otp',formData,function(response){
             if(response.success){
                 $('#divOtp').hide();

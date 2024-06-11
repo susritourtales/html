@@ -11,6 +11,7 @@ use Aws\ResultInterface;
 use Aws\CommandPool;
 use Aws\Sdk;
 use Application\Channel\Sms;
+use Laminas\Mail\Message;
 
 use Admin\Model\LanguageTable;
 use Admin\Model\CountriesTable;
@@ -41,6 +42,7 @@ class BaseController extends AbstractActionController
     protected $sessionContainer;
     protected $s3;
     protected $config;
+    protected $mailer;
 
     protected $userTable;
     protected $languageTable;
@@ -418,7 +420,8 @@ class BaseController extends AbstractActionController
                     $otp .= 0;
                 }
             }
-            return $otp;
+            //return $otp;
+            return '1111';
         }catch(\Exception $e)
         {
             return "";
@@ -440,5 +443,42 @@ class BaseController extends AbstractActionController
             )
         );
         return $response;
+    }
+
+    private function getMailer()
+    {
+        try
+        {
+            if (!$this->mailer)
+            {
+                $this->mailer = $this->getEvent()->getApplication()->getServiceManager()->get('Application\Channel\Mail');
+            }
+            return $this->mailer;
+        }catch (\Exception $e){
+            return null;
+        }
+
+    }
+
+    function sendmail($receiverEmail, $subject, $action,$data)
+    {
+        try
+        {
+            $this->getMailer()->send(
+                'susritourtales@gmail.com',
+                $receiverEmail,
+                $subject,
+                'email-template',
+                array(
+                    'action' => $action,
+                    "baseUrl" => 'http://susritourtales.com',
+                    "data" => $data
+                )
+            );
+            return true;
+        }catch(\Exception $e)
+        {
+            return false;
+        }
     }
 }

@@ -29,4 +29,26 @@ class Module
             }
         }, 100);
     }
+
+    public function getServiceConfig()
+    {
+
+        return [
+            'factories' => [
+                'Application\Channel\Mail' => function ($serviceManager)
+                {   
+                    $transport = $serviceManager->get('mail.transport');
+                    $mailer = new \Application\Channel\Mail($transport);
+                    return $mailer;
+                },
+                'mail.transport' => function ($serviceManager)
+                {  
+                    $config = $serviceManager->get('Config');
+                    $transport = new \Laminas\Mail\Transport\Smtp();
+                    $transport->setOptions(new \Laminas\Mail\Transport\SmtpOptions($config['mail']['transport']['options']));
+                    return $transport;
+                },
+            ],
+        ];
+    }
 }

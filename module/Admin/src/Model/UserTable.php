@@ -61,7 +61,8 @@ class UserTable extends BaseTable
             $query = $sql->select()
                 ->from($this->tableName)
                 ->columns(array("" . $column . ""))
-                ->where($where);
+                ->where($where)
+                ->limit(1);
             $field = array();
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             foreach ($resultSet as $row) {

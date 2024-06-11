@@ -1,0 +1,50 @@
+
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+        <head>
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+            <title>Susri Tour Tales Mail</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    font-size: 13px;
+                }
+                .container {
+                    width: 100%;
+                    max-width: 600px;
+                    margin: 0 auto;
+                    padding: 20px;
+                    border: 1px solid #ddd;
+                }
+                .header {
+                    background-color: #eee;
+                    color: white;
+                    padding: 10px;
+                    text-align: center;
+                }
+                .content {
+                    margin: 20px 0;
+                }
+                .footer {
+                    text-align: center;
+                    color: #666;
+                    font-size: 12px;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <img src="https://www.susritourtales.com/img/user/logo.png"/>
+                </div>
+                <div class="content">
+                    <?php if($action == 'forgot-password'){ ?>
+                    <div>Otp to reset your password for TWISTT Executive login is - <?php echo $data;?></div>
+                    <?php } ?>
+                </div>
+                <div class="footer">
+                    <p>Susri Tour Tales &copy; 2019</p>
+                </div>
+            </div>
+        </body>
+    </html>

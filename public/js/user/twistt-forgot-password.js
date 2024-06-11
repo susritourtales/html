@@ -29,6 +29,8 @@ $(document).ready(function(){
       element.prop('disabled',true);
       var formData=new FormData();
       formData.append('mobile',mobile);
+      formData.append('otpType','2');
+      formData.append('rb','3');
       ajaxCall=  $.ajax({
           type: "POST",
           url: BASE_URL+'/twistt/executive/send-otp',
@@ -61,25 +63,24 @@ $(document).ready(function(){
         var element=$(this);
         var otp=$("#txtOtp").val();
         var mobile=$("#Y3VycmVudFBhc3N3b3Jk").val();
-        var ccmobile="91" + mobile;;
-        var countryCode = "91";
-      if(otp=="")
+        if(otp=="")
         {
             messageDisplay("Please enter Otp received on your registered mobile");
             return false;
         }
       
-      if(ajaxCall!=null)
-      {
-          ajaxCall.abort();
-      }
+        if(ajaxCall!=null)
+        {
+            ajaxCall.abort();
+        }
       
-      element.html('Please wait...');
-      element.prop('disabled',true);
-      var formData=new FormData();
-      formData.append('otp',otp);
-      formData.append('mobile',mobile);
-      ajaxCall=  $.ajax({
+        element.html('Please wait...');
+        element.prop('disabled',true);
+        var formData=new FormData();
+        formData.append('otp',otp);
+        formData.append('mobile',mobile);
+        formData.append('otp_type','2');
+        ajaxCall=  $.ajax({
           type: "POST",
           url: BASE_URL+'/twistt/executive/verify-otp',
           data: formData,
@@ -105,7 +106,7 @@ $(document).ready(function(){
               element.prop('disabled',false);
               element.html('Submit');
           }
-      });
+        });
     });
 
     

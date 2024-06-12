@@ -5,17 +5,18 @@ $(document).ready(function(){
     element.prop('disabled',true);
 
     $("body").on("click","#sendOtp",function(){
-        var element=$(this);
+      var element=$(this);
       var mobile=$("#Y3VycmVudFBhc3N3b3Jk").val();
       if(mobile=="")
         {
             messageDisplay("Please enter registered mobile number");
             return false;
         }else{
-          if (!(/^\d{10}$/.test(mobile)) && !(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mobile))) {
+          //if (!(/^\d{10}$/.test(mobile)) && !(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mobile))) {
+            if (!(/^\d{10}$/.test(mobile))) {
               element.html('Send Otp');
               element.prop('disabled',false);
-              messageDisplay("Please enter valid mobile number or email id");
+              messageDisplay("Please enter valid mobile number");
               return false;
           }
         }
@@ -68,12 +69,10 @@ $(document).ready(function(){
             messageDisplay("Please enter Otp received on your registered mobile");
             return false;
         }
-      
         if(ajaxCall!=null)
         {
             ajaxCall.abort();
         }
-      
         element.html('Please wait...');
         element.prop('disabled',true);
         var formData=new FormData();
@@ -115,6 +114,7 @@ $(document).ready(function(){
           var newPassword=$("#bmV3UGFzc3dvcmQ").val();
           var confirmPassword=$("#Y29uZmlybVBhc3N3b3Jk").val();
           var mobile=$("#Y3VycmVudFBhc3N3b3Jk").val();
+          var otp=$("#txtOtp").val();
           
         if(newPassword=="")
         {
@@ -143,9 +143,11 @@ $(document).ready(function(){
         var formData=new FormData();
         formData.append('mobile',mobile);
         formData.append('new_password',newPassword);
+        formData.append('otp',otp);
+        formData.append('type','2');
         ajaxCall=  $.ajax({
             type: "POST",
-            url: BASE_URL+'/twistt-reset-password',
+            url: BASE_URL+'/twistt/reset-password',
             data: formData,
             cache: false,
             contentType: false,
@@ -158,7 +160,7 @@ $(document).ready(function(){
                 ajaxCall=null;
                 if(data.success){
                     setTimeout(function(){
-                        window.location.href=BASE_URL+"/twistt";
+                        window.location.href=BASE_URL+"/twistt/executive/login";
                     },2000);
                 }
             },

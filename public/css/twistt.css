@@ -81,3 +81,6 @@ body {
   .primary-btn:hover {
     color: white !important;
   }
+  .primary-text {
+    color: #20437b !important
+  }

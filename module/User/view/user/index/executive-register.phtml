@@ -1,7 +1,7 @@
 <link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.13/css/intlTelInput.css">
 <link rel="stylesheet" href="<?php echo $this->basePath(); ?>/css/login.css">
-<link rel="stylesheet" href="<?php echo $this->basePath(); ?>/css/twistt.css?v=1.0.1">
+<link rel="stylesheet" href="<?php echo $this->basePath(); ?>/css/twistt.css?v=1.0.2">
 <style>
   .iti{
     display: block;
@@ -110,13 +110,25 @@
       </div>
       <div class="col-md-6 udetails">
         <label for="photo" class="form-label">Passport Size Photo*</label>
-        <input type="file" class="form-control mb-3" id="photo" name="photo">
-        <img id="preview" alt="Image Preview" height="100" width="100">
+        <input type="file" class="form-control mb-3" id="photo" name="photo" required>
+        <img id="preview" alt="Photo Preview" height="100" width="100">
         <div class="invalid-feedback">Please upload your photo.</div>
+      </div>
+      <div class="col-md-6 udetails">
+        <label for="aadhar" class="form-label">Aadhar*</label>
+        <input type="file" class="form-control mb-3" id="aadhar" name="aadhar" required>
+        <img id="apreview" alt="Adhar Preview" height="150" width="200">
+        <div class="invalid-feedback">Please upload your aadhar scan.</div>
+      </div>
+      <div class="col-md-6 udetails">
+        <label for="pan" class="form-label">Pan card*</label>
+        <input type="file" class="form-control mb-3" id="pan" name="pan" required>
+        <img id="ppreview" alt="Pan Preview" height="150" width="200">
+        <div class="invalid-feedback">Please upload your pan card scan.</div>
       </div>
     </div>
     <button type="submit" class="btn submit-btn mt-5" id="register">Register</button>
   </form>
 </div>
 <div class="login-bg"></div>
-<script src="<?php echo $this->basePath(); ?>/js/user/add-executive.js?v=1.0.15"></script>
+<script src="<?php echo $this->basePath(); ?>/js/user/add-executive.js?v=1.0.16"></script>

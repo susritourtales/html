@@ -6,6 +6,8 @@
     // $('#bankDetails').hide();
     $('#register').hide();
     $('#preview').hide();
+    $('#apreview').hide();
+    $('#ppreview').hide();
     $('.udetails').hide();
     $('#divCM').hide();
     // Initialize intlTelInput
@@ -18,6 +20,7 @@
       strictMode:true,
       utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.13/js/utils.js",
       initialCountry: "in",
+      onlyCountries: ["in"],
       separateDialCode: true,
       hiddenInput: () => ({ phone: "full_phone", country: "country_code" }),
     });
@@ -73,6 +76,31 @@
             reader.readAsDataURL(file);
         } else {
             $('#preview').hide();
+        }
+    });
+
+    $('#aadhar').change(function(event) {
+        var file = event.target.files[0];
+        if (file && file.type.match('image.*')) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                $('#apreview').attr('src', e.target.result).show();
+            };
+            reader.readAsDataURL(file);
+        } else {
+            $('#apreview').hide();
+        }
+    });
+    $('#pan').change(function(event) {
+        var file = event.target.files[0];
+        if (file && file.type.match('image.*')) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                $('#ppreview').attr('src', e.target.result).show();
+            };
+            reader.readAsDataURL(file);
+        } else {
+            $('#ppreview').hide();
         }
     });
 

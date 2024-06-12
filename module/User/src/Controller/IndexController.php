@@ -178,8 +178,12 @@ public function contactAction() {
     $validImageFiles = array('png', 'jpg', 'jpeg');
     $userdetails = [];
     $bankDetails = [];
-    $uploadedFile = $this->params()->fromFiles('photo');
-    if (isset($uploadedFile)) {
+    $uploadedFiles[0] = $this->params()->fromFiles('photo');
+    $uploadedFiles[1] = $this->params()->fromFiles('aadhar');
+    $uploadedFiles[2] = $this->params()->fromFiles('pan');
+    $i=0;
+    if (isset($uploadedFiles)) {
+      foreach($uploadedFiles as $uploadedFile)  {
         $attachment = $uploadedFile;
         $filename = $attachment['name'];
         $fileExt = explode(".", $filename);
@@ -196,9 +200,21 @@ public function contactAction() {
         if (!$uploadStatus) {
             return new JsonModel(array('success' => false, "message" => 'unable to upload photo.. try agian after sometime..'));
         }
-        $userdetails['photo_url'] = $filePath;
+        switch ($i) {
+          case 0:
+              $userdetails['photo_url'] = $filePath;
+              break;
+          case 1:
+              $userdetails['aadhar_url'] = $filePath;
+              break;
+          case 2:
+              $userdetails['pan_url'] = $filePath;
+              break;
+        }
+        $i++;
+      }
     }else{
-      return new JsonModel(array('success' => false, "message" => 'Photo not submitted.'));
+      return new JsonModel(array('success' => false, "message" => 'image not submitted.'));
     }
     
     $userdetails['username'] = $postData['name'];
@@ -255,35 +271,51 @@ public function contactAction() {
       $validImageFiles = array('png', 'jpg', 'jpeg');
       $userdetails = [];
       $bankDetails = [];
-      $uploadedFile = $this->params()->fromFiles('photo');
-      if (isset($uploadedFile)) {
-        if($uploadedFile['error'] !== UPLOAD_ERR_NO_FILE){
-            $attachment = $uploadedFile;
-            $filename = $attachment['name'];
-            $fileExt = explode(".", $filename);
-            $ext = end($fileExt) ? end($fileExt) : "";
-            $ext = strtolower($ext);
-            $filenameWithoutExt = $this->generateRandomString() . "_" . strtotime(date("Y-m-d H:i:s"));
-            $filename = $filenameWithoutExt . "." . $ext;
-            $filePath = "data/profiles";
-            $filePath = $filePath . "/" . $filename;
-            if (!in_array(strtolower($ext), $validImageFiles)) {
-              return new JsonModel(array("success" => false, "message" => $ext . " file format is not supported !"));
-            }
-            $uploadStatus = $this->pushFiles($filePath, $attachment['tmp_name'], $attachment['type']);
-            if (!$uploadStatus) {
-              return new JsonModel(array('success' => false, "message" => 'unable to upload photo.. try agian after sometime..'));
-            }else{ // new photo successfully uploaded - delete old photo
-              $oldPPUrl = $this->userTable->getField(['id'=>$userId], 'photo_url');
-              if ($this->fileExists($oldPPUrl)) {
-                if (!$this->deleteFile($oldPPUrl)) {
-                  return new JsonModel(array('success' => false, "message" => 'unable to delete old photo..'));
-                }
-              } else {
-                return new JsonModel(array('success' => false, "message" => 'unable to find old photo to be replaced..'));
+      $uploadedFiles[0] = $this->params()->fromFiles('photo');
+      $uploadedFiles[1] = $this->params()->fromFiles('aadhar');
+      $uploadedFiles[2] = $this->params()->fromFiles('pan');
+      $i=0;
+      if (isset($uploadedFiles)) {
+        foreach($uploadedFiles as $uploadedFile)  {
+          if($uploadedFile['error'] !== UPLOAD_ERR_NO_FILE){
+              $attachment = $uploadedFile;
+              $filename = $attachment['name'];
+              $fileExt = explode(".", $filename);
+              $ext = end($fileExt) ? end($fileExt) : "";
+              $ext = strtolower($ext);
+              $filenameWithoutExt = $this->generateRandomString() . "_" . strtotime(date("Y-m-d H:i:s"));
+              $filename = $filenameWithoutExt . "." . $ext;
+              $filePath = "data/profiles";
+              $filePath = $filePath . "/" . $filename;
+              if (!in_array(strtolower($ext), $validImageFiles)) {
+                return new JsonModel(array("success" => false, "message" => $ext . " file format is not supported !"));
               }
+              $uploadStatus = $this->pushFiles($filePath, $attachment['tmp_name'], $attachment['type']);
+              if (!$uploadStatus) {
+                return new JsonModel(array('success' => false, "message" => 'unable to upload photo.. try agian after sometime..'));
+              }else{ // new photo successfully uploaded - delete old photo
+                $oldPPUrl = $this->userTable->getField(['id'=>$userId], 'photo_url');
+                if ($this->fileExists($oldPPUrl)) {
+                  if (!$this->deleteFile($oldPPUrl)) {
+                    return new JsonModel(array('success' => false, "message" => 'unable to delete old photo..'));
+                  }
+                } else {
+                  return new JsonModel(array('success' => false, "message" => 'unable to find old photo to be replaced..'));
+                }
+              }
+              switch ($i) {
+                case 0:
+                    $userdetails['photo_url'] = $filePath;
+                    break;
+                case 1:
+                    $userdetails['aadhar_url'] = $filePath;
+                    break;
+                case 2:
+                    $userdetails['pan_url'] = $filePath;
+                    break;
+              }
+              $i++;
             }
-            $userdetails['photo_url'] = $filePath;
           }
       }else{
         return new JsonModel(array('success' => false, "message" => 'Photo not submitted.'));
@@ -379,9 +411,9 @@ public function contactAction() {
                 return new JsonModel(array('success' => false, "message" => 'unknown error.. please try again after sometime..'));
               }
             }else{
-              return new JsonModel(array('success' => false, "message" => 'foreign users can provide their registred email id for otp verification..'));
+              return new JsonModel(array('success' => false, "message" => 'not a registered mobile no..'));
             }
-          }else{
+          } /* else{
             $isEmailRegistered = $this->userTable->getField(['email' => $mobile], 'id');
             if($isEmailRegistered){
               $otp = $this->generateOtp();
@@ -399,12 +431,11 @@ public function contactAction() {
             }else{
               return new JsonModel(array('success' => false, "message" => 'not a registered mobile no / email id'));
             }
-          }
+          } */
         }else{
           return new JsonModel(array('success' => false, "message" => 'please provide registered mobile no / email id'));
         }
       }
-      
       return new JsonModel(array('success' => true, "message" => 'otp sent successfully.. please enter the otp..'));
     }
   }
@@ -457,7 +488,7 @@ public function contactAction() {
           return new JsonModel(array("success"=>false,"message"=>"otp not valid.. please try again"));
         }
       }elseif($type==\Admin\Model\Otp::Forgot_Password){
-        $data = ['otp' => $otp, 'otp_type_id' => \Admin\Model\Otp::Forgot_Password, 'sent_status_id' => \Admin\Model\Otp::Not_verifed, 'otp_requested_by' => \Admin\Model\Otp::TWISTT_Request, 'otp_sent_to' => $mobile];
+        $data = ['otp' => $otp, 'otp_type_id' => \Admin\Model\Otp::Forgot_Password, 'verification_mode' => \Admin\Model\Otp::Mobile_Verification, 'sent_status_id' => \Admin\Model\Otp::Not_verifed, 'otp_requested_by' => \Admin\Model\Otp::TWISTT_Request, 'otp_sent_to' => $mobile];
         $verify=$this->otpTable->verifyOtp($data);
         if($verify){
           $updateResponse=$this->otpTable->setOtpDetails(array('sent_status_id'=>\Admin\Model\Otp::Is_verifed), $data);
@@ -778,7 +809,7 @@ public function contactAction() {
   {
     return new ViewModel();
   }
-  public function forgotPasswordAction()
+  public function executiveForgotPasswordAction()
   {
     return new ViewModel();
   }
@@ -812,7 +843,29 @@ public function contactAction() {
         return new JsonModel(array('success' => false, "message" => 'Current password wrong'));
       }
     }else{
-      $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
+      if($this->getRequest()->isXmlHttpRequest()) {
+        $request = $this->getRequest()->getPost();
+        $type = $request['type'];
+        $otp = $request['otp'];
+        $mobile = $request['mobile'];
+        $new_password = $request['new_password'];
+        $data = ['otp' => $otp, 'otp_type_id' => $type, 'verification_mode' => \Admin\Model\Otp::Mobile_Verification, 'sent_status_id' => \Admin\Model\Otp::Is_verifed, 'otp_requested_by' => \Admin\Model\Otp::TWISTT_Request, 'otp_sent_to' => $mobile];
+        $verify=$this->otpTable->verifyOtp($data);
+        if($verify){
+          $aes = new Aes();
+          $encodeContent = $aes->encrypt($new_password);
+          $userdetails['password'] = $encodeContent['password'];
+          $userdetails['hash'] = $encodeContent['hash'];
+          $res = $this->userTable->updateUser($userdetails,['mobile_number'=>$mobile]);
+          if($res)
+            return new JsonModel(array('success' => true, "message" => 'password changed succesfully..'));
+          else
+            return  new JsonModel(array('success' => false, "message" => 'unable to change password.. try after sometime..'));
+        }
+        return  new JsonModel(array('success' => false, "message" => 'unable to change password.. try after sometime..'));
+      }else{
+       $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
+      }
     }
   }
 

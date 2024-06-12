@@ -408,13 +408,13 @@ return [
                         'action' => 'questt-validity',
                     ],
                 ],
-            ], 'forgot-password' => [
+            ], 'executive-forgot-password' => [
                 'type' => Segment::class,
                 'options' => [
-                    'route' => '/twistt/forgot-password',
+                    'route' => '/twistt/executive/forgot-password',
                     'defaults' => [
                         'controller' => Controller\IndexController::class,
-                        'action' => 'forgot-password',
+                        'action' => 'executive-forgot-password',
                     ],
                 ],
             ], 'change-password' => [

@@ -11,6 +11,7 @@ $(document).ready(function() {
       strictMode:true,
       utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.13/js/utils.js",
       initialCountry: "in",
+      onlyCountries: ["in"],
       separateDialCode: true,
       hiddenInput: () => ({ phone: "full_phone", country: "country_code" }),
     });

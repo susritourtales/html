@@ -105,11 +105,25 @@
                                         <div class="invalid-feedback">Please provide a valid email address.</div>
                                     </div>
                                 </div>
-                                <div class="row pt-3">
+                                <div class="row pt-3 my-3">
+                                    <div class="col-sm-12 col-md-6">
+                                        <label class="form-label text-start">Aadhar*</label>
+                                        <div><img src="<?php echo $imageUrl . $userDetails['aadhar_url']; ?>" id="apreview" alt="Aadhar Preview" height="150" width="200"></div>
+                                        <!-- <input type="file" class="form-control my-3" id="aadhar" name="aadhar"> -->
+                                        <div class="invalid-feedback text-white">Please upload your aadhar.</div>
+                                    </div>
+                                    <div class="col-sm-12 col-md-6">
+                                        <label class="form-label text-start">Pan Card*</label>
+                                        <div><img src="<?php echo $imageUrl . $userDetails['pan_url']; ?>" id="ppreview" alt="Pan Preview" height="150" width="200"></div>
+                                        <!-- <input type="file" class="form-control my-3" id="pan" name="pan"> -->
+                                        <div class="invalid-feedback text-white">Please upload your pan card.</div>
+                                    </div>
+                                </div>
+                                <div class="row pt-3 my-3">
                                     <div class="col-sm-12 col-md-6">
                                         <label class="form-label text-start">Profile Pic*</label>
-                                        <div><img src="<?php echo $imageUrl . $userDetails['photo_url']; ?>" id="preview" alt="Image Preview" height="100" width="100"></div>
-                                        <input type="file" class="form-control my-3" id="photo" name="photo">
+                                        <div><img src="<?php echo $imageUrl . $userDetails['photo_url']; ?>" id="preview" alt="Image Preview" height="150" width="150"></div>
+                                        <!-- <input type="file" class="form-control my-3" id="photo" name="photo"> -->
                                         <div class="invalid-feedback text-white">Please upload your photo.</div>
                                     </div>
                                 </div>
@@ -122,4 +136,4 @@
         </div>
     </div>
 </div>
-<script src="<?php echo $this->basePath(); ?>/js/user/executive-home.js?v=1.0.1"></script>
+<script src="<?php echo $this->basePath(); ?>/js/user/executive-profile.js"></script>

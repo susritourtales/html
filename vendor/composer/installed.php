@@ -3,7 +3,7 @@
         'name' => 'laminas/laminas-mvc-skeleton',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => 'a8335ff87ce2fb317cd80f27cfca85ac9c760a7f',
+        'reference' => 'e44455b6d8caba3005b808bc7126a24dc637ecbd',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -150,6 +150,15 @@
             'install_path' => __DIR__ . '/../fidry/cpu-core-counter',
             'aliases' => array(),
             'dev_requirement' => true,
+        ),
+        'firebase/php-jwt' => array(
+            'pretty_version' => 'v6.10.1',
+            'version' => '6.10.1.0',
+            'reference' => '500501c2ce893c824c801da135d02661199f60c5',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../firebase/php-jwt',
+            'aliases' => array(),
+            'dev_requirement' => false,
         ),
         'guzzlehttp/guzzle' => array(
             'pretty_version' => '7.8.1',
@@ -316,7 +325,7 @@
         'laminas/laminas-mvc-skeleton' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => 'a8335ff87ce2fb317cd80f27cfca85ac9c760a7f',
+            'reference' => 'e44455b6d8caba3005b808bc7126a24dc637ecbd',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

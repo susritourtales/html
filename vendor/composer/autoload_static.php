@@ -129,6 +129,7 @@ class ComposerStaticInite5c0ec13caac948eb49f604210254756
         ),
         'F' => 
         array (
+            'Firebase\\JWT\\' => 13,
             'Fidry\\CpuCoreCounter\\' => 21,
         ),
         'D' => 
@@ -405,6 +406,10 @@ class ComposerStaticInite5c0ec13caac948eb49f604210254756
         'GuzzleHttp\\' => 
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/guzzle/src',
+        ),
+        'Firebase\\JWT\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/firebase/php-jwt/src',
         ),
         'Fidry\\CpuCoreCounter\\' => 
         array (

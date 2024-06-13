@@ -2,6 +2,5 @@
 .vscode/launch.json
 susri_booking_*.pdf
 module/User/view/user/index/config.php
-config/
 storage/
 module/Application/src/Handler/Razorpay.php

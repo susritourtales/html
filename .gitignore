@@ -4,4 +4,3 @@ susri_booking_*.pdf
 module/User/view/user/index/config.php
 storage/
 module/Application/src/Handler/Razorpay.php
-config/

@@ -115,7 +115,8 @@ public function contactAction() {
         $userdetails['state'] = $userProfile->region;
         $userdetails['gender'] = $userProfile->gender;
         $userdetails['user_type_id'] = \Admin\Model\User::TWISTT_Executive;
-        $userdetails['photo_url'] = strtok($userProfile->photoURL, '?');
+        if ($userProfile->photoURL !== null && $userProfile->photoURL !== "")
+          $userdetails['photo_url'] = strtok($userProfile->photoURL, '?');
         $userdetails['access_token'] = $accessToken['access_token'];
         $userdetails['token_expiry'] = $accessToken['expires_at'];
         $aes = new Aes();

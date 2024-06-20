@@ -12,25 +12,27 @@ use Hybridauth\Storage\Session;
 use Laminas\Mvc\Controller\AbstractActionController;
 use Application\Handler\Razorpay;
 
-class IndexController extends BaseController 
+class IndexController extends BaseController
 { //AbstractActionController
 
-public function indexAction()
-{
-  $marqText = "Awareness enhances enjoyment... Know about the place you visit by listening to Susri Tour Tales...";
-  $banners=$this->bannerTable->getBanners();
-  $this->layout()->setVariable('activeTab', \Application\Constants\Constants::MAIN_SITE_HOME_PAGE);
-  return new ViewModel(['marqText'=>$marqText,'banners'=>$banners, 'imageUrl'=>$this->filesUrl()]);
-}
-public function aboutUsAction() {
-  $this->layout()->setVariable('activeTab', \Application\Constants\Constants::MAIN_SITE_ABOUT_PAGE);
-  return new ViewModel();
-}
+  public function indexAction()
+  {
+    $marqText = "Awareness enhances enjoyment... Know about the place you visit by listening to Susri Tour Tales...";
+    $banners = $this->bannerTable->getBanners();
+    $this->layout()->setVariable('activeTab', \Application\Constants\Constants::MAIN_SITE_HOME_PAGE);
+    return new ViewModel(['marqText' => $marqText, 'banners' => $banners, 'imageUrl' => $this->filesUrl()]);
+  }
+  public function aboutUsAction()
+  {
+    $this->layout()->setVariable('activeTab', \Application\Constants\Constants::MAIN_SITE_ABOUT_PAGE);
+    return new ViewModel();
+  }
 
-public function contactAction() {
-  $this->layout()->setVariable('activeTab', \Application\Constants\Constants::MAIN_SITE_CONTACT_PAGE);
-  return new ViewModel();
-}
+  public function contactAction()
+  {
+    $this->layout()->setVariable('activeTab', \Application\Constants\Constants::MAIN_SITE_CONTACT_PAGE);
+    return new ViewModel();
+  }
 
   public function twisttAction()
   {
@@ -54,7 +56,7 @@ public function contactAction() {
   }
   public function executiveAuthAction()
   {
-    try{
+    try {
       $config = $this->getConfig();
       $hybridauth = new Hybridauth($config['hybridauth']);
       $storage = new Session();
@@ -65,10 +67,10 @@ public function contactAction() {
       if (isset($_GET['provider'])) {
         // Validate provider exists in the $config
         if (in_array($_GET['provider'], $hybridauth->getProviders())) {
-            // Store the provider for the callback event
-            $storage->set('provider', $_GET['provider']);
+          // Store the provider for the callback event
+          $storage->set('provider', $_GET['provider']);
         } else {
-            $error = $_GET['provider'];
+          $error = $_GET['provider'];
         }
       }
 
@@ -78,15 +80,15 @@ public function contactAction() {
       if (isset($_GET['logout'])) {
         //echo $_GET['logout']; exit;
         if (in_array($_GET['logout'], $hybridauth->getProviders())) {
-            // Disconnect the adapter
-            $adapter = $hybridauth->getAdapter($_GET['logout']);
-            $adapter->disconnect();
-            session_unset();
-            $storage->clear();
-            header("Location: /twistt/executive/login");
-            exit;
+          // Disconnect the adapter
+          $adapter = $hybridauth->getAdapter($_GET['logout']);
+          $adapter->disconnect();
+          session_unset();
+          $storage->clear();
+          header("Location: /twistt/executive/login");
+          exit;
         } else {
-            $error = $_GET['logout'];
+          $error = $_GET['logout'];
         }
       }
 
@@ -98,7 +100,7 @@ public function contactAction() {
         echo 'Hybridauth Error: Provider ' . json_encode($error) . ' not found or not enabled in $config';
         exit;
       }
-    
+
       if ($provider = $storage->get('provider')) {
         $hybridauth->authenticate($provider);
         $storage->set('provider', null);
@@ -124,57 +126,58 @@ public function contactAction() {
         $userdetails['password'] = $encodeContent['password'];
         $userdetails['hash'] = $encodeContent['hash'];
         $userId = $this->userTable->getField(['user_login_id' => $userdetails['user_login_id']], 'id');
-        if($userId){
+        if ($userId) {
           $execId = $this->executiveDetailsTable->executiveExists($userId);
-          if($execId){
+          if ($execId) {
             $updateValues['access_token'] = $userdetails['access_token'];
             $updateValues['password'] = $userdetails['password'];
             $updateValues['hash'] = $userdetails['hash'];
             $ures = $this->userTable->updateUser($updateValues, ['id' => $userId]);
-            if(!$ures)
+            if (!$ures)
               return new ViewModel(['success' => false, "message" => 'unknown error.. please try again later..']);
             $this->authService->getAdapter()
-                ->setIdentity($userdetails['user_login_id'])
-                ->setCredential($userdetails['password']);
+              ->setIdentity($userdetails['user_login_id'])
+              ->setCredential($userdetails['password']);
             $this->authService->authenticate();
             if ($this->authService->hasIdentity()) {
               $config = $this->getConfig();
               $loginId = $this->authService->getIdentity();
-              $userDetails = $this->userTable->getUserDetails(['user_login_id'=>$loginId['user_login_id']]);
+              $userDetails = $this->userTable->getUserDetails(['user_login_id' => $loginId['user_login_id']]);
               $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/buy-coupons');
-            }else{
+            } else {
               $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
             }
-          }else{
+          } else {
             return new ViewModel(['success' => false, "message" => 'not a valid TWISTT executive']);
           }
-        }else{
+        } else {
           return new ViewModel(['success' => false, "message" => 'user not found']);
-        } 
+        }
       }
     } catch (Exception $e) {
-        error_log($e->getMessage());
-        echo $e->getMessage();
+      error_log($e->getMessage());
+      echo $e->getMessage();
     }
   }
   public function sttAuthAction()
   {
     $postData = $this->params()->fromPost();
-    $userdetails['user_login_id'] = str_replace("+","",$postData['loginid']);
+    $userdetails['user_login_id'] = str_replace("+", "", $postData['loginid']);
     $userdetails['password'] = $postData['password'];
     $res = $this->userTable->checkPasswordWithUserId($userdetails['user_login_id'], $userdetails['password']);
-    if($res){
+    if ($res) {
       $this->authService->getAdapter()
-              ->setIdentity($userdetails['user_login_id'])
-              ->setCredential($userdetails['password']);
+        ->setIdentity($userdetails['user_login_id'])
+        ->setCredential($userdetails['password']);
       $ares = $this->authService->authenticate();
       return new JsonModel(array('success' => true, "message" => 'credentials valid'));
-    }else{
+    } else {
       return new JsonModel(array('success' => false, "message" => 'invalid credentials'));
-    } 
+    }
   }
 
-  public function executiveAddAction(){
+  public function executiveAddAction()
+  {
     $postData = $this->params()->fromPost();
     $validImageFiles = array('png', 'jpg', 'jpeg');
     $userdetails = [];
@@ -182,9 +185,9 @@ public function contactAction() {
     $uploadedFiles[0] = $this->params()->fromFiles('photo');
     $uploadedFiles[1] = $this->params()->fromFiles('aadhar');
     $uploadedFiles[2] = $this->params()->fromFiles('pan');
-    $i=0;
+    $i = 0;
     if (isset($uploadedFiles)) {
-      foreach($uploadedFiles as $uploadedFile)  {
+      foreach ($uploadedFiles as $uploadedFile) {
         $attachment = $uploadedFile;
         $filename = $attachment['name'];
         $fileExt = explode(".", $filename);
@@ -195,29 +198,29 @@ public function contactAction() {
         $filePath = "data/profiles";
         $filePath = $filePath . "/" . $filename;
         if (!in_array(strtolower($ext), $validImageFiles)) {
-            return new JsonModel(array("success" => false, "message" => $ext . " file format is not supported !"));
+          return new JsonModel(array("success" => false, "message" => $ext . " file format is not supported !"));
         }
         $uploadStatus = $this->pushFiles($filePath, $attachment['tmp_name'], $attachment['type']);
         if (!$uploadStatus) {
-            return new JsonModel(array('success' => false, "message" => 'unable to upload photo.. try agian after sometime..'));
+          return new JsonModel(array('success' => false, "message" => 'unable to upload photo.. try agian after sometime..'));
         }
         switch ($i) {
           case 0:
-              $userdetails['photo_url'] = $filePath;
-              break;
+            $userdetails['photo_url'] = $filePath;
+            break;
           case 1:
-              $userdetails['aadhar_url'] = $filePath;
-              break;
+            $userdetails['aadhar_url'] = $filePath;
+            break;
           case 2:
-              $userdetails['pan_url'] = $filePath;
-              break;
+            $userdetails['pan_url'] = $filePath;
+            break;
         }
         $i++;
       }
-    }else{
+    } else {
       return new JsonModel(array('success' => false, "message" => 'image not submitted.'));
     }
-    
+
     $userdetails['username'] = $postData['name'];
     $userdetails['user_login_id'] = $postData['lid'];
     $userdetails['mobile_number'] = $postData['mobile'];
@@ -228,43 +231,44 @@ public function contactAction() {
     $userdetails['state'] = $postData['state'];
     $userdetails['gender'] = $postData['gender'];
     $userdetails['user_type_id'] = \Admin\Model\User::TWISTT_Executive;
-    $postData['ccmobile'] = str_replace("+","",$postData['ccmobile']);
+    $postData['ccmobile'] = str_replace("+", "", $postData['ccmobile']);
     $aes = new Aes();
     $encodeContent = $aes->encrypt($postData['ccmobile']);
     $userdetails['password'] = $encodeContent['password'];
     $userdetails['hash'] = $encodeContent['hash'];
     $userId = $this->userTable->userExists($userdetails['user_login_id']);
-    if($userId){
+    if ($userId) {
       $ures = $this->userTable->updateUser($userdetails, ['id' => $userId]);
-    }else{
+    } else {
       return new JsonModel(array('success' => false, "message" => 'unknown error occurred.. please try after sometime..'));
     }
-    if($ures){
+    if ($ures) {
       $execId = $this->executiveDetailsTable->executiveExists($userId);
       $bankDetails['user_id'] = $userId;
       $bankDetails['bank_name'] = $postData['bankName'];
       $bankDetails['bank_account_no'] = $postData['bankAccount'];
       $bankDetails['ifsc_code'] = $postData['ifsc'];
       $bankDetails['commission_percentage'] = "20";
-      if(!$execId){
+      if (!$execId) {
         $bres = $this->executiveDetailsTable->addExecutive($bankDetails);
-      }else{
+      } else {
         $bres = $this->executiveDetailsTable->setExecutiveDetails($bankDetails, ['id' => $execId]);
       }
-      if($bres){
+      if ($bres) {
         $this->authService->getAdapter()
-                ->setIdentity($userdetails['user_login_id'])
-                ->setCredential($userdetails['password']);
+          ->setIdentity($userdetails['user_login_id'])
+          ->setCredential($userdetails['password']);
         $ares = $this->authService->authenticate();
         return new JsonModel(array('success' => true, "message" => 'you have succesfully registered as TWISTT Executive.'));
-      }else{
+      } else {
         return new JsonModel(array('success' => false, "message" => 'error saving user bank details.. please try after sometime..'));
       }
-    }else{
+    } else {
       return new JsonModel(array('success' => false, "message" => 'error saving user details.. please try after sometime..'));
     }
   }
-  public function executiveEditAction(){
+  public function executiveEditAction()
+  {
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
       $userId = $this->userTable->userExists($loginId['user_login_id']);
@@ -275,84 +279,84 @@ public function contactAction() {
       $uploadedFiles[0] = $this->params()->fromFiles('photo');
       $uploadedFiles[1] = $this->params()->fromFiles('aadhar');
       $uploadedFiles[2] = $this->params()->fromFiles('pan');
-      $i=0;
+      $i = 0;
       if (isset($uploadedFiles)) {
-        foreach($uploadedFiles as $uploadedFile)  {
-          if($uploadedFile['error'] !== UPLOAD_ERR_NO_FILE){
-              $attachment = $uploadedFile;
-              $filename = $attachment['name'];
-              $fileExt = explode(".", $filename);
-              $ext = end($fileExt) ? end($fileExt) : "";
-              $ext = strtolower($ext);
-              $filenameWithoutExt = $this->generateRandomString() . "_" . strtotime(date("Y-m-d H:i:s"));
-              $filename = $filenameWithoutExt . "." . $ext;
-              $filePath = "data/profiles";
-              $filePath = $filePath . "/" . $filename;
-              if (!in_array(strtolower($ext), $validImageFiles)) {
-                return new JsonModel(array("success" => false, "message" => $ext . " file format is not supported !"));
-              }
-              $uploadStatus = $this->pushFiles($filePath, $attachment['tmp_name'], $attachment['type']);
-              if (!$uploadStatus) {
-                return new JsonModel(array('success' => false, "message" => 'unable to upload photo.. try agian after sometime..'));
-              }else{ // new photo successfully uploaded - delete old photo
-                $oldPPUrl = $this->userTable->getField(['id'=>$userId], 'photo_url');
-                if ($this->fileExists($oldPPUrl)) {
-                  if (!$this->deleteFile($oldPPUrl)) {
-                    return new JsonModel(array('success' => false, "message" => 'unable to delete old photo..'));
-                  }
-                } else {
-                  return new JsonModel(array('success' => false, "message" => 'unable to find old photo to be replaced..'));
-                }
-              }
-              switch ($i) {
-                case 0:
-                    $userdetails['photo_url'] = $filePath;
-                    break;
-                case 1:
-                    $userdetails['aadhar_url'] = $filePath;
-                    break;
-                case 2:
-                    $userdetails['pan_url'] = $filePath;
-                    break;
-              }
-              $i++;
+        foreach ($uploadedFiles as $uploadedFile) {
+          if ($uploadedFile['error'] !== UPLOAD_ERR_NO_FILE) {
+            $attachment = $uploadedFile;
+            $filename = $attachment['name'];
+            $fileExt = explode(".", $filename);
+            $ext = end($fileExt) ? end($fileExt) : "";
+            $ext = strtolower($ext);
+            $filenameWithoutExt = $this->generateRandomString() . "_" . strtotime(date("Y-m-d H:i:s"));
+            $filename = $filenameWithoutExt . "." . $ext;
+            $filePath = "data/profiles";
+            $filePath = $filePath . "/" . $filename;
+            if (!in_array(strtolower($ext), $validImageFiles)) {
+              return new JsonModel(array("success" => false, "message" => $ext . " file format is not supported !"));
             }
+            $uploadStatus = $this->pushFiles($filePath, $attachment['tmp_name'], $attachment['type']);
+            if (!$uploadStatus) {
+              return new JsonModel(array('success' => false, "message" => 'unable to upload photo.. try agian after sometime..'));
+            } else { // new photo successfully uploaded - delete old photo
+              $oldPPUrl = $this->userTable->getField(['id' => $userId], 'photo_url');
+              if ($this->fileExists($oldPPUrl)) {
+                if (!$this->deleteFile($oldPPUrl)) {
+                  return new JsonModel(array('success' => false, "message" => 'unable to delete old photo..'));
+                }
+              } else {
+                return new JsonModel(array('success' => false, "message" => 'unable to find old photo to be replaced..'));
+              }
+            }
+            switch ($i) {
+              case 0:
+                $userdetails['photo_url'] = $filePath;
+                break;
+              case 1:
+                $userdetails['aadhar_url'] = $filePath;
+                break;
+              case 2:
+                $userdetails['pan_url'] = $filePath;
+                break;
+            }
+            $i++;
           }
-      }else{
+        }
+      } else {
         return new JsonModel(array('success' => false, "message" => 'Photo not submitted.'));
       }
-      
+
       $userdetails['username'] = $postData['name'];
       $userdetails['email'] = $postData['email'];
       $userdetails['country'] = $postData['country'];
       $userdetails['city'] = $postData['city'];
       $userdetails['state'] = $postData['state'];
       $userdetails['gender'] = $postData['gender'];
-      if($userId){
+      if ($userId) {
         $ures = $this->userTable->updateUser($userdetails, ['id' => $userId]);
-      }else{
+      } else {
         return new JsonModel(array('success' => false, "message" => 'unknown error occurred.. please try after sometime..'));
       }
-      if($ures){
+      if ($ures) {
         $execId = $this->executiveDetailsTable->executiveExists($userId);
         $bankDetails['user_id'] = $userId;
         $bankDetails['bank_name'] = $postData['bankName'];
         $bankDetails['bank_account_no'] = $postData['bankAccount'];
         $bankDetails['ifsc_code'] = $postData['ifsc'];
-        if(!$execId){
+        if (!$execId) {
           $bres = $this->executiveDetailsTable->addExecutive($bankDetails);
-        }else{
+        } else {
           $bres = $this->executiveDetailsTable->setExecutiveDetails($bankDetails, ['id' => $execId]);
         }
-        if($bres){
+        if ($bres) {
           return new JsonModel(array('success' => true, "message" => 'updated succesfully..'));
-        }else{
+        } else {
           return new JsonModel(array('success' => false, "message" => 'error saving user bank details.. please try after sometime..'));
         }
-      }else{
+      } else {
         return new JsonModel(array('success' => false, "message" => 'error saving user details.. please try after sometime..'));
       }
-    }else{
+    } else {
       $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
     }
   }
@@ -360,11 +364,11 @@ public function contactAction() {
   {
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
-      $userDetails = $this->userTable->getUserDetails(['user_login_id'=>$loginId['user_login_id']]);
+      $userDetails = $this->userTable->getUserDetails(['user_login_id' => $loginId['user_login_id']]);
       $bankDetails = $this->executiveDetailsTable->getExecutiveDetails(['user_id' => $userDetails['id']]);
       $config = $this->getConfig();
-      return new ViewModel(['userDetails' => $userDetails, 'bankDetails' => $bankDetails, 'config' => $config['hybridauth'], 'imageUrl'=>$this->filesUrl()]);
-    }else{
+      return new ViewModel(['userDetails' => $userDetails, 'bankDetails' => $bankDetails, 'config' => $config['hybridauth'], 'imageUrl' => $this->filesUrl()]);
+    } else {
       $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
     }
   }
@@ -378,40 +382,40 @@ public function contactAction() {
       $otpType = $request['otpType'];
       $vm = $request['vm'];
       $rb = $request['rb'];
-      if($otpType == \Admin\Model\Otp::Executive_Registration){
-        if($cc == "91"){
+      if ($otpType == \Admin\Model\Otp::Executive_Registration) {
+        if ($cc == "91") {
           $otp = $this->generateOtp();
           $otpRes = $this->otpTable->addOtpDetails(['otp' => $otp, 'otp_type_id' => $otpType, 'verification_mode' => $vm, 'sent_status_id' => \Admin\Model\Otp::Not_verifed, 'otp_requested_by' => $rb, 'otp_sent_to' => $ccmobile]);
-          if($otpRes){
+          if ($otpRes) {
             $resp = "1"; //$this->sendOtpSms($ccmobile, $otp);
-            if($resp){
+            if ($resp) {
               return new JsonModel(array('success' => true, "message" => 'otp sent successfully.. please enter the otp..'));
-            }else{
+            } else {
               return new JsonModel(array('success' => false, "message" => 'unable to send otp.. please try again after sometime..'));
             }
-          }else{
+          } else {
             return new JsonModel(array('success' => false, "message" => 'unknown error.. please try again after sometime..'));
           }
         }
-      }else if($otpType == \Admin\Model\Otp::Forgot_Password){
-        if(!empty($mobile)){
+      } else if ($otpType == \Admin\Model\Otp::Forgot_Password) {
+        if (!empty($mobile)) {
           $isMobileNoRegistered = $this->userTable->getField(['mobile_number' => $mobile], 'id');
-          if($isMobileNoRegistered){
+          if ($isMobileNoRegistered) {
             $getcc = $this->userTable->getField(['mobile_number' => $mobile], 'country_phone_code');
-            if($getcc == "91"){
+            if ($getcc == "91") {
               $otp = $this->generateOtp();
               $otpRes = $this->otpTable->addOtpDetails(['otp' => $otp, 'otp_type_id' => $otpType, 'verification_mode' => \Admin\Model\Otp::Mobile_Verification, 'sent_status_id' => \Admin\Model\Otp::Not_verifed, 'otp_requested_by' => $rb, 'otp_sent_to' => $mobile]);
-              if($otpRes){
+              if ($otpRes) {
                 $resp = "1"; //$this->sendOtpSms($ccmobile, $otp);
-                if($resp){
+                if ($resp) {
                   return new JsonModel(array('success' => true, "message" => 'otp sent successfully.. please enter the otp..'));
-                }else{
+                } else {
                   return new JsonModel(array('success' => false, "message" => 'unable to send otp.. please try again after sometime..'));
                 }
-              }else{
+              } else {
                 return new JsonModel(array('success' => false, "message" => 'unknown error.. please try again after sometime..'));
               }
-            }else{
+            } else {
               return new JsonModel(array('success' => false, "message" => 'not a registered mobile no..'));
             }
           } /* else{
@@ -433,7 +437,7 @@ public function contactAction() {
               return new JsonModel(array('success' => false, "message" => 'not a registered mobile no / email id'));
             }
           } */
-        }else{
+        } else {
           return new JsonModel(array('success' => false, "message" => 'please provide registered mobile no / email id'));
         }
       }
@@ -449,25 +453,23 @@ public function contactAction() {
       $cc = $request['cc'];
       $otp = $request['otp'];
       $type = $request['otp_type'];
-      if($type==\Admin\Model\Otp::Executive_Registration){
-        if($cc == "91"){
-          if($otp=='' || $otp==null)
-          {
-            return new JsonModel(array("success"=>false,"message"=>"OTP is required"));
+      if ($type == \Admin\Model\Otp::Executive_Registration) {
+        if ($cc == "91") {
+          if ($otp == '' || $otp == null) {
+            return new JsonModel(array("success" => false, "message" => "OTP is required"));
           }
-          if($ccmobile == '' || $ccmobile == null)
-          {
-            return new JsonModel(array("success"=>false,"message"=>"mobile number is missing"));
+          if ($ccmobile == '' || $ccmobile == null) {
+            return new JsonModel(array("success" => false, "message" => "mobile number is missing"));
           }
         }
         $data = ['otp' => $otp, 'otp_type_id' => \Admin\Model\Otp::Executive_Registration, 'verification_mode' => \Admin\Model\Otp::Mobile_Verification, 'sent_status_id' => \Admin\Model\Otp::Not_verifed, 'otp_requested_by' => \Admin\Model\Otp::TWISTT_Request, 'otp_sent_to' => $ccmobile];
-        $verify=$this->otpTable->verifyOtp($data);
-        if($verify){
-          $updateResponse=$this->otpTable->setOtpDetails(array('sent_status_id'=>\Admin\Model\Otp::Is_verifed), $data);
-          if($updateResponse){
-            return new JsonModel(array("success"=>true,"message"=>"Otp verified succesfully.. please enter your details.."));
-          }else{
-            return new JsonModel(array("success"=>false,"message"=>"unable to verify otp.. please try again"));
+        $verify = $this->otpTable->verifyOtp($data);
+        if ($verify) {
+          $updateResponse = $this->otpTable->setOtpDetails(array('sent_status_id' => \Admin\Model\Otp::Is_verifed), $data);
+          if ($updateResponse) {
+            return new JsonModel(array("success" => true, "message" => "Otp verified succesfully.. please enter your details.."));
+          } else {
+            return new JsonModel(array("success" => false, "message" => "unable to verify otp.. please try again"));
           }
           /* $exists = '0';
           $ud = [];
@@ -485,24 +487,24 @@ public function contactAction() {
           }else{
             return new JsonModel(array("success"=>false,"message"=>"unable to verify otp.. please try again"));
           } */
-        }else{
-          return new JsonModel(array("success"=>false,"message"=>"otp not valid.. please try again"));
+        } else {
+          return new JsonModel(array("success" => false, "message" => "otp not valid.. please try again"));
         }
-      }elseif($type==\Admin\Model\Otp::Forgot_Password){
+      } elseif ($type == \Admin\Model\Otp::Forgot_Password) {
         $data = ['otp' => $otp, 'otp_type_id' => \Admin\Model\Otp::Forgot_Password, 'verification_mode' => \Admin\Model\Otp::Mobile_Verification, 'sent_status_id' => \Admin\Model\Otp::Not_verifed, 'otp_requested_by' => \Admin\Model\Otp::TWISTT_Request, 'otp_sent_to' => $mobile];
-        $verify=$this->otpTable->verifyOtp($data);
-        if($verify){
-          $updateResponse=$this->otpTable->setOtpDetails(array('sent_status_id'=>\Admin\Model\Otp::Is_verifed), $data);
-          if($updateResponse){
-            return new JsonModel(array("success"=>true,"message"=>"Otp verified succesfully.."));
-          }else{
-            return new JsonModel(array("success"=>false,"message"=>"unable to verify otp.. please try again"));
+        $verify = $this->otpTable->verifyOtp($data);
+        if ($verify) {
+          $updateResponse = $this->otpTable->setOtpDetails(array('sent_status_id' => \Admin\Model\Otp::Is_verifed), $data);
+          if ($updateResponse) {
+            return new JsonModel(array("success" => true, "message" => "Otp verified succesfully.."));
+          } else {
+            return new JsonModel(array("success" => false, "message" => "unable to verify otp.. please try again"));
           }
-        }else{
-          return new JsonModel(array("success"=>false,"message"=>"wrong otp"));
+        } else {
+          return new JsonModel(array("success" => false, "message" => "wrong otp"));
         }
-      }else{
-        return new JsonModel(array("success"=>false,"message"=>"wrong otp type"));
+      } else {
+        return new JsonModel(array("success" => false, "message" => "wrong otp type"));
       }
     }
   }
@@ -515,9 +517,9 @@ public function contactAction() {
       $cc = str_replace($mobile, '', $ccmobile);
       $userId = $this->userTable->userExists($ccmobile);
       $execId = 0;
-      if($userId){
+      if ($userId) {
         $execId = $this->executiveDetailsTable->executiveExists($userId);
-        if($execId)
+        if ($execId)
           return new JsonModel(array('success' => false, "message" => 'mobile number already registered.'));
       }
     }
@@ -526,130 +528,130 @@ public function contactAction() {
   {
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
-      $userDetails = $this->userTable->getUserDetails(['user_login_id'=>$loginId['user_login_id']]);
+      $userDetails = $this->userTable->getUserDetails(['user_login_id' => $loginId['user_login_id']]);
       $bankDetails = $this->executiveDetailsTable->getExecutiveDetails(['user_id' => $userDetails['id']]);
       $questtValid = $this->questtSubscriptionTable->isValidQuesttUser($userDetails['id']);
-      $qed = $this->questtSubscriptionTable->getField(['user_id'=>$loginId['id']], 'end_date');
+      $qed = $this->questtSubscriptionTable->getField(['user_id' => $loginId['id']], 'end_date');
       $qed = date('d-m-Y', strtotime($qed));
       $udcp = 0;
       $uccp = 0;
-      if($questtValid && $bankDetails['banned'] == '0') {
-        if($userDetails['country_phone_code'] == '91'){
+      if ($questtValid && $bankDetails['banned'] == '0') {
+        if ($userDetails['country_phone_code'] == '91') {
           $udcp = $this->subscriptionPlanTable->getField(['id' => 1], 'dp_inr');
           $uccp = $this->subscriptionPlanTable->getField(['id' => 1], 'ccp_inr');
-        }else{
+        } else {
           $udcp = $this->subscriptionPlanTable->getField(['id' => 1], 'dp_usd');
           $uccp = $this->subscriptionPlanTable->getField(['id' => 1], 'ccp_usd');
         }
       }
       $config = $this->getConfig();
-      return new ViewModel(['userDetails' => $userDetails, 'bankDetails' => $bankDetails, 'config' => $config['hybridauth'], 'imageUrl'=>$this->filesUrl(), 'isQUESTTValid' => $questtValid, 'udcp' => $udcp, 'uccp' => $uccp, 'qed'=>$qed]);
-    }else{
+      return new ViewModel(['userDetails' => $userDetails, 'bankDetails' => $bankDetails, 'config' => $config['hybridauth'], 'imageUrl' => $this->filesUrl(), 'isQUESTTValid' => $questtValid, 'udcp' => $udcp, 'uccp' => $uccp, 'qed' => $qed]);
+    } else {
       $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
     }
   }
-  public function executivePayAction(){
+  public function executivePayAction()
+  {
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
-      $userDetails = $this->userTable->getUserDetails(['user_login_id'=>$loginId['user_login_id']]);
+      $userDetails = $this->userTable->getUserDetails(['user_login_id' => $loginId['user_login_id']]);
       $bankDetails = $this->executiveDetailsTable->getExecutiveDetails(['user_id' => $userDetails['id']]);
       $questtValid = $this->questtSubscriptionTable->isValidQuesttUser($userDetails['id']);
-      if($questtValid && $bankDetails['banned'] == '0') {
+      if ($questtValid && $bankDetails['banned'] == '0') {
         $request = $this->getRequest()->getPost();
         $dc = $request['dc'];
         $cc = $request['cc'];
-        
-        if($dc == 0 && $cc ==0){
+
+        if ($dc == 0 && $cc == 0) {
           return new JsonModel(array('success' => false, "message" => 'Please mention the no of coupons to purchase..'));
         }
-        if($userDetails['country_phone_code'] == '91'){
+        if ($userDetails['country_phone_code'] == '91') {
           $udcp = $this->subscriptionPlanTable->getField(['id' => 1], 'dp_inr');
           $uccp = $this->subscriptionPlanTable->getField(['id' => 1], 'ccp_inr');
-        }else{
+        } else {
           $udcp = $this->subscriptionPlanTable->getField(['id' => 1], 'dp_usd');
           $uccp = $this->subscriptionPlanTable->getField(['id' => 1], 'ccp_usd');
         }
         $totalAmount = $dc * $udcp + $cc * $uccp;
-        if($totalAmount!=0 && round($totalAmount)!=0)
-        {                
+        if ($totalAmount != 0 && round($totalAmount) != 0) {
           $saveData['payment_status'] = \Admin\Model\ExecutivePurchase::payment_in_process;
           $saveData['user_id'] = $userDetails['id'];
           $saveData['executive_id'] = $bankDetails['id'];
           $saveData['amount'] = number_format((float)$totalAmount, 2, '.', '');
-          if($userDetails['country_phone_code']=="91"){
+          if ($userDetails['country_phone_code'] == "91") {
             $saveData['currency'] = "INR";
-          }else{
+          } else {
             $saveData['currency'] = "USD";
           }
           $purchaseResp = $this->executivePurchaseTable->addExecutivePurchase($saveData);
-          if($purchaseResp['success'])
+          if ($purchaseResp['success'])
             $purchaseId = $purchaseResp['id'];
-          if($purchaseId){
+          if ($purchaseId) {
             $api = new Razorpay();
-            if($userDetails['country_phone_code']=="91"){
+            if ($userDetails['country_phone_code'] == "91") {
               $orderData = [
-                  'amount'          => intval($totalAmount * 100),
-                  'currency'        => 'INR',
-                  'receipt' => 'TC_' . $purchaseId,
-                  'payment_capture' => 1 
+                'amount'          => intval($totalAmount * 100),
+                'currency'        => 'INR',
+                'receipt' => 'TC_' . $purchaseId,
+                'payment_capture' => 1
               ];
-            }
-            else{
+            } else {
               $orderData = [
-                  'amount'          => intval($totalAmount * 100),
-                  'currency'        => 'USD',
-                  'receipt' => 'TC_' . $purchaseId,
-                  'payment_capture' => 1 
+                'amount'          => intval($totalAmount * 100),
+                'currency'        => 'USD',
+                'receipt' => 'TC_' . $purchaseId,
+                'payment_capture' => 1
               ];
             }
             $razorpayOrder = [];
             try {
-              $response = $api->paymentRequestCreate($orderData); 
+              $response = $api->paymentRequestCreate($orderData);
               $razorpayOrder['id'] = $response['id'];
               $razorpayOrder['amount'] = $response['amount'];
               $razorpayOrder['currency'] = $response['currency'];
               $razorpayOrder['receipt'] = $response['receipt'];
             } catch (\Exception $e) {
-                return new JsonModel(array('success' => false, 'message' => $e->getMessage()));
+              return new JsonModel(array('success' => false, 'message' => $e->getMessage()));
             }
-            if($response){
+            if ($response) {
               $setResp = $this->executivePurchaseTable->setExecutivePurchase(['receipt' => $razorpayOrder['receipt'], 'razorpay_order_id' => $razorpayOrder['id']], ['id' => $purchaseId]);
               /* if (session_status() == PHP_SESSION_NONE) {
                 session_start();
               }
                $_SESSION['razorpay_order_id'] = $razorpayOrder['id']; */
-              if($setResp){
+              if ($setResp) {
                 return new JsonModel(array('success' => true, 'message' => 'order created', 'order' => $razorpayOrder));
-              }else{
+              } else {
                 return new JsonModel(array('success' => false, 'message' => 'unable to process your payment now.. please try after sometime..'));
               }
-            }else{
+            } else {
               return new JsonModel(array('success' => false, 'message' => 'unable to process your payment now.. please try after sometime..'));
             }
           }
         }
-      }else{
+      } else {
         return new JsonModel(array('success' => false, "message" => 'coupons purchase not allowed..'));
       }
-    }else{
+    } else {
       $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
     }
   }
-  public function executiveCheckoutAction(){
+  public function executiveCheckoutAction()
+  {
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
-      $userDetails = $this->userTable->getUserDetails(['user_login_id'=>$loginId['user_login_id']]);
+      $userDetails = $this->userTable->getUserDetails(['user_login_id' => $loginId['user_login_id']]);
       $bankDetails = $this->executiveDetailsTable->getExecutiveDetails(['user_id' => $userDetails['id']]);
       $questtValid = $this->questtSubscriptionTable->isValidQuesttUser($userDetails['id']);
 
-      if($questtValid && $bankDetails['banned'] == '0') {
+      if ($questtValid && $bankDetails['banned'] == '0') {
         $request = $this->getRequest()->getPost();
         $dc = $request['dc'];
         $cc = $request['cc'];
         $razorpay_payment_id = $request['razorpay_payment_id'];
         $razorpay_order_id = $request['razorpay_order_id'];
         $razorpay_signature = $request['razorpay_signature'];
-        
+
         /* if (session_status() == PHP_SESSION_NONE) {
           session_start();
         } */
@@ -657,26 +659,26 @@ public function contactAction() {
           'razorpay_order_id' => $razorpay_order_id, //$_SESSION['razorpay_order_id'],
           'razorpay_payment_id' => $razorpay_payment_id,
           'razorpay_signature' => $razorpay_signature
-      );
-      $api = new Razorpay();
-      try {
+        );
+        $api = new Razorpay();
+        try {
           $api->checkPaymentSignature($attributes);
           $orderResp = $api->checkOrderStatus($razorpay_order_id);
-          if($orderResp['status'] !== "paid")
+          if ($orderResp['status'] !== "paid")
             return new JsonModel(array('success' => false, 'message' => 'payment not successful'));
 
           $setResp = $this->executivePurchaseTable->setExecutivePurchase(['razorpay_payment_id' => $razorpay_payment_id, 'razorpay_signature' => $razorpay_signature, 'payment_status' => \Admin\Model\ExecutivePurchase::payment_success], ['razorpay_order_id' => $razorpay_order_id]);
-          if($setResp){
+          if ($setResp) {
             $purchase = $this->executivePurchaseTable->getExecutivePurchase(['razorpay_payment_id' => $razorpay_payment_id]);
-            $ved = $this->questtSubscriptionTable->getField(['user_id'=>$purchase['user_id']], 'end_date');
-            if($userDetails['country_phone_code'] == '91'){
+            $ved = $this->questtSubscriptionTable->getField(['user_id' => $purchase['user_id']], 'end_date');
+            if ($userDetails['country_phone_code'] == '91') {
               $udcp = $this->subscriptionPlanTable->getField(['id' => 1], 'dp_inr');
               $uccp = $this->subscriptionPlanTable->getField(['id' => 1], 'ccp_inr');
-            }else{
+            } else {
               $udcp = $this->subscriptionPlanTable->getField(['id' => 1], 'dp_usd');
               $uccp = $this->subscriptionPlanTable->getField(['id' => 1], 'ccp_usd');
             }
-            for ($i = 0; $i < $dc ; $i++) {
+            for ($i = 0; $i < $dc; $i++) {
               $coupons[$i]['executive_id'] = $purchase['executive_id'];
               $coupons[$i]['purchase_id'] = $purchase['id'];
               $coupons[$i]['coupon_type'] = \Admin\Model\Coupons::Coupon_Type_Discount;
@@ -686,7 +688,7 @@ public function contactAction() {
               $coupons[$i]['coupon_status'] = \Admin\Model\Coupons::Coupon_Status_Active;
             }
             $count = count($coupons);
-            for ($j = $count; $j < $count + $cc ; $j++) {
+            for ($j = $count; $j < $count + $cc; $j++) {
               $coupons[$j]['executive_id'] = $purchase['executive_id'];
               $coupons[$j]['purchase_id'] = $purchase['id'];
               $coupons[$j]['coupon_type'] = \Admin\Model\Coupons::Coupon_Type_Complimentary;
@@ -696,21 +698,21 @@ public function contactAction() {
               $coupons[$j]['coupon_status'] = \Admin\Model\Coupons::Coupon_Status_Active;
             }
             $miresp = $this->couponsTable->addMutipleCoupons($coupons);
-            if($miresp){
+            if ($miresp) {
               return new JsonModel(array('success' => true, 'message' => 'payment successful'));
-            }else{
+            } else {
               return new JsonModel(array('success' => false, 'message' => 'unknown error'));
             }
-          }else{
+          } else {
             return new JsonModel(array('success' => false, 'message' => 'unable to process.. please after sometime'));
           }
-      } catch (\Exception $e) {
-        return new JsonModel(array('success' => false, "message" => 'Razorpay Error : ' . $e->getMessage()));
-      }
-      }else{
+        } catch (\Exception $e) {
+          return new JsonModel(array('success' => false, "message" => 'Razorpay Error : ' . $e->getMessage()));
+        }
+      } else {
         return new JsonModel(array('success' => false, "message" => 'coupons purchase not allowed..'));
       }
-    }else{
+    } else {
       $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
     }
   }
@@ -718,64 +720,62 @@ public function contactAction() {
   {
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
-      $userDetails = $this->userTable->getUserDetails(['user_login_id'=>$loginId['user_login_id']]);
+      $userDetails = $this->userTable->getUserDetails(['user_login_id' => $loginId['user_login_id']]);
       $bankDetails = $this->executiveDetailsTable->getExecutiveDetails(['user_id' => $userDetails['id']]);
-      $qed = $this->questtSubscriptionTable->getField(['user_id'=>$loginId['id']], 'end_date');
+      $qed = $this->questtSubscriptionTable->getField(['user_id' => $loginId['id']], 'end_date');
       $qed = date('d-m-Y', strtotime($qed));
-      $coupons = $this->couponsTable->getCouponsList(['executive_id' => $bankDetails['id'], 'limit'=>10,'offset'=>0]);
-      $totalCount=$this->couponsTable->getCouponsList(['executive_id' => $bankDetails['id']], 1);
+      $coupons = $this->couponsTable->getCouponsList(['executive_id' => $bankDetails['id'], 'limit' => 10, 'offset' => 0]);
+      $totalCount = $this->couponsTable->getCouponsList(['executive_id' => $bankDetails['id']], 1);
       $config = $this->getConfig();
-      return new ViewModel(['userDetails' => $userDetails, 'bankDetails' => $bankDetails, 'config' => $config['hybridauth'], 'coupons'=>$coupons, 'totalCount'=>$totalCount, 'qed' => $qed, 'imageUrl'=>$this->filesUrl()]);
-    }else{
+      return new ViewModel(['userDetails' => $userDetails, 'bankDetails' => $bankDetails, 'config' => $config['hybridauth'], 'coupons' => $coupons, 'totalCount' => $totalCount, 'qed' => $qed, 'imageUrl' => $this->filesUrl()]);
+    } else {
       $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
     }
   }
-  
-  public function loadCouponsListAction(){
-    if ($this->getRequest()->isXmlHttpRequest())
-    {
-        $request = $this->getRequest()->getPost();
-        $searchData=array('limit'=>10,'offset'=>0);
-        $type=$request['type'];
-        $offset=0;
-        $loginId = $this->authService->getIdentity();
-        $userDetails = $this->userTable->getUserDetails(['user_login_id'=>$loginId['user_login_id']]);
-        $bankDetails = $this->executiveDetailsTable->getExecutiveDetails(['user_id' => $userDetails['id']]);
 
-        if(isset($request['page_number']))
-        {
-            $pageNumber = $request['page_number'];
-            $offset = ($pageNumber * 10 - 10);
-            $limit = 10;
-            $searchData['offset']=$offset;
-            $searchData['limit']=$limit;
-        }
-        $searchData['executive_id']=$bankDetails['id'];
-        $totalCount=0;
-        
-        if($type && $type=='search')
-        {
-            $totalCount=$this->couponsTable->getCouponsList($searchData, 1);
-        }
-        $coupons = $this->couponsTable->getCouponsList($searchData);
-        $view = new ViewModel(array('coupons'=>$coupons, 'totalCount'=>$totalCount));
-        $view->setTerminal(true);
-        return $view;
+  public function loadCouponsListAction()
+  {
+    if ($this->getRequest()->isXmlHttpRequest()) {
+      $request = $this->getRequest()->getPost();
+      $searchData = array('limit' => 10, 'offset' => 0);
+      $type = $request['type'];
+      $offset = 0;
+      $loginId = $this->authService->getIdentity();
+      $userDetails = $this->userTable->getUserDetails(['user_login_id' => $loginId['user_login_id']]);
+      $bankDetails = $this->executiveDetailsTable->getExecutiveDetails(['user_id' => $userDetails['id']]);
+
+      if (isset($request['page_number'])) {
+        $pageNumber = $request['page_number'];
+        $offset = ($pageNumber * 10 - 10);
+        $limit = 10;
+        $searchData['offset'] = $offset;
+        $searchData['limit'] = $limit;
+      }
+      $searchData['executive_id'] = $bankDetails['id'];
+      $totalCount = 0;
+
+      if ($type && $type == 'search') {
+        $totalCount = $this->couponsTable->getCouponsList($searchData, 1);
+      }
+      $coupons = $this->couponsTable->getCouponsList($searchData);
+      $view = new ViewModel(array('coupons' => $coupons, 'totalCount' => $totalCount));
+      $view->setTerminal(true);
+      return $view;
     }
   }
   public function executiveTrackCommissionsAction()
   {
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
-      $userDetails = $this->userTable->getUserDetails(['user_login_id'=>$loginId['user_login_id']]);
+      $userDetails = $this->userTable->getUserDetails(['user_login_id' => $loginId['user_login_id']]);
       $bankDetails = $this->executiveDetailsTable->getExecutiveDetails(['user_id' => $userDetails['id']]);
-      $qed = $this->questtSubscriptionTable->getField(['user_id'=>$loginId['id']], 'end_date');
+      $qed = $this->questtSubscriptionTable->getField(['user_id' => $loginId['id']], 'end_date');
       $qed = date('d-m-Y', strtotime($qed));
-      $transactions = $this->executiveTransactionTable->getTransactionsList(['executive_id' => $bankDetails['id'], 'limit'=>10,'offset'=>0]);
-      $totalCount=$this->executiveTransactionTable->getTransactionsList(['executive_id' => $bankDetails['id']], 1);
+      $transactions = $this->executiveTransactionTable->getTransactionsList(['executive_id' => $bankDetails['id'], 'limit' => 10, 'offset' => 0]);
+      $totalCount = $this->executiveTransactionTable->getTransactionsList(['executive_id' => $bankDetails['id']], 1);
       $config = $this->getConfig();
-      return new ViewModel(['userDetails' => $userDetails, 'bankDetails' => $bankDetails, 'transactions' => $transactions, 'totalCount'=>$totalCount, 'config' => $config['hybridauth'], 'qed' => $qed, 'imageUrl'=>$this->filesUrl()]);
-    }else{
+      return new ViewModel(['userDetails' => $userDetails, 'bankDetails' => $bankDetails, 'transactions' => $transactions, 'totalCount' => $totalCount, 'config' => $config['hybridauth'], 'qed' => $qed, 'imageUrl' => $this->filesUrl()]);
+    } else {
       $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
     }
   }
@@ -785,13 +785,13 @@ public function contactAction() {
       $request = $this->getRequest()->getPost();
       $lid = $request['lid'];
       $userId = $this->userTable->getField(['user_login_id' => $lid], 'id');
-      if($userId){
+      if ($userId) {
         $isValidQuesttUser = $this->questtSubscriptionTable->isValidQuesttUser($userId);
-        if($isValidQuesttUser)
-          return new JsonModel(array('success' => true, "message" => 'Valid QUESTT user.. may proceed with TWISTT exxecutive registration process..'));
+        if ($isValidQuesttUser)
+          return new JsonModel(array('success' => true, "message" => 'Valid QUESTT user.. may proceed with TWISTT executive registration process..'));
         else
           return new JsonModel(array('success' => false, "message" => 'not a valid QUESTT user'));
-      }else{
+      } else {
         return new JsonModel(array('success' => false, "message" => 'user not found'));
       }
     }
@@ -800,11 +800,11 @@ public function contactAction() {
   {
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
-      $userDetails = $this->userTable->getUserDetails(['user_login_id'=>$loginId['user_login_id']]);
+      $userDetails = $this->userTable->getUserDetails(['user_login_id' => $loginId['user_login_id']]);
       $bankDetails = $this->executiveDetailsTable->getExecutiveDetails(['user_id' => $userDetails['id']]);
       $config = $this->getConfig();
-      return new ViewModel(['userDetails' => $userDetails, 'bankDetails' => $bankDetails, 'config' => $config['hybridauth'], 'imageUrl'=>$this->filesUrl()]);
-    }else{
+      return new ViewModel(['userDetails' => $userDetails, 'bankDetails' => $bankDetails, 'config' => $config['hybridauth'], 'imageUrl' => $this->filesUrl()]);
+    } else {
       $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
     }
   }
@@ -822,7 +822,7 @@ public function contactAction() {
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
       return new ViewModel(['userId' => $loginId['user_login_id']]);
-    }else{
+    } else {
       $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
     }
   }
@@ -832,42 +832,42 @@ public function contactAction() {
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
       $check = $this->userTable->checkPasswordWithUserId($loginId['user_login_id'], $postData['current_password']);
-      if($check){
+      if ($check) {
         $aes = new Aes();
         $encodeContent = $aes->encrypt($postData['new_password']);
         $userdetails['password'] = $encodeContent['password'];
         $userdetails['hash'] = $encodeContent['hash'];
-        $res = $this->userTable->updateUser($userdetails,['id'=>$check['id']]);
-        if($res)
+        $res = $this->userTable->updateUser($userdetails, ['id' => $check['id']]);
+        if ($res)
           return new JsonModel(array('success' => true, "message" => 'password changed succesfully..'));
         else
           return  new JsonModel(array('success' => false, "message" => 'unable to change password.. try after sometime..'));
-      }else{
+      } else {
         return new JsonModel(array('success' => false, "message" => 'Current password wrong'));
       }
-    }else{
-      if($this->getRequest()->isXmlHttpRequest()) {
+    } else {
+      if ($this->getRequest()->isXmlHttpRequest()) {
         $request = $this->getRequest()->getPost();
         $type = $request['type'];
         $otp = $request['otp'];
         $mobile = $request['mobile'];
         $new_password = $request['new_password'];
         $data = ['otp' => $otp, 'otp_type_id' => $type, 'verification_mode' => \Admin\Model\Otp::Mobile_Verification, 'sent_status_id' => \Admin\Model\Otp::Is_verifed, 'otp_requested_by' => \Admin\Model\Otp::TWISTT_Request, 'otp_sent_to' => $mobile];
-        $verify=$this->otpTable->verifyOtp($data);
-        if($verify){
+        $verify = $this->otpTable->verifyOtp($data);
+        if ($verify) {
           $aes = new Aes();
           $encodeContent = $aes->encrypt($new_password);
           $userdetails['password'] = $encodeContent['password'];
           $userdetails['hash'] = $encodeContent['hash'];
-          $res = $this->userTable->updateUser($userdetails,['mobile_number'=>$mobile]);
-          if($res)
+          $res = $this->userTable->updateUser($userdetails, ['mobile_number' => $mobile]);
+          if ($res)
             return new JsonModel(array('success' => true, "message" => 'password changed succesfully..'));
           else
             return  new JsonModel(array('success' => false, "message" => 'unable to change password.. try after sometime..'));
         }
         return  new JsonModel(array('success' => false, "message" => 'unable to change password.. try after sometime..'));
-      }else{
-       $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
+      } else {
+        $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
       }
     }
   }
@@ -882,8 +882,9 @@ public function contactAction() {
     return new ViewModel();
   }
 
-  public function termsPrivacyAction() {
+  public function termsPrivacyAction()
+  {
     $this->layout()->setVariable('activeTab', \Application\Constants\Constants::MAIN_SITE_TERMS_PAGE);
-      return new ViewModel();
+    return new ViewModel();
   }
 }

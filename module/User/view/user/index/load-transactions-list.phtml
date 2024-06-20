@@ -10,7 +10,9 @@
         <th class="text-center" data-placeholder="Coupon Type">Coupon Type</th>
         <th class="text-center" data-placeholder="Redeemer Name">Redeemer Name</th>
         <th class="text-center" data-placeholder="Redeemer Mobile">Redeemer Mobile</th>
+        <th class="text-center" data-placeholder="Txn Ref ">Txn Ref</th>
         <th class="text-center" data-placeholder="Amount Paid ">Amount Paid</th>
+        <th class="text-center" data-placeholder="Total Earnings">Total Earnings</th>
         <th class="text-center" data-placeholder="Balance">Balance</th>
     </tr>
     <?php } ?>
@@ -42,7 +44,9 @@
               <td class="text-center"><?php echo $tx['coupon_type']; ?></td>
               <td class="text-center"><?php echo $tx['username']; ?></td>
               <td class="text-center"><?php echo "(" . $tx['country_phone_code'] . ")" . $tx['mobile_number'] ; ?></td>
+              <td class="text-center"><?php echo $tx['transaction_ref']; ?></td>
               <td class="text-center"><?php echo $tx['stt_paid_amount']; ?></td>
+              <td class="text-center"><?php echo $tx['total_earnings']; ?></td>
               <td class="text-center"><?php echo $tx['balance_outstanding']; ?></td>
           </tr>
           <?php $i++; } } else { ?>

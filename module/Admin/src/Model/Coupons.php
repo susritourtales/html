@@ -17,8 +17,8 @@ class Coupons
 
     const Coupon_Type_Discount = 'D';
     const Coupon_Type_Complimentary = 'C';
-    const Coupon_Status_Active = 0;
-    const Coupon_Status_Redeemed = 1;
+    const Coupon_Status_Active = '0';
+    const Coupon_Status_Redeemed = '1';
 
 
 

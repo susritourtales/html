@@ -1,9 +1,5 @@
 
 <?php if(isset($type) && $type =='initialize') { ?>
-<!-- <style>
-.table-condensed thead tr th{ color: unset !important;}
-.calign input{text-align: center !important;}
-</style> -->
 <div class="table-responsive">
 <table class="table table-hover" id="extTable">
     <thead>
@@ -11,8 +7,8 @@
         <th>S.no</th>
         <th class="text-center" data-placeholder="Purchase Date">Purchase Date</th>
         <th class="text-center" data-placeholder="Coupon Code">Coupon Code</th>
-        <th class="text-center" data-placeholder="Coupon Type"">Coupon Type</th>
-        <th class="text-center" data-placeholder="Coupon Amount"">Coupon Amount</th>
+        <th class="text-center" data-placeholder="Coupon Type">Coupon Type</th>
+        <th class="text-center" data-placeholder="Coupon Amount">Coupon Amount</th>
         <th class="text-center" data-placeholder="Validity End Date">Validity End Date</th>
         <th class="text-center" data-placeholder="Redeemer Mobile">Redeemer Mobile</th>
         <th class="text-center" data-placeholder="Redeemer Paid">Redeemer Paid</th>
@@ -40,7 +36,7 @@
               $color = "table-danger text-nowrap";
           else
               $color = "table-success text-nowrap";
-          if(1==1){ //if(!$cd['sr']){?>
+         ?>
           <tr class="<?php echo $color; ?>">
               <td><?php echo $i+1; ?></td>
               <td class="text-center"><?php echo date("d-m-Y",strtotime($cd['created_at'])); ?></td>
@@ -53,7 +49,7 @@
               <td class="text-center"><?php echo $cd['redeemer_actual_amount']; ?></td>
               <td class="text-center"><?php echo $cd['commission_receivable']; ?></td>
           </tr>
-          <?php $i++; } } } else { ?>
+          <?php $i++;  } } else { ?>
         <tr ><td class="text-center" colspan="10">No data</td></tr>
     <?php  } ?>
     <?php if(isset($type) && ($type =='initialize' || $type=="search") ) {?>

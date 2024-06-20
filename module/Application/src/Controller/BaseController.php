@@ -11,7 +11,6 @@ use Aws\ResultInterface;
 use Aws\CommandPool;
 use Aws\Sdk;
 use Application\Channel\Sms;
-use Laminas\Mail\Message;
 
 use Admin\Model\LanguageTable;
 use Admin\Model\CountriesTable;
@@ -28,6 +27,7 @@ use Admin\Model\UserTable;
 use Admin\Model\BannerTable;
 use Admin\Model\ExecutiveDetailsTable;
 use Admin\Model\ExecutivePurchaseTable;
+use Admin\Model\ExecutiveTransactionTable;
 use Admin\Model\OtpTable;
 use Admin\Model\CouponsTable;
 
@@ -59,6 +59,7 @@ class BaseController extends AbstractActionController
     protected $questtSubscriptionTable;
     protected $executiveDetailsTable;
     protected $executivePurchaseTable;
+    protected $executiveTransactionTable;
     protected $otpTable;
     protected $couponsTable;
 
@@ -80,6 +81,7 @@ class BaseController extends AbstractActionController
         BannerTable $banner_table,
         ExecutiveDetailsTable $executive_details,
         ExecutivePurchaseTable $executive_purchase,
+        ExecutiveTransactionTable $executive_transaction,
         OtpTable $otp_table,
         CouponsTable $coupons_table
     ) {
@@ -104,6 +106,7 @@ class BaseController extends AbstractActionController
         $this->bannerTable = $banner_table;
         $this->executiveDetailsTable = $executive_details;
         $this->executivePurchaseTable = $executive_purchase;
+        $this->executiveTransactionTable = $executive_transaction;
         $this->otpTable = $otp_table;
         $this->couponsTable = $coupons_table;
     }

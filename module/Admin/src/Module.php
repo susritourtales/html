@@ -169,6 +169,16 @@ class Module implements ConfigProviderInterface
                     $resultSetPrototype->setArrayObjectPrototype(new Model\ExecutivePurchase());
                     return new TableGateway('executive_purchase', $dbAdapter, null, $resultSetPrototype);
                 },
+                Model\ExecutiveTransactionTable::class => function ($container) {
+                    $tableGateway = $container->get(Model\ExecutiveTransactionTableGateway::class);
+                    return new Model\ExecutiveTransactionTable($tableGateway);
+                },
+                Model\ExecutiveTransactionTableGateway::class => function ($container) {
+                    $dbAdapter = $container->get(AdapterInterface::class);
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Model\ExecutiveTransaction());
+                    return new TableGateway('executive_transaction', $dbAdapter, null, $resultSetPrototype);
+                },
                 Model\OtpTable::class => function ($container) {
                     $tableGateway = $container->get(Model\OtpTableGateway::class);
                     return new Model\OtpTable($tableGateway);
@@ -215,6 +225,7 @@ class Module implements ConfigProviderInterface
                         $container->get(Model\BannerTable::class),
                         $container->get(Model\ExecutiveDetailsTable::class),
                         $container->get(Model\ExecutivePurchaseTable::class),
+                        $container->get(Model\ExecutiveTransactionTable::class),
                         $container->get(Model\OtpTable::class),
                         $container->get(Model\CouponsTable::class)
                     );

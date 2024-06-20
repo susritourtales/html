@@ -48,8 +48,7 @@
                     <div class="" id="recordsList">
                         <?php echo $this->partial("/load-coupons-list", array('coupons'=>$coupons,'totalCount'=>$totalCount,'type'=>'initialize')); ?>
                     </div>
-                    <?php if($totalCount > 10)
-                    {
+                    <?php if($totalCount > 10){
                         $paginationCount = ceil($totalCount / 10); ?>
                         <ul class="pagination justify-content-end mt-3" id="listPager"></ul>
                     <?php } ?>

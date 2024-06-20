@@ -771,8 +771,10 @@ public function contactAction() {
       $bankDetails = $this->executiveDetailsTable->getExecutiveDetails(['user_id' => $userDetails['id']]);
       $qed = $this->questtSubscriptionTable->getField(['user_id'=>$loginId['id']], 'end_date');
       $qed = date('d-m-Y', strtotime($qed));
+      $transactions = $this->executiveTransactionTable->getTransactionsList(['executive_id' => $bankDetails['id'], 'limit'=>10,'offset'=>0]);
+      $totalCount=$this->executiveTransactionTable->getTransactionsList(['executive_id' => $bankDetails['id']], 1);
       $config = $this->getConfig();
-      return new ViewModel(['userDetails' => $userDetails, 'bankDetails' => $bankDetails, 'config' => $config['hybridauth'], 'qed' => $qed, 'imageUrl'=>$this->filesUrl()]);
+      return new ViewModel(['userDetails' => $userDetails, 'bankDetails' => $bankDetails, 'transactions' => $transactions, 'totalCount'=>$totalCount, 'config' => $config['hybridauth'], 'qed' => $qed, 'imageUrl'=>$this->filesUrl()]);
     }else{
       $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
     }

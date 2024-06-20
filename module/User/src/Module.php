@@ -36,6 +36,7 @@ class Module implements ConfigProviderInterface
                         $container->get(\Admin\Model\BannerTable::class),
                         $container->get(\Admin\Model\ExecutiveDetailsTable::class),
                         $container->get(\Admin\Model\ExecutivePurchaseTable::class),
+                        $container->get(\Admin\Model\ExecutiveTransactionTable::class),
                         $container->get(\Admin\Model\OtpTable::class),
                         $container->get(\Admin\Model\CouponsTable::class)
                     );

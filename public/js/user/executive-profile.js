@@ -12,8 +12,36 @@ $(document).ready(function() {
         }
     });
 
+    $('#aadhar').change(function(event) {
+        var file = event.target.files[0];
+        if (file && file.type.match('image.*')) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                $('#apreview').attr('src', e.target.result).show();
+            };
+            reader.readAsDataURL(file);
+        } else {
+            $('#apreview').hide();
+        }
+    });
+    $('#pan').change(function(event) {
+        var file = event.target.files[0];
+        if (file && file.type.match('image.*')) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                $('#ppreview').attr('src', e.target.result).show();
+            };
+            reader.readAsDataURL(file);
+        } else {
+            $('#ppreview').hide();
+        }
+    });
+
     const form = document.getElementById('profileForm');
     form.addEventListener('submit', function(event) {
+        var element=$('#submit');
+        element.html('Please wait...');
+        element.prop('disabled',true);
         if($('#bankAccountConf').val() != $('#bankAccount').val()){
             messageDisplay('Please check the Bank Account number you have entered..', 2000);
             event.preventDefault(); 

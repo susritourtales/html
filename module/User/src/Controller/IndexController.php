@@ -299,14 +299,24 @@ class IndexController extends BaseController
             if (!$uploadStatus) {
               return new JsonModel(array('success' => false, "message" => 'unable to upload photo.. try agian after sometime..'));
             } else { // new photo successfully uploaded - delete old photo
-              $oldPPUrl = $this->userTable->getField(['id' => $userId], 'photo_url');
+              switch ($i) {
+                case 0:
+                  $oldPPUrl = $this->userTable->getField(['id' => $userId], 'photo_url');
+                  break;
+                case 1:
+                  $oldPPUrl = $this->userTable->getField(['id' => $userId], 'aadhar_url');
+                  break;
+                case 2:
+                  $oldPPUrl = $this->userTable->getField(['id' => $userId], 'pan_url');
+                  break;
+              }
               if ($this->fileExists($oldPPUrl)) {
                 if (!$this->deleteFile($oldPPUrl)) {
                   return new JsonModel(array('success' => false, "message" => 'unable to delete old photo..'));
                 }
-              } else {
+              } /* else {
                 return new JsonModel(array('success' => false, "message" => 'unable to find old photo to be replaced..'));
-              }
+              } */
             }
             switch ($i) {
               case 0:
@@ -319,8 +329,8 @@ class IndexController extends BaseController
                 $userdetails['pan_url'] = $filePath;
                 break;
             }
-            $i++;
           }
+          $i++;
         }
       } else {
         return new JsonModel(array('success' => false, "message" => 'Photo not submitted.'));

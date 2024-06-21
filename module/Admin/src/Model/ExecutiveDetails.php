@@ -12,7 +12,11 @@ class ExecutiveDetails
   public $bank_name;
   public $created_at;
   public $updated_at;
-  const DefaultCommission = '10';
+  const DefaultCommission = '20';
+  const Is_Verified = '1';
+  const Not_Verified = '0';
+  const Is_Banned = '1';
+  const Not_Banned = '0';
 
   public function exchangeArray(array $data)
   {

@@ -6,6 +6,7 @@ use Application\Controller\BaseController;
 use Application\Handler\Aes;
 use Laminas\View\Model\JsonModel;
 use Laminas\View\Model\ViewModel;
+use PHPUnit\Framework\Constraint\IsEmpty;
 
 
 class AdminController extends BaseController
@@ -2441,6 +2442,64 @@ class AdminController extends BaseController
         return $view;
     }
     // Parameters - End
+
+    // Twistt Execitives - Start
+
+    public function executivesAction(){
+        if ($this->authService->hasIdentity()) {
+            $identity = $this->authService->getIdentity();
+            $executivesList = $this->executiveDetailsTable->getExecutiveDetails4Admin(['limit' => 10, 'offset' => 0]);
+            $totalCount = $this->executiveDetailsTable->getExecutiveDetails4Admin(['limit' => 10, 'offset' => 0], 1);
+            return new ViewModel(['executivesList' => $executivesList, 'totalCount' => $totalCount]);
+        } else {
+            return $this->redirect()->toUrl($this->getBaseUrl() . '/a_dMin/login');
+        }
+    }
+
+    public function loadExecutivesListAction()
+    {
+        if ($this->authService->hasIdentity()) {
+            if ($this->getRequest()->isXmlHttpRequest()) {
+                $request = $this->getRequest()->getPost();
+                $searchData = array('limit' => 10, 'offset' => 0);
+                $type = $request['type'];
+                $offset = 0;
+                $filterData = $request['filter'];
+                if ($filterData) {
+                    $filterData = json_decode($filterData, true);
+                    if (isset($filterData['username'])) {
+                        if (isset($filterData['username']['text']) && !empty($filterData['username']['text'])) {
+                            $searchData['username'] = $filterData['username']['text'];
+                        }
+                        if (isset($filterData['username']['order']) && $filterData['username']['order']) {
+                            $searchData['username_order'] = $filterData['username']['order'];
+                        }
+                    }
+                }
+                if (isset($request['page_number'])) {
+                    $pageNumber = $request['page_number'];
+                    $offset = ($pageNumber * 10 - 10);
+                    $limit = 10;
+                    $searchData['offset'] = $offset;
+                    $searchData['limit'] = $limit;
+                }
+                $totalCount = 0;
+
+                if ($type && $type == 'search') {
+                    $totalCount = $this->executiveDetailsTable->getExecutiveDetails4Admin($searchData, 1);
+                }
+                $executivesList = $this->executiveDetailsTable->getExecutiveDetails4Admin($searchData);
+                $totalCount = $this->executiveDetailsTable->getExecutiveDetails4Admin($searchData, 1);
+                $view = new ViewModel(['executivesList' => $executivesList, 'totalCount' => $totalCount, 'offset' => $offset, 'type' => $type]);
+                $view->setTerminal(true);
+                return $view;
+            }
+        } else {
+            return $this->redirect()->toUrl($this->getBaseUrl() . '/a_dMin/login');
+        }
+    }
+
+    // Twistt Execitives - End
 
     // Change Password - Start
     public function changePasswordAction()

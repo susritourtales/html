@@ -22,7 +22,7 @@
         <div class="content bg-white custom-shadow p-4 color-333"> 
             <div class="bg-light border-radius-10 custom-shadow p-4 color-333">
                 <div class="user-page-name text-uppercase avant-md pb-3">
-                    <h5><?php echo "TWISTT Executive Dashboard"; ?></h5>
+                    <h5>TWISTT Executive Dashboard</h5>
                 </div>
                 <div class="stt-bg-primary border-radius-10 custom-shadow p-4 color-333">
                     <h6 class="font-weight-bold text-uppercase"><u>TWISTT Executive Details</u></h6>
@@ -38,7 +38,7 @@
                 </div>
                 <form id="profileForm" enctype="multipart/form-data" novalidate>
                     <div class="bg-white border-radius-10 custom-shadow p-4 color-333 my-3">
-                        <h6 id="hdr" class="font-weight-bold text-uppercase my-3 p-2 stt-bg-light my-3"><u>Edit Profile</u></h6>
+                        <h6 id="hdr" class="font-weight-bold border-radius-10 text-uppercase my-3 p-2 stt-bg-light my-3"><u>Edit Profile</u></h6>
                         <div class="row">
                             <div class="col">
                                 <div class="row pt-1">
@@ -108,14 +108,18 @@
                                 <div class="row pt-3 my-3">
                                     <div class="col-sm-12 col-md-6">
                                         <label class="form-label text-start">Aadhar*</label>
-                                        <div><img src="<?php echo $imageUrl . $userDetails['aadhar_url']; ?>" id="apreview" alt="Aadhar Preview" height="150" width="200"></div>
-                                        <!-- <input type="file" class="form-control my-3" id="aadhar" name="aadhar"> -->
+                                        <div><img src="<?php echo $imageUrl . $userDetails['aadhar_url']; ?>" id="apreview" alt="Aadhar Preview" height="150" width="250"></div>
+                                        <?php if($bankDetails['verified'] == '0'){ ?>
+                                        <input type="file" class="form-control my-3" id="aadhar" name="aadhar">
+                                        <?php } ?>
                                         <div class="invalid-feedback text-white">Please upload your aadhar.</div>
                                     </div>
                                     <div class="col-sm-12 col-md-6">
                                         <label class="form-label text-start">Pan Card*</label>
-                                        <div><img src="<?php echo $imageUrl . $userDetails['pan_url']; ?>" id="ppreview" alt="Pan Preview" height="150" width="200"></div>
-                                        <!-- <input type="file" class="form-control my-3" id="pan" name="pan"> -->
+                                        <div><img src="<?php echo $imageUrl . $userDetails['pan_url']; ?>" id="ppreview" alt="Pan Preview" height="150" width="250"></div>
+                                        <?php if($bankDetails['verified'] == '0'){ ?>
+                                        <input type="file" class="form-control my-3" id="pan" name="pan">
+                                         <?php } ?>
                                         <div class="invalid-feedback text-white">Please upload your pan card.</div>
                                     </div>
                                 </div>
@@ -123,7 +127,9 @@
                                     <div class="col-sm-12 col-md-6">
                                         <label class="form-label text-start">Profile Pic*</label>
                                         <div><img src="<?php echo $imageUrl . $userDetails['photo_url']; ?>" id="preview" alt="Image Preview" height="150" width="150"></div>
-                                        <!-- <input type="file" class="form-control my-3" id="photo" name="photo"> -->
+                                        <?php if($bankDetails['verified'] == '0'){ ?>
+                                        <input type="file" class="form-control my-3" id="photo" name="photo">
+                                        <?php } ?>
                                         <div class="invalid-feedback text-white">Please upload your photo.</div>
                                     </div>
                                 </div>
@@ -136,4 +142,4 @@
         </div>
     </div>
 </div>
-<script src="<?php echo $this->basePath(); ?>/js/user/executive-profile.js"></script>
+<script src="<?php echo $this->basePath(); ?>/js/user/executive-profile.js?v=1.0.2"></script>

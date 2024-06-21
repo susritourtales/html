@@ -1,0 +1,72 @@
+<?php if(isset($type) && $type =='initialize') { ?>
+<table class="table table-bordered table-hover table-striped" id="table">
+    <thead>
+    <tr>
+        <th>S.no</th>
+        <th data-placeholder="Name" data-input="username">Name</th>
+        <th>QUESTT Exp. Dt</th>
+        <th>Mobile</th>
+        <th>D Coupons Count</th>
+        <th>C Coupons Count</th>
+        <th>Total Comm. earned</th>
+        <th>Total Comm. paid</th>
+        <th>Total Balance</th>
+        <th>Verified</th>
+        <th>Banned</th>
+    </tr>
+    <?php } ?>
+
+    <?php if(isset($type) && ($type =='initialize' || $type=="search") ) {?>
+    <input type="hidden" class="records" value="<?php echo $totalCount; ?>">
+    <tbody>
+    <?php } ?>
+
+    <?php if(count($executivesList))
+    {
+        $i=0;
+        if(isset($offset))
+        {
+            $i=$offset;   
+        }
+
+        foreach ($executivesList as $executive) : 
+            $encodedID = base64_encode('executiveId='.$executive['id']);?>
+            <tr>
+                <td><?= $i+1 ?></td>
+                <td><?= $executive['username'] ?></td>
+                <td><?= date("d-m-Y",strtotime($executive['end_date'])) ?></td>
+                <td><?= "(" . $executive['country_phone_code'] . ") " . $executive['mobile_number'] ?></td>
+                <td><?= $executive['d_coupon_count'] ?></td>
+                <td><?= $executive['c_coupon_count'] ?></td>
+                <td><?= $executive['total_earnings'] ?></td>
+                <td><?= $executive['stt_paid_amount'] ?></td>
+                <td><?= $executive['balance_outstanding'] ?></td>
+                <td class="text-center">
+                    <input type="checkbox" id="vcb_<?php echo $executive['id']; ?>" class="cbc" name="vcb_<?php echo $executive['id']; ?>" value="<?php echo $executive['id']; ?>" <?php echo ($executive['verified'] == \Admin\Model\ExecutiveDetails::Is_Verified) ? "checked disabled" : "" ;?>>
+                </td>
+                <td class="text-center">
+                    <input type="checkbox" id="bcb_<?php echo $executive['id']; ?>" class="cbc" name="bcb_<?php echo $executive['id']; ?>" value="<?php echo $executive['id']; ?>" <?php echo ($executive['banned'] == \Admin\Model\ExecutiveDetails::Is_Banned) ? "checked" : "" ;?>>
+                </td>
+                
+                <!-- <td>
+                    <div class="d-flex">
+                        <div class="action-icon delete-executive"  data-id="<?php echo $encodedID; ?>">
+                            <img src="<?php //echo $this->basePath();?>/img/delete.png" class="img-fluid">
+                        </div>
+                    </div>
+                </td> -->
+            </tr>
+        <?php $i++;
+        endforeach;
+    } else
+    { ?>
+        <tr ><td class="text-center" colspan="10">No data</td></tr>
+    <?php  } ?>
+    <?php if(isset($type) && ($type =='initialize' || $type=="search") ) {?>
+
+    </tbody>
+    <?php } ?>
+    <?php if(isset($type) && $type =='initialize') {?>
+
+</table>
+<?php } ?>

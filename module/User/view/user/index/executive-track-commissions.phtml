@@ -4,7 +4,17 @@
     $hybridauth = new Hybridauth($config);
     $adapters = $hybridauth->getConnectedAdapters();
 ?>
+<link rel="stylesheet" href="<?php echo $this->basePath() ?>/css/main.css">
 <link rel="stylesheet" href="<?php echo $this->basePath();?>/css/twistt.css?v=1.0.1">
+<style>
+    body{
+        background-color: #f5f5f5 !important;
+        font-size: 14px !important;
+    }
+    .navbar-brand{
+        justify-content: left;
+    }
+</style>
 <div class="container-fluid my-5">
     <div class="container">
         <?php 
@@ -18,11 +28,12 @@
                     $logoutUrl = $config['callback'] . "?logout=Apple";
                 }
             }
-            echo $this->partial('/exec-sidebar', array('activeTab'=>\Application\Constants\Constants::TWISTT_TRACK_COMMISSION, 'logoutUrl'=>$logoutUrl)); ?>
+            echo $this->partial('/exec-sidebar', array('activeTab'=>\Application\Constants\Constants::TWISTT_TRACK_COMMISSION, 'logoutUrl'=>$logoutUrl)); 
+            if($bankDetails['verified'] == '1' && $bankDetails['banned'] == '0'){ ?>
         <div class="content bg-white custom-shadow p-4 color-333"> 
             <div class="bg-light border-radius-10 custom-shadow p-4 color-333">
                 <div class="user-page-name text-uppercase avant-md pb-3">
-                    <h5><?php echo "TWISTT Executive Track Commissions"; ?></h5>
+                    <h5>TWISTT Executive Track Commissions</h5>
                 </div>
                 <div class="stt-bg-primary border-radius-10 custom-shadow p-4 color-333">
                     <h6 class="font-weight-bold text-uppercase"><u>TWISTT Executive Details</u></h6>
@@ -48,6 +59,23 @@
                 </div>
             </div>
         </div>
+        <?php } elseif($bankDetails['verified'] == '0'){ ?>
+            <div class="content bg-white custom-shadow p-4 color-333"> 
+                <div class="bg-light border-radius-10 custom-shadow p-4 color-333" style="min-height:400px;">
+                    <div class="user-page-name text-uppercase avant-md pb-3 text-danger">
+                        <h5>Executive registration not verified by Admin..</h5>
+                    </div>
+                </div>
+            </div>
+        <?php } elseif($bankDetails['banned'] == '1'){ ?>
+            <div class="content bg-white custom-shadow p-4 color-333"> 
+                <div class="bg-light border-radius-10 custom-shadow p-4 color-333" style="min-height:400px;">
+                    <div class="user-page-name text-uppercase avant-md pb-3 text-danger">
+                        <h5>Executive Banned by Admin..</h5>
+                    </div>
+                </div>
+            </div>
+        <?php } ?>
     </div>
 </div>
 <script src="<?php echo $this->basePath(); ?>/js/pagination.js"></script>

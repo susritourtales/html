@@ -558,6 +558,26 @@ return [
                     ],
                 ],
             ],
+            'twistt-executives' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/executives',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'executives',
+                    ],
+                ],
+            ],
+            'executives-list' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route'    => '/admin/load-executives-list',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action'     => 'load-executives-list',
+                    ],
+                ],
+            ],
             'change-password' => [
                 'type' => Segment::class,
                 'options' => [

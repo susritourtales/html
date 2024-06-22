@@ -46,6 +46,8 @@ $(document).ready(function() {
             messageDisplay('Please check the Bank Account number you have entered..', 2000);
             event.preventDefault(); 
             event.stopPropagation(); 
+            element.html('Submit');
+            element.prop('disabled',false);
             return;
         }
         const fileInput = document.querySelector('input[type="file"]');
@@ -60,46 +62,49 @@ $(document).ready(function() {
                 if (file.size > maxFileSize) {
                     event.preventDefault(); 
                     alert('The selected file is too large. Please choose a file smaller than 2MB.');
+                    element.html('Submit');
+                    element.prop('disabled',false);
                     return;
                 }
             }
             event.preventDefault();
-            const formData = new FormData(form);
-            fetch('/twistt/executive/edit', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => {
-                const contentType = response.headers.get('content-type');
-                if (response.ok && contentType && contentType.includes('application/json')) {
-                    return response.json(); 
-                } else if (!response.ok) {
-                    return response.json().then(json => {
-                        throw new Error(json.message || 'Network response was not ok');
-                    });
-                } else {
-                    return response.text().then(text => {
-                        console.error('Unexpected response format:', text);
-                        throw new Error('Unexpected response format: ' + text);
-                    });
-                }
-            })
-            .then(data => {
-                if (data.success) {
-                    messageDisplay('Executive profile saved successfully!');
-                    console.log('Executive profile saved successfully!', data);
-                    setTimeout(function(){
-                        location.reload();
-                    },2000);
-                } else {
-                    messageDisplay('Error submitting form: ' + data.message);
-                    console.error('Error submitting form:', data.message);
-                }
-            })
-            .catch(error => {
-                messageDisplay('Error submitting form: ' + error.message);
-                console.error('Error submitting form:', error);
-            });
+                const formData = new FormData(form);
+                //formData.append("id",$('#exid').val());
+                fetch('/a_dMin/edit-executive', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    const contentType = response.headers.get('content-type');
+                    if (response.ok && contentType && contentType.includes('application/json')) {
+                        return response.json(); 
+                    } else if (!response.ok) {
+                        return response.json().then(json => {
+                            throw new Error(json.message || 'Network response was not ok');
+                        });
+                    } else {
+                        return response.text().then(text => {
+                            console.error('Unexpected response format:', text);
+                            throw new Error('Unexpected response format: ' + text);
+                        });
+                    }
+                })
+                .then(data => {
+                    if (data.success) {
+                        messageDisplay('Executive profile saved successfully!');
+                        console.log('Executive profile saved successfully!', data);
+                        setTimeout(function(){
+                            location.reload();
+                        },2000);
+                    } else {
+                        messageDisplay('Error submitting form: ' + data.message);
+                        console.error('Error submitting form:', data.message);
+                    }
+                })
+                .catch(error => {
+                    messageDisplay('Error submitting form: ' + error.message);
+                    console.error('Error submitting form:', error);
+                });
         }
         form.classList.add('was-validated');
         element.html('Submit');

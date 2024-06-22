@@ -33,7 +33,7 @@ class ExecutiveDetailsTable extends BaseTable
         $query = $sql->select()
             ->from($this->tableName)
             ->columns(array("id"))
-            ->where(['user_id' => $userId]);
+            ->where(['user_id' => $userId, 'deleted' => '0']);
         $field = array();
         $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
         foreach ($resultSet as $row) {
@@ -52,6 +52,7 @@ class ExecutiveDetailsTable extends BaseTable
   public function getField($where, $column)
   {
     try {
+      $where['deleted'] = '0';
       $sql = $this->getSql();
       $query = $sql->select()
         ->from($this->tableName)
@@ -75,6 +76,7 @@ class ExecutiveDetailsTable extends BaseTable
   public function getExecutiveDetails($where)
   {
     try {
+      $where['deleted'] = '0';
       $sql = $this->getSql();
       $query = $sql->select()
         ->from($this->tableName)
@@ -94,6 +96,7 @@ class ExecutiveDetailsTable extends BaseTable
   {
     try {
       $where = new Where();
+      $where->equalTo('p.deleted', '0');
       $order = ['p.created_at desc'];
       if (array_key_exists('username', $data)) {
         $where->and->like(new Expression("LOWER(u.username)"), '%' . $data['username'] . "%");

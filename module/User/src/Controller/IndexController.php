@@ -789,6 +789,38 @@ class IndexController extends BaseController
       $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
     }
   }
+
+  public function loadTransactionsListAction()
+  {
+    if ($this->getRequest()->isXmlHttpRequest()) {
+      $request = $this->getRequest()->getPost();
+      $searchData = array('limit' => 10, 'offset' => 0);
+      $type = $request['type'];
+      $offset = 0;
+      $loginId = $this->authService->getIdentity();
+      $userDetails = $this->userTable->getUserDetails(['user_login_id' => $loginId['user_login_id']]);
+      $bankDetails = $this->executiveDetailsTable->getExecutiveDetails(['user_id' => $userDetails['id']]);
+      $qed = $this->questtSubscriptionTable->getField(['user_id' => $loginId['id']], 'end_date');
+      $qed = date('d-m-Y', strtotime($qed));
+      if (isset($request['page_number'])) {
+        $pageNumber = $request['page_number'];
+        $offset = ($pageNumber * 10 - 10);
+        $limit = 10;
+        $searchData['offset'] = $offset;
+        $searchData['limit'] = $limit;
+      }
+      $searchData['executive_id'] = $bankDetails['id'];
+      $totalCount = 0;
+
+      if ($type && $type == 'search') {
+        $totalCount = $this->executiveTransactionTable->getTransactionsList($searchData, 1);
+      }
+      $transactions = $this->executiveTransactionTable->getTransactionsList($searchData);
+      $view = new ViewModel(array('transactions' => $transactions, 'totalCount' => $totalCount));
+      $view->setTerminal(true);
+      return $view;
+    }
+  }
   public function questtValidityAction()
   {
     if ($this->getRequest()->isXmlHttpRequest()) {

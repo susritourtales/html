@@ -2499,6 +2499,249 @@ class AdminController extends BaseController
         }
     }
 
+    public function deleteExecutiveAction(){
+        $this->checkAdmin();
+        if ($this->getRequest()->isXmlHttpRequest()) {
+            $request = $this->getRequest()->getPost();
+            $executiveId = $request['id'];
+            $response = $this->executiveDetailsTable->setExecutiveDetails(array('deleted' => 1), array('id' => $executiveId));
+            if ($response) {
+                return new JsonModel(array('success' => true, "message" => 'Deleted successfully'));
+            } else {
+                return new JsonModel(array('success' => false, "message" => 'unable to delete'));
+            }
+        }
+    }
+    public function modifyExecutiveAction(){
+        $this->checkAdmin();
+        if ($this->getRequest()->isXmlHttpRequest()) {
+            $request = $this->getRequest()->getPost();
+            $rId = explode("_", $request['id']);
+            $executiveId = $rId[1];
+            if(str_starts_with($rId[0], 'v')){
+                $response = $this->executiveDetailsTable->setExecutiveDetails(array('verified' => $request['val']), array('id' => $executiveId));
+            }elseif(str_starts_with($rId[0], 'b')){
+                $response = $this->executiveDetailsTable->setExecutiveDetails(array('banned' => $request['val']), array('id' => $executiveId));
+            }
+            if ($response) {
+                return new JsonModel(array('success' => true, "message" => 'Updated successfully'));
+            } else {
+                return new JsonModel(array('success' => false, "message" => 'unable to update'));
+            }
+        }
+    }
+
+    public function couponsCommissionsAction(){
+        $this->checkAdmin();
+        $paramId = $this->params()->fromRoute('id', '');
+        if (!$paramId) {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        $executiveIdString = rtrim($paramId, "=");
+        $executiveIdString = base64_decode($executiveIdString);
+        $executiveIdString = explode("=", $executiveIdString);
+        $executiveId = array_key_exists(1, $executiveIdString) ? $executiveIdString[1] : 0;
+        $coupons = $this->couponsTable->getCouponsList(['executive_id' => $executiveId, 'limit' => 10, 'offset' => 0]);
+        $totalCount = $this->couponsTable->getCouponsList(['executive_id' => $executiveId], 1);
+        return new ViewModel(['coupons' => $coupons, 'totalCount' => $totalCount, 'id' => $executiveId]);
+    }
+
+    public function loadCouponsCommissionsListAction()
+    {
+        if ($this->getRequest()->isXmlHttpRequest()) {
+        $request = $this->getRequest()->getPost();
+        $searchData = array('limit' => 10, 'offset' => 0);
+        $type = $request['type'];
+        $paramId = $request['id'];
+        if (!$paramId) {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        $executiveIdString = rtrim($paramId, "=");
+        $executiveIdString = base64_decode($executiveIdString);
+        $executiveIdString = explode("=", $executiveIdString);
+        $executiveId = array_key_exists(1, $executiveIdString) ? $executiveIdString[1] : 0;
+        $offset = 0;
+        if (isset($request['page_number'])) {
+            $pageNumber = $request['page_number'];
+            $offset = ($pageNumber * 10 - 10);
+            $limit = 10;
+            $searchData['offset'] = $offset;
+            $searchData['limit'] = $limit;
+        }
+        $searchData['executive_id'] = $executiveId;
+        $totalCount = 0;
+
+        if ($type && $type == 'search') {
+            $totalCount = $this->couponsTable->getCouponsList($searchData, 1);
+        }
+        $coupons = $this->couponsTable->getCouponsList($searchData);
+        $view = new ViewModel(array('coupons' => $coupons, 'totalCount' => $totalCount));
+        $view->setTerminal(true);
+        return $view;
+        }
+    }
+
+    public function commissionsPaymentsAction(){
+        $this->checkAdmin();
+        $paramId = $this->params()->fromRoute('id', '');
+        if (!$paramId) {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        $executiveIdString = rtrim($paramId, "=");
+        $executiveIdString = base64_decode($executiveIdString);
+        $executiveIdString = explode("=", $executiveIdString);
+        $executiveId = array_key_exists(1, $executiveIdString) ? $executiveIdString[1] : 0;
+        $transactions = $this->executiveTransactionTable->getTransactionsList(['executive_id' => $executiveId, 'limit' => 10, 'offset' => 0]);
+        $totalCount = $this->executiveTransactionTable->getTransactionsList(['executive_id' => $executiveId], 1);
+        return new ViewModel(['transactions' => $transactions, 'totalCount' => $totalCount, 'id' => $executiveId]);
+    }
+
+    public function loadCommissionsPaymentsListAction()
+    {
+        if ($this->getRequest()->isXmlHttpRequest()) {
+        $request = $this->getRequest()->getPost();
+        $searchData = array('limit' => 10, 'offset' => 0);
+        $type = $request['type'];
+        $paramId = $request['id'];
+        if (!$paramId) {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        $executiveIdString = rtrim($paramId, "=");
+        $executiveIdString = base64_decode($executiveIdString);
+        $executiveIdString = explode("=", $executiveIdString);
+        $executiveId = array_key_exists(1, $executiveIdString) ? $executiveIdString[1] : 0;
+        $offset = 0;
+        if (isset($request['page_number'])) {
+            $pageNumber = $request['page_number'];
+            $offset = ($pageNumber * 10 - 10);
+            $limit = 10;
+            $searchData['offset'] = $offset;
+            $searchData['limit'] = $limit;
+        }
+        $searchData['executive_id'] = $executiveId;
+        $totalCount = 0;
+        if ($type && $type == 'search') {
+            $totalCount = $this->executiveTransactionTable->getTransactionsList($searchData, 1);
+        }
+        $transactions = $this->executiveTransactionTable->getTransactionsList($searchData);
+        $view = new ViewModel(array('transactions' => $transactions, 'totalCount' => $totalCount));
+        $view->setTerminal(true);
+        return $view;
+        }
+    }
+    public function editExecutiveAction(){
+        $this->checkAdmin();
+        if ($this->getRequest()->isPost()) {
+            $request = $this->getRequest()->getPost();
+            $executiveId = $request['id'];
+            $userId = $this->executiveDetailsTable->getField(['id' => $executiveId], 'user_id');
+            $postData = $this->params()->fromPost();
+            $validImageFiles = array('png', 'jpg', 'jpeg');
+            $userdetails = [];
+            $bankDetails = [];
+            $uploadedFiles[0] = $this->params()->fromFiles('photo');
+            $uploadedFiles[1] = $this->params()->fromFiles('aadhar');
+            $uploadedFiles[2] = $this->params()->fromFiles('pan');
+            $i = 0;
+            if (isset($uploadedFiles)) {
+                foreach ($uploadedFiles as $uploadedFile) {
+                if ($uploadedFile['error'] !== UPLOAD_ERR_NO_FILE) {
+                    $attachment = $uploadedFile;
+                    $filename = $attachment['name'];
+                    $fileExt = explode(".", $filename);
+                    $ext = end($fileExt) ? end($fileExt) : "";
+                    $ext = strtolower($ext);
+                    $filenameWithoutExt = $this->generateRandomString() . "_" . strtotime(date("Y-m-d H:i:s"));
+                    $filename = $filenameWithoutExt . "." . $ext;
+                    $filePath = "data/profiles";
+                    $filePath = $filePath . "/" . $filename;
+                    if (!in_array(strtolower($ext), $validImageFiles)) {
+                    return new JsonModel(array("success" => false, "message" => $ext . " file format is not supported !"));
+                    }
+                    $uploadStatus = $this->pushFiles($filePath, $attachment['tmp_name'], $attachment['type']);
+                    if (!$uploadStatus) {
+                    return new JsonModel(array('success' => false, "message" => 'unable to upload photo.. try agian after sometime..'));
+                    } else { // new photo successfully uploaded - delete old photo
+                        switch ($i) {
+                            case 0:
+                            $oldPPUrl = $this->userTable->getField(['id' => $userId], 'photo_url');
+                            break;
+                            case 1:
+                            $oldPPUrl = $this->userTable->getField(['id' => $userId], 'aadhar_url');
+                            break;
+                            case 2:
+                            $oldPPUrl = $this->userTable->getField(['id' => $userId], 'pan_url');
+                            break;
+                        }
+                        if ($this->fileExists($oldPPUrl)) {
+                            if (!$this->deleteFile($oldPPUrl)) {
+                            return new JsonModel(array('success' => false, "message" => 'unable to delete old photo..'));
+                            }
+                        } 
+                    }
+                    switch ($i) {
+                    case 0:
+                        $userdetails['photo_url'] = $filePath;
+                        break;
+                    case 1:
+                        $userdetails['aadhar_url'] = $filePath;
+                        break;
+                    case 2:
+                        $userdetails['pan_url'] = $filePath;
+                        break;
+                    }
+                }
+                $i++;
+                }
+            } else {
+                return new JsonModel(array('success' => false, "message" => 'Photo not submitted.'));
+            }
+
+            $userdetails['username'] = $postData['name'];
+            $userdetails['email'] = $postData['email'];
+            $userdetails['country'] = $postData['country'];
+            $userdetails['city'] = $postData['city'];
+            $userdetails['state'] = $postData['state'];
+            $userdetails['gender'] = $postData['gender'];
+            if ($userId) {
+                $ures = $this->userTable->updateUser($userdetails, ['id' => $userId]);
+            } else {
+                return new JsonModel(array('success' => false, "message" => 'unknown error occurred.. please try after sometime..'));
+            }
+            if ($ures) {
+                $execId = $this->executiveDetailsTable->executiveExists($userId);
+                $bankDetails['user_id'] = $userId;
+                $bankDetails['bank_name'] = $postData['bankName'];
+                $bankDetails['bank_account_no'] = $postData['bankAccount'];
+                $bankDetails['ifsc_code'] = $postData['ifsc'];
+                $bankDetails['commission_percentage'] = $postData['comm'];
+                if (!$execId) {
+                $bres = $this->executiveDetailsTable->addExecutive($bankDetails);
+                } else {
+                $bres = $this->executiveDetailsTable->setExecutiveDetails($bankDetails, ['id' => $execId]);
+                }
+                if ($bres) {
+                return new JsonModel(array('success' => true, "message" => 'updated succesfully..'));
+                } else {
+                return new JsonModel(array('success' => false, "message" => 'error saving user bank details.. please try after sometime..'));
+                }
+            } else {
+                return new JsonModel(array('success' => false, "message" => 'error saving user details.. please try after sometime..'));
+            }
+        }
+        $paramId = $this->params()->fromRoute('id', '');
+        if (!$paramId) {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        $executiveIdString = rtrim($paramId, "=");
+        $executiveIdString = base64_decode($executiveIdString);
+        $executiveIdString = explode("=", $executiveIdString);
+        $executiveId = array_key_exists(1, $executiveIdString) ? $executiveIdString[1] : 0;
+        $bankDetails = $this->executiveDetailsTable->getExecutiveDetails(['id' => $executiveId]);
+        $userDetails = $this->userTable->getUserDetails(['id' => $bankDetails['user_id']]);
+        return new ViewModel(['bankDetails' => $bankDetails, 'userDetails' => $userDetails, 'imageUrl' => $this->filesUrl()]);
+    }
+
     // Twistt Execitives - End
 
     // Change Password - Start

@@ -264,7 +264,16 @@ return [
                         'action' => 'executive-track-commissions',
                     ],
                 ],
-            ], 'twistt-executiveterms' => [
+            ],   'twistt-executive-load-commissions' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/twistt/executive/load-transactions-list',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'load-transactions-list',
+                    ],
+                ],
+            ],'twistt-executiveterms' => [
                 'type' => Literal::class,
                 'options' => [
                     'route' => '/twistt/executive-terms',

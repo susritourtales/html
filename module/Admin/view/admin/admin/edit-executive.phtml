@@ -1,0 +1,132 @@
+<div class="sidebar">
+<div class="side-panel" id="collapsibleNavbar">
+    <?php echo $this->partial('/application/index/left-menu', array(
+        'activeTab' => \Application\Constants\Constants::TEx_Dashboard
+    )); ?>
+</div>
+</div>
+<link rel="stylesheet" href="<?php echo $this->basePath() ?>/css/main.css">
+<style>
+    input[type=file] {
+        opacity: unset;
+        height: unset;
+        position: relative;
+    }
+</style>
+<div class="wrapper">
+<div class="main-panel ">
+    <?php echo $this->partial("/application/index/app-header"); ?>
+
+    <div class="main-container p-lg-4">
+        <div class="main-heading mb-3"><a href="<?php echo $this->basePath() . '/a_dMin/executives' ?>"><i class="fa fa-arrow-left mr-2"></i></a> Edit Executive</div>
+        <form id="profileForm" enctype="multipart/form-data" novalidate>
+            <div class="row">
+                <div class="col-12 col-lg-10">
+                    <div class="row adding-form">
+                        <div class="col-12 pt-md-5 mb-4 mt-n1">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="row pt-1">
+                                        <div class="col-sm-12 col-md-6">
+                                            <label for="name" class="form-label">Name*</label>
+                                            <input type="text" class="form-control" id="name" name="name" required value="<?php echo $userDetails['username']; ?>">
+                                            <div class="invalid-feedback">Please provide your name.</div>
+                                        </div>
+                                        <div class="col-sm-12 col-md-6">
+                                            <label for="city" class="form-label">City*</label>
+                                            <input type="text" class="form-control" id="city" name="city" required value="<?php echo $userDetails['city']; ?>">
+                                            <div class="invalid-feedback">Please provide City name.</div>
+                                        </div>
+                                    </div>
+                                    <div class="row pt-3">
+                                        <div class="col-sm-12 col-md-6">
+                                            <label for="state" class="form-label">State*</label>
+                                            <input type="text" class="form-control" id="state" name="state" required value="<?php echo $userDetails['state']; ?>">
+                                            <div class="invalid-feedback">Please provide State name.</div>
+                                        </div>
+                                        <div class="col-sm-12 col-md-6">
+                                            <label for="country" class="form-label">Country*</label>
+                                            <input type="text" class="form-control" id="country" name="country" required value="<?php echo $userDetails['country']; ?>">
+                                            <div class="invalid-feedback">Please provide a valid Country name.</div>
+                                        </div>
+                                    </div>
+                                    <div class="row pt-3">
+                                        <div class="col-sm-12 col-md-6">
+                                            <label for="ifsc" class="form-label">Bank Name*</label>
+                                            <input type="text" class="form-control" id="bankName" name="bankName" required value="<?php echo $bankDetails['bank_name']; ?>">
+                                            <div class="invalid-feedback">Please provide a valid Bank Name.</div>
+                                        </div>
+                                        <div class="col-sm-12 col-md-6">
+                                            <label for="ifsc" class="form-label">IFSC*</label>
+                                            <input type="text" class="form-control" id="ifsc" name="ifsc" required value="<?php echo $bankDetails['ifsc_code']; ?>">
+                                            <div class="invalid-feedback">Please provide a valid IFSC code.</div>
+                                        </div>
+                                    </div>
+                                    <div class="row pt-3">
+                                        <div class="col-sm-12 col-md-6">
+                                            <label for="bankAccount" class="form-label">Bank Account*</label>
+                                            <input type="password" class="form-control" id="bankAccountConf" name="bankAccountConf" required value="<?php echo $bankDetails['bank_account_no']; ?>">
+                                            <div class="invalid-feedback">Please provide bank account number.</div>
+                                        </div>
+                                        <div class="col-sm-12 col-md-6">
+                                            <label for="bankAccount" class="form-label">Confirm Bank Account*</label>
+                                            <input type="text" class="form-control" id="bankAccount" name="bankAccount" required value="<?php echo $bankDetails['bank_account_no']; ?>">
+                                            <div class="invalid-feedback">Please provide bank account number.</div>
+                                        </div>
+                                    </div>
+                                    <div class="row pt-3">
+                                        <div class="col-sm-12 col-md-6">
+                                            <label for="gender" class="form-label">Gender</label>
+                                                <select class="form-select" id="gender" name="gender">
+                                                <option value="">Select...</option>
+                                                <option value="male" <?php echo $userDetails['gender']== 'male' ? 'selected' : '' ?>>Male</option>
+                                                <option value="female" <?php echo $userDetails['gender']== 'female' ? 'selected' : '' ?>>Female</option>
+                                                <option value="other" <?php echo $userDetails['gender']== 'other' ? 'selected' : '' ?>>Other</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-12 col-md-6">
+                                            <label for="email" class="form-label">Email* <span class="text-danger" style="font-size:10px;">(all communication will be sent to this email)</span></label>
+                                            <input type="email" class="form-control" id="email" name="email" required value="<?php echo $userDetails['email']; ?>">
+                                            <div class="invalid-feedback">Please provide a valid email address.</div>
+                                        </div>
+                                    </div>
+                                    <div class="row pt-3 my-3">
+                                        <div class="col-sm-12 col-md-6">
+                                            <label class="form-label text-start">Aadhar*</label>
+                                            <p><img src="<?php echo $imageUrl . $userDetails['aadhar_url']; ?>" id="apreview" alt="Aadhar Preview" height="150" width="250"></p>
+                                            <input type="file" class="form-control my-3" id="aadhar" name="aadhar">
+                                            <div class="invalid-feedback text-white">Please upload your aadhar.</div>
+                                        </div>
+                                        <div class="col-sm-12 col-md-6">
+                                            <label class="form-label text-start">Pan Card*</label>
+                                            <p><img src="<?php echo $imageUrl . $userDetails['pan_url']; ?>" id="ppreview" alt="Pan Preview" height="150" width="250"></p>
+                                            <input type="file" class="form-control my-3" id="pan" name="pan">
+                                            <div class="invalid-feedback text-white">Please upload your pan card.</div>
+                                        </div>
+                                    </div>
+                                    <div class="row pt-3 my-3">
+                                        <div class="col-sm-12 col-md-6">
+                                            <label class="form-label text-start">Profile Pic*</label>
+                                            <p><img src="<?php echo $imageUrl . $userDetails['photo_url']; ?>" id="preview" alt="Image Preview" height="150" width="150"></p>
+                                            <input type="file" class="form-control my-3" id="photo" name="photo">
+                                            <div class="invalid-feedback text-white">Please upload your photo.</div>
+                                        </div>
+                                        <div class="col-sm-12 col-md-6">
+                                            <label class="form-label text-start">Commission*</label>
+                                            <input type="text" class="form-control" id="comm" name="comm" required value="<?php echo $bankDetails['commission_percentage']; ?>">
+                                            <div class="invalid-feedback">Please provide a valid Commission percentage.</div>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" value="<?php echo $bankDetails['id']; ?>" id="id" name="id">
+                                    <button type="submit" class="btn submit-btn" id="submit">Submit</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+<script src="<?php echo $this->basePath(); ?>/js/admin/edit-executive.js?v=1.0.1"></script>

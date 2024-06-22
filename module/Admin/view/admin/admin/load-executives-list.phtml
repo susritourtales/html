@@ -13,6 +13,7 @@
         <th>Total Balance</th>
         <th>Verified</th>
         <th>Banned</th>
+        <th>Action</th>
     </tr>
     <?php } ?>
 
@@ -36,25 +37,27 @@
                 <td><?= $executive['username'] ?></td>
                 <td><?= date("d-m-Y",strtotime($executive['end_date'])) ?></td>
                 <td><?= "(" . $executive['country_phone_code'] . ") " . $executive['mobile_number'] ?></td>
-                <td><?= $executive['d_coupon_count'] ?></td>
-                <td><?= $executive['c_coupon_count'] ?></td>
-                <td><?= $executive['total_earnings'] ?></td>
-                <td><?= $executive['stt_paid_amount'] ?></td>
-                <td><?= $executive['balance_outstanding'] ?></td>
+                <td class="cc text-center" data-url="<?php echo $this->basePath() . '/a_dMin/executive/coupons-commissions/' . base64_encode('id=' . $executive['id']) ?>"><?= $executive['d_coupon_count'] ?></td>
+                <td class="cc text-center" data-url="<?php echo $this->basePath() . '/a_dMin/executive/coupons-commissions/' . base64_encode('id=' . $executive['id']) ?>"><?= $executive['c_coupon_count'] ?></td>
+                <td class="cc text-center" data-url="<?php echo $this->basePath() . '/a_dMin/executive/commissions-payments/' . base64_encode('id=' . $executive['id']) ?>"><?= $executive['total_earnings'] == null ? "0.00" : $executive['total_earnings'] ?></td>
+                <td class="cc text-center" data-url="<?php echo $this->basePath() . '/a_dMin/executive/commissions-payments/' . base64_encode('id=' . $executive['id']) ?>"><?= $executive['stt_paid_amount'] == null ? "0.00" : $executive['stt_paid_amount'] ?></td>
+                <td class="cc text-center" data-url="<?php echo $this->basePath() . '/a_dMin/executive/commissions-payments/' . base64_encode('id=' . $executive['id']) ?>"><?= $executive['balance_outstanding'] == null ? "0.00" : $executive['balance_outstanding'] ?></td>
                 <td class="text-center">
                     <input type="checkbox" id="vcb_<?php echo $executive['id']; ?>" class="cbc" name="vcb_<?php echo $executive['id']; ?>" value="<?php echo $executive['id']; ?>" <?php echo ($executive['verified'] == \Admin\Model\ExecutiveDetails::Is_Verified) ? "checked disabled" : "" ;?>>
                 </td>
                 <td class="text-center">
                     <input type="checkbox" id="bcb_<?php echo $executive['id']; ?>" class="cbc" name="bcb_<?php echo $executive['id']; ?>" value="<?php echo $executive['id']; ?>" <?php echo ($executive['banned'] == \Admin\Model\ExecutiveDetails::Is_Banned) ? "checked" : "" ;?>>
                 </td>
-                
-                <!-- <td>
+                <td>
                     <div class="d-flex">
-                        <div class="action-icon delete-executive"  data-id="<?php echo $encodedID; ?>">
-                            <img src="<?php //echo $this->basePath();?>/img/delete.png" class="img-fluid">
+                        <a class="action-icon" href="<?php echo $this->basePath() . '/a_dMin/edit-executive/' . base64_encode('id=' . $executive['id']) ?>">
+                            <img src="<?php echo $this->basePath(); ?>/img/edit.png" class="img-fluid">
+                        </a>
+                        <div class="action-icon delete-executive" data-id="<?php echo $executive['id']; ?>">
+                            <img src="<?php echo $this->basePath(); ?>/img/delete.png" class="img-fluid">
                         </div>
                     </div>
-                </td> -->
+                </td>
             </tr>
         <?php $i++;
         endforeach;

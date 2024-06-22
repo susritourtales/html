@@ -578,6 +578,92 @@ return [
                     ],
                 ],
             ],
+            'edit-executive' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/edit-executive[/:id]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-zA-Z0-9_~\-!@#\$%\^&*\(\)=]*[/]*',
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'edit-executive',
+                    ],
+                ],
+            ],
+            'modify-executive' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/modify-executive',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'modify-executive',
+                    ],
+                ],
+            ],
+            'delete-executive' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/delete-executive[/:id]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-zA-Z0-9_~\-!@#\$%\^&*\(\)=]*[/]*',
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'delete-executive',
+                    ],
+                ],
+            ],
+            'executive-coupons-commissions' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/executive/coupons-commissions[/:id]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-zA-Z0-9_~\-!@#\$%\^&*\(\)=]*[/]*',
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'coupons-commissions',
+                    ],
+                ],
+            ],
+            'load-coupons-commissions' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/a_dMin/load-coupons-commissions-list',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'load-coupons-commissions-list',
+                    ],
+                ],
+            ],
+            'executive-commissions-payments' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/executive/commissions-payments[/:id]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-zA-Z0-9_~\-!@#\$%\^&*\(\)=]*[/]*',
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'commissions-payments',
+                    ],
+                ],
+            ],
+            'load-commissions-payments' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/a_dMin/load-commissions-payments-list',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'load-commissions-payments-list',
+                    ],
+                ],
+            ],
             'change-password' => [
                 'type' => Segment::class,
                 'options' => [

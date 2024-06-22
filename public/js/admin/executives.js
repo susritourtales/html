@@ -149,10 +149,39 @@ $(document).ready(function () {
                 initPagination()
             },
             error: function()
-            {
-
-
-            }
+            { }
         });
     }
+
+    $('.cbc').click(function() {
+        var value = '0';
+        if ($(this).is(':checked')) {
+            value = '1';
+        } 
+        var formData=new FormData();
+        formData.append('id',$(this).attr('id'));
+        formData.append('val',value);
+        ajaxCall=  $.ajax({
+            type: "POST",
+            url: BASE_URL+'/a_dMin/modify-executive',
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function(data)
+            {
+                messageDisplay(data.message);
+                setTimeout(function() {
+					window.location.href = BASE_URL + "/a_dMin/executives";
+				}, 3000);
+            },
+            error: function()
+            { }
+        });
+    });
+
+    $('.cc').click(function() {
+        var url = $(this).data('url');
+        window.location.href = url;
+    });
 });

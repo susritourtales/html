@@ -916,12 +916,101 @@ class IndexController extends BaseController
 
   public function enablerRegisterAction()
   {
-    return new ViewModel();
+    $config = $this->getConfig();
+    return new ViewModel(['callbackUrl' => $config['hybridauth']['callback']]);
   }
 
   public function enablerLoginAction()
   {
-    return new ViewModel();
+    $config = $this->getConfig();
+    return new ViewModel(['callbackUrl' => $config['hybridauth']['callback']]);
+  }
+
+  public function enablerSendOtpAction()
+  {
+    if ($this->getRequest()->isXmlHttpRequest()) {
+      $request = $this->getRequest()->getPost();
+      $mobile = $request['mobile'];
+      $email = $request['email'];
+      $ccmobile = $request['ccmobile'];
+      $cc = $request['cc'];
+      $otpType = $request['otpType'];
+      $vm = $request['vm'];
+      $rb = $request['rb'];
+      if ($otpType == \Admin\Model\Otp::Enabler_Registration) {
+        if ($cc == "91") {
+          $otp = $this->generateOtp();
+          $otpRes = $this->otpTable->addOtpDetails(['otp' => $otp, 'otp_type_id' => $otpType, 'verification_mode' => $vm, 'sent_status_id' => \Admin\Model\Otp::Not_verifed, 'otp_requested_by' => $rb, 'otp_sent_to' => $ccmobile]);
+          if ($otpRes) {
+            $resp = "1"; //$this->sendOtpSms($ccmobile, $otp);
+            if ($resp) {
+              return new JsonModel(array('success' => true, "message" => 'otp sent successfully.. please enter the otp..'));
+            } else {
+              return new JsonModel(array('success' => false, "message" => 'unable to send otp.. please try again after sometime..'));
+            }
+          } else {
+            return new JsonModel(array('success' => false, "message" => 'unknown error.. please try again after sometime..'));
+          }
+        }else{
+          $otp = $this->generateOtp();
+          $otpRes = $this->otpTable->addOtpDetails(['otp' => $otp, 'otp_type_id' => $otpType, 'verification_mode' => $vm, 'sent_status_id' => \Admin\Model\Otp::Not_verifed, 'otp_requested_by' => $rb, 'otp_sent_to' => $email]);
+          if($otpRes){
+            $resp = $this->sendmail($email, 'otp to reset your password', 'ten-verify-email', $otp);
+            if($resp){
+              return new JsonModel(array('success' => true, "message" => 'otp sent successfully.. please enter the otp..'));
+            }else{
+              return new JsonModel(array('success' => false, "message" => 'unable to send otp.. please try again after sometime..'));
+            }
+          }else{
+            return new JsonModel(array('success' => false, "message" => 'unknown error.. please try again after sometime..'));
+          }
+        }
+      } else if ($otpType == \Admin\Model\Otp::Forgot_Password) {
+        if (!empty($mobile)) {
+          $isMobileNoRegistered = $this->userTable->getField(['mobile_number' => $mobile], 'id');
+          if ($isMobileNoRegistered) {
+            $getcc = $this->userTable->getField(['mobile_number' => $mobile], 'country_phone_code');
+            if ($getcc == "91") {
+              $otp = $this->generateOtp();
+              $otpRes = $this->otpTable->addOtpDetails(['otp' => $otp, 'otp_type_id' => $otpType, 'verification_mode' => \Admin\Model\Otp::Mobile_Verification, 'sent_status_id' => \Admin\Model\Otp::Not_verifed, 'otp_requested_by' => $rb, 'otp_sent_to' => $mobile]);
+              if ($otpRes) {
+                $resp = "1"; //$this->sendOtpSms($ccmobile, $otp);
+                if ($resp) {
+                  return new JsonModel(array('success' => true, "message" => 'otp sent successfully.. please enter the otp..'));
+                } else {
+                  return new JsonModel(array('success' => false, "message" => 'unable to send otp.. please try again after sometime..'));
+                }
+              } else {
+                return new JsonModel(array('success' => false, "message" => 'unknown error.. please try again after sometime..'));
+              }
+            } else {
+              return new JsonModel(array('success' => false, "message" => 'not a registered mobile no..'));
+            }
+          } /* else{
+            $isEmailRegistered = $this->userTable->getField(['email' => $mobile], 'id');
+            if($isEmailRegistered){
+              $otp = $this->generateOtp();
+              $otpRes = $this->otpTable->addOtpDetails(['otp' => $otp, 'otp_type_id' => $otpType, 'verification_mode' => \Admin\Model\Otp::Email_Verification, 'sent_status_id' => \Admin\Model\Otp::Not_verifed, 'otp_requested_by' => $rb, 'otp_sent_to' => $email]);
+              if($otpRes){
+                $resp = $this->sendmail($mobile, 'otp to reset your password', 'forgot-password', $otp);
+                if($resp){
+                  return new JsonModel(array('success' => true, "message" => 'otp sent successfully.. please enter the otp..'));
+                }else{
+                  return new JsonModel(array('success' => false, "message" => 'unable to send otp.. please try again after sometime..'));
+                }
+              }else{
+                return new JsonModel(array('success' => false, "message" => 'unknown error.. please try again after sometime..'));
+              }
+            }else{
+              return new JsonModel(array('success' => false, "message" => 'not a registered mobile no / email id'));
+            }
+          } */
+        } else {
+          return new JsonModel(array('success' => false, "message" => 'please provide valid mobile no / email id'));
+        }
+      }
+      return new JsonModel(array('success' => true, "message" => 'otp sent successfully.. please enter the otp..'));
+    }
   }
 
   public function termsPrivacyAction()

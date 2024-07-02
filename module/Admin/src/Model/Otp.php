@@ -17,6 +17,7 @@ class Otp
   const Change_Password = '3';
   const User_Registration = '4';
   const Executive_Registration = '5';
+  const Enabler_Registration = '6';
   const Mobile_Verification = '1';
   const Email_Verification = '2';
   const Not_verifed=0;

@@ -82,5 +82,9 @@ body {
     color: white !important;
   }
   .primary-text {
-    color: #20437b !important
+    color: #20437b !important;
+  }
+  .btn:disabled{
+    color: dimgray !important;
+    background-color: darkgray !important;
   }

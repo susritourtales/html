@@ -252,7 +252,8 @@ class IndexController extends BaseController
       if (!$execId) {
         $bres = $this->executiveDetailsTable->addExecutive($bankDetails);
       } else {
-        $bres = $this->executiveDetailsTable->setExecutiveDetails($bankDetails, ['id' => $execId]);
+        //$bres = $this->executiveDetailsTable->setExecutiveDetails($bankDetails, ['id' => $execId]);
+        return new JsonModel(array('success' => false, "message" => 'TWISTT Executive already exists..'));
       }
       if ($bres) {
         $this->authService->getAdapter()
@@ -986,13 +987,13 @@ class IndexController extends BaseController
             } else {
               return new JsonModel(array('success' => false, "message" => 'not a registered mobile no..'));
             }
-          } /* else{
-            $isEmailRegistered = $this->userTable->getField(['email' => $mobile], 'id');
+          } else{
+            $isEmailRegistered = $this->userTable->getField(['email' => $email], 'id');
             if($isEmailRegistered){
               $otp = $this->generateOtp();
               $otpRes = $this->otpTable->addOtpDetails(['otp' => $otp, 'otp_type_id' => $otpType, 'verification_mode' => \Admin\Model\Otp::Email_Verification, 'sent_status_id' => \Admin\Model\Otp::Not_verifed, 'otp_requested_by' => $rb, 'otp_sent_to' => $email]);
               if($otpRes){
-                $resp = $this->sendmail($mobile, 'otp to reset your password', 'forgot-password', $otp);
+                $resp = $this->sendmail($email, 'otp to reset your password', 'forgot-password', $otp);
                 if($resp){
                   return new JsonModel(array('success' => true, "message" => 'otp sent successfully.. please enter the otp..'));
                 }else{
@@ -1004,15 +1005,133 @@ class IndexController extends BaseController
             }else{
               return new JsonModel(array('success' => false, "message" => 'not a registered mobile no / email id'));
             }
-          } */
+          }
         } else {
           return new JsonModel(array('success' => false, "message" => 'please provide valid mobile no / email id'));
         }
       }
       return new JsonModel(array('success' => true, "message" => 'otp sent successfully.. please enter the otp..'));
+    }else{
+      return new JsonModel(array("success" => false, "message" => "unkown request"));
     }
   }
 
+  public function enablerVerifyOtpAction()
+  {
+    if ($this->getRequest()->isXmlHttpRequest()) {
+      $request = $this->getRequest()->getPost();
+      $mobile = $request['mobile'];
+      $email = $request['email'];
+      $ccmobile = $request['ccmobile'];
+      $cc = $request['cc'];
+      $otp = $request['otp'];
+      $type = $request['otp_type'];
+      $data = [];
+      if ($type == \Admin\Model\Otp::Enabler_Registration) {
+        if ($otp == '' || $otp == null) {
+          return new JsonModel(array("success" => false, "message" => "OTP is required"));
+        }
+        if ($cc == "91") {
+          if ($ccmobile == '' || $ccmobile == null) {
+            return new JsonModel(array("success" => false, "message" => "mobile number is missing"));
+          }
+          $data = ['otp' => $otp, 'otp_type_id' => \Admin\Model\Otp::Enabler_Registration, 'verification_mode' => \Admin\Model\Otp::Mobile_Verification, 'sent_status_id' => \Admin\Model\Otp::Not_verifed, 'otp_requested_by' => \Admin\Model\Otp::TWISTT_Request, 'otp_sent_to' => $ccmobile];
+        }else{
+          if ($email == '' || $email == null) {
+            return new JsonModel(array("success" => false, "message" => "email id is missing"));
+          }
+          $data = ['otp' => $otp, 'otp_type_id' => \Admin\Model\Otp::Enabler_Registration, 'verification_mode' => \Admin\Model\Otp::Email_Verification, 'sent_status_id' => \Admin\Model\Otp::Not_verifed, 'otp_requested_by' => \Admin\Model\Otp::TWISTT_Request, 'otp_sent_to' => $email];
+        }
+        
+        $verify = $this->otpTable->verifyOtp($data);
+        if ($verify) {
+          $updateResponse = $this->otpTable->setOtpDetails(array('sent_status_id' => \Admin\Model\Otp::Is_verifed), $data);
+          if ($updateResponse) {
+            return new JsonModel(array("success" => true, "message" => "Otp verified succesfully.. accept terms & conditions to proceed with registration.."));
+          } else {
+            return new JsonModel(array("success" => false, "message" => "unable to verify otp.. please try again"));
+          }
+        } else {
+          return new JsonModel(array("success" => false, "message" => "otp not valid.. please try again"));
+        }
+      } elseif ($type == \Admin\Model\Otp::Forgot_Password) {
+        $data = ['otp' => $otp, 'otp_type_id' => \Admin\Model\Otp::Forgot_Password, 'verification_mode' => \Admin\Model\Otp::Mobile_Verification, 'sent_status_id' => \Admin\Model\Otp::Not_verifed, 'otp_requested_by' => \Admin\Model\Otp::TWISTT_Request, 'otp_sent_to' => $mobile];
+        $verify = $this->otpTable->verifyOtp($data);
+        if ($verify) {
+          $updateResponse = $this->otpTable->setOtpDetails(array('sent_status_id' => \Admin\Model\Otp::Is_verifed), $data);
+          if ($updateResponse) {
+            return new JsonModel(array("success" => true, "message" => "Otp verified succesfully.."));
+          } else {
+            return new JsonModel(array("success" => false, "message" => "unable to verify otp.. please try again"));
+          }
+        } else {
+          return new JsonModel(array("success" => false, "message" => "wrong otp"));
+        }
+      } else {
+        return new JsonModel(array("success" => false, "message" => "wrong otp type"));
+      }
+    }else{
+      return new JsonModel(array("success" => false, "message" => "unkown request"));
+    }
+  }
+
+  public function enablerAddAction()
+  {
+    $postData = $this->params()->fromPost();
+    $validImageFiles = array('png', 'jpg', 'jpeg');
+    $enablerdetails = [];
+    $uploadedFile = $this->params()->fromFiles('photo');
+    if (isset($uploadedFile)) {
+        $attachment = $uploadedFile;
+        $filename = $attachment['name'];
+        $fileExt = explode(".", $filename);
+        $ext = end($fileExt) ? end($fileExt) : "";
+        $ext = strtolower($ext);
+        $filenameWithoutExt = $this->generateRandomString() . "_" . strtotime(date("Y-m-d H:i:s"));
+        $filename = $filenameWithoutExt . "." . $ext;
+        $filePath = "data/profiles";
+        $filePath = $filePath . "/" . $filename;
+        if (!in_array(strtolower($ext), $validImageFiles)) {
+          return new JsonModel(array("success" => false, "message" => $ext . " file format is not supported !"));
+        }
+        $uploadStatus = $this->pushFiles($filePath, $attachment['tmp_name'], $attachment['type']);
+        if (!$uploadStatus) {
+          return new JsonModel(array('success' => false, "message" => 'unable to upload photo.. try agian after sometime..'));
+        }
+    } else {
+      return new JsonModel(array('success' => false, "message" => 'image not submitted.'));
+    }
+
+    $enablerdetails['username'] = $postData['name'];
+    $enablerdetails['mobile_number'] = $postData['mobile'];
+    $enablerdetails['country_phone_code'] = $postData['cc'];
+    $enablerdetails['email'] = $postData['email'];
+    $postData['ccmobile'] = str_replace("+", "", $postData['ccmobile']);
+    if($postData['cc'] == "91")
+      $enablerdetails['user_login_id'] = $postData['ccmobile'];
+    else
+      $enablerdetails['user_login_id'] = $postData['email'];
+    $enablerdetails['country'] = $postData['country'];
+    $enablerdetails['city'] = $postData['city'];
+    $aes = new Aes();
+    $encodeContent = $aes->encrypt($postData['ccmobile']);
+    $enablerdetails['password'] = $encodeContent['password'];
+    $enablerdetails['hash'] = $encodeContent['hash'];
+    $enablerId = $this->enablerTable->enablerExists($enablerdetails['user_login_id']);
+    if ($enablerId) {
+      return new JsonModel(array('success' => false, "message" => 'TWISTT Enabler already exists'));
+    }
+    $eres = $this->enablerTable->addEnabler($enablerdetails);
+    if ($eres) {
+      $this->authService->getAdapter()
+        ->setIdentity($enablerdetails['user_login_id'])
+        ->setCredential($enablerdetails['password']);
+      $ares = $this->authService->authenticate();
+      return new JsonModel(array('success' => true, "message" => 'you have succesfully registered as TWISTT Enabler..'));
+    } else {
+      return new JsonModel(array('success' => false, "message" => 'error saving your details.. please try after sometime..'));
+    }
+  }
   public function termsPrivacyAction()
   {
     $this->layout()->setVariable('activeTab', \Application\Constants\Constants::MAIN_SITE_TERMS_PAGE);

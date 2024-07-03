@@ -30,6 +30,9 @@ use Admin\Model\ExecutivePurchaseTable;
 use Admin\Model\ExecutiveTransactionTable;
 use Admin\Model\OtpTable;
 use Admin\Model\CouponsTable;
+use Admin\Model\EnablerTable;
+use Admin\Model\EnablerPurchaseTable;
+use Admin\Model\EnablerSalesTable;
 
 class BaseController extends AbstractActionController
 {
@@ -62,6 +65,9 @@ class BaseController extends AbstractActionController
     protected $executiveTransactionTable;
     protected $otpTable;
     protected $couponsTable;
+    protected $enablerTable;
+    protected $enablePurchaseTable;
+    protected $enablerSalesTable;
 
     public function __construct(
         AuthenticationService $authService,
@@ -83,7 +89,10 @@ class BaseController extends AbstractActionController
         ExecutivePurchaseTable $executive_purchase,
         ExecutiveTransactionTable $executive_transaction,
         OtpTable $otp_table,
-        CouponsTable $coupons_table
+        CouponsTable $coupons_table,
+        EnablerTable $enabler_table,
+        EnablerPurchaseTable $enabler_purchase_table,
+        EnablerSalesTable $enabler_sales_table,
     ) {
         $this->sessionContainer = new SessionContainer('stt_session');
         $this->sessionManager = $this->sessionContainer->getManager();
@@ -109,6 +118,9 @@ class BaseController extends AbstractActionController
         $this->executiveTransactionTable = $executive_transaction;
         $this->otpTable = $otp_table;
         $this->couponsTable = $coupons_table;
+        $this->enablerTable = $enabler_table;
+        $this->enablerPurchaseTable = $enabler_purchase_table;
+        $this->enablerTable = $enabler_sales_table;
     }
 
     public function getLoggedInUserId()

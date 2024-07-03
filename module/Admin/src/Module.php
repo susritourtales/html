@@ -199,6 +199,36 @@ class Module implements ConfigProviderInterface
                     $resultSetPrototype->setArrayObjectPrototype(new Model\Coupons());
                     return new TableGateway('coupons', $dbAdapter, null, $resultSetPrototype);
                 },
+                Model\EnablerTable::class => function ($container) {
+                    $tableGateway = $container->get(Model\EnablerTableGateway::class);
+                    return new Model\EnablerTable($tableGateway);
+                },
+                Model\EnablerTableGateway::class => function ($container) {
+                    $dbAdapter = $container->get(AdapterInterface::class);
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Model\Enabler());
+                    return new TableGateway('enabler', $dbAdapter, null, $resultSetPrototype);
+                },
+                Model\EnablerPurchaseTable::class => function ($container) {
+                    $tableGateway = $container->get(Model\EnablerPurchaseTableGateway::class);
+                    return new Model\EnablerPurchaseTable($tableGateway);
+                },
+                Model\EnablerPurchaseTableGateway::class => function ($container) {
+                    $dbAdapter = $container->get(AdapterInterface::class);
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Model\EnablerPurchase());
+                    return new TableGateway('enabler_purchase', $dbAdapter, null, $resultSetPrototype);
+                },
+                Model\EnablerSalesTable::class => function ($container) {
+                    $tableGateway = $container->get(Model\EnablerSalesTableGateway::class);
+                    return new Model\EnablerSalesTable($tableGateway);
+                },
+                Model\EnablerSalesTableGateway::class => function ($container) {
+                    $dbAdapter = $container->get(AdapterInterface::class);
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Model\EnablerSales());
+                    return new TableGateway('enabler_sales', $dbAdapter, null, $resultSetPrototype);
+                },
             ],
         ];
     }
@@ -227,7 +257,10 @@ class Module implements ConfigProviderInterface
                         $container->get(Model\ExecutivePurchaseTable::class),
                         $container->get(Model\ExecutiveTransactionTable::class),
                         $container->get(Model\OtpTable::class),
-                        $container->get(Model\CouponsTable::class)
+                        $container->get(Model\CouponsTable::class),
+                        $container->get(Model\EnablerTable::class),
+                        $container->get(Model\EnablerPurchaseTable::class),
+                        $container->get(Model\EnablerSalesTable::class)
                     );
                 },
             ],

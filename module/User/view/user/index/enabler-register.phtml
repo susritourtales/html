@@ -14,84 +14,14 @@
 <div class="container my-5">
   <h1 class="text-center mb-5">TWISTT Enabler Registration Form</h1>
   <form id="registrationForm" enctype="multipart/form-data" novalidate>
-    <!-- <div class="row g-3 mb-3" id="loginType">
-      <div id="divLoginId" class="col-md-6">
-        <label for="lid" class="form-label" id="lblLid">Enter your login id (that you use to login into STT app)</label>
-        <p class="text-danger" style="font-size:10px;">(If your login id is mobile number, it should be entered along with country code)</p>
-        <input type="text" class="form-control" id="lid" name="lid">
-        <button type="button" class="btn primary-btn mt-3" id="btnQUESTT" name="btnQUESTT">Check</button>
-      </div>
-    </div> -->
    <div class="row g-3" id="userDetails">
-        <!--  <div id="divMobile" class="col-md-6">
-        <div class="row">
-          <div class="col-sm-12 col-md-12 col-lg-9">
-            <label for="mobile" class="form-label">Mobile*</label>
-            <input type="tel" class="form-control" id="mobile" name="mobile" pattern="[0-9]*" required>
-            <input type="hidden" id="country">
-            <div class="invalid-feedback">Please provide valid mobile number.</div>
-          </div>
-          <div class="col-sm-12 col-md-12 col-lg-3">
-            <div id="divBtn" class="pt-3 text-end">
-              <button type="button" class="btn primary-btn mt-3" id="btnOtp" name="btnOtp">Send Otp</button>
-              <div id="valid-msg" class="hide text-success">✓ Valid</div>
-              <div id="error-msg" class="hide text-danger"></div>
-            </div>
-            <div id="divCM" class="pt-3 text-end">
-              <button type="button" class="btn primary-btn mt-3" id="changeMobile" name="changeMobile">Edit Mobile</button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div id="divOtp" class="col-md-6">
-        <div class="row">
-          <div class="col-sm-12 col-md-12 col-lg-9">
-            <label for="otp" class="form-label">Enter Otp sent to Mobile</label>
-            <input type="text" class="form-control" id="otp" name="otp">
-          </div>
-          <div class="col-sm-12 col-md-12 col-lg-3 pt-3">
-            <button type="button" class="btn primary-btn mt-3" id="btnVerify" name="btnVerify">Verify Otp</button>
-          </div>
-        </div>
-      </div>
-      <div id="divEmail" class="col-md-6 ">
-        <div class="row">
-            <div class="col-sm-12 col-md-12 col-lg-9">
-                <label for="email" class="form-label">Email* <span class="text-danger" style="font-size:10px;">(all communication will be sent to this email)</span></label>
-                <input type="email" class="form-control" id="email" name="email" required>
-                <div class="invalid-feedback">Please provide a valid email address.</div>
-            </div>
-            <div class="col-sm-12 col-md-12 col-lg-3">
-                <div id="divEBtn" class="pt-3 text-end">
-                    <button type="button" class="btn primary-btn mt-3" id="btnEOtp" name="btnEOtp" disabled>Send Otp</button>
-                    <div id="e-valid-msg" class="hide text-success">✓ Valid</div>
-                    <div id="e-error-msg" class="hide text-danger"></div>
-                </div>
-                <div id="divCEm" class="pt-3 text-end">
-                    <button type="button" class="btn primary-btn mt-3" id="changeEmail" name="changeEmail">Edit Email</button>
-                </div>
-          </div>
-        </div>
-      </div>
-      <div id="divEOtp" class="col-md-6">
-        <div class="row">
-          <div class="col-sm-12 col-md-12 col-lg-9">
-            <label for="otp" class="form-label">Enter Otp sent to Email</label>
-            <input type="text" class="form-control" id="eotp" name="eotp">
-          </div>
-          <div class="col-sm-12 col-md-12 col-lg-3 pt-3">
-            <button type="button" class="btn primary-btn mt-3" id="btnEVerify" name="btnEVerify">Verify Otp</button>
-          </div>
-        </div>
-      </div> -->
-
       <div class="col-md-6 udetails">
         <label for="name" class="form-label">Name*</label>
         <input type="text" class="form-control" id="name" name="name" required>
         <div class="invalid-feedback">Please provide your name.</div>
       </div>
       <div class="col-md-6 udetails">
-        <label for="cname" class="form-label">Company Name</label>
+        <label for="cname" class="form-label">Sponsoring Company Name</label>
         <input type="text" class="form-control" id="cname" name="cname">
       </div>
       <div class="col-md-6 udetails">
@@ -111,15 +41,15 @@
         <div class="invalid-feedback">Please upload your photo.</div>
       </div>
       <div class="col-md-6 udetails">
+        <label for="email" class="form-label">Email* <span class="text-danger" style="font-size:10px;">(all communication will be sent to this email)</span></label>
+        <input type="email" class="form-control" id="email" name="email" required>
+        <div class="invalid-feedback">Please provide a valid email address.</div>
+      </div>
+      <div class="col-md-6 udetails">
         <label for="mobile" class="form-label">Mobile*</label>
         <input type="tel" class="form-control" id="mobile" name="mobile" pattern="[0-9]*" required>
         <input type="hidden" id="country">
         <div class="invalid-feedback">Please provide valid mobile number.</div>
-      </div>
-      <div class="col-md-6 udetails">
-        <label for="email" class="form-label">Email* <span class="text-danger" style="font-size:10px;">(all communication will be sent to this email)</span></label>
-        <input type="email" class="form-control" id="email" name="email" required>
-        <div class="invalid-feedback">Please provide a valid email address.</div>
       </div>
       <div class="col-md-6 udetails">
         <div id="divBtn" class="pt-3 text-start">
@@ -147,4 +77,4 @@
   </form>
 </div>
 <div class="login-bg"></div>
-<script src="<?php echo $this->basePath(); ?>/js/user/add-enabler.js?v=1.0.1"></script>
+<script src="<?php echo $this->basePath(); ?>/js/user/add-enabler.js?v=1.0.2"></script>

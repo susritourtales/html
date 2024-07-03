@@ -1,6 +1,5 @@
   $(document).ready(function() {
     $('#divOtp').hide();
-    //$('#register').hide();
     $('#preview').hide();
     $('#divCM').hide();
     $('#divCEm').hide();
@@ -55,14 +54,13 @@
         }
     });
 
+    function validateEmail($email) {
+        var emailReg = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+        return emailReg.test( $email );
+    }
+
     const form = document.getElementById('registrationForm');
     form.addEventListener('submit', function(event) {
-        if($('#bankAccountConf').val() != $('#bankAccount').val()){
-            messageDisplay('Please check the Bank Account number you have entered..', 2000);
-            event.preventDefault(); 
-            event.stopPropagation(); 
-            return;
-        }
         const fileInput = document.querySelector('input[type="file"]');
         const maxFileSize = 2 * 1024 * 1024; // 2MB in bytes
         
@@ -86,19 +84,19 @@
             var countryCode = countryData.dialCode; 
 
             $("#mobile").prop('disabled', false);
-            $("#lid").prop('disabled', false);
+            $("#email").prop('disabled', false);
             const formData = new FormData(form);
             formData.append("ccmobile", ccmobile);
             formData.append("cc", countryCode);
-            fetch('/twistt/executive/add', {
+            fetch('/twistt/enabler/add', {
                 method: 'POST',
                 body: formData
             })
             .then(response => {
                 if(countryCode !== "91"){
                     $("#mobile").prop('disabled', true);
+                    $("#email").prop('disabled', true);
                 }
-                $("#lid").prop('disabled', false);
                 const contentType = response.headers.get('content-type');
                 if (response.ok && contentType && contentType.includes('application/json')) {
                     return response.json(); 
@@ -115,8 +113,8 @@
             })
             .then(data => {
                 if (data.success) {
-                    messageDisplay('Executive registration successfull!');
-                    console.log('Executive registration successfull!', data);
+                    messageDisplay('TWISTT Enabler registration successfull!');
+                    console.log('TWISTT Enabler registration successfull!', data);
                     setTimeout(function(){
                         window.location.href=BASE_URL+"/twistt/change-password";
                     },2000);
@@ -134,11 +132,16 @@
     });
     $("body").on("click","#btnOtp",function(){
         reset();
+        if(!validateEmail($("#email").val())) {
+            const msg = "Invalid email id";
+            showError(msg);
+            return false;
+        }
         if (iti.isValidNumber()) {
             validMsg.classList.remove("hide");
         } else {
             const errorCode = iti.getValidationError();
-            const msg = errorMap[errorCode] || "Invalid number";
+            const msg = errorMap[errorCode] || "Invalid mobile number";
             showError(msg);
             return false;
         }
@@ -171,29 +174,36 @@
     }).on("click","#btnVerify",function(){
         var otp=$("#otp").val();
         var mobile=$("#mobile").val();
+        var email=$("#email").val();
         var ccmobile=iti.getNumber();
         var countryData = iti.getSelectedCountryData();
         var countryCode = countryData.dialCode;
         var formData=new FormData();
         formData.append("mobile", mobile);
+        formData.append("email", email);
         formData.append("ccmobile", ccmobile);
         formData.append("countryData", countryData);
         formData.append("cc", countryCode);
         formData.append("otp", otp);
-        formData.append("otp_type", '5');
+        formData.append("otp_type", '6');
         formData.append('rb','3');
-        ajaxData('/twistt/executive/verify-otp',formData,function(response){
+        ajaxData('/twistt/enabler/verify-otp',formData,function(response){
             if(response.success){
                 $('#divOtp').hide();
                 $('#divBtn').hide();
+                $('#cbtnc').prop('disabled', false);
                 $("#mobile").prop('disabled', true);
-                $("#changeMobile").hide();
-                $('.udetails').show();
-                $('#register').prop('disabled',false);
+                $('#email').prop('disabled',true);
                 messageDisplay(response.message, 2000);
             }else{
                 messageDisplay(response.message,3000);
             }
         });
+    }).on("change","#cbtnc",function(){
+        if ($('#cbtnc').is(":checked")){
+            $('#register').prop('disabled', false);
+        }else{
+            $('#register').prop('disabled', true);
+        }
     });
 }); 

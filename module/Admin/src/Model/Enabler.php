@@ -1,17 +1,21 @@
 <?php
 namespace Admin\Model;
-class User
+
+class Enabler
 {
     public $id;
-    public $username;
+    public $name;
+    public $company_name;
     public $user_login_id;
     public $password;
     public $hash;
     public $email;
-    public $mobile_number;
+    public $mobile;
     public $country_phone_code;
-    public $user_location;
+    public $country;
+    public $city;
     public $user_type_id;
+    public $login_type;
     public $oauth_provider;
     public $oauth_provider_user_id;
 
@@ -30,14 +34,16 @@ class User
     public function exchangeArray(array $data)
     {
         $this->id = !empty($data['id']) ? $data['id'] : null;
-        $this->username = !empty($data['username']) ? $data['username'] : null;
+        $this->name = !empty($data['name']) ? $data['name'] : null;
+        $this->company_name = !empty($data['company_name']) ? $data['company_name'] : null;
         $this->user_login_id  = !empty($data['user_login_id']) ? $data['user_login_id'] : null;
         $this->password = !empty($data['password']) ? $data['password'] : null;
         $this->hash  = !empty($data['hash']) ? $data['hash'] : null;
         $this->email = !empty($data['email']) ? $data['email'] : null;
-        $this->mobile_number = !empty($data['mobile_number']) ? $data['mobile_number'] : null;
+        $this->mobile = !empty($data['mobile']) ? $data['mobile'] : null;
         $this->country_phone_code = !empty($data['country_phone_code']) ? $data['country_phone_code'] : null;
-        $this->user_location = !empty($data['user_location']) ? $data['user_location'] : null;
+        $this->country = !empty($data['country']) ? $data['country'] : null;
+        $this->city = !empty($data['city']) ? $data['city'] : null;
         $this->user_type_id = !empty($data['user_type_id']) ? $data['user_type_id'] : null;
         $this->oauth_provider = !empty($data['oauth_provider']) ? $data['oauth_provider'] : null;
         $this->oauth_provider_user_id = !empty($data['oauth_provider_user_id']) ? $data['oauth_provider_user_id'] : null;

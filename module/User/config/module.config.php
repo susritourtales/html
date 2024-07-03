@@ -408,6 +408,24 @@ return [
                         'action' => 'enabler-logout',
                     ],
                 ],
+            ],   'twistt-enabler-send-otp' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/twistt/enabler/send-otp',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'enabler-send-otp',
+                    ],
+                ],
+            ],  'twistt-enabler-verify-otp' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/twistt/enabler/verify-otp',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'enabler-verify-otp',
+                    ],
+                ],
             ], 'questt-validity' => [
                 'type' => Segment::class,
                 'options' => [

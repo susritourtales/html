@@ -57,4 +57,12 @@ class Constants
     const TWISTT_EXEC_TERMS = 5;
     const TWISTT_EXEC_LOGOUT = 6;
     const TWISTT_TRACK_COUPONS = 7;
+
+    const TWISTT_EN_PROFILE = 1;
+    const TWISTT_BUY_PLANS = 2;
+    const TWISTT_TRACK_PLANS = 3;
+    const TWISTT_TRACK_PURCHASES = 4;
+    const TWISTT_EN_TERMS = 5;
+    const TWISTT_EN_LOGOUT = 6;
+    const TWISTT_EN_CHANGE_PASSWORD = 7;
 }

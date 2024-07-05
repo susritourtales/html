@@ -116,6 +116,24 @@ class CouponsTable extends BaseTable
       }
   }
 
+  public function getCoupon($where){
+    try {
+      $sql = $this->getSql();
+      $query = $sql->select()
+        ->from($this->tableName)
+        ->where($where)
+        ->limit(1);
+      $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
+      $coupons = [];
+      foreach ($resultSet as $row) {
+        $coupons[] = $row;
+      }
+      return $coupons;
+    } catch (\Exception $e) {
+      return array();
+    }
+  }
+
   public function setCoupons($data, $where)
   {
     try {

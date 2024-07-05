@@ -926,6 +926,109 @@ class IndexController extends BaseController
     $config = $this->getConfig();
     return new ViewModel(['callbackUrl' => $config['hybridauth']['callback']]);
   }
+  public function sttEnablerAuthAction()
+  {
+    $postData = $this->params()->fromPost();
+    $userdetails['user_login_id'] = str_replace("+", "", $postData['loginid']);
+    $userdetails['password'] = $postData['password'];
+    $res = $this->enablerTable->checkPasswordWithUserId($userdetails['user_login_id'], $userdetails['password']);
+    if ($res) {
+      $this->authService->getAdapter()
+        ->setIdentity($userdetails['user_login_id'])
+        ->setCredential($userdetails['password']);
+      $ares = $this->authService->authenticate();
+      return new JsonModel(array('success' => true, "message" => 'credentials valid'));
+    } else {
+      return new JsonModel(array('success' => false, "message" => 'invalid credentials'));
+    }
+  }
+  public function enablerAuthAction()
+  {
+    try {
+      $config = $this->getConfig();
+      $hybridauth = new Hybridauth($config['hybridauth']);
+      $storage = new Session();
+      $error = false;
+
+      if (isset($_GET['provider'])) {
+        if (in_array($_GET['provider'], $hybridauth->getProviders())) {
+          $storage->set('provider', $_GET['provider']);
+        } else {
+          $error = $_GET['provider'];
+        }
+      }
+
+      if (isset($_GET['logout'])) {
+        if (in_array($_GET['logout'], $hybridauth->getProviders())) {
+          $adapter = $hybridauth->getAdapter($_GET['logout']);
+          $adapter->disconnect();
+          session_unset();
+          $storage->clear();
+          header("Location: /twistt/executive/login");
+          exit;
+        } else {
+          $error = $_GET['logout'];
+        }
+      }
+
+      if ($error) {
+        error_log('Hybridauth Error: Provider ' . json_encode($error) . ' not found or not enabled in $config');
+        echo 'Hybridauth Error: Provider ' . json_encode($error) . ' not found or not enabled in $config';
+        exit;
+      }
+
+      if ($provider = $storage->get('provider')) {
+        $hybridauth->authenticate($provider);
+        $storage->set('provider', null);
+        // Retrieve the provider record
+        $adapter = $hybridauth->getAdapter($provider);
+        $userProfile = $adapter->getUserProfile();
+        $accessToken = $adapter->getAccessToken();
+
+        $userdetails['user_login_id'] = $userProfile->email;
+        $userdetails['username'] = $userProfile->displayName;
+        $userdetails['company_name'] = $userProfile->displayName;
+        $userdetails['email'] = $userProfile->email;
+        $userdetails['country'] = $userProfile->country;
+        $userdetails['city'] = $userProfile->city;
+        $userdetails['login_type'] = \Admin\Model\Enabler::login_type_social;
+        if ($userProfile->photoURL !== null && $userProfile->photoURL !== "")
+          $userdetails['photo_url'] = strtok($userProfile->photoURL, '?');
+        $userdetails['access_token'] = $accessToken['access_token'];
+        $userdetails['token_expiry'] = $accessToken['expires_at'];
+        $aes = new Aes();
+        $encodeContent = $aes->encrypt($accessToken['access_token']);
+        $userdetails['password'] = $encodeContent['password'];
+        $userdetails['hash'] = $encodeContent['hash'];
+        $userId = $this->enablerTable->getField(['user_login_id' => $userdetails['user_login_id']], 'id');
+        if ($userId) {
+          $updateValues['access_token'] = $userdetails['access_token'];
+          $updateValues['password'] = $userdetails['password'];
+          $updateValues['hash'] = $userdetails['hash'];
+          $ures = $this->enablerTable->updateEnabler($updateValues, ['id' => $userId]);
+          if (!$ures)
+            return new ViewModel(['success' => false, "message" => 'unknown error.. please try again later..']);
+          $this->authService->getAdapter()
+            ->setIdentity($userdetails['user_login_id'])
+            ->setCredential($userdetails['password']);
+          $this->authService->authenticate();
+          if ($this->authService->hasIdentity()) {
+            $config = $this->getConfig();
+            $loginId = $this->authService->getIdentity();
+            //$userDetails = $this->enablerTable->getEnablerDetails(['user_login_id' => $loginId['user_login_id']]);
+            $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/enabler/buy-plans');
+          } else {
+            $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/enabler/login');
+          }
+        } else {
+          return new ViewModel(['success' => false, "message" => 'not a valid TWISTT Enabler']);
+        }
+      }
+    } catch (Exception $e) {
+      error_log($e->getMessage());
+      echo $e->getMessage();
+    }
+  }
 
   public function enablerSendOtpAction()
   {
@@ -1098,19 +1201,24 @@ class IndexController extends BaseController
         if (!$uploadStatus) {
           return new JsonModel(array('success' => false, "message" => 'unable to upload photo.. try agian after sometime..'));
         }
+        $enablerdetails['photo_url'] = $filePath;
     } else {
       return new JsonModel(array('success' => false, "message" => 'image not submitted.'));
     }
 
     $enablerdetails['username'] = $postData['name'];
+    $enablerdetails['company_name'] = $postData['cname'];
     $enablerdetails['mobile_number'] = $postData['mobile'];
     $enablerdetails['country_phone_code'] = $postData['cc'];
     $enablerdetails['email'] = $postData['email'];
     $postData['ccmobile'] = str_replace("+", "", $postData['ccmobile']);
-    if($postData['cc'] == "91")
+    if($postData['cc'] == "91"){
+      $enablerdetails['login_type'] = \Admin\Model\Enabler::login_type_mobile;
       $enablerdetails['user_login_id'] = $postData['ccmobile'];
-    else
+    }else{
+      $enablerdetails['login_type'] = \Admin\Model\Enabler::login_type_email;
       $enablerdetails['user_login_id'] = $postData['email'];
+    }
     $enablerdetails['country'] = $postData['country'];
     $enablerdetails['city'] = $postData['city'];
     $aes = new Aes();
@@ -1122,7 +1230,7 @@ class IndexController extends BaseController
       return new JsonModel(array('success' => false, "message" => 'TWISTT Enabler already exists'));
     }
     $eres = $this->enablerTable->addEnabler($enablerdetails);
-    if ($eres) {
+    if ($eres['id']) {
       $this->authService->getAdapter()
         ->setIdentity($enablerdetails['user_login_id'])
         ->setCredential($enablerdetails['password']);
@@ -1131,6 +1239,371 @@ class IndexController extends BaseController
     } else {
       return new JsonModel(array('success' => false, "message" => 'error saving your details.. please try after sometime..'));
     }
+  }
+
+  public function enablerEditAction()
+  {
+    if ($this->authService->hasIdentity()) {
+      $loginId = $this->authService->getIdentity();
+      $userId = $this->enablerTable->enablerExists($loginId['user_login_id']);
+      $postData = $this->params()->fromPost();
+      $validImageFiles = array('png', 'jpg', 'jpeg');
+      $userdetails = [];
+      $uploadedFile = $this->params()->fromFiles('photo');
+
+      if (isset($uploadedFile)) {
+          if ($uploadedFile['error'] !== UPLOAD_ERR_NO_FILE) {
+            $attachment = $uploadedFile;
+            $filename = $attachment['name'];
+            $fileExt = explode(".", $filename);
+            $ext = end($fileExt) ? end($fileExt) : "";
+            $ext = strtolower($ext);
+            $filenameWithoutExt = $this->generateRandomString() . "_" . strtotime(date("Y-m-d H:i:s"));
+            $filename = $filenameWithoutExt . "." . $ext;
+            $filePath = "data/profiles";
+            $filePath = $filePath . "/" . $filename;
+            if (!in_array(strtolower($ext), $validImageFiles)) {
+              return new JsonModel(array("success" => false, "message" => $ext . " file format is not supported !"));
+            }
+            $uploadStatus = $this->pushFiles($filePath, $attachment['tmp_name'], $attachment['type']);
+            if (!$uploadStatus) {
+              return new JsonModel(array('success' => false, "message" => 'unable to upload photo.. try agian after sometime..'));
+            } else { // new photo successfully uploaded - delete old photo
+              $oldPPUrl = $this->enablerTable->getField(['id' => $userId], 'photo_url');
+              if ($this->fileExists($oldPPUrl)) {
+                if (!$this->deleteFile($oldPPUrl)) {
+                  return new JsonModel(array('success' => false, "message" => 'unable to delete old photo..'));
+                }
+              } /* else {
+                return new JsonModel(array('success' => false, "message" => 'unable to find old photo to be replaced..'));
+              } */
+            }
+            $userdetails['photo_url'] = $filePath;
+          }
+      } else {
+        return new JsonModel(array('success' => false, "message" => 'Photo not submitted.'));
+      }
+
+      $userdetails['username'] = $postData['name'];
+      $userdetails['country'] = $postData['country'];
+      $userdetails['city'] = $postData['city'];
+      $userdetails['company_name'] = $postData['cname'];
+      if ($userId) {
+        $ures = $this->enablerTable->updateEnabler($userdetails, ['id' => $userId]);
+      } else {
+        return new JsonModel(array('success' => false, "message" => 'unknown error occurred.. please try after sometime..'));
+      }
+      if ($ures) {
+        return new JsonModel(array('success' => true, "message" => 'updated succesfully..'));
+      } else {
+        return new JsonModel(array('success' => false, "message" => 'error saving user details.. please try after sometime..'));
+      }
+    } else {
+      $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/enabler/login');
+    }
+  }
+
+  public function enablerForgotPasswordAction()
+  {
+    return new ViewModel();
+  }
+
+  public function enablerChangePasswordAction()
+  {
+    if ($this->authService->hasIdentity()) {
+      $loginId = $this->authService->getIdentity();
+      return new ViewModel(['userId' => $loginId['user_login_id']]);
+    } else {
+      $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/enabler/login');
+    }
+  }
+  public function enablerResetPasswordAction()
+  {
+    $postData = $this->params()->fromPost();
+    if ($this->authService->hasIdentity()) {
+      $loginId = $this->authService->getIdentity();
+      $check = $this->enablerTable->checkPasswordWithUserId($loginId['user_login_id'], $postData['current_password']);
+      if ($check) {
+        $aes = new Aes();
+        $encodeContent = $aes->encrypt($postData['new_password']);
+        $userdetails['password'] = $encodeContent['password'];
+        $userdetails['hash'] = $encodeContent['hash'];
+        $res = $this->enablerTable->updateEnabler($userdetails, ['id' => $check['id']]);
+        if ($res)
+          return new JsonModel(array('success' => true, "message" => 'password changed succesfully..'));
+        else
+          return  new JsonModel(array('success' => false, "message" => 'unable to change password.. try after sometime..'));
+      } else {
+        return new JsonModel(array('success' => false, "message" => 'Current password wrong'));
+      }
+    } else {
+      if ($this->getRequest()->isXmlHttpRequest()) {
+        $request = $this->getRequest()->getPost();
+        $type = $request['type'];
+        $otp = $request['otp'];
+        $mobile = $request['mobile'];
+        $new_password = $request['new_password'];
+        $data = ['otp' => $otp, 'otp_type_id' => $type, 'verification_mode' => \Admin\Model\Otp::Mobile_Verification, 'sent_status_id' => \Admin\Model\Otp::Is_verifed, 'otp_requested_by' => \Admin\Model\Otp::TWISTT_Request, 'otp_sent_to' => $mobile];
+        $verify = $this->otpTable->verifyOtp($data);
+        if ($verify) {
+          $aes = new Aes();
+          $encodeContent = $aes->encrypt($new_password);
+          $userdetails['password'] = $encodeContent['password'];
+          $userdetails['hash'] = $encodeContent['hash'];
+          $res = $this->enablerTable->updateEnabler($userdetails, ['mobile_number' => $mobile]);
+          if ($res)
+            return new JsonModel(array('success' => true, "message" => 'password changed succesfully..'));
+          else
+            return  new JsonModel(array('success' => false, "message" => 'unable to change password.. try after sometime..'));
+        }
+        return  new JsonModel(array('success' => false, "message" => 'unable to change password.. try after sometime..'));
+      } else {
+        $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/enabler/login');
+      }
+    }
+  }
+
+  public function enablerProfileAction()
+  {
+    if ($this->authService->hasIdentity()) {
+      $loginId = $this->authService->getIdentity();
+      $userDetails = $this->enablerTable->getEnablerDetails(['user_login_id' => $loginId['user_login_id']]);
+      $config = $this->getConfig();
+      return new ViewModel(['userDetails' => $userDetails, 'config' => $config['hybridauth'], 'imageUrl' => $this->filesUrl()]);
+    } else {
+      $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/enabler/login');
+    }
+  }
+
+  public function enablerBuyPlansAction()
+  {
+    if ($this->authService->hasIdentity()) {
+      $loginId = $this->authService->getIdentity();
+      $userDetails = $this->enablerTable->getEnablerDetails(['user_login_id' => $loginId['user_login_id']]);
+      $enablerPlans = $this->enablerPlansTable->getEnablerPlans(['status' => \Admin\Model\EnablerPlans::status_active]);
+      $config = $this->getConfig();
+      return new ViewModel(['userDetails' => $userDetails, 'enablerPlans' => $enablerPlans, 'config' => $config['hybridauth'], 'imageUrl' => $this->filesUrl()]);
+    } else {
+      $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
+    }
+  }
+
+  public function getPlanPriceAction(){
+    if ($this->getRequest()->isXmlHttpRequest()) {
+      $request = $this->getRequest()->getPost();
+      $plan_id = $request['pid'];
+      $coupon_code = $request['cc'];
+      if ($this->authService->hasIdentity()) {
+        $loginId = $this->authService->getIdentity();
+        $userDetails = $this->enablerTable->getEnablerDetails(['user_login_id' => $loginId['user_login_id']]);
+        $plan = $this->enablerPlansTable->getEnablerPlans(['status' => \Admin\Model\EnablerPlans::status_active, 'id' => $plan_id]);
+        $planPrice = 0.00;
+        $pad = 0.00;
+        $discount = 0;
+        if($coupon_code != ""){
+          $checkCoupon = $this->couponsTable->getCoupon(['coupon_code' => $coupon_code]);
+          if($checkCoupon){
+            $today = date('Y-m-d');
+            if($checkCoupon[0]['validity_end_date'] < $today)
+              return new JsonModel(array('success' => false, "message" => 'This coupon code expired..'));
+
+            if($checkCoupon[0]['coupon_type'] == \Admin\Model\Coupons::Coupon_Type_Complimentary){
+              if(str_contains($plan[0]['plan_name'], $checkCoupon[0]['coupon_type']))
+                return new JsonModel(array('success' => true, "message" => 'success', 'pp' => $planPrice, 'pad' => $pad));
+              else
+                return new JsonModel(array('success' => false, "message" => 'This coupon code cannot be applied for the selected plan..'));
+            }else{
+              $discount = number_format($this->subscriptionPlanTable->getField(['active' => '1'], 'cd_percentage'), 2);
+              if($userDetails['country_phone_code'] == '91'){
+                $planPrice = number_format($plan[0]['price_inr'], 2);
+              }else{
+                $planPrice = number_format($plan[0]['price_usd'], 2);
+              }
+              $pad = number_format($planPrice * (1 - $discount / 100), 2);
+              if(str_contains($plan[0]['plan_name'], 'P'))
+                return new JsonModel(array('success' => true, "message" => 'success', 'pp' => $planPrice, 'pad' => $pad));
+              else
+                return new JsonModel(array('success' => false, "message" => 'This coupon code cannot be applied for the selected plan..'));
+            }
+          }else{
+            return new JsonModel(array('success' => false, "message" => 'This coupon code is not valid..'));
+          }
+        }
+      } else {
+        $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/enabler/login');
+      }
+    } else {
+      $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/enabler/login');
+    }
+  }
+
+  public function enablerPayAction()
+  {
+    if ($this->authService->hasIdentity()) {
+      $loginId = $this->authService->getIdentity();
+      $userDetails = $this->enablerTable->getEnablerDetails(['user_login_id' => $loginId['user_login_id']]);
+      $request = $this->getRequest()->getPost();
+      $cc = $request['cc'];
+      $pp = $request['pp'];
+      $totalAmount = $request['pad'];
+      $pid = $request['pid'];
+      $dname = $request['dname'];
+
+      if ($totalAmount != 0 && round($totalAmount) != 0) {
+        $saveData['payment_status'] = \Admin\Model\ExecutivePurchase::payment_in_process;
+        $saveData['user_id'] = $userDetails['id'];
+        $saveData['display_name'] = $dname;
+        $saveData['plan_id'] = $pid;
+        $saveData['coupon_code'] = $cc;
+        $saveData['actual_price'] = number_format((float)$pp, 2, '.', '');
+        $saveData['price_after_discount'] = number_format((float)$totalAmount, 2, '.', '');
+        if ($userDetails['country_phone_code'] == "91") {
+          $saveData['currency'] = "INR";
+        } else {
+          $saveData['currency'] = "USD";
+        }
+        $purchaseResp = $this->enablerPurchaseTable->addEnablerPurchase($saveData);
+        if ($purchaseResp['success'])
+          $purchaseId = $purchaseResp['id'];
+        if ($purchaseId) {
+          $api = new Razorpay();
+          if ($userDetails['country_phone_code'] == "91") {
+            $orderData = [
+              'amount'          => intval($totalAmount * 100),
+              'currency'        => 'INR',
+              'receipt' => 'TP_' . $purchaseId,
+              'payment_capture' => 1
+            ];
+          } else {
+            $orderData = [
+              'amount'          => intval($totalAmount * 100),
+              'currency'        => 'USD',
+              'receipt' => 'TP_' . $purchaseId,
+              'payment_capture' => 1
+            ];
+          }
+          $razorpayOrder = [];
+          try {
+            $response = $api->paymentRequestCreate($orderData);
+            $razorpayOrder['id'] = $response['id'];
+            $razorpayOrder['amount'] = $response['amount'];
+            $razorpayOrder['currency'] = $response['currency'];
+            $razorpayOrder['receipt'] = $response['receipt'];
+          } catch (\Exception $e) {
+            return new JsonModel(array('success' => false, 'message' => $e->getMessage()));
+          }
+          if ($response) {
+            $setResp = $this->enablerPurchaseTable->setEnablerPurchase(['receipt' => $razorpayOrder['receipt'], 'razorpay_order_id' => $razorpayOrder['id']], ['id' => $purchaseId]);
+            if ($setResp) {
+              return new JsonModel(array('success' => true, 'message' => 'order created', 'order' => $razorpayOrder));
+            } else {
+              return new JsonModel(array('success' => false, 'message' => 'unable to process your payment now.. please try after sometime..'));
+            }
+          } else {
+            return new JsonModel(array('success' => false, 'message' => 'unable to process your payment now.. please try after sometime..'));
+          }
+        }
+      }else{
+        // chekc if complimentary coupon and write code accordingly
+      }
+    } else {
+      $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/enabler/login');
+    }
+  }
+  public function enablerCheckoutAction()
+  {
+    if ($this->authService->hasIdentity()) {
+      $loginId = $this->authService->getIdentity();
+      $userDetails = $this->userTable->getUserDetails(['user_login_id' => $loginId['user_login_id']]);
+      $bankDetails = $this->executiveDetailsTable->getExecutiveDetails(['user_id' => $userDetails['id']]);
+      $questtValid = $this->questtSubscriptionTable->isValidQuesttUser($userDetails['id']);
+
+      if ($questtValid && $bankDetails['banned'] == '0') {
+        $request = $this->getRequest()->getPost();
+        $dc = $request['dc'];
+        $cc = $request['cc'];
+        $razorpay_payment_id = $request['razorpay_payment_id'];
+        $razorpay_order_id = $request['razorpay_order_id'];
+        $razorpay_signature = $request['razorpay_signature'];
+
+
+        $attributes = array(
+          'razorpay_order_id' => $razorpay_order_id,
+          'razorpay_payment_id' => $razorpay_payment_id,
+          'razorpay_signature' => $razorpay_signature
+        );
+        $api = new Razorpay();
+        try {
+          $api->checkPaymentSignature($attributes);
+          $orderResp = $api->checkOrderStatus($razorpay_order_id);
+          if ($orderResp['status'] !== "paid")
+            return new JsonModel(array('success' => false, 'message' => 'payment not successful'));
+
+          $setResp = $this->executivePurchaseTable->setExecutivePurchase(['razorpay_payment_id' => $razorpay_payment_id, 'razorpay_signature' => $razorpay_signature, 'payment_status' => \Admin\Model\ExecutivePurchase::payment_success], ['razorpay_order_id' => $razorpay_order_id]);
+          if ($setResp) {
+            $purchase = $this->executivePurchaseTable->getExecutivePurchase(['razorpay_payment_id' => $razorpay_payment_id]);
+            $ved = $this->questtSubscriptionTable->getField(['user_id' => $purchase['user_id']], 'end_date');
+            if ($userDetails['country_phone_code'] == '91') {
+              $udcp = $this->subscriptionPlanTable->getField(['id' => 1], 'dp_inr');
+              $uccp = $this->subscriptionPlanTable->getField(['id' => 1], 'ccp_inr');
+            } else {
+              $udcp = $this->subscriptionPlanTable->getField(['id' => 1], 'dp_usd');
+              $uccp = $this->subscriptionPlanTable->getField(['id' => 1], 'ccp_usd');
+            }
+            for ($i = 0; $i < $dc; $i++) {
+              $coupons[$i]['executive_id'] = $purchase['executive_id'];
+              $coupons[$i]['purchase_id'] = $purchase['id'];
+              $coupons[$i]['coupon_type'] = \Admin\Model\Coupons::Coupon_Type_Discount;
+              $coupons[$i]['coupon_code'] = $this->generateCouponCode('D');
+              $coupons[$i]['amount'] = $udcp;
+              $coupons[$i]['validity_end_date'] = $ved;
+              $coupons[$i]['coupon_status'] = \Admin\Model\Coupons::Coupon_Status_Active;
+            }
+            $count = count($coupons);
+            for ($j = $count; $j < $count + $cc; $j++) {
+              $coupons[$j]['executive_id'] = $purchase['executive_id'];
+              $coupons[$j]['purchase_id'] = $purchase['id'];
+              $coupons[$j]['coupon_type'] = \Admin\Model\Coupons::Coupon_Type_Complimentary;
+              $coupons[$j]['coupon_code'] = $this->generateCouponCode('C');
+              $coupons[$j]['amount'] = $uccp;
+              $coupons[$j]['validity_end_date'] = $ved;
+              $coupons[$j]['coupon_status'] = \Admin\Model\Coupons::Coupon_Status_Active;
+            }
+            $miresp = $this->couponsTable->addMutipleCoupons($coupons);
+            if ($miresp) {
+              return new JsonModel(array('success' => true, 'message' => 'payment successful'));
+            } else {
+              return new JsonModel(array('success' => false, 'message' => 'unknown error'));
+            }
+          } else {
+            return new JsonModel(array('success' => false, 'message' => 'unable to process.. please after sometime'));
+          }
+        } catch (\Exception $e) {
+          return new JsonModel(array('success' => false, "message" => 'Razorpay Error : ' . $e->getMessage()));
+        }
+      } else {
+        return new JsonModel(array('success' => false, "message" => 'coupons purchase not allowed..'));
+      }
+    } else {
+      $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
+    }
+  }
+
+  public function enablerTermsAction()
+  {
+    if ($this->authService->hasIdentity()) {
+      $loginId = $this->authService->getIdentity();
+      $userDetails = $this->enablerTable->getEnablerDetails(['user_login_id' => $loginId['user_login_id']]);
+      $config = $this->getConfig();
+      return new ViewModel(['userDetails' => $userDetails, 'config' => $config['hybridauth'], 'imageUrl' => $this->filesUrl()]);
+    } else {
+      $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/enabler/login');
+    }
+  }
+
+  public function enablerLogoutAction()
+  {
+    return new ViewModel();
   }
   public function termsPrivacyAction()
   {

@@ -1,0 +1,85 @@
+<?php
+    include 'vendor/autoload.php';
+    use Hybridauth\Hybridauth;
+    $hybridauth = new Hybridauth($config);
+    $adapters = $hybridauth->getConnectedAdapters();
+?>
+<link rel="stylesheet" href="<?php echo $this->basePath();?>/css/twistt.css?v=1.0.1">
+<div class="container-fluid my-5">
+    <div class="container">
+        <?php 
+            $logoutUrl = $this->basePath() . '/twistt/enabler/logout';
+            if($adapters){ 
+                if($userDetails['oauth_provider'] == 'g'){
+                    $logoutUrl = $config['callback'] . "?logout=Google";
+                }elseif($userDetails['oauth_provider'] == 'f'){
+                    $logoutUrl = $config['callback'] . "?logout=Facebook";
+                }elseif($userDetails['oauth_provider'] == 'a'){
+                    $logoutUrl = $config['callback'] . "?logout=Apple";
+                }
+            }
+            echo $this->partial('/enb-sidebar', array('activeTab'=>\Application\Constants\Constants::TWISTT_EN_PROFILE, 'logoutUrl'=>$logoutUrl)); ?>
+        <div class="content bg-white custom-shadow p-4 color-333"> 
+            <div class="bg-light border-radius-10 custom-shadow p-4 color-333">
+                <div class="user-page-name text-uppercase avant-md pb-3">
+                    <h5>TWISTT Enabler Dashboard</h5>
+                </div>
+                <div class="stt-bg-primary border-radius-10 custom-shadow p-4 color-333">
+                    <h6 class="font-weight-bold text-uppercase"><u>TWISTT Enabler Details</u></h6>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="row pt-1">
+                                <div class="col-sm-12 col-md-4"><?php echo "Mobile: (" . $userDetails['country_phone_code'] . ")" . $userDetails['mobile_number']; ?></div>
+                                <div class="col-sm-12 col-md-4"><?php echo "Spl Discount: " . $userDetails['stt_disc'] . "%"; ?></div>
+                                <div class="col-sm-12 col-md-4"><?php echo "Email: " . $userDetails['email']; ?></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <form id="profileForm" enctype="multipart/form-data" novalidate>
+                    <div class="bg-white border-radius-10 custom-shadow p-4 color-333 my-3">
+                        <h6 id="hdr" class="font-weight-bold border-radius-10 text-uppercase my-3 p-2 stt-bg-light my-3"><u>Edit Profile</u></h6>
+                        <div class="row">
+                            <div class="col">
+                                <div class="row pt-1">
+                                    <div class="col-sm-12 col-md-6">
+                                        <label for="name" class="form-label">Name*</label>
+                                        <input type="text" class="form-control" id="name" name="name" required value="<?php echo $userDetails['username']; ?>">
+                                        <div class="invalid-feedback">Please provide your name.</div>
+                                    </div>
+                                    <div class="col-sm-12 col-md-6">
+                                        <label for="name" class="form-label">Company Name</label>
+                                        <input type="text" class="form-control" id="cname" name="cname" value="<?php echo $userDetails['company_name']; ?>">
+                                    </div>
+                                    
+                                </div>
+                                <div class="row pt-3">
+                                    <div class="col-sm-12 col-md-6">
+                                        <label for="city" class="form-label">City / Town*</label>
+                                        <input type="text" class="form-control" id="city" name="city" required value="<?php echo $userDetails['city']; ?>">
+                                        <div class="invalid-feedback">Please provide City name.</div>
+                                    </div>
+                                    <div class="col-sm-12 col-md-6">
+                                        <label for="country" class="form-label">Country / State*</label>
+                                        <input type="text" class="form-control" id="country" name="country" required value="<?php echo $userDetails['country']; ?>">
+                                        <div class="invalid-feedback">Please provide a valid Country name.</div>
+                                    </div>
+                                </div>
+                                <div class="row pt-3 my-3">
+                                    <div class="col-sm-12 col-md-6">
+                                        <label class="form-label text-start">Profile Pic*</label>
+                                        <div><img src="<?php echo $imageUrl . $userDetails['photo_url']; ?>" id="preview" alt="Image Preview" height="150" width="150"></div>
+                                        <input type="file" class="form-control my-3" id="photo" name="photo">
+                                        <div class="invalid-feedback text-white">Please upload your photo.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn primary-btn text-white" id="submit">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="<?php echo $this->basePath(); ?>/js/user/enabler-profile.js"></script>

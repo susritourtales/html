@@ -18,7 +18,7 @@ class EnablerSalesTable extends BaseTable
     $this->tableName = array("p" => "enabler_sales");
   }
 
-  public function addExecutivePurchase(array $data)
+  public function addEnablerSale(array $data)
   {
     try {
       $insert = $this->insert($data);

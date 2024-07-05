@@ -31,6 +31,10 @@ class Enabler
     const Is_user_verified=1;
     const Is_user_not_verified=0;
 
+    const login_type_mobile = 'm';
+    const login_type_email = 'e';
+    const login_type_social = 's';
+
     public function exchangeArray(array $data)
     {
         $this->id = !empty($data['id']) ? $data['id'] : null;

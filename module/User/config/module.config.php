@@ -264,7 +264,7 @@ return [
                         'action' => 'executive-track-commissions',
                     ],
                 ],
-            ],   'twistt-executive-load-commissions' => [
+            ],  'twistt-executive-load-commissions' => [
                 'type' => Literal::class,
                 'options' => [
                     'route' => '/twistt/executive/load-transactions-list',
@@ -273,7 +273,7 @@ return [
                         'action' => 'load-transactions-list',
                     ],
                 ],
-            ],'twistt-executiveterms' => [
+            ], 'twistt-executiveterms' => [
                 'type' => Literal::class,
                 'options' => [
                     'route' => '/twistt/executive-terms',
@@ -426,6 +426,132 @@ return [
                         'action' => 'enabler-verify-otp',
                     ],
                 ],
+            ],  'twistt-enabler-auth' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/twistt/enabler/auth',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'enabler-auth',
+                    ],
+                ],
+            ], 'twistt-enabler-stt-auth' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/twistt/enabler/stt-auth',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'stt-enabler-auth',
+                    ],
+                ],
+            ], 'twistt-enabler-add' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/twistt/enabler/add',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'enabler-add',
+                    ],
+                ],
+            ], 'twistt-enabler-edit' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/twistt/enabler/edit',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'enabler-edit',
+                    ],
+                ],
+            ],  'twistt-enabler-buy-plans' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/twistt/enabler/buy-plans',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'enabler-buy-plans',
+                    ],
+                ],
+            ], 'twistt-enabler-track-plans' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/twistt/enabler/track-plans',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'enabler-track-plans',
+                    ],
+                ],
+            ],  'twistt-enabler-load-plans' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/twistt/enabler/load-plans-list',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'load-plans-list',
+                    ],
+                ],
+            ], 'twistt-enabler-track-purchases' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/twistt/enabler/track-purchases',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'enabler-track-purchases',
+                    ],
+                ],
+            ],  'twistt-enabler-load-purchases' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/twistt/enabler/load-purchases-list',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'load-purchases-list',
+                    ],
+                ],
+            ], 'twistt-enabler-profile' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/twistt/enabler/profile',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'enabler-profile',
+                    ],
+                ],
+            ],  'enabler-get-plan-price' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/twistt/enabler/get-plan-price',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'get-plan-price',
+                    ],
+                ],
+            ],  'twistt-enabler-terms' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/twistt/enabler/terms',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'enabler-terms',
+                    ],
+                ],
+            ],  'twistt-enabler-pay' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/twistt/enabler/pay',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'enabler-pay',
+                    ],
+                ],
+            ], 'twistt-enabler-checkout' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/twistt/enabler/checkout',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'enabler-checkout',
+                    ],
+                ],
             ], 'questt-validity' => [
                 'type' => Segment::class,
                 'options' => [
@@ -460,6 +586,33 @@ return [
                     'defaults' => [
                         'controller' => Controller\IndexController::class,
                         'action' => 'reset-password',
+                    ],
+                ],
+            ], 'enabler-forgot-password' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/twistt/enabler/forgot-password',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'enabler-forgot-password',
+                    ],
+                ],
+            ], 'enabler-change-password' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/twistt/enabler/change-password',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'enabler-change-password',
+                    ],
+                ],
+            ], 'enabler-reset-password' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/twistt/enabler/reset-password',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'enabler-reset-password',
                     ],
                 ],
             ], 

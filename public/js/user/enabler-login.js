@@ -44,7 +44,7 @@ $(document).ready(function() {
             showError(msg);
         }
     }).on("click", "#btnFP", function() {
-        window.location.href = BASE_URL + '/twistt/executive/forgot-password';
+        window.location.href = BASE_URL + '/twistt/enabler/forgot-password';
     }).on("click", "#btnLogin", function() {
         var loginid = "";
         if($('#divMobile').is(':visible')){
@@ -70,11 +70,11 @@ $(document).ready(function() {
         var formData=new FormData();
         formData.append("loginid", loginid);
         formData.append("password", password);
-        ajaxData('/twistt/executive/stt-auth',formData,function(response){
+        ajaxData('/twistt/enabler/stt-auth',formData,function(response){
             if(response.success){
                 messageDisplay(response.message, 2000);
                 setTimeout(function(){
-                    window.location.href=BASE_URL+"/twistt/executive/buy-coupons";
+                    window.location.href=BASE_URL+"/twistt/enabler/buy-plans";
                 },3000);
             }else{
                 messageDisplay(response.message,3000);

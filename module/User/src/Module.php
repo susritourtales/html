@@ -41,7 +41,8 @@ class Module implements ConfigProviderInterface
                         $container->get(\Admin\Model\CouponsTable::class),
                         $container->get(\Admin\Model\EnablerTable::class),
                         $container->get(\Admin\Model\EnablerPurchaseTable::class),
-                        $container->get(\Admin\Model\EnablerSalesTable::class)
+                        $container->get(\Admin\Model\EnablerSalesTable::class),
+                        $container->get(\Admin\Model\EnablerPlansTable::class)
                     );
                 },
             ],

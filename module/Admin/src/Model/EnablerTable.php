@@ -126,6 +126,38 @@ class EnablerTable extends BaseTable
         }
     }
 
+    public function checkPasswordWithUserId($userId, $password)
+    {
+        try {
+            $sql = $this->getSql();
+            $query = $sql->select()
+                ->from($this->tableName)
+                ->columns(array("id", "password", "hash"))
+                ->where(array('display' => 1, 'user_login_id' => $userId));
+            $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
+            $user = array();
+            foreach ($resultSet as $row) {
+                $user[] = $row;
+            }
+            if (count($user)) {
+                $aes = new Aes();
+                if ($user[0]['hash'] == "") {
+                    return "";
+                }
+                $decryptedPassword = $aes->decrypt($user[0]['password'], $user[0]['hash']);
+                if ($decryptedPassword == $password) {
+                    return $user[0];
+                } else {
+                    return "";
+                }
+            } else {
+                return "";
+            }
+        } catch (\Exception $e) {
+            return "";
+        }
+    }
+    
     public function updateEnabler($data, $where)
     {
         try {

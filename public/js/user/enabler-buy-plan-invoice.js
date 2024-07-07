@@ -13,6 +13,12 @@ $(document).ready(function(){
             processData: false,
             success: function(data)
             {
+                if(data.rid){
+                    messageDisplay(data.message);
+                    setTimeout(function(){
+                        window.location.href=BASE_URL+"/twistt/enabler/receipt/" + data.rid;
+                    },2000);
+                }
                 ajaxCall=null;
                 var options = {
                     "key": "rzp_test_dn58ZwDYwvA7U3",
@@ -39,7 +45,7 @@ $(document).ready(function(){
                             {
                                 messageDisplay(resp.message);
                                 setTimeout(function(){
-                                    window.location.href=BASE_URL+"/twistt/enabler/receipt";
+                                    window.location.href=BASE_URL+"/twistt/enabler/receipt/" + resp.pid;
                                 },2000);
                             },
                             error: function(resp)

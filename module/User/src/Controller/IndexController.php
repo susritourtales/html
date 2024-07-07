@@ -924,7 +924,7 @@ class IndexController extends BaseController
   public function enablerLoginAction()
   {
     $config = $this->getConfig();
-    return new ViewModel(['callbackUrl' => $config['hybridauth']['callback']]);
+    return new ViewModel(['callbackUrl' => $config['enbhybridauth']['callback']]);
   }
   public function sttEnablerAuthAction()
   {
@@ -946,7 +946,7 @@ class IndexController extends BaseController
   {
     try {
       $config = $this->getConfig();
-      $hybridauth = new Hybridauth($config['hybridauth']);
+      $hybridauth = new Hybridauth($config['enbhybridauth']);
       $storage = new Session();
       $error = false;
 
@@ -1008,20 +1008,21 @@ class IndexController extends BaseController
           $ures = $this->enablerTable->updateEnabler($updateValues, ['id' => $userId]);
           if (!$ures)
             return new ViewModel(['success' => false, "message" => 'unknown error.. please try again later..']);
-          $this->authService->getAdapter()
-            ->setIdentity($userdetails['user_login_id'])
-            ->setCredential($userdetails['password']);
-          $this->authService->authenticate();
-          if ($this->authService->hasIdentity()) {
-            $config = $this->getConfig();
-            $loginId = $this->authService->getIdentity();
-            //$userDetails = $this->enablerTable->getEnablerDetails(['user_login_id' => $loginId['user_login_id']]);
-            $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/enabler/buy-plans');
-          } else {
-            $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/enabler/login');
-          }
         } else {
-          return new ViewModel(['success' => false, "message" => 'not a valid TWISTT Enabler']);
+          $ures = $this->enablerTable->addEnabler($userdetails);
+          if (!$ures)
+            return new ViewModel(['success' => false, "message" => 'unknown error.. please try again later..']);
+        }
+        $this->authService->getAdapter()
+          ->setIdentity($userdetails['user_login_id'])
+          ->setCredential($userdetails['password']);
+        $this->authService->authenticate();
+        if ($this->authService->hasIdentity()) {
+          $config = $this->getConfig();
+          $loginId = $this->authService->getIdentity();
+          $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/enabler/buy-plans');
+        } else {
+          $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/enabler/login');
         }
       }
     } catch (Exception $e) {
@@ -1369,7 +1370,11 @@ class IndexController extends BaseController
       $loginId = $this->authService->getIdentity();
       $userDetails = $this->enablerTable->getEnablerDetails(['user_login_id' => $loginId['user_login_id']]);
       $config = $this->getConfig();
-      return new ViewModel(['userDetails' => $userDetails, 'config' => $config['hybridauth'], 'imageUrl' => $this->filesUrl()]);
+      if($userDetails['login_type'] == \Admin\Model\Enabler::login_type_social) 
+        $imageUrl = "";
+      else
+        $imageUrl = $this->filesUrl();
+      return new ViewModel(['userDetails' => $userDetails, 'config' => $config['hybridauth'], 'imageUrl' => $imageUrl]);
     } else {
       $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/enabler/login');
     }
@@ -1379,10 +1384,20 @@ class IndexController extends BaseController
   {
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
-      $userDetails = $this->enablerTable->getEnablerDetails(['user_login_id' => $loginId['user_login_id']]);
-      $enablerPlans = $this->enablerPlansTable->getEnablerPlans(['status' => \Admin\Model\EnablerPlans::status_active]);
+      $enablerDetails = $this->enablerTable->getEnablerDetails(['user_login_id' => $loginId['user_login_id']]);
+      $epWhere['status'] = \Admin\Model\EnablerPlans::status_active;
+      $cpa = $this->enablerPurchaseTable->enablerCPAvailed($enablerDetails['id']);
+      if($cpa > 0)
+        $epWhere['plan_type'] = \Admin\Model\EnablerPlans::Paid_Plan;
+      $enablerPlans = $this->enablerPlansTable->getEnablerPlans($epWhere);
+      $lastPurchaseDate = $this->enablerPurchaseTable->getEnablerLastPurchaseDate($enablerDetails['id']);
+      $lpd = date('Y-m-d', strtotime($lastPurchaseDate));
       $config = $this->getConfig();
-      return new ViewModel(['userDetails' => $userDetails, 'enablerPlans' => $enablerPlans, 'config' => $config['hybridauth'], 'imageUrl' => $this->filesUrl()]);
+      if($enablerDetails['login_type'] == \Admin\Model\Enabler::login_type_social) 
+        $imageUrl = "";
+      else
+        $imageUrl = $this->filesUrl();
+      return new ViewModel(['enablerDetails' => $enablerDetails, 'enablerPlans' => $enablerPlans, 'lpd' => $lpd, 'config' => $config['hybridauth'], 'imageUrl' => $imageUrl]);
     } else {
       $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/enabler/login');
     }
@@ -1408,6 +1423,8 @@ class IndexController extends BaseController
         if($coupon_code != ""){
           $checkCoupon = $this->couponsTable->getCoupon(['coupon_code' => $coupon_code]);
           if($checkCoupon){
+            if($checkCoupon[0]['coupon_status'] == \Admin\Model\Coupons::Coupon_Status_Redeemed)
+              return new JsonModel(array('success' => false, "message" => 'Coupon code already redeemed..'));
             $today = date('Y-m-d');
             if($checkCoupon[0]['validity_end_date'] < $today)
               return new JsonModel(array('success' => false, "message" => 'This coupon code expired..'));
@@ -1461,9 +1478,9 @@ class IndexController extends BaseController
         $saveData['plan_id'] = $pid;
         $saveData['stt_disc'] = $enablerDetails['stt_disc'];
         $saveData['actual_price'] = number_format((float)$pp, 2, '.', '');
+        $plan = $this->enablerPlansTable->getEnablerPlans(['status' => \Admin\Model\EnablerPlans::status_active, 'id' => $pid]);
         if($totalAmount == 0 && round($totalAmount) == 0){
           $checkCoupon = $this->couponsTable->getCoupon(['coupon_code' => $cc]);
-          $plan = $this->enablerPlansTable->getEnablerPlans(['status' => \Admin\Model\EnablerPlans::status_active, 'id' => $pid]);
           if($checkCoupon){
             $today = date('Y-m-d');
             if($checkCoupon[0]['validity_end_date'] < $today)
@@ -1498,11 +1515,13 @@ class IndexController extends BaseController
           $saveData['executive_name'] = $execDetails['username'];
           $saveData['executive_mobile'] = "(" . $execDetails['country_phone_code'] . ")" . $execDetails['mobile_number'];
         }
+        $saveData['purchase_date'] = date('Y-m-d H:i:s');
+        $saveData['invoice'] = 'IN'.$saveData['enabler_id'].$saveData['plan_id'].date('YmdHis');
         $purReqResp = $this->enablerPurchaseRequestTable->addEnablerPurchaseRequest($saveData);
         if (!$purReqResp['success'])
           return new JsonModel(array('success' => false, "message" => 'unable to process your order now.. please try later..'));
         $purchaseRequestId = $purReqResp['id'];
-        $prId =base64_encode('invoiceId=' . $purchaseRequestId);
+        $prId =base64_encode('prId=' . $purchaseRequestId);
         return new JsonModel(array('success' => true, "message" => 'please check your invoice and proceed with payment...', 'pid' => $prId));
       }
     }
@@ -1516,10 +1535,10 @@ class IndexController extends BaseController
       if (!$paramId) {
           return $this->redirect()->toUrl($this->getBaseUrl());
       }
-      $invoiceIdString = rtrim($paramId, "=");
-      $invoiceIdString = base64_decode($invoiceIdString);
-      $invoiceIdString = explode("=", $invoiceIdString);
-      $iId = array_key_exists(1, $invoiceIdString) ? $invoiceIdString[1] : 0;
+      $prIdString = rtrim($paramId, "=");
+      $prIdString = base64_decode($prIdString);
+      $prIdString = explode("=", $prIdString);
+      $iId = array_key_exists(1, $prIdString) ? $prIdString[1] : 0;
       if ($iId != 0) {
         $prDetails = $this->enablerPurchaseRequestTable->getEnablerPurchaseRequest(['id' => $iId]);
         $prRes = $this->enablerPurchaseTable->getField(['invoice' => $prDetails['invoice']], 'id');
@@ -1536,6 +1555,32 @@ class IndexController extends BaseController
     }
   }
 
+  public function enablerReceiptAction(){
+    if ($this->authService->hasIdentity()) {
+      $loginId = $this->authService->getIdentity();
+      $enablerDetails = $this->enablerTable->getEnablerDetails(['user_login_id' => $loginId['user_login_id']]);
+      $paramId = $this->params()->fromRoute('id', '');
+      if (!$paramId) {
+          return $this->redirect()->toUrl($this->getBaseUrl());
+      }
+      $prIdString = rtrim($paramId, "=");
+      $prIdString = base64_decode($prIdString);
+      $prIdString = explode("=", $prIdString);
+      $rId = array_key_exists(1, $prIdString) ? $prIdString[1] : 0;
+      if ($rId != 0) {
+        $prDetails = $this->enablerPurchaseRequestTable->getEnablerPurchaseRequest(['id' => $rId]);
+        $purchase = $this->enablerPurchaseTable->getEnablerPurchase(['invoice' => $prDetails['invoice']]);
+        $planName = $this->enablerPlansTable->getField(['id' => $purchase['plan_id']], 'plan_name');
+      } else {
+        return new JsonModel(array('success' => false, "message" => 'receipt not found..'));
+      } 
+      $config = $this->getConfig();
+      return new ViewModel(['enablerDetails' => $enablerDetails, 'purchase' => $purchase, 'prId'=>$paramId, 'planName'=>$planName, 'config' => $config['hybridauth'], 'imageUrl' => $this->filesUrl()]);
+    } else {
+      $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/enabler/login');
+    }
+  }
+
   public function enablerPayAction()
   {
     if ($this->authService->hasIdentity()) {
@@ -1546,10 +1591,10 @@ class IndexController extends BaseController
       if (!$prid) {
         return new JsonModel(array('success' => false, "message" => 'invalid purchase request..'));
       }
-      $invoiceIdString = rtrim($prid, "=");
-      $invoiceIdString = base64_decode($invoiceIdString);
-      $invoiceIdString = explode("=", $invoiceIdString);
-      $iId = array_key_exists(1, $invoiceIdString) ? $invoiceIdString[1] : 0;
+      $prIdString = rtrim($prid, "=");
+      $prIdString = base64_decode($prIdString);
+      $prIdString = explode("=", $prIdString);
+      $iId = array_key_exists(1, $prIdString) ? $prIdString[1] : 0;
       if ($iId != 0) {
         $prDetails = $this->enablerPurchaseRequestTable->getEnablerPurchaseRequest(['id' => $iId]);
       }else{
@@ -1561,10 +1606,18 @@ class IndexController extends BaseController
       $saveData['enabler_id'] = $enablerDetails['id'];
       $saveData['display_name'] = $prDetails['display_name'];
       $saveData['plan_id'] = $prDetails['plan_id'];
+      $saveData['invoice'] = $prDetails['invoice'];
       $saveData['actual_price'] = number_format((float)$prDetails['actual_price'], 2, '.', '');
+      $plan = $this->enablerPlansTable->getEnablerPlans(['status' => \Admin\Model\EnablerPlans::status_active, 'id' => $prDetails['plan_id']]);
+      $lic_bal = '0';
+      if($plan['plan_type'] == \Admin\Model\EnablerPlans::Complimentary_Plan)
+        $lic_bal = substr($plan['plan_name'], strpos($plan['plan_name'], 'C')+1);
+      else
+        $lic_bal = substr($plan['plan_name'], strpos($plan['plan_name'], 'P')+1);
+
+      $saveData['lic_bal'] = $lic_bal;
       if($totalAmount == 0 && round($totalAmount) == 0){
         $checkCoupon = $this->couponsTable->getCoupon(['coupon_code' => $prDetails['coupon_code']]);
-        $plan = $this->enablerPlansTable->getEnablerPlans(['status' => \Admin\Model\EnablerPlans::status_active, 'id' => $prDetails['plan_id']]);
         if($checkCoupon){
           $today = date('Y-m-d');
           if($checkCoupon[0]['validity_end_date'] < $today)
@@ -1599,24 +1652,49 @@ class IndexController extends BaseController
         $saveData['executive_name'] = $execDetails['username'];
         $saveData['executive_mobile'] = "(" . $execDetails['country_phone_code'] . ")" . $execDetails['mobile_number'];
       }
-      
+      $saveData['purchase_date'] = date('Y-m-d H:i:s');
       $purchaseResp = $this->enablerPurchaseTable->addEnablerPurchase($saveData);
       if ($purchaseResp['success'])
         $purchaseId = $purchaseResp['id'];
       if ($purchaseId) {
+        if($saveData['price_after_disc'] == "0.00"){
+          $setResp = $this->enablerPurchaseTable->setEnablerPurchase(['payment_status' => \Admin\Model\EnablerPurchase::payment_success, 'receipt' => 'TP_' . $purchaseId.$saveData['enabler_id'].$saveData['plan_id'].date('YmdHis')], ['id' => $purchaseId]);
+          $updateCoupon = [];
+          if($setResp){
+            $purDetails = $this->enablerPurchaseTable->getEnablerPurchase(['id' => $purchaseId]);
+            if(!is_null($purDetails['coupon_code']) && !empty($purDetails['coupon_code'])){
+              $updateCoupon['redeemer_login'] = $enablerDetails['user_login_id'];
+              $updateCoupon['redeemer_name'] = $enablerDetails['company_name'] == "" ? $enablerDetails['username'] : $enablerDetails['company_name'];
+              $updateCoupon['redeemer_mobile'] = '(' . $enablerDetails['country_phone_code'] . ')' . $enablerDetails['mobile_number'];
+              $updateCoupon['redeemed_on'] = $purDetails['purchase_date'];
+              $updateCoupon['redeemer_paid'] = $purDetails['price_after_disc'];
+              $updateCoupon['redeemer_actual_amount'] = $purDetails['actual_price'];
+              $updateCoupon['coupon_status'] = \Admin\Model\Coupons::Coupon_Status_Redeemed;
+              $setCoupon = $this->couponsTable->setCoupons($updateCoupon, ['coupon_code' => $purDetails['coupon_code']]);
+              if($setCoupon){return new JsonModel(array('success' => true, 'message' => 'plan purchased successfully..', 'rid'=>$prid,));
+              }else{
+                return new JsonModel(array('success' => false, 'message' => 'unable to process your request now.. unknown error..'));
+              }
+            }else{return new JsonModel(array('success' => true, 'message' => 'plan purchased successfully..', 'rid'=>$prid,));
+            }
+          }else{
+            return new JsonModel(array('success' => false, 'message' => 'unable to process your request now..'));
+          }
+        }
+
         $api = new Razorpay();
         if ($enablerDetails['country_phone_code'] == "91") {
           $orderData = [
             'amount'          => intval($totalAmount * 100),
             'currency'        => 'INR',
-            'receipt' => 'TP_' . $purchaseId,
+            'receipt' => 'TP_' . $purchaseId.$saveData['enabler_id'].$saveData['plan_id'].date('YmdHis'),
             'payment_capture' => 1
           ];
         } else {
           $orderData = [
             'amount'          => intval($totalAmount * 100),
             'currency'        => 'USD',
-            'receipt' => 'TP_' . $purchaseId,
+            'receipt' => 'TP_' . $purchaseId.$saveData['enabler_id'].$saveData['plan_id'].date('YmdHis'),
             'payment_capture' => 1
           ];
         }
@@ -1655,10 +1733,10 @@ class IndexController extends BaseController
       if (!$prid) {
         return new JsonModel(array('success' => false, "message" => 'invalid purchase request..'));
       }
-      $invoiceIdString = rtrim($prid, "=");
-      $invoiceIdString = base64_decode($invoiceIdString);
-      $invoiceIdString = explode("=", $invoiceIdString);
-      $iId = array_key_exists(1, $invoiceIdString) ? $invoiceIdString[1] : 0;
+      $prIdString = rtrim($prid, "=");
+      $prIdString = base64_decode($prIdString);
+      $prIdString = explode("=", $prIdString);
+      $iId = array_key_exists(1, $prIdString) ? $prIdString[1] : 0;
       if ($iId != 0) {
         $prDetails = $this->enablerPurchaseRequestTable->getEnablerPurchaseRequest(['id' => $iId]);
       }else{
@@ -1691,18 +1769,18 @@ class IndexController extends BaseController
             $updateCoupon['redeemer_login'] = $enablerDetails['user_login_id'];
             $updateCoupon['redeemer_name'] = $enablerDetails['company_name'] == "" ? $enablerDetails['username'] : $enablerDetails['company_name'];
             $updateCoupon['redeemer_mobile'] = '(' . $enablerDetails['country_phone_code'] . ')' . $enablerDetails['mobile_number'];
-            $updateCoupon['redeemed_on'] = date('d-m-Y H:i:s');
+            $updateCoupon['redeemed_on'] = date('Y-m-d H:i:s');
             $updateCoupon['redeemer_paid'] = $pad;
             $updateCoupon['redeemer_actual_amount'] = $pp;
             $updateCoupon['coupon_status'] = \Admin\Model\Coupons::Coupon_Status_Redeemed;
             $setCoupon = $this->couponsTable->setCoupons($updateCoupon, ['coupon_code' => $cc]);
             if($setCoupon){
-              return new JsonModel(array('success' => false, 'message' => 'plan purchased succesfully..'));
+              return new JsonModel(array('success' => true, 'message' => 'plan purchased successfully..', 'pid'=>$prid,));
             }else{
               return new JsonModel(array('success' => false, 'message' => 'unable to process your request now.. unknown error..'));
             }
           }else{
-            return new JsonModel(array('success' => false, 'message' => 'plan purchased succesfully..'));
+            return new JsonModel(array('success' => true, 'message' => 'plan purchased successfully..', 'pid'=>$prid,));
           }
         }else{
           return new JsonModel(array('success' => false, 'message' => 'unable to process your request now..'));
@@ -1723,7 +1801,11 @@ class IndexController extends BaseController
       $purchases = $this->enablerPurchaseTable->getEnablerPurchasesList(['enabler_id' => $enablerDetails['id'], 'limit' => 10, 'offset' => 0]);
       $totalCount = $this->enablerPurchaseTable->getEnablerPurchasesList(['enabler_id' => $enablerDetails['id']], 1);
       $config = $this->getConfig();
-      return new ViewModel(['enablerDetails' => $enablerDetails, 'purchases' => $purchases, 'totalCount' => $totalCount, 'config' => $config['hybridauth'], 'imageUrl' => $this->filesUrl()]);
+      if($enablerDetails['login_type'] == \Admin\Model\Enabler::login_type_social) 
+        $imageUrl = "";
+      else
+        $imageUrl = $this->filesUrl();
+      return new ViewModel(['enablerDetails' => $enablerDetails, 'purchases' => $purchases, 'totalCount' => $totalCount, 'config' => $config['hybridauth'], 'imageUrl' => $imageUrl]);
     } else {
       $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/enabler/login');
     }
@@ -1768,7 +1850,11 @@ class IndexController extends BaseController
       $transactions = $this->executiveTransactionTable->getTransactionsList(['executive_id' => $bankDetails['id'], 'limit' => 10, 'offset' => 0]);
       $totalCount = $this->executiveTransactionTable->getTransactionsList(['executive_id' => $bankDetails['id']], 1);
       $config = $this->getConfig();
-      return new ViewModel(['userDetails' => $userDetails, 'bankDetails' => $bankDetails, 'transactions' => $transactions, 'totalCount' => $totalCount, 'config' => $config['hybridauth'], 'qed' => $qed, 'imageUrl' => $this->filesUrl()]); */
+      if($enablerDetails['login_type'] == \Admin\Model\Enabler::login_type_social) 
+        $imageUrl = "";
+      else
+        $imageUrl = $this->filesUrl();
+      return new ViewModel(['userDetails' => $userDetails, 'bankDetails' => $bankDetails, 'transactions' => $transactions, 'totalCount' => $totalCount, 'config' => $config['hybridauth'], 'qed' => $qed, 'imageUrl' => $imageUrl02]); */
       echo "Track plans page";
       exit;
     } else {

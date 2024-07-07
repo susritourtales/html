@@ -1,0 +1,49 @@
+<?php
+    include 'vendor/autoload.php';
+    use Hybridauth\Hybridauth;
+    $hybridauth = new Hybridauth($config);
+    $adapters = $hybridauth->getConnectedAdapters();
+?>
+<link rel="stylesheet" href="<?php echo $this->basePath();?>/css/twistt.css?v=1.0.1">
+<div class="container-fluid my-5">
+    <div class="container">
+        <?php 
+            $logoutUrl = $this->basePath() . '/twistt/enabler/logout';
+            if($adapters){ 
+                if($enablerDetails['oauth_provider'] == 'g'){
+                    $logoutUrl = $config['callback'] . "?logout=Google";
+                }elseif($enablerDetails['oauth_provider'] == 'f'){
+                    $logoutUrl = $config['callback'] . "?logout=Facebook";
+                }elseif($enablerDetails['oauth_provider'] == 'a'){
+                    $logoutUrl = $config['callback'] . "?logout=Apple";
+                }
+            }
+            echo $this->partial('/enb-sidebar', array('activeTab'=>\Application\Constants\Constants::TWISTT_BUY_PLANS, 'logoutUrl'=>$logoutUrl)); ?>
+        <div class="content bg-white custom-shadow p-4 color-333"> 
+            <div class="bg-light border-radius-10 custom-shadow p-4 color-333" style="min-height:400px;">
+                <div id="receipt">
+                    <div class="user-page-name text-uppercase avant-md pb-3">
+                        <h5>Receipt</h5>
+                    </div>
+                    <div class="row pt-3">
+                        <div class="col-sm-12 col-md-6 primary-text">
+                            Receipt no: <?php echo $purchase['receipt'];?>
+                        </div>
+                        <div class="col-sm-12 col-md-6 primary-text text-end">
+                            Date: <?php echo date('d-m-Y', strtotime($purchase['purchase_date']));?>
+                        </div>
+                    </div>
+                    <div class="row pt-3">
+                        <div class="col-12">
+                            <p>This On-Line Receipt for <span class="primary-text"><?php echo $purchase['price_after_disc'] . " " . $purchase['currency'];?></span> is issued by M/s Susri Tour Tales Pvt Ltd to <span class="primary-text"><?php echo $purchase['display_name'];?></span> who will be operating as the TWISTT ENABLER for the TWISTT PLAN <span class="primary-text"><?php echo $planName;?></span> purchased with reference to our Invoice bearing the number <span class="primary-text"><?php echo $purchase['invoice'];?> Dt <?php echo $purchase['purchase_date'];?>.</span></p>
+                            <p>Your Plan is activated and you can access and operate the same from your ‘TWISTT ENABLER PORTAL’ in our website, www.susritourtales.com with immediate effect.</p>
+                            <p>Thanks and Regards</p>
+                            <p>Susri Tour Tales Pvt Ltd</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>

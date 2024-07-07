@@ -565,6 +565,19 @@ return [
                         'action' => 'enabler-invoice',
                     ],
                 ],
+            ], 'twistt-enabler-receipt' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/twistt/enabler/receipt[/:id]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'tour' => '[a-zA-Z0-9_~\-!@#\$%\^&*\(\)=]*[/]*'
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'enabler-receipt',
+                    ],
+                ],
             ], 'twistt-enabler-checkout' => [
                 'type' => Literal::class,
                 'options' => [

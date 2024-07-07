@@ -13,6 +13,9 @@ class EnablerPlans
   const status_active = 1;
   const status_inactive = 0;
 
+  const Paid_Plan = "P";
+  const Complimentary_Plan = "C";
+
   public function exchangeArray(array $data)
   {
     $this->id = !empty($data['id']) ? $data['id'] : null;

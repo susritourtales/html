@@ -10,11 +10,11 @@
         <?php 
             $logoutUrl = $this->basePath() . '/twistt/enabler/logout';
             if($adapters){ 
-                if($userDetails['oauth_provider'] == 'g'){
+                if($enablerDetails['oauth_provider'] == 'g'){
                     $logoutUrl = $config['callback'] . "?logout=Google";
-                }elseif($userDetails['oauth_provider'] == 'f'){
+                }elseif($enablerDetails['oauth_provider'] == 'f'){
                     $logoutUrl = $config['callback'] . "?logout=Facebook";
-                }elseif($userDetails['oauth_provider'] == 'a'){
+                }elseif($enablerDetails['oauth_provider'] == 'a'){
                     $logoutUrl = $config['callback'] . "?logout=Apple";
                 }
             }
@@ -30,20 +30,20 @@
                         <div class="row">
                             <div class="col-8">
                                 <div class="row pt-1">
-                                    <div class="col-sm-12 col-md-6"><?php echo "Name: " . $userDetails['username']; ?></div>
-                                    <div class="col-sm-12 col-md-6"><?php echo "Company Name: " . $userDetails['company_name']; ?></div>
+                                    <div class="col-sm-12 col-md-6"><?php echo "Name: " . $enablerDetails['username']; ?></div>
+                                    <div class="col-sm-12 col-md-6"><?php echo "Company Name: " . $enablerDetails['company_name']; ?></div>
                                 </div>
                                 <div class="row pt-1">
-                                    <div class="col-sm-12 col-md-6"><?php echo "Mobile: (" . $userDetails['country_phone_code'] . ")" . $userDetails['mobile_number']; ?></div>
-                                    <div class="col-sm-12 col-md-6"><?php echo "Email: " . $userDetails['email']; ?></div>
+                                    <div class="col-sm-12 col-md-6"><?php echo "Mobile: (" . $enablerDetails['country_phone_code'] . ")" . $enablerDetails['mobile_number']; ?></div>
+                                    <div class="col-sm-12 col-md-6"><?php echo "Email: " . $enablerDetails['email']; ?></div>
                                 </div>
                                 <div class="row pt-1">
-                                    <div class="col-sm-12 col-md-6"><?php echo "Spl Discount: " . $userDetails['stt_disc'] . "%"; ?></div>
+                                    <div class="col-sm-12 col-md-6"><?php echo "Spl Discount: " . $enablerDetails['stt_disc'] . "%"; ?></div>
                                     <div class="col-sm-12 col-md-6"></div>
                                 </div>
                             </div>
                             <div class="col-4">
-                                <div class="row pt-1"><img src="<?php echo $imageUrl.$userDetails['photo_url'];  ?>"></div>
+                                <div class="row pt-1"><img src="<?php echo $imageUrl.$enablerDetails['photo_url'];  ?>" style="width:100px !important;"></div>
                             </div>
                         </div>
                     </div>
@@ -51,13 +51,13 @@
                         <div class="col-sm-12 col-md-6 pt-3">
                             <label for="selName" class="form-label">Name to appear in the message to Tourist</label>
                             <select class="form-control" id="selName" required>
-                                <?php if(!empty($userDetails['company_name']) && !is_null($userDetails['company_name'])){?>
-                                <option value="<?php echo $userDetails['company_name']; ?>"><?php echo $userDetails['company_name']; ?></option>
+                                <?php if(!empty($enablerDetails['company_name']) && !is_null($enablerDetails['company_name'])){?>
+                                <option value="<?php echo $enablerDetails['company_name']; ?>"><?php echo $enablerDetails['company_name']; ?></option>
                                 <?php } ?>
-                                <option value="<?php echo $userDetails['username']; ?>"><?php echo $userDetails['username']; ?></option>
+                                <option value="<?php echo $enablerDetails['username']; ?>"><?php echo $enablerDetails['username']; ?></option>
                             </select>
                         </div>
-                        <?php if($userDetails['stt_disc'] == "0.00"){ ?>
+                        <?php if($enablerDetails['stt_disc'] == "0.00"){ ?>
                         <div class="col-sm-12 col-md-6 pt-3">
                             <label for="cc" class="form-label">Discount / Complimentary Coupon Code (if any)</label>
                             <input type="text" class="form-control w-100" id="cc" name="cc" value="" onfocusout="updateAmt()">
@@ -83,7 +83,11 @@
                             <div class="from-control"><label id="pad" name="pad" class="form-label">0.00</label></div>
                         </div>
                         <div class="col-12">
-                            <button type="button" class="btn primary-btn mt-3" id="btnBuy" name="btnBuy">Buy</button>
+                            <?php $today = date('Y-m-d')?>
+                            <button type="button" class="btn primary-btn mt-3" id="btnBuy" name="btnBuy" <?php echo ($today > $lpd) ? '' : 'disabled'; ?>>Buy</button>
+                        </div>
+                        <div class="col-12 text-danger pt-2">
+                            <small><?php echo ($today > $lpd) ? '' : 'Last Purchase date: ' . date('d-m-Y', strtotime($lpd)); ?></small>
                         </div>
                     </div>
                 </div>

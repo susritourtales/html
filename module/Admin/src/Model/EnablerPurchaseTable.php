@@ -78,14 +78,15 @@ class EnablerPurchaseTable extends BaseTable
     try {
       $where = new Where();
       $where->equalTo('p.enabler_id', $data['enabler_id']);
-      $where->and->equalTo('payment_status', \Admin\Model\EnablerPurchase::payment_success,);
+      $where->and->equalTo('payment_status', \Admin\Model\EnablerPurchase::payment_success);
       $order = ['p.created_at desc'];
       
       $sql = $this->getSql();
       $query = $sql->select()
         ->from($this->tableName)
         ->where($where)
-        ->join(array('p' => 'enabler_plans'), 'p.id=p.plan_id', array('plan_name'), Select::JOIN_LEFT)
+        ->join(array('e' => 'enabler_plans'), 'e.id=p.plan_id', array('plan_name'), Select::JOIN_LEFT)
+        ->join(array('r' => 'enabler_purchase_request'), 'r.invoice=p.invoice', array('prid' => 'id'), Select::JOIN_LEFT)
         ->order($order);
       if ($gc == 0) {
         $query->offset($data['offset'])
@@ -99,6 +100,56 @@ class EnablerPurchaseTable extends BaseTable
         $purchases[] = $row;
       }
       return $purchases;
+    } catch (\Exception $e) {
+      return array();
+    }
+  }
+
+  public function getEnablerLastPurchaseDate($enablerId){
+    try {
+      $where = new Where();
+      $order = ['p.created_at desc'];
+      $where->equalTo('p.enabler_id', $enablerId);
+      $sql = $this->getSql();
+      $query = $sql->select()
+        ->from($this->tableName)
+        ->columns(array("purchase_date"))
+        ->where($where)
+        ->order($order)
+        ->limit(1);
+      $field = array();
+      $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
+      foreach ($resultSet as $row) {
+        $field = $row['purchase_date'];
+      }
+      if ($field) {
+        return $field;
+      } else {
+        return "";
+      }
+    } catch (\Exception $e) {
+      return "";
+    }
+  }
+
+  public function enablerCPAvailed($enablerId){
+    try {
+      $where = new Where();
+      $order = ['p.created_at desc'];
+      $where->equalTo('p.enabler_id', $enablerId);
+      $where->and->equalTo('c.coupon_type', 'C');
+      $sql = $this->getSql();
+      $query = $sql->select()
+        ->from($this->tableName)
+        ->where($where)
+        ->join(['c' => 'coupons'], 'c.coupon_code = p.coupon_code', ['coupon_type'], Select::JOIN_LEFT)
+        ->order($order);
+      $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
+      $enabler = array();
+      foreach ($resultSet as $row) {
+        $enabler[] = $row;
+      }
+      return count($enabler);
     } catch (\Exception $e) {
       return array();
     }

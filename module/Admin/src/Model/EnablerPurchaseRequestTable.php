@@ -4,10 +4,9 @@ namespace Admin\Model;
 
 use Application\Model\BaseTable;
 use Laminas\Db\Sql\Where;
-use Laminas\Db\Sql\Select;
 use Laminas\Db\TableGateway\TableGateway;
 
-class EnablerPurchaseTable extends BaseTable
+class EnablerPurchaseRequestTable extends BaseTable
 {
   protected $tableGateway;
   protected $tableName;
@@ -15,10 +14,10 @@ class EnablerPurchaseTable extends BaseTable
   public function __construct(TableGateway $tableGateway)
   {
     $this->tableGateway = $tableGateway;
-    $this->tableName = array("p" => "enabler_purchase");
+    $this->tableName = array("p" => "enabler_purchase_request");
   }
 
-  public function addEnablerPurchase(array $data)
+  public function addEnablerPurchaseRequest(array $data)
   {
     try {
       $insert = $this->insert($data);
@@ -55,7 +54,7 @@ class EnablerPurchaseTable extends BaseTable
     }
   }
 
-  public function getEnablerPurchase($where)
+  public function getEnablerPurchaseRequest($where)
   {
     try {
       $sql = $this->getSql();
@@ -73,38 +72,7 @@ class EnablerPurchaseTable extends BaseTable
     }
   }
 
-  public function getEnablerPurchasesList($data = array('limit' => 10, 'offset' => 0), $gc = 0)
-  {
-    try {
-      $where = new Where();
-      $where->equalTo('p.enabler_id', $data['enabler_id']);
-      $where->and->equalTo('payment_status', \Admin\Model\EnablerPurchase::payment_success,);
-      $order = ['p.created_at desc'];
-      
-      $sql = $this->getSql();
-      $query = $sql->select()
-        ->from($this->tableName)
-        ->where($where)
-        ->join(array('p' => 'enabler_plans'), 'p.id=p.plan_id', array('plan_name'), Select::JOIN_LEFT)
-        ->order($order);
-      if ($gc == 0) {
-        $query->offset($data['offset'])
-            ->limit($data['limit']);
-      }
-      $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
-      if ($gc == 1)
-        return count($resultSet);
-      $purchases = array();
-      foreach ($resultSet as $row) {
-        $purchases[] = $row;
-      }
-      return $purchases;
-    } catch (\Exception $e) {
-      return array();
-    }
-  }
-
-  public function setEnablerPurchase($data, $where)
+  public function setEnablerPurchaseRequest($data, $where)
   {
     try {
       return $this->update($data, $where);

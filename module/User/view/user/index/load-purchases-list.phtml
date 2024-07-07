@@ -1,0 +1,60 @@
+<?php if(isset($type) && $type =='initialize') { ?>
+<div class="table-responsive">
+<table class="table table-hover" id="extTable">
+    <thead>
+    <tr class="text-nowrap">
+        <th>S.no</th>
+        <th class="text-center" data-placeholder="Transaction Date">Purchase Date</th>
+        <th class="text-center" data-placeholder="Plan Name">Plan Name</th>
+        <th class="text-center" data-placeholder="Plan Price">Plan Price</th>
+        <th class="text-center" data-placeholder="Amount Paid">Amount Paid</th>
+        <th class="text-center" data-placeholder="Coupon Code">Coupon Code</th>
+        <th class="text-center" data-placeholder="Exec Name">Exec Name</th>
+        <th class="text-center" data-placeholder="Exec Mobile">Exec Mobile</th>
+        <th class="text-center" data-placeholder="Invoice">Invoice</th>
+        <th class="text-center" data-placeholder="Receipt">Receipt</th>
+        <th class="text-center" data-placeholder="Licenses Bal">Licenses Bal</th>
+    </tr>
+    <?php } ?>
+
+    <?php if(isset($type) && ($type =='initialize' || $type=="search") ) {?>
+    <input type="hidden" class="records" value="<?php echo $totalCount; ?>">
+    <tbody>
+    <?php } ?>
+    
+    <?php if(count($purchases))
+      {
+        $i=0;
+        if(isset($offset))
+        {
+            $i=$offset;
+        }
+
+        foreach ($purchases as $pur) { ?>
+          <tr>
+              <td><?php echo $i+1; ?></td>
+              <td class="text-center"><?php echo date("d-m-Y",strtotime($pur['purchase_date'])); ?></td>
+              <td class="text-center"><?php echo $pur['plan_name']; ?></td>
+              <td class="text-center"><?php echo $pur['actual_price'] . " " .  $pur['currency']; ?></td>
+              <td class="text-center"><?php echo $pur['price_after_disc'] . " " .  $pur['currency']; ?></td>
+              <td class="text-center"><?php echo $pur['coupon_code']; ?></td>
+              <td class="text-center"><?php echo $pur['executive_name']; ?></td>
+              <td class="text-center"><?php echo $pur['executive_mobile'] ; ?></td>
+              <td class="text-center"><?php echo $pur['invoice']; ?></td>
+              <td class="text-center"><?php echo $pur['receipt']; ?></td>
+              <td class="text-center"><?php echo "licesnes bal"; ?></td>
+          </tr>
+          <?php $i++; } } else { ?>
+        <tr ><td class="text-center" colspan="10">No data</td></tr>
+    <?php  } ?>
+    <?php if(isset($type) && ($type =='initialize' || $type=="search") ) {?>
+
+    </tbody>
+    <?php } ?>
+    <?php if(isset($type) && $type =='initialize') {?>
+
+</table>
+<?php //echo "id=".$id;?>
+<input type="hidden" id="hid" value="0<?php //echo base64_encode("id=".$id);?>" />
+</div>
+<?php } ?>

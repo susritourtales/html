@@ -32,6 +32,7 @@ use Admin\Model\OtpTable;
 use Admin\Model\CouponsTable;
 use Admin\Model\EnablerTable;
 use Admin\Model\EnablerPurchaseTable;
+use Admin\Model\EnablerPurchaseRequestTable;
 use Admin\Model\EnablerSalesTable;
 use Admin\Model\EnablerPlansTable;
 
@@ -63,11 +64,13 @@ class BaseController extends AbstractActionController
     protected $questtSubscriptionTable;
     protected $executiveDetailsTable;
     protected $executivePurchaseTable;
+    protected $executivePurchaseRequestTable;
     protected $executiveTransactionTable;
     protected $otpTable;
     protected $couponsTable;
     protected $enablerTable;
     protected $enablerPurchaseTable;
+    protected $enablerPurchaseRequestTable;
     protected $enablerSalesTable;
     protected $enablerPlansTable;
 
@@ -94,6 +97,7 @@ class BaseController extends AbstractActionController
         CouponsTable $coupons_table,
         EnablerTable $enabler_table,
         EnablerPurchaseTable $enabler_purchase_table,
+        EnablerPurchaseRequestTable $enabler_purchase_request_table,
         EnablerSalesTable $enabler_sales_table,
         EnablerPlansTable $enabler_plans_table,
     ) {
@@ -123,6 +127,7 @@ class BaseController extends AbstractActionController
         $this->couponsTable = $coupons_table;
         $this->enablerTable = $enabler_table;
         $this->enablerPurchaseTable = $enabler_purchase_table;
+        $this->enablerPurchaseRequestTable = $enabler_purchase_request_table;
         $this->enablerSalesTable = $enabler_sales_table;
         $this->enablerPlansTable = $enabler_plans_table;
     }

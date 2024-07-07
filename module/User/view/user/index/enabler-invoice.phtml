@@ -1,0 +1,56 @@
+<?php
+    include 'vendor/autoload.php';
+    use Hybridauth\Hybridauth;
+    $hybridauth = new Hybridauth($config);
+    $adapters = $hybridauth->getConnectedAdapters();
+?>
+<link rel="stylesheet" href="<?php echo $this->basePath();?>/css/twistt.css?v=1.0.1">
+<div class="container-fluid my-5">
+    <div class="container">
+        <?php 
+            $logoutUrl = $this->basePath() . '/twistt/enabler/logout';
+            if($adapters){ 
+                if($enablerDetails['oauth_provider'] == 'g'){
+                    $logoutUrl = $config['callback'] . "?logout=Google";
+                }elseif($enablerDetails['oauth_provider'] == 'f'){
+                    $logoutUrl = $config['callback'] . "?logout=Facebook";
+                }elseif($enablerDetails['oauth_provider'] == 'a'){
+                    $logoutUrl = $config['callback'] . "?logout=Apple";
+                }
+            }
+            echo $this->partial('/enb-sidebar', array('activeTab'=>\Application\Constants\Constants::TWISTT_BUY_PLANS, 'logoutUrl'=>$logoutUrl)); ?>
+        <div class="content bg-white custom-shadow p-4 color-333"> 
+            <div class="bg-light border-radius-10 custom-shadow p-4 color-333" style="min-height:400px;">
+                <div id="invoice">
+                    <div class="user-page-name text-uppercase avant-md pb-3">
+                        <h5>Invoice</h5>
+                    </div>
+                    <div class="row pt-3">
+                        <div class="col-sm-12 col-md-6 pt-2">Name: <?php echo $enablerDetails['username']; ?></div>
+                        <div class="col-sm-12 col-md-6 pt-2">Company Name: <?php echo $enablerDetails['company_name']; ?></div>
+                        <div class="col-sm-12 col-md-6 pt-2">Mobile: <?php echo "(" . $enablerDetails['country_phone_code'] . ")" . $enablerDetails['mobile_number']; ?></div>
+                        <div class="col-sm-12 col-md-6 pt-2">Email: <?php echo $enablerDetails['email']; ?></div>
+                        <div class="col-sm-12 col-md-6 pt-2">Display name: <?php echo $prDetails['display_name']; ?></div>
+                        <?php if($enablerDetails['stt_disc'] == "0.00"){?>
+                        <div class="col-sm-12 col-md-6 pt-2">Coupon Code: <?php echo $prDetails['coupon_code'] . "%"; ?></div>
+                        <?php } else { ?>
+                        <div class="col-sm-12 col-md-6 pt-2">Special Discount: <?php echo $prDetails['stt_disc'] . "%"; ?></div>
+                        <?php } ?>
+                        <div class="col-sm-12 col-md-6 pt-2">Actual Plan Price: <?php echo $prDetails['actual_price']; ?></div>
+                        <div class="col-sm-12 col-md-6 pt-2">Price after Discount: <?php echo $prDetails['price_after_disc'] ; ?></div>
+                        <div class="col-sm-12 col-md-6 pt-2">Display logo: <p><img src="<?php echo $imageUrl.$enablerDetails['photo_url'];  ?>" width="100"></p></div>
+                        <div><input type="hidden" id="prid" name="prid" value="<?php echo $prId; ?>"/></div>
+                        <?php if($show == 1){ ?>
+                        <div class="col-12 pt-3">
+                            <button type="button" class="btn primary-btn mt-3" id="btnCheckout" name="btnCheckout">Checkout</button>
+                            <a href="<?php echo $this->basePath();?>/twistt/enabler/buy-plans" type="button" class="btn primary-btn mt-3" id="btnCancel" name="btnCancel">Cancel</a>
+                        </div>
+                        <?php } ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="<?php echo $this->basePath(); ?>/js/user/enabler-buy-plan-invoice.js?"></script>

@@ -219,6 +219,16 @@ class Module implements ConfigProviderInterface
                     $resultSetPrototype->setArrayObjectPrototype(new Model\EnablerPurchase());
                     return new TableGateway('enabler_purchase', $dbAdapter, null, $resultSetPrototype);
                 },
+                Model\EnablerPurchaseRequestTable::class => function ($container) {
+                    $tableGateway = $container->get(Model\EnablerPurchaseRequestTableGateway::class);
+                    return new Model\EnablerPurchaseRequestTable($tableGateway);
+                },
+                Model\EnablerPurchaseRequestTableGateway::class => function ($container) {
+                    $dbAdapter = $container->get(AdapterInterface::class);
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Model\EnablerPurchaseRequest());
+                    return new TableGateway('enabler_purchase_request', $dbAdapter, null, $resultSetPrototype);
+                },
                 Model\EnablerSalesTable::class => function ($container) {
                     $tableGateway = $container->get(Model\EnablerSalesTableGateway::class);
                     return new Model\EnablerSalesTable($tableGateway);
@@ -270,6 +280,7 @@ class Module implements ConfigProviderInterface
                         $container->get(Model\CouponsTable::class),
                         $container->get(Model\EnablerTable::class),
                         $container->get(Model\EnablerPurchaseTable::class),
+                        $container->get(Model\EnablerPurchaseRequestTable::class),
                         $container->get(Model\EnablerSalesTable::class),
                         $container->get(Model\EnablerPlansTable::class)
                     );

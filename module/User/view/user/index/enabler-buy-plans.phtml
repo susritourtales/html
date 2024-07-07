@@ -21,75 +21,74 @@
             echo $this->partial('/enb-sidebar', array('activeTab'=>\Application\Constants\Constants::TWISTT_BUY_PLANS, 'logoutUrl'=>$logoutUrl)); ?>
         <div class="content bg-white custom-shadow p-4 color-333"> 
             <div class="bg-light border-radius-10 custom-shadow p-4 color-333" style="min-height:400px;">
-                <div class="user-page-name text-uppercase avant-md pb-3">
-                    <h5>Buy Plans</h5>
-                </div>
-                <div class="stt-bg-primary border-radius-10 custom-shadow p-4 color-333">
-                    <h6 class="font-weight-bold text-uppercase"><u>TWISTT Enabler Details</u></h6>
-                    <div class="row">
-                        <div class="col-8">
-                            <div class="row pt-1">
-                                <div class="col-sm-12 col-md-6"><?php echo "Name: " . $userDetails['username']; ?></div>
-                                <div class="col-sm-12 col-md-6"><?php echo "Company Name: " . $userDetails['company_name']; ?></div>
+                <div id="buy">
+                    <div class="user-page-name text-uppercase avant-md pb-3">
+                        <h5>Buy Plans</h5>
+                    </div>
+                    <div class="stt-bg-primary border-radius-10 custom-shadow p-4 color-333">
+                        <h6 class="font-weight-bold text-uppercase"><u>TWISTT Enabler Details</u></h6>
+                        <div class="row">
+                            <div class="col-8">
+                                <div class="row pt-1">
+                                    <div class="col-sm-12 col-md-6"><?php echo "Name: " . $userDetails['username']; ?></div>
+                                    <div class="col-sm-12 col-md-6"><?php echo "Company Name: " . $userDetails['company_name']; ?></div>
+                                </div>
+                                <div class="row pt-1">
+                                    <div class="col-sm-12 col-md-6"><?php echo "Mobile: (" . $userDetails['country_phone_code'] . ")" . $userDetails['mobile_number']; ?></div>
+                                    <div class="col-sm-12 col-md-6"><?php echo "Email: " . $userDetails['email']; ?></div>
+                                </div>
+                                <div class="row pt-1">
+                                    <div class="col-sm-12 col-md-6"><?php echo "Spl Discount: " . $userDetails['stt_disc'] . "%"; ?></div>
+                                    <div class="col-sm-12 col-md-6"></div>
+                                </div>
                             </div>
-                            <div class="row pt-1">
-                                <div class="col-sm-12 col-md-6"><?php echo "Mobile: (" . $userDetails['country_phone_code'] . ")" . $userDetails['mobile_number']; ?></div>
-                                <div class="col-sm-12 col-md-6"><?php echo "Email: " . $userDetails['email']; ?></div>
-                            </div>
-                            <div class="row pt-1">
-                                <div class="col-sm-12 col-md-6"><?php echo "Spl Discount: " . $userDetails['stt_disc'] . "%"; ?></div>
-                                <div class="col-sm-12 col-md-6"></div>
+                            <div class="col-4">
+                                <div class="row pt-1"><img src="<?php echo $imageUrl.$userDetails['photo_url'];  ?>"></div>
                             </div>
                         </div>
-                        <div class="col-4">
-                            <div class="row pt-1"><img src="<?php echo $imageUrl.$userDetails['photo_url'];  ?>"></div>
+                    </div>
+                    <div class="row pt-3">
+                        <div class="col-sm-12 col-md-6 pt-3">
+                            <label for="selName" class="form-label">Name to appear in the message to Tourist</label>
+                            <select class="form-control" id="selName" required>
+                                <?php if(!empty($userDetails['company_name']) && !is_null($userDetails['company_name'])){?>
+                                <option value="<?php echo $userDetails['company_name']; ?>"><?php echo $userDetails['company_name']; ?></option>
+                                <?php } ?>
+                                <option value="<?php echo $userDetails['username']; ?>"><?php echo $userDetails['username']; ?></option>
+                            </select>
+                        </div>
+                        <?php if($userDetails['stt_disc'] == "0.00"){ ?>
+                        <div class="col-sm-12 col-md-6 pt-3">
+                            <label for="cc" class="form-label">Discount / Complimentary Coupon Code (if any)</label>
+                            <input type="text" class="form-control w-100" id="cc" name="cc" value="" onfocusout="updateAmt()">
+                        </div>
+                        <?php } else {?>
+                            <input type="hidden" id="cc" name="cc" value="">
+                        <?php } ?>
+                        <div class="col-sm-12 col-md-6 pt-3">
+                            <label for="selPlan" class="form-label" onchange="updateAmt()">Select the Plan to be purchased</label>
+                            <select class="form-control" id="selPlan">
+                                <option value="0">-- select --</option>
+                                <?php foreach($enablerPlans as $ep) {?>
+                                    <option value="<?php echo $ep['id']; ?>"><?php echo $ep['plan_name']; ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                        <div class="col-sm-12 col-md-6 pt-3">
+                            <label for="pp" class="form-label">Price of the selected Plan: </label>
+                            <div class="from-control"><label id="pp" name="pp" class="form-label">0.00</label></div>
+                        </div>
+                        <div class="col-sm-12 col-md-6 pt-3">
+                            <label for="pad" class="form-label">Price payable after discount: </label>
+                            <div class="from-control"><label id="pad" name="pad" class="form-label">0.00</label></div>
+                        </div>
+                        <div class="col-12">
+                            <button type="button" class="btn primary-btn mt-3" id="btnBuy" name="btnBuy">Buy</button>
                         </div>
                     </div>
-                </div>
-                <div class="row pt-3">
-                    <div class="col-6 pt-3">
-                        <label for="selName" class="form-label">Name to appear in the message to Tourist</label>
-                        <select class="form-control" id="selName" required>
-                            <?php if(!empty($userDetails['company_name']) && !is_null($userDetails['company_name'])){?>
-                            <option value="<?php echo $userDetails['company_name']; ?>"><?php echo $userDetails['company_name']; ?></option>
-                            <?php } ?>
-                            <option value="<?php echo $userDetails['username']; ?>"><?php echo $userDetails['username']; ?></option>
-                        </select>
-                    </div>
-                    <?php if($userDetails['stt_disc'] == "0.00"){ ?>
-                    <div class="col-6 pt-3">
-                        <label for="cc" class="form-label">Discount / Complimentary Coupon Code (if any)</label>
-                        <input type="text" class="form-control w-100" id="cc" name="cc" value="" onfocusout="updateAmt()">
-                    </div>
-                    <?php } else {?>
-                        <input type="hidden" id="cc" name="cc" value="">
-                    <?php } ?>
-                    <div class="col-6 pt-3">
-                        <label for="selPlan" class="form-label" onchange="updateAmt()">Select the Plan to be purchased</label>
-                        <select class="form-control" id="selPlan">
-                            <option value="0">-- select --</option>
-                            <?php foreach($enablerPlans as $ep) {?>
-                                <option value="<?php echo $ep['id']; ?>"><?php echo $ep['plan_name']; ?></option>
-                            <?php } ?>
-                        </select>
-                    </div>
-                    <div class="col-6 pt-3">
-                        <label for="pp" class="form-label">Price of the selected Plan: </label>
-                        <div class="from-control"><label id="pp" name="pp" class="form-label">0.00</label></div>
-                    </div>
-                    <div class="col-6 pt-3">
-                        <label for="pad" class="form-label">Price payable after discount: </label>
-                        <div class="from-control"></div><label id="pad" name="pad" class="form-label">0.00</label></div>
-                    </div>
-                    <div class="row">
-                    <div class="col-12">
-                        <button type="button" class="btn primary-btn mt-3" id="btnBuy" name="btnBuy">Buy</button>
-                    </div>
-                </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-<script src="<?php echo $this->basePath(); ?>/js/user/enabler-buy-plans.js?"></script>
+<script src="<?php echo $this->basePath(); ?>/js/user/enabler-buy-plans.js?v=1.0.3"></script>

@@ -534,13 +534,35 @@ return [
                         'action' => 'enabler-terms',
                     ],
                 ],
-            ],  'twistt-enabler-pay' => [
+            ],  'enabler-purchase-request' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/twistt/enabler/purchase-request',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'enabler-purchase-request',
+                    ],
+                ],
+            ], 'twistt-enabler-pay' => [
                 'type' => Literal::class,
                 'options' => [
                     'route' => '/twistt/enabler/pay',
                     'defaults' => [
                         'controller' => Controller\IndexController::class,
                         'action' => 'enabler-pay',
+                    ],
+                ],
+            ],  'twistt-enabler-invoice' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/twistt/enabler/invoice[/:id]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'tour' => '[a-zA-Z0-9_~\-!@#\$%\^&*\(\)=]*[/]*'
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'enabler-invoice',
                     ],
                 ],
             ], 'twistt-enabler-checkout' => [

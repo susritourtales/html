@@ -1,0 +1,54 @@
+<?php if(isset($type) && $type =='initialize') { ?>
+<div class="table-responsive">
+<table class="table table-hover" id="extTable">
+    <thead>
+    <tr class="text-nowrap">
+        <th>S.no</th>
+        <th class="text-center" data-placeholder="Date">Date</th>
+        <th class="text-center" data-placeholder="Plan Name">Plan Name</th>
+        <th class="text-center" data-placeholder="Tourist Name">Tourist Name</th>
+        <th class="text-center" data-placeholder="Tourist Mobile">Tourist Mobile</th>
+        <th class="text-center" data-placeholder="Tourist Email">Tourist Email</th>
+        <th class="text-center" data-placeholder="Tour Start Date">Tour Start Date</th>
+        <th class="text-center" data-placeholder="Licenses Bal">Licenses Bal</th>
+    </tr>
+    <?php } ?>
+
+    <?php if(isset($type) && ($type =='initialize' || $type=="search") ) {?>
+    <input type="hidden" class="records" value="<?php echo $totalCount; ?>">
+    <tbody>
+    <?php } ?>
+    
+    <?php if(count($sales))
+      {
+        $i=0;
+        if(isset($offset))
+        {
+            $i=$offset;
+        }
+
+        foreach ($sales as $tx) { ?>
+          <tr>
+              <td><?php echo $i+1; ?></td>
+              <td class="text-center"><?php echo date("d-m-Y",strtotime($tx['sale_date'])); ?></td>
+              <td class="text-center"><?php echo $tx['plan_name']; ?></td>
+              <td class="text-center"><?php echo $tx['tourist_name']; ?></td>
+              <td class="text-center"><?php echo $tx['tourist_mobile']; ?></td>
+              <td class="text-center"><?php echo $tx['tourist_email']; ?></td>
+              <td class="text-center"><?php echo date('d-m-Y', strtotime($tx['twistt_start_date'])); ?></td>
+              <td class="text-center"><?php echo $tx['lic_bal']; ?></td>
+          </tr>
+          <?php $i++; } } else { ?>
+        <tr ><td class="text-center" colspan="10">No data</td></tr>
+    <?php  } ?>
+    <?php if(isset($type) && ($type =='initialize' || $type=="search") ) {?>
+
+    </tbody>
+    <?php } ?>
+    <?php if(isset($type) && $type =='initialize') {?>
+
+</table>
+<?php //echo "id=".$id;?>
+<input type="hidden" id="hid" value="0<?php //echo base64_encode("id=".$id);?>" />
+</div>
+<?php } ?>

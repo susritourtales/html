@@ -63,11 +63,39 @@ class EnablerPlansTable extends BaseTable
         ->from($this->tableName)
         ->where($where);
       $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
-      $transaction = array();
+      $plan = array();
       foreach ($resultSet as $row) {
-        $transaction[] = $row;
+        $plan[] = $row;
       }
-      return $transaction;
+      return $plan;
+    } catch (\Exception $e) {
+      return array();
+    }
+  }
+
+  public function getAdminEnablerPlans($data = array('limit' => 10, 'offset' => 0), $gc = 0){
+    try {
+      $where = new Where();
+      $where->equalTo('p.status', \Admin\Model\EnablerPlans::status_active);
+      $order = ['p.created_at desc'];
+
+      $sql = $this->getSql();
+      $query = $sql->select()
+        ->from($this->tableName)
+        ->where($where)
+        ->order($order);
+      if ($gc == 0) {
+        $query->offset($data['offset'])
+            ->limit($data['limit']);
+      }
+      $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
+      if ($gc == 1)
+        return count($resultSet);
+      $plan = array();
+      foreach ($resultSet as $row) {
+        $plan[] = $row;
+      }
+      return $plan;
     } catch (\Exception $e) {
       return array();
     }

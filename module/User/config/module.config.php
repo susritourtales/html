@@ -587,6 +587,15 @@ return [
                         'action' => 'enabler-checkout',
                     ],
                 ],
+            ], 'twistt-enabler-sell' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/twistt/enabler/sell',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'enabler-sell',
+                    ],
+                ],
             ], 'questt-validity' => [
                 'type' => Segment::class,
                 'options' => [

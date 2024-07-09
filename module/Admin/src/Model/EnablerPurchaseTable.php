@@ -105,6 +105,32 @@ class EnablerPurchaseTable extends BaseTable
     }
   }
 
+  public function getEnablerPurchasedPlansList($enabler_id)
+  {
+    try {
+      $where = new Where();
+      $where->equalTo('p.enabler_id', $enabler_id);
+      $where->and->equalTo('payment_status', \Admin\Model\EnablerPurchase::payment_success);
+      $order = ['p.created_at desc'];
+      
+      $sql = $this->getSql();
+      $query = $sql->select()
+        ->from($this->tableName)
+        ->where($where)
+        ->join(array('e' => 'enabler_plans'), 'e.id=p.plan_id', array('plan_name'), Select::JOIN_LEFT)
+        ->join(array('r' => 'enabler_purchase_request'), 'r.invoice=p.invoice', array('prid' => 'id'), Select::JOIN_LEFT)
+        ->order($order);
+      $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
+      $purchases = array();
+      foreach ($resultSet as $row) {
+        $purchases[] = $row;
+      }
+      return $purchases;
+    } catch (\Exception $e) {
+      return array();
+    }
+  }
+
   public function getEnablerLastPurchaseDate($enablerId){
     try {
       $where = new Where();

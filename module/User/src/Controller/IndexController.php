@@ -1610,10 +1610,10 @@ class IndexController extends BaseController
       $saveData['actual_price'] = number_format((float)$prDetails['actual_price'], 2, '.', '');
       $plan = $this->enablerPlansTable->getEnablerPlans(['status' => \Admin\Model\EnablerPlans::status_active, 'id' => $prDetails['plan_id']]);
       $lic_bal = '0';
-      if($plan['plan_type'] == \Admin\Model\EnablerPlans::Complimentary_Plan)
-        $lic_bal = substr($plan['plan_name'], strpos($plan['plan_name'], 'C')+1);
+      if($plan[0]['plan_type'] == \Admin\Model\EnablerPlans::Complimentary_Plan)
+        $lic_bal = substr($plan[0]['plan_name'], strpos($plan[0]['plan_name'], 'C')+1);
       else
-        $lic_bal = substr($plan['plan_name'], strpos($plan['plan_name'], 'P')+1);
+        $lic_bal = substr($plan[0]['plan_name'], strpos($plan[0]['plan_name'], 'P')+1);
 
       $saveData['lic_bal'] = $lic_bal;
       if($totalAmount == 0 && round($totalAmount) == 0){
@@ -1842,26 +1842,57 @@ class IndexController extends BaseController
   public function enablerTrackPlansAction()
   {
     if ($this->authService->hasIdentity()) {
-      /* $loginId = $this->authService->getIdentity();
-      $userDetails = $this->userTable->getUserDetails(['user_login_id' => $loginId['user_login_id']]);
-      $bankDetails = $this->executiveDetailsTable->getExecutiveDetails(['user_id' => $userDetails['id']]);
-      $qed = $this->questtSubscriptionTable->getField(['user_id' => $loginId['id']], 'end_date');
-      $qed = date('d-m-Y', strtotime($qed));
-      $transactions = $this->executiveTransactionTable->getTransactionsList(['executive_id' => $bankDetails['id'], 'limit' => 10, 'offset' => 0]);
-      $totalCount = $this->executiveTransactionTable->getTransactionsList(['executive_id' => $bankDetails['id']], 1);
+      $loginId = $this->authService->getIdentity();
+      $enablerDetails = $this->enablerTable->getEnablerDetails(['user_login_id' => $loginId['user_login_id']]);
+      $enblerPL = $this->enablerPurchaseTable->getEnablerPurchasedPlansList($enablerDetails['id']);
+      $sales = $this->enablerSalesTable->getEnablerSalesList(['enabler_id' => $enablerDetails['id'], 'limit' => 10, 'offset' => 0]);
+      $totalCount = $this->enablerSalesTable->getEnablerSalesList(['enabler_id' => $enablerDetails['id']], 1);
       $config = $this->getConfig();
       if($enablerDetails['login_type'] == \Admin\Model\Enabler::login_type_social) 
         $imageUrl = "";
       else
         $imageUrl = $this->filesUrl();
-      return new ViewModel(['userDetails' => $userDetails, 'bankDetails' => $bankDetails, 'transactions' => $transactions, 'totalCount' => $totalCount, 'config' => $config['hybridauth'], 'qed' => $qed, 'imageUrl' => $imageUrl02]); */
-      echo "Track plans page";
-      exit;
+      return new ViewModel(['enablerDetails' => $enablerDetails, 'sales' => $sales, 'totalCount' => $totalCount, 'epl' => $enblerPL, 'config' => $config['hybridauth'], 'imageUrl' => $imageUrl]);
     } else {
       $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/enabler/login');
     }
   }
 
+  public function enablerSellAction()
+  {
+    if ($this->authService->hasIdentity()) {
+      $loginId = $this->authService->getIdentity();
+      $enablerDetails = $this->enablerTable->getEnablerDetails(['user_login_id' => $loginId['user_login_id']]);
+      $request = $this->getRequest()->getPost();
+      $saveData['enabler_id'] = $enablerDetails['id'];
+      $saveData['purchase_id'] = $request['selPlan'];
+      $epd = $this->enablerPurchaseTable->getEnablerPurchase(['id'=>$request['selPlan']]);
+      $saveData['plan_id'] = $epd['plan_id'];
+      $saveData['sale_date'] = date('Y-m-d');
+      $saveData['tourist_name'] = $request['tname'];
+      $saveData['tourist_mobile'] = "(" . $request['cc'] . ")" . $request['mobile'];
+      $saveData['tourist_email'] = $request['email'];
+      $saveData['tour_start_date'] = date('Y-m-d', strtotime($request['datepicker']));
+      $saveData['twistt_start_date'] = date('Y-m-d', strtotime($request['datepicker'] . ' -3 days'));
+      $plan_name = $this->enablerPlansTable->getField(['id' => $epd['plan_id']], 'plan_name');
+      if(strstr($plan_name, \Admin\Model\EnablerPlans::Paid_Plan))
+        $twisttPd = substr($plan_name, 0, strpos($plan_name, \Admin\Model\EnablerPlans::Paid_Plan));
+      else if(strstr($plan_name, \Admin\Model\EnablerPlans::Complimentary_Plan))
+        $twisttPd = substr($plan_name, 0, strpos($plan_name, \Admin\Model\EnablerPlans::Complimentary_Plan));
+      $saveData['twistt_end_date'] = date('Y-m-d', strtotime($saveData['twistt_start_date'] . " $twisttPd days"));
+      $lic_bal = (int)$epd['lic_bal'] - 1;
+      $saveData['lic_bal'] = $lic_bal;
+      $updatePDT_LB = $this->enablerPurchaseTable->setEnablerPurchase(['lic_bal' => $lic_bal], ['id' => $epd['id']]);
+      if(!$updatePDT_LB)
+        return new JsonModel(array('success' => false, 'message' => 'unable to process your request..'));
+      $addESData = $this->enablerSalesTable->addEnablerSale($saveData);
+      if(!$addESData)
+        return new JsonModel(array('success' => false, 'message' => 'unable to process your request..'));
+      return new JsonModel(array('success' => true, 'message' => 'successfull'));
+    } else {
+      $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/enabler/login');
+    }
+  }
   public function enablerTermsAction()
   {
     if ($this->authService->hasIdentity()) {

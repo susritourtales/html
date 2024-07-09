@@ -615,6 +615,25 @@ return [
                         'action' => 'delete-executive',
                     ],
                 ],
+            ],'enabler-plans' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/enabler-plans',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'enabler-plans',
+                    ],
+                ],
+            ],
+            'load-enabler-plans' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/a_dMin/load-enabler-plans',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'load-enabler-plans',
+                    ],
+                ],
             ],
             'executive-coupons-commissions' => [
                 'type' => Segment::class,

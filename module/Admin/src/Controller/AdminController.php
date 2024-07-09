@@ -2746,7 +2746,79 @@ class AdminController extends BaseController
 
     // Twistt Enablers - End
 
+    public function enablerPlansAction(){
+        $this->checkAdmin();
+        $searchData = ['limit' => 10, 'offset' => 0];
+        $plansList = $this->enablerPlansTable->getAdminEnablerPlans($searchData);
+        $totalCount = $this->enablerPlansTable->getAdminEnablerPlans($searchData, 1);
+        return new ViewModel(['plansList' => $plansList, 'totalCount' => $totalCount]);
+    }
 
+    public function loadEnablerPlansAction()
+    {
+        if ($this->authService->hasIdentity()) {
+            if ($this->getRequest()->isXmlHttpRequest()) {
+                $request = $this->getRequest()->getPost();
+                $searchData = array('limit' => 10, 'offset' => 0);
+                $type = $request['type'];
+                $offset = 0;
+                $filterData = $request['filter'];
+                if ($filterData) {
+                    $filterData = json_decode($filterData, true);
+                    if (isset($filterData['plan_name'])) {
+                        if (isset($filterData['plan_name']['text']) && !empty($filterData['plan_name']['text'])) {
+                            $searchData['plan_name'] = $filterData['plan_name']['text'];
+                        }
+                        if (isset($filterData['plan_name']['order']) && $filterData['plan_name']['order']) {
+                            $searchData['plan_name_order'] = $filterData['plan_name']['order'];
+                        }
+                    }
+                    if (isset($filterData['plan_type'])) {
+                        if (isset($filterData['plan_type']['text']) && !empty($filterData['plan_type']['text'])) {
+                            $searchData['plan_type'] = $filterData['plan_type']['text'];
+                        }
+                        if (isset($filterData['plan_type']['order']) && $filterData['plan_type']['order']) {
+                            $searchData['plan_type_order'] = $filterData['plan_type']['order'];
+                        }
+                    }
+                    if (isset($filterData['price_inr'])) {
+                        if (isset($filterData['price_inr']['text']) && !empty($filterData['price_inr']['text'])) {
+                            $searchData['price_inr'] = $filterData['price_inr']['text'];
+                        }
+                        if (isset($filterData['price_inr']['order']) && $filterData['price_inr']['order']) {
+                            $searchData['price_inr_order'] = $filterData['price_inr']['order'];
+                        }
+                    }
+                    if (isset($filterData['price_usd'])) {
+                        if (isset($filterData['price_usd']['text']) && !empty($filterData['price_usd']['text'])) {
+                            $searchData['price_usd'] = $filterData['price_usd']['text'];
+                        }
+                        if (isset($filterData['price_usd']['order']) && $filterData['price_usd']['order']) {
+                            $searchData['price_usd_order'] = $filterData['price_usd']['order'];
+                        }
+                    }
+                }
+                if (isset($request['page_number'])) {
+                    $pageNumber = $request['page_number'];
+                    $offset = ($pageNumber * 10 - 10);
+                    $limit = 10;
+                    $searchData['offset'] = $offset;
+                    $searchData['limit'] = $limit;
+                }
+                $totalCount = 0;
+
+                if ($type && $type == 'search') {
+                    $totalCount = $this->enablerPlansTable->getAdminEnablerPlans($searchData, 1);
+                }
+                $plansList = $this->enablerPlansTable->getAdminEnablerPlans($searchData);
+                $view = new ViewModel(['plansList' => $plansList, 'totalCount' => $totalCount, 'offset' => $offset, 'type' => $type]);
+                $view->setTerminal(true);
+                return $view;
+            }
+        } else {
+            return $this->redirect()->toUrl($this->getBaseUrl() . '/a_dMin/login');
+        }
+    }
 
     // Twistt Enablers - End
 

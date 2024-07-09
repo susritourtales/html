@@ -1,0 +1,29 @@
+<div class="sidebar">
+    <div class="side-panel" id="collapsibleNavbar">
+        <?php echo $this->partial('/application/index/left-menu', array(
+            'mainActiveTab' => \Application\Constants\Constants::TWISTT_ENABLERS,
+            'activeTab' => \Application\Constants\Constants::TE_Plans
+        )); ?>
+    </div>
+</div>
+<link rel="stylesheet" href="<?php echo $this->basePath() ?>/css/main.css">
+<div class="wrapper">
+    <div class="main-panel ">
+        <?php echo $this->partial("/application/index/app-header"); ?>
+        <div class="main-container p-lg-4">
+            <div class="d-flex justify-content-between mb-4">
+                <div class="main-heading"><?php echo "TWISTT Enabler Plans (Total: $totalCount)";?></div> <a class="text-end" href="<?php echo $this->basePath() . '/a_dMin/add-plan' ?>"><button type="button" class="btn add-btn">Add Plan</button></a>
+            </div>
+            <div class="" id="recordsList">
+                <?php echo $this->partial('/admin/admin/load-enabler-plans', array('plansList' => $plansList, 'totalCount' => $totalCount, 'type' => 'initialize')); ?>
+            </div>
+            <?php if ($totalCount > 10) {
+                $paginationCount = ceil($totalCount / 10); ?>
+                <ul class="pagination float-end" id="listPager"></ul>
+            <?php } ?>
+        </div>
+    </div>
+</div>
+<?php echo $this->partial('/admin/admin/deletePlan', ['entityName' => 'Enabler Plan']); ?>
+<script src="<?php echo $this->basePath(); ?>/js/pagination.js"></script>
+<script src="<?php echo $this->basePath() . '/js/admin/enabler-plans.js' ?>"></script>

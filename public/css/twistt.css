@@ -73,7 +73,7 @@ body {
 
   .primary-btn {
     background-color: #20437b !important;
-    color: white;
+    color: white !important;
     font-family: "ITC Avant Garde Pro Bk", "arial" !important;
     border-radius: 10px;
   }

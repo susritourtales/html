@@ -55,19 +55,31 @@ class EnablerSalesTable extends BaseTable
     }
   }
 
-  public function getEnablerSales($where)
+  public function getEnablerSalesList($data = array('limit' => 10, 'offset' => 0), $gc = 0)
   {
     try {
+      $where = new Where();
+      $where->equalTo('p.enabler_id', $data['enabler_id']);
+      $order = ['p.created_at desc'];
+
       $sql = $this->getSql();
       $query = $sql->select()
         ->from($this->tableName)
-        ->where($where);
+        ->where($where)
+        ->join(array('e' => 'enabler_plans'), 'e.id=p.plan_id', array('plan_name'), Select::JOIN_LEFT)
+        ->order($order);
+        if ($gc == 0) {
+          $query->offset($data['offset'])
+              ->limit($data['limit']);
+        }
       $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
-      $transaction = array();
+      if ($gc == 1)
+        return count($resultSet);
+      $sales = array();
       foreach ($resultSet as $row) {
-        $transaction[] = $row;
+        $sales[] = $row;
       }
-      return $transaction[0];
+      return $sales;
     } catch (\Exception $e) {
       return array();
     }

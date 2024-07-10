@@ -615,7 +615,7 @@ return [
                         'action' => 'delete-executive',
                     ],
                 ],
-            ],'enabler-plans' => [
+            ], 'enabler-plans' => [
                 'type' => Segment::class,
                 'options' => [
                     'route' => '/a_dMin/enabler-plans',
@@ -635,6 +635,126 @@ return [
                     ],
                 ],
             ],
+            'add-enabler-plan' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/add-enabler-plan',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'add-enabler-plan',
+                    ],
+                ],
+            ],
+            'edit-enabler-plan' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/edit-enabler-plan[/:id]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-zA-Z0-9_~\-!@#\$%\^&*\(\)=]*[/]*',
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'edit-enabler-plan',
+                    ],
+                ],
+            ],
+            'delete-enabler-plan' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/delete-enabler-plan[/:id]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-zA-Z0-9_~\-!@#\$%\^&*\(\)=]*[/]*',
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'delete-enabler-plan',
+                    ],
+                ],
+            ], 'enablers-list' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/enablers-list',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'enablers-list',
+                    ],
+                ],
+            ],
+            'load-enablers-list' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/a_dMin/load-enablers-list',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'load-enablers-list',
+                    ],
+                ],
+            ],'edit-enabler' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/edit-enabler',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'edit-enabler',
+                    ],
+                ],
+            ],
+            'enabler-purchases' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/enabler-purchases[/:id]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-zA-Z0-9_~\-!@#\$%\^&*\(\)=]*[/]*',
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'enabler-purchases',
+                    ],
+                ],
+            ], 
+            'enabler-sales' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/enabler-sales[/:id]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-zA-Z0-9_~\-!@#\$%\^&*\(\)=]*[/]*',
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'enabler-sales',
+                    ],
+                ],
+            ],'enabler-invoice' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/enabler/invoice[/:id]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'tour' => '[a-zA-Z0-9_~\-!@#\$%\^&*\(\)=]*[/]*'
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'enabler-invoice',
+                    ],
+                ],
+            ], 'enabler-receipt' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/enabler/receipt[/:id]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'tour' => '[a-zA-Z0-9_~\-!@#\$%\^&*\(\)=]*[/]*'
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'enabler-receipt',
+                    ],
+                ],
+            ], 
             'executive-coupons-commissions' => [
                 'type' => Segment::class,
                 'options' => [

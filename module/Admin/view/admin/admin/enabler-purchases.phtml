@@ -2,7 +2,7 @@
     <div class="side-panel" id="collapsibleNavbar">
         <?php echo $this->partial('/application/index/left-menu', array(
             'mainActiveTab' => \Application\Constants\Constants::TWISTT_ENABLERS,
-            'activeTab' => \Application\Constants\Constants::TE_Plans
+            'activeTab' => \Application\Constants\Constants::TE_Profiles
         )); ?>
     </div>
 </div>
@@ -12,10 +12,10 @@
         <?php echo $this->partial("/application/index/app-header"); ?>
         <div class="main-container p-lg-4">
             <div class="d-flex justify-content-between mb-4">
-                <div class="main-heading"><?php echo "TWISTT Enabler Plans (Total: $totalCount)";?></div> <a class="text-end" href="<?php echo $this->basePath() . '/a_dMin/add-enabler-plan' ?>"><button type="button" class="btn add-btn">Add Plan</button></a>
+                <div class="main-heading mb-3"><a href="<?php echo $this->basePath() . '/a_dMin/enablers-list' ?>"><i class="fa fa-arrow-left mr-2"></i></a> <?php echo "TWISTT Enabler Purchases (Total: $totalCount)";?></div>
             </div>
-            <div class="" id="recordsList">
-                <?php echo $this->partial('/admin/admin/load-enabler-plans', array('plansList' => $plansList, 'totalCount' => $totalCount, 'type' => 'initialize')); ?>
+            <div class="overflow-auto" id="recordsList">
+                <?php echo $this->partial('/admin/admin/load-purchases-list', array('purchases' => $purchases, 'totalCount' => $totalCount, 'type' => 'initialize')); ?>
             </div>
             <?php if ($totalCount > 10) {
                 $paginationCount = ceil($totalCount / 10); ?>
@@ -24,6 +24,5 @@
         </div>
     </div>
 </div>
-<?php echo $this->partial('/admin/admin/deleteModal', ['entityName' => 'Enabler Plan']); ?>
 <script src="<?php echo $this->basePath(); ?>/js/pagination.js"></script>
-<script src="<?php echo $this->basePath() . '/js/admin/enabler-plans.js' ?>"></script>
+<script src="<?php echo $this->basePath() . '/js/admin/enabler-purchases.js' ?>"></script>

@@ -77,7 +77,51 @@ class EnablerPlansTable extends BaseTable
     try {
       $where = new Where();
       $where->equalTo('p.status', \Admin\Model\EnablerPlans::status_active);
-      $order = ['p.created_at desc'];
+      
+      if (array_key_exists('plan_name', $data)) {
+        $where->and->like(new \Laminas\Db\Sql\Expression("LOWER(p.plan_name)"), '%' . $data['plan_name'] . "%");
+      }
+      if (array_key_exists('plan_type', $data)) {
+          $where->and->like(new \Laminas\Db\Sql\Expression("LOWER(p.plan_type)"), '%' . $data['plan_type'] . "%");
+      }
+      if (array_key_exists('price_inr', $data)) {
+          $where->and->like(new \Laminas\Db\Sql\Expression("LOWER(p.price_inr)"), '%' . $data['price_inr'] . "%");
+      }
+      if (array_key_exists('price_usd', $data)) {
+        $where->and->like(new \Laminas\Db\Sql\Expression("LOWER(p.price_usd)"), '%' . $data['price_usd'] . "%");
+      }
+      $order = array();
+      if (array_key_exists('plan_name_order', $data)) {
+          if ($data['plan_name_order'] == 1) {
+              $order[] = 'p.plan_name asc';
+          } else if ($data['plan_name_order'] == -1) {
+              $order[] = 'p.plan_name desc';
+          }
+      }
+      if (array_key_exists('plan_type_order', $data)) {
+          if ($data['plan_type_order'] == 1) {
+              $order[] = 'p.plan_type asc';
+          } else if ($data['plan_type_order'] == -1) {
+              $order[] = 'p.plan_type desc';
+          }
+      }
+      if (array_key_exists('price_inr_order', $data)) {
+          if ($data['price_inr_order'] == 1) {
+              $order[] = 'p.price_inr asc';
+          } else if ($data['price_inr_order'] == -1) {
+              $order[] = 'p.price_inr desc';
+          }
+      }
+      if (array_key_exists('price_usd_order', $data)) {
+        if ($data['price_usd_order'] == 1) {
+            $order[] = 'p.price_usd asc';
+        } else if ($data['price_usd_order'] == -1) {
+            $order[] = 'p.price_usd desc';
+        }
+      }
+      if (!count($order)) {
+        $order = ['p.created_at desc'];
+      }
 
       $sql = $this->getSql();
       $query = $sql->select()

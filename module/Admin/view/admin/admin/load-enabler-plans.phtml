@@ -3,7 +3,10 @@
         <thead>
             <tr>
                 <th>S.no</th>
-                <th data-placeholder="state" data-input="state">state</th>
+                <th data-placeholder="Plan Name" data-input="plan_name">Plan Name</th>
+                <th data-placeholder="Plan Type" data-input="plan_type">Plan Type</th>
+                <th data-placeholder="Price (INR)" data-input="price_inr">Price (INR)</th>
+                <th data-placeholder="Price (USD)" data-input="price_usd">Price (USD)</th>
                 <th>Action</th>
             </tr>
         <?php } ?>
@@ -12,21 +15,24 @@
             <input type="hidden" class="records" value="<?php echo $totalCount; ?>">
         <tbody>
         <?php } ?>
-        <?php if (count($stateList)) {
+        <?php if (count($plansList)) {
             $i = 0;
             if (isset($offset)) {
                 $i = $offset;
             }
-            foreach ($stateList as $state) { ?>
+            foreach ($plansList as $plan) { ?>
                 <tr>
-                    <td><?php echo $i + 1; ?></td>
-                    <td><?php echo$state['state_name']; ?></td>
+                    <td class="text-center"><?php echo $i + 1; ?></td>
+                    <td class="text-center"><?php echo $plan['plan_name']; ?></td>
+                    <td class="text-center"><?php echo $plan['plan_type']; ?></td>
+                    <td class="text-center"><?php echo $plan['price_inr']; ?></td>
+                    <td class="text-center"><?php echo $plan['price_usd']; ?></td>
                     <td>
                         <div class="d-flex">
-                            <a class="action-icon " href="<?php echo $this->basePath() . '/a_dMin/edit-state/' . base64_encode('tourismPlaceId=' . $state['id']) ?>">
+                            <a class="action-icon " href="<?php echo $this->basePath() . '/a_dMin/edit-enabler-plan/' . base64_encode('enablerPlanId=' . $plan['id']) ?>">
                                 <img src="<?php echo $this->basePath(); ?>/img/edit.png" class="img-fluid">
                             </a>
-                            <div class="action-icon delete-state" data-id="<?php echo $state['id']; ?>">
+                            <div class="action-icon delete-enabler-plan" data-id="<?php echo $plan['id']; ?>">
                                 <img src="<?php echo $this->basePath(); ?>/img/delete.png" class="img-fluid">
                             </div>
                         </div>

@@ -1,0 +1,58 @@
+<div class="sidebar">
+    <div class="side-panel" id="collapsibleNavbar">
+        <?php echo $this->partial('/application/index/left-menu', array(
+            'mainActiveTab' => \Application\Constants\Constants::TWISTT_ENABLERS,
+            'activeTab' => \Application\Constants\Constants::TE_Plans
+        )); ?>
+    </div>
+</div>
+<link rel="stylesheet" href="<?php echo $this->basePath() ?>/css/main.css">
+<script src="<?php echo $this->basePath() ?>/js/radialIndicator.min.js"></script>
+<script src="<?php echo $this->basePath(); ?>/js/admin/add-enabler-plan.js"></script>
+<div class="wrapper">
+    <div class="main-panel ">
+        <?php echo $this->partial("/application/index/app-header"); ?>
+        <div class="main-container p-lg-4">
+            <div class="main-heading mb-3"><a href="<?php echo $this->basePath() . '/a_dMin/enabler-plans' ?>"><i class="fa fa-arrow-left mr-2"></i></a> Add Enabler Plan</div>
+            <div class="row">
+                <div class="col-12 col-lg-10">
+                    <div class="row adding-form">
+                        <div class="col-12 col-md-6 pt-md-5 mb-4 mt-n1">
+                            <div class="row">
+                                <div class="col-sm-12 col-md-6">
+                                    <label class="text-black-50">TWISTT Duration</label>
+                                    <input type="text" class="form-control" id="pd" name="pp" onfocusout="setPlanName()"/>
+                                </div>
+                                <div class="col-sm-12 col-md-6">
+                                    <label class="text-black-50">Plan Type</label>
+                                    <select class="form-control" id="pt" name="pt" onchange="setPlanName()">
+                                        <option value="P">Paid Plan</option>
+                                        <option value="C">Complimentary Plan</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-12 col-md-6">
+                                    <label class="text-black-50">MTL</label>
+                                    <input type="text" class="form-control" id="pp" name="pp" onfocusout="setPlanName()"/>
+                                </div>
+                                <div class="col-sm-12 col-md-6">
+                                    <label class="text-black-50">Plan Name</label>
+                                    <input type="text" class="form-control" id="pn" name="pn" disabled/>
+                                </div>
+                                <div class="col-sm-12 col-md-6">
+                                    <label class="text-black-50">Plan Price INR</label>
+                                    <input type="text" class="form-control" id="ppinr" name="ppinr"/>
+                                </div>
+                                <div class="col-sm-12 col-md-6">
+                                    <label class="text-black-50">Plan Price USD</label>
+                                    <input type="text" class="form-control" id="ppusd" name="ppusd"/>
+                                </div>
+                                <div class="col-sm-12 col-md-6 mt-3">
+                                    <div class="col-sm-9"> <button type="button" class="btn submit-btn" id="addEnbPlan">Submit</button></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

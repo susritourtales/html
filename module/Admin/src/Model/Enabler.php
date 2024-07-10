@@ -35,6 +35,9 @@ class Enabler
     const login_type_email = 'e';
     const login_type_social = 's';
 
+    const display_yes = '1';
+    const display_no = '0';
+
     public function exchangeArray(array $data)
     {
         $this->id = !empty($data['id']) ? $data['id'] : null;

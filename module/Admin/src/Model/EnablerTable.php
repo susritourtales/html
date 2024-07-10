@@ -15,7 +15,7 @@ class EnablerTable extends BaseTable
     public function __construct(TableGateway $tableGateway)
     {
         $this->tableGateway = $tableGateway;
-        $this->tableName = array("u" => "enabler");
+        $this->tableName = array("p" => "enabler");
     }
 
     public function addEnabler(array $data)
@@ -165,5 +165,117 @@ class EnablerTable extends BaseTable
         } catch (\Exception $e) {
             return false;
         }
-    }  
+    }
+    
+    public function getAdminEnablersList($data = array('limit' => 10, 'offset' => 0), $gc = 0){
+        try {
+          $where = new Where();
+          $where->equalTo('p.display', \Admin\Model\Enabler::display_yes);
+          
+          if (array_key_exists('username', $data)) {
+            $where->and->like(new \Laminas\Db\Sql\Expression("LOWER(p.username)"), '%' . $data['username'] . "%");
+          }
+          if (array_key_exists('company_name', $data)) {
+              $where->and->like(new \Laminas\Db\Sql\Expression("LOWER(p.company_name)"), '%' . $data['company_name'] . "%");
+          }
+          if (array_key_exists('country_phone_code', $data)) {
+              $where->and->like(new \Laminas\Db\Sql\Expression("LOWER(p.country_phone_code)"), '%' . $data['country_phone_code'] . "%");
+          }
+          if (array_key_exists('mobile_number', $data)) {
+            $where->and->like(new \Laminas\Db\Sql\Expression("LOWER(p.mobile_number)"), '%' . $data['mobile_number'] . "%");
+          }
+          if (array_key_exists('email', $data)) {
+            $where->and->like(new \Laminas\Db\Sql\Expression("LOWER(p.email)"), '%' . $data['email'] . "%");
+          }
+          if (array_key_exists('country', $data)) {
+              $where->and->like(new \Laminas\Db\Sql\Expression("LOWER(p.country)"), '%' . $data['country'] . "%");
+          }
+          if (array_key_exists('city', $data)) {
+              $where->and->like(new \Laminas\Db\Sql\Expression("LOWER(p.city)"), '%' . $data['city'] . "%");
+          }
+          if (array_key_exists('stt_disc', $data)) {
+            $where->and->like(new \Laminas\Db\Sql\Expression("LOWER(p.stt_disc)"), '%' . $data['stt_disc'] . "%");
+          }
+          $order = array();
+          if (array_key_exists('username_order', $data)) {
+              if ($data['username_order'] == 1) {
+                  $order[] = 'p.username asc';
+              } else if ($data['username_order'] == -1) {
+                  $order[] = 'p.username desc';
+              }
+          }
+          if (array_key_exists('company_name_order', $data)) {
+              if ($data['company_name_order'] == 1) {
+                  $order[] = 'p.company_name asc';
+              } else if ($data['company_name_order'] == -1) {
+                  $order[] = 'p.company_name desc';
+              }
+          }
+          if (array_key_exists('country_phone_code_order', $data)) {
+              if ($data['country_phone_code_order'] == 1) {
+                  $order[] = 'p.country_phone_code asc';
+              } else if ($data['country_phone_code_order'] == -1) {
+                  $order[] = 'p.country_phone_code desc';
+              }
+          }
+          if (array_key_exists('mobile_number_order', $data)) {
+            if ($data['mobile_number_order'] == 1) {
+                $order[] = 'p.mobile_number asc';
+            } else if ($data['mobile_number_order'] == -1) {
+                $order[] = 'p.mobile_number desc';
+            }
+          }if (array_key_exists('email_order', $data)) {
+            if ($data['email_order'] == 1) {
+                $order[] = 'p.email asc';
+            } else if ($data['email_order'] == -1) {
+                $order[] = 'p.email desc';
+            }
+        }
+        if (array_key_exists('country_order', $data)) {
+            if ($data['country_order'] == 1) {
+                $order[] = 'p.country asc';
+            } else if ($data['country_order'] == -1) {
+                $order[] = 'p.country desc';
+            }
+        }
+        if (array_key_exists('city_order', $data)) {
+            if ($data['city_order'] == 1) {
+                $order[] = 'p.city asc';
+            } else if ($data['city_order'] == -1) {
+                $order[] = 'p.city desc';
+            }
+        }
+        if (array_key_exists('stt_disc_order', $data)) {
+          if ($data['stt_disc_order'] == 1) {
+              $order[] = 'p.stt_disc asc';
+          } else if ($data['stt_disc_order'] == -1) {
+              $order[] = 'p.stt_disc desc';
+          }
+        }
+          if (!count($order)) {
+            $order = ['p.created_at desc'];
+          }
+    
+          $sql = $this->getSql();
+          $query = $sql->select()
+            ->from($this->tableName)
+            ->where($where)
+            ->order($order);
+          if ($gc == 0) {
+            $query->offset($data['offset'])
+                ->limit($data['limit']);
+          }
+          $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
+          if ($gc == 1)
+            return count($resultSet);
+          $plan = array();
+          foreach ($resultSet as $row) {
+            $plan[] = $row;
+          }
+          return $plan;
+        } catch (\Exception $e) {
+          return array();
+        }
+      }
+    
 }

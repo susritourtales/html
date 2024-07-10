@@ -2820,6 +2820,336 @@ class AdminController extends BaseController
         }
     }
 
+    public function addEnablerPlanAction(){
+        $this->checkAdmin();
+        if ($this->getRequest()->isXmlHttpRequest()) {
+            $request = $this->getRequest()->getPost();
+            $plan['plan_name'] = $request['pn'];
+            $plan['plan_type'] = $request['pt'];
+            $plan['price_inr'] = $request['ppinr'];
+            $plan['price_usd'] = $request['ppusd'];
+            $plan['status'] = \Admin\Model\EnablerPlans::status_active;
+            $addRes = $this->enablerPlansTable->addEnablerPlan($plan);
+            if(!$addRes)
+                return new JsonModel(array('success' => false, 'message' => 'unable to add'));
+            return new JsonModel(array('success' => true, 'message' => 'Added successfully'));
+        }
+        return new ViewModel();
+    }
+
+    public function editEnablerPlanAction(){
+        $this->checkAdmin();
+        if ($this->getRequest()->isXmlHttpRequest()) {
+            $request = $this->getRequest()->getPost();
+            $planId = $request['id'];
+            $plan['plan_name'] = $request['pn'];
+            $plan['plan_type'] = $request['pt'];
+            $plan['price_inr'] = $request['ppinr'];
+            $plan['price_usd'] = $request['ppusd'];
+            $plan['status'] = \Admin\Model\EnablerPlans::status_active;
+            $res = $this->enablerPlansTable->setEnablerPlans($plan,['id' => $planId]);
+            if(!$res)
+                return new JsonModel(array('success' => false, 'message' => 'unable to update'));
+            return new JsonModel(array('success' => true, 'message' => 'updated successfully'));
+        }
+        $paramId = $this->params()->fromRoute('id', '');
+        if (!$paramId) {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        $prIdString = rtrim($paramId, "=");
+        $prIdString = base64_decode($prIdString);
+        $prIdString = explode("=", $prIdString);
+        $planId = array_key_exists(1, $prIdString) ? $prIdString[1] : 0;
+        $plan = $this->enablerPlansTable->getEnablerPlans(['id' => $planId]);
+        if($plan[0]['plan_type'] == \Admin\Model\EnablerPlans::Paid_Plan)
+            $planNameArr = explode(\Admin\Model\EnablerPlans::Paid_Plan, $plan[0]['plan_name']);
+        else
+            $planNameArr = explode(\Admin\Model\EnablerPlans::Complimentary_Plan, $plan[0]['plan_name']);
+        $plan[0]['duration'] = $planNameArr[0];
+        $plan[0]['mtl'] = $planNameArr[1];
+        return new ViewModel(['plan' => $plan[0]]);
+    }
+
+    public function deleteEnablerPlanAction(){
+        $this->checkAdmin();
+        if ($this->getRequest()->isXmlHttpRequest()) {
+            $request = $this->getRequest()->getPost();
+            $planId = $request['id'];
+            $res = $this->enablerPlansTable->setEnablerPlans(['status' => \Admin\Model\EnablerPlans::status_inactive],['id' => $planId]);
+            if(!$res)
+                return new JsonModel(array('success' => false, 'message' => 'unable to delete'));
+            return new JsonModel(array('success' => true, 'message' => 'deleted successfully'));
+        }
+    }
+
+    public function enablersListAction(){
+        $this->checkAdmin();
+        $searchData = ['limit' => 10, 'offset' => 0];
+        $enbList = $this->enablerTable->getAdminEnablersList($searchData);
+        $totalCount = $this->enablerTable->getAdminEnablersList($searchData, 1);
+        return new ViewModel(['enbList' => $enbList, 'totalCount' => $totalCount]);
+    }
+
+    public function loadEnablersListAction()
+    {
+        if ($this->authService->hasIdentity()) {
+            if ($this->getRequest()->isXmlHttpRequest()) {
+                $request = $this->getRequest()->getPost();
+                $searchData = array('limit' => 10, 'offset' => 0);
+                $type = $request['type'];
+                $offset = 0;
+                $filterData = $request['filter'];
+                if ($filterData) {
+                    $filterData = json_decode($filterData, true);
+                    if (isset($filterData['username'])) {
+                        if (isset($filterData['username']['text']) && !empty($filterData['username']['text'])) {
+                            $searchData['username'] = $filterData['username']['text'];
+                        }
+                        if (isset($filterData['username']['order']) && $filterData['username']['order']) {
+                            $searchData['username_order'] = $filterData['username']['order'];
+                        }
+                    }
+                    if (isset($filterData['company_name'])) {
+                        if (isset($filterData['company_name']['text']) && !empty($filterData['company_name']['text'])) {
+                            $searchData['company_name'] = $filterData['company_name']['text'];
+                        }
+                        if (isset($filterData['company_name']['order']) && $filterData['company_name']['order']) {
+                            $searchData['company_name_order'] = $filterData['company_name']['order'];
+                        }
+                    }
+                    if (isset($filterData['country_code'])) {
+                        if (isset($filterData['country_code']['text']) && !empty($filterData['country_code']['text'])) {
+                            $searchData['country_phone_code'] = $filterData['country_code']['text'];
+                        }
+                        if (isset($filterData['country_code']['order']) && $filterData['country_code']['order']) {
+                            $searchData['country_phone_code'] = $filterData['country_code']['order'];
+                        }
+                    }
+                    if (isset($filterData['mobile'])) {
+                        if (isset($filterData['mobile']['text']) && !empty($filterData['mobile']['text'])) {
+                            $searchData['mobile_number'] = $filterData['mobile']['text'];
+                        }
+                        if (isset($filterData['mobile']['order']) && $filterData['mobile']['order']) {
+                            $searchData['mobile_number_order'] = $filterData['mobile']['order'];
+                        }
+                    }
+                    if (isset($filterData['country'])) {
+                        if (isset($filterData['country']['text']) && !empty($filterData['country']['text'])) {
+                            $searchData['country'] = $filterData['country']['text'];
+                        }
+                        if (isset($filterData['country']['order']) && $filterData['country']['order']) {
+                            $searchData['country_order'] = $filterData['country']['order'];
+                        }
+                    }
+                    if (isset($filterData['city'])) {
+                        if (isset($filterData['city']['text']) && !empty($filterData['city']['text'])) {
+                            $searchData['city'] = $filterData['city']['text'];
+                        }
+                        if (isset($filterData['city']['order']) && $filterData['city']['order']) {
+                            $searchData['city_order'] = $filterData['city']['order'];
+                        }
+                    }
+                    if (isset($filterData['email'])) {
+                        if (isset($filterData['email']['text']) && !empty($filterData['email']['text'])) {
+                            $searchData['email'] = $filterData['email']['text'];
+                        }
+                        if (isset($filterData['email']['order']) && $filterData['email']['order']) {
+                            $searchData['email_order'] = $filterData['email']['order'];
+                        }
+                    }
+                    if (isset($filterData['stt_disc'])) {
+                        if (isset($filterData['stt_disc']['text']) && !empty($filterData['stt_disc']['text'])) {
+                            $searchData['stt_disc'] = $filterData['stt_disc']['text'];
+                        }
+                        if (isset($filterData['stt_disc']['order']) && $filterData['stt_disc']['order']) {
+                            $searchData['stt_disc_order'] = $filterData['stt_disc']['order'];
+                        }
+                    }
+                }
+                if (isset($request['page_number'])) {
+                    $pageNumber = $request['page_number'];
+                    $offset = ($pageNumber * 10 - 10);
+                    $limit = 10;
+                    $searchData['offset'] = $offset;
+                    $searchData['limit'] = $limit;
+                }
+                $totalCount = 0;
+
+                if ($type && $type == 'search') {
+                    $totalCount = $this->enablerTable->getAdminEnablersList($searchData, 1);
+                }
+                $enbList = $this->enablerTable->getAdminEnablersList($searchData);
+                $view = new ViewModel(['enbList' => $enbList, 'totalCount' => $totalCount, 'offset' => $offset, 'type' => $type]);
+                $view->setTerminal(true);
+                return $view;
+            }
+        } else {
+            return $this->redirect()->toUrl($this->getBaseUrl() . '/a_dMin/login');
+        }
+    }
+
+    public function editEnablerAction(){
+        $this->checkAdmin();
+        if ($this->getRequest()->isXmlHttpRequest()) {
+            $request = $this->getRequest()->getPost();
+            $id = base64_decode($request['id']);
+            $csd = $request['csd'];
+            $res = $this->enablerTable->updateEnabler(['stt_disc' => $csd], ['id' => $id]);
+            if(!$res)
+                return new JsonModel(array('success' => false, 'message' => 'unable to update'));
+            return new JsonModel(array('success' => true, 'message' => 'updated successfully'));
+        }
+    }
+
+    public function enablerPurchasesAction(){
+        $this->checkAdmin();
+        $paramId = $this->params()->fromRoute('id', '');
+        if (!$paramId) {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        $prIdString = rtrim($paramId, "=");
+        $prIdString = base64_decode($prIdString);
+        $prIdString = explode("=", $prIdString);
+        $eId = array_key_exists(1, $prIdString) ? $prIdString[1] : 0;
+        $purchases = $this->enablerPurchaseTable->getEnablerPurchasesList(['enabler_id' => $eId, 'limit' => 10, 'offset' => 0]);
+        $totalCount = $this->enablerPurchaseTable->getEnablerPurchasesList(['enabler_id' => $eId], 1);
+        return new ViewModel(['purchases' => $purchases, 'totalCount'=>$totalCount]);
+    }
+    public function loadPurchasesListAction()
+  {
+    if ($this->getRequest()->isXmlHttpRequest()) {
+       $paramId = $this->params()->fromRoute('id', '');
+       if (!$paramId) {
+          return $this->redirect()->toUrl($this->getBaseUrl());
+       }
+      $prIdString = rtrim($paramId, "=");
+      $prIdString = base64_decode($prIdString);
+      $prIdString = explode("=", $prIdString);
+      $eId = array_key_exists(1, $prIdString) ? $prIdString[1] : 0;
+      $request = $this->getRequest()->getPost();
+      $searchData = array('limit' => 10, 'offset' => 0);
+      $type = $request['type'];
+      $offset = 0;
+      
+      if (isset($request['page_number'])) {
+        $pageNumber = $request['page_number'];
+        $offset = ($pageNumber * 10 - 10);
+        $limit = 10;
+        $searchData['offset'] = $offset;
+        $searchData['limit'] = $limit;
+      }
+      $searchData['enabler_id'] = $eId;
+      $totalCount = 0;
+
+      if ($type && $type == 'search') {
+        $totalCount = $this->enablerPurchaseTable->getEnablerPurchasesList($searchData, 1);
+      }
+      $purchases = $this->enablerPurchaseTable->getEnablerPurchasesList($searchData);
+      $view = new ViewModel(array('purchases' => $purchases, 'totalCount' => $totalCount));
+      $view->setTerminal(true);
+      return $view;
+    }
+  }
+
+  public function enablerSalesAction(){
+    $this->checkAdmin();
+    $paramId = $this->params()->fromRoute('id', '');
+    if (!$paramId) {
+        return $this->redirect()->toUrl($this->getBaseUrl());
+    }
+    $prIdString = rtrim($paramId, "=");
+    $prIdString = base64_decode($prIdString);
+    $prIdString = explode("=", $prIdString);
+    $id = array_key_exists(1, $prIdString) ? $prIdString[1] : 0;
+    $sales = $this->enablerSalesTable->getAdminEnablerSalesList(['purchase_id' => $id, 'limit' => 10, 'offset' => 0]);
+    $totalCount = $this->enablerSalesTable->getAdminEnablerSalesList(['purchase_id' => $id], 1);
+    return new ViewModel(['sales' => $sales, 'totalCount'=>$totalCount]);
+}
+public function loadSalesListAction()
+{
+if ($this->getRequest()->isXmlHttpRequest()) {
+   $paramId = $this->params()->fromRoute('id', '');
+   if (!$paramId) {
+      return $this->redirect()->toUrl($this->getBaseUrl());
+   }
+  $prIdString = rtrim($paramId, "=");
+  $prIdString = base64_decode($prIdString);
+  $prIdString = explode("=", $prIdString);
+  $id = array_key_exists(1, $prIdString) ? $prIdString[1] : 0;
+  $request = $this->getRequest()->getPost();
+  $searchData = array('limit' => 10, 'offset' => 0);
+  $type = $request['type'];
+  $offset = 0;
+  
+  if (isset($request['page_number'])) {
+    $pageNumber = $request['page_number'];
+    $offset = ($pageNumber * 10 - 10);
+    $limit = 10;
+    $searchData['offset'] = $offset;
+    $searchData['limit'] = $limit;
+  }
+  $searchData['purchase_id'] = $id;
+  $totalCount = 0;
+
+  if ($type && $type == 'search') {
+    $totalCount = $this->enablerSalesTable->getAdminEnablerSalesList($searchData, 1);
+  }
+  $sales = $this->enablerSalesTable->getAdminEnablerSalesList($searchData);
+  $view = new ViewModel(array('sales' => $sales, 'totalCount' => $totalCount));
+  $view->setTerminal(true);
+  return $view;
+}
+}
+  public function enablerInvoiceAction(){
+    if ($this->authService->hasIdentity()) {
+      $paramId = $this->params()->fromRoute('id', '');
+      if (!$paramId) {
+          return $this->redirect()->toUrl($this->getBaseUrl());
+      }
+      $prIdString = rtrim($paramId, "=");
+      $prIdString = base64_decode($prIdString);
+      $prIdString = explode("=", $prIdString);
+      $iId = array_key_exists(1, $prIdString) ? $prIdString[1] : 0;
+      if ($iId != 0) {
+        $prDetails = $this->enablerPurchaseRequestTable->getEnablerPurchaseRequest(['id' => $iId]);
+        $enablerDetails = $this->enablerTable->getEnablerDetails(['id' => $prDetails['enabler_id']]);
+        $prRes = $this->enablerPurchaseTable->getField(['invoice' => $prDetails['invoice']], 'id');
+        $show = 1;
+        if($prRes)
+          $show = 0;
+      }else{
+        return new JsonModel(array('success' => false, "message" => 'invoice not found..'));
+      } 
+      return new ViewModel(['enablerDetails' => $enablerDetails,'prDetails' => $prDetails, 'imageUrl' => $this->filesUrl()]);
+    } else {
+      $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/enabler/login');
+    }
+  }
+
+  public function enablerReceiptAction(){
+    if ($this->authService->hasIdentity()) {
+      $paramId = $this->params()->fromRoute('id', '');
+      if (!$paramId) {
+          return $this->redirect()->toUrl($this->getBaseUrl());
+      }
+      $prIdString = rtrim($paramId, "=");
+      $prIdString = base64_decode($prIdString);
+      $prIdString = explode("=", $prIdString);
+      $rId = array_key_exists(1, $prIdString) ? $prIdString[1] : 0;
+      if ($rId != 0) {
+        $prDetails = $this->enablerPurchaseRequestTable->getEnablerPurchaseRequest(['id' => $rId]);
+        $purchase = $this->enablerPurchaseTable->getEnablerPurchase(['invoice' => $prDetails['invoice']]);
+        $planName = $this->enablerPlansTable->getField(['id' => $purchase['plan_id']], 'plan_name');
+      } else {
+        return new JsonModel(array('success' => false, "message" => 'receipt not found..'));
+      } 
+      $config = $this->getConfig();
+      return new ViewModel(['purchase' => $purchase, 'prId'=>$paramId, 'planName'=>$planName]);
+    } else {
+      $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/enabler/login');
+    }
+  }
+
     // Twistt Enablers - End
 
     // Change Password - Start
@@ -2840,7 +3170,7 @@ class AdminController extends BaseController
                 $hash = $encodeContent['hash'];
                 $currentPasswordInsert = $this->userTable->updateUser(['password' => $encodeString, 'hash' => $hash], ['id' => $userId]);
                 if ($currentPasswordInsert) {
-                    return new JsonModel(array('success' => false, 'message' => 'Updated successfully'));
+                    return new JsonModel(array('success' => true, 'message' => 'Updated successfully'));
                 } else {
                     return new JsonModel(array('success' => false, 'message' => 'Something went worng. Try again after sometime'));
                 }

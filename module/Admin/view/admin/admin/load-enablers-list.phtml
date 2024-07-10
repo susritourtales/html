@@ -1,0 +1,59 @@
+<?php if (isset($type) && $type == 'initialize') { ?>
+    <style>
+        .ppd {
+            cursor: pointer;
+        }
+    </style>
+    <table class="table table-bordered table-hover table-striped" id="table">
+        <thead>
+            <tr>
+                <th>S.no</th>
+                <th data-placeholder="Reg Dt" data-input="created_at">Registered On</th>
+                <th data-placeholder="User Name" data-input="username">Username</th>
+                <th data-placeholder="Company Name" data-input="company_name">Company Name</th>
+                <th data-placeholder="Country Code" data-input="country_code">Country Code</th>
+                <th data-placeholder="Mobile" data-input="mobile">Mobile</th>
+                <th data-placeholder="Email" data-input="email">Email</th>
+                <th data-placeholder="Country" data-input="country">Country</th>
+                <th data-placeholder="City" data-input="city">City</th>
+                <th data-placeholder="Discount" data-input="stt_disc">Discount</th>
+            </tr>
+        <?php } ?>
+
+        <?php if (isset($type) && ($type == 'initialize' || $type == "search")) { ?>
+            <input type="hidden" class="records" value="<?php echo $totalCount; ?>">
+        <tbody>
+        <?php } ?>
+        <?php if (count($enbList)) {
+            $i = 0;
+            if (isset($offset)) {
+                $i = $offset;
+            }
+            foreach ($enbList as $enabler) { ?>
+                <tr class="ppd" data-href="<?php echo $this->basePath() . '/a_dMin/enabler-purchases/' . base64_encode('id='.$enabler['id']) ?>">
+                    <td class="text-center"><?php echo $i + 1; ?></td>
+                    <td class="text-center"><?php echo date('d-m-Y', strtotime($enabler['created_at'])); ?></td>
+                    <td class="text-center"><?php echo $enabler['username']; ?></td>
+                    <td class="text-center"><?php echo $enabler['company_name']; ?></td>
+                    <td class="text-center"><?php echo $enabler['country_phone_code']; ?></td>
+                    <td class="text-center"><?php echo $enabler['mobile_number']; ?></td>
+                    <td class="text-center"><?php echo $enabler['email']; ?></td>
+                    <td class="text-center"><?php echo $enabler['country']; ?></td>
+                    <td class="text-center"><?php echo $enabler['city']; ?></td>
+                    <td class="text-center no-click"><input type="text" class="form-control sd" id="<?php echo base64_encode($enabler['id']); ?>" name="<?php echo base64_encode($enabler['id']); ?>" value="<?php echo $enabler['stt_disc']; ?>"/></td>
+                </tr>
+            <?php $i++;
+            }
+        } else { ?>
+            <tr>
+                <td class="text-center" colspan="10">No data</td>
+            </tr>
+        <?php  } ?>
+        <?php if (isset($type) && ($type == 'initialize' || $type == "search")) { ?>
+
+        </tbody>
+    <?php } ?>
+    <?php if (isset($type) && $type == 'initialize') { ?>
+
+    </table>
+<?php } ?>

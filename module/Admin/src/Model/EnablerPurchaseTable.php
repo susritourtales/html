@@ -79,7 +79,111 @@ class EnablerPurchaseTable extends BaseTable
       $where = new Where();
       $where->equalTo('p.enabler_id', $data['enabler_id']);
       $where->and->equalTo('payment_status', \Admin\Model\EnablerPurchase::payment_success);
-      $order = ['p.created_at desc'];
+
+      if (array_key_exists('purchase_date', $data)) {
+        $where->and->like(new \Laminas\Db\Sql\Expression("LOWER(p.purchase_date)"), '%' . $data['purchase_date'] . "%");
+      }
+      if (array_key_exists('plan_name', $data)) {
+          $where->and->like(new \Laminas\Db\Sql\Expression("LOWER(p.plan_name)"), '%' . $data['plan_name'] . "%");
+      }
+      if (array_key_exists('actual_price', $data)) {
+          $where->and->like(new \Laminas\Db\Sql\Expression("LOWER(p.actual_price)"), '%' . $data['actual_price'] . "%");
+      }
+      if (array_key_exists('price_after_disc', $data)) {
+        $where->and->like(new \Laminas\Db\Sql\Expression("LOWER(p.price_after_disc)"), '%' . $data['price_after_disc'] . "%");
+      }
+      if (array_key_exists('coupon_code', $data)) {
+        $where->and->like(new \Laminas\Db\Sql\Expression("LOWER(p.coupon_code)"), '%' . $data['coupon_code'] . "%");
+      }
+      if (array_key_exists('executive_name', $data)) {
+          $where->and->like(new \Laminas\Db\Sql\Expression("LOWER(p.executive_name)"), '%' . $data['executive_name'] . "%");
+      }
+      if (array_key_exists('executive_mobile', $data)) {
+          $where->and->like(new \Laminas\Db\Sql\Expression("LOWER(p.executive_mobile)"), '%' . $data['executive_mobile'] . "%");
+      }
+      if (array_key_exists('invoice', $data)) {
+        $where->and->like(new \Laminas\Db\Sql\Expression("LOWER(p.invoice)"), '%' . $data['invoice'] . "%");
+      }
+      if (array_key_exists('receipt', $data)) {
+        $where->and->like(new \Laminas\Db\Sql\Expression("LOWER(p.receipt)"), '%' . $data['receipt'] . "%");
+      }
+      if (array_key_exists('lic_bal', $data)) {
+          $where->and->like(new \Laminas\Db\Sql\Expression("LOWER(p.lic_bal)"), '%' . $data['lic_bal'] . "%");
+      }
+      
+      $order = array();
+      if (array_key_exists('purchase_date_order', $data)) {
+          if ($data['purchase_date_order'] == 1) {
+              $order[] = 'p.purchase_date asc';
+          } else if ($data['purchase_date_order'] == -1) {
+              $order[] = 'p.purchase_date desc';
+          }
+      }
+      if (array_key_exists('plan_name_order', $data)) {
+          if ($data['plan_name_order'] == 1) {
+              $order[] = 'p.plan_name asc';
+          } else if ($data['plan_name_order'] == -1) {
+              $order[] = 'p.plan_name desc';
+          }
+      }
+      if (array_key_exists('actual_price_order', $data)) {
+          if ($data['actual_price_order'] == 1) {
+              $order[] = 'p.actual_price asc';
+          } else if ($data['actual_price_order'] == -1) {
+              $order[] = 'p.actual_price desc';
+          }
+      }
+      if (array_key_exists('price_after_disc_order', $data)) {
+        if ($data['price_after_disc_order'] == 1) {
+            $order[] = 'p.price_after_disc asc';
+        } else if ($data['price_after_disc_order'] == -1) {
+            $order[] = 'p.price_after_disc desc';
+        }
+      }if (array_key_exists('coupon_code_order', $data)) {
+        if ($data['coupon_code_order'] == 1) {
+            $order[] = 'p.coupon_code asc';
+        } else if ($data['coupon_code_order'] == -1) {
+            $order[] = 'p.coupon_code desc';
+        }
+    }
+    if (array_key_exists('executive_name_order', $data)) {
+        if ($data['executive_name_order'] == 1) {
+            $order[] = 'p.executive_name asc';
+        } else if ($data['executive_name_order'] == -1) {
+            $order[] = 'p.executive_name desc';
+        }
+    }
+    if (array_key_exists('executive_mobile_order', $data)) {
+        if ($data['executive_mobile_order'] == 1) {
+            $order[] = 'p.executive_mobile asc';
+        } else if ($data['executive_mobile_order'] == -1) {
+            $order[] = 'p.executive_mobile desc';
+        }
+    }
+    if (array_key_exists('invoice_order', $data)) {
+      if ($data['invoice_order'] == 1) {
+          $order[] = 'p.invoice asc';
+      } else if ($data['invoice_order'] == -1) {
+          $order[] = 'p.invoice desc';
+      }
+    }
+    if (array_key_exists('receipt_order', $data)) {
+        if ($data['receipt_order'] == 1) {
+            $order[] = 'p.receipt asc';
+        } else if ($data['receipt_order'] == -1) {
+            $order[] = 'p.receipt desc';
+        }
+    }
+    if (array_key_exists('lic_bal_order', $data)) {
+        if ($data['lic_bal_order'] == 1) {
+            $order[] = 'p.lic_bal asc';
+        } else if ($data['lic_bal_order'] == -1) {
+            $order[] = 'p.lic_bal desc';
+        }
+    }
+      if (!count($order)) {
+        $order = ['p.created_at desc'];
+      }
       
       $sql = $this->getSql();
       $query = $sql->select()

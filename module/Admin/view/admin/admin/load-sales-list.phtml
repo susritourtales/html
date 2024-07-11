@@ -1,16 +1,16 @@
 <?php if(isset($type) && $type =='initialize') { ?>
 <div class="table-responsive">
-<table class="table table-hover" id="extTable">
+<table class="table table-bordered table-hover table-striped" id="table">
     <thead>
     <tr class="text-nowrap">
         <th>S.no</th>
-        <th class="text-center" data-placeholder="Date">Date</th>
-        <th class="text-center" data-placeholder="Plan Name">Plan Name</th>
-        <th class="text-center" data-placeholder="Tourist Name">Tourist Name</th>
-        <th class="text-center" data-placeholder="Tourist Mobile">Tourist Mobile</th>
-        <th class="text-center" data-placeholder="Tourist Email">Tourist Email</th>
-        <th class="text-center" data-placeholder="Tour Start Date">Tour Start Date</th>
-        <th class="text-center" data-placeholder="Licenses Bal">Licenses Bal</th>
+        <th class="text-center" data-placeholder="Date" data-input="sale_date">Date</th>
+        <th class="text-center" data-placeholder="Plan Name" data-input="plan_name">Plan Name</th>
+        <th class="text-center" data-placeholder="Tourist Name" data-input="tourist_name">Tourist Name</th>
+        <th class="text-center" data-placeholder="Tourist Mobile" data-input="tourist_mobile">Tourist Mobile</th>
+        <th class="text-center" data-placeholder="Tourist Email" data-input="tourist_email">Tourist Email</th>
+        <th class="text-center" data-placeholder="Tour Start Date" data-input="twistt_start_date">Tour Start Date</th>
+        <th class="text-center" data-placeholder="Licenses Bal" data-input="lic_bal">Licenses Bal</th>
     </tr>
     <?php } ?>
 
@@ -49,6 +49,6 @@
 
 </table>
 <?php //echo "id=".$id;?>
-<input type="hidden" id="hid" value="0<?php //echo base64_encode("id=".$id);?>" />
+<input type="hidden" id="hid" name="hid" value="<?php echo base64_encode("id=".$tx['purchase_id']);?>" />
 </div>
 <?php } ?>

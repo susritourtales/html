@@ -715,6 +715,20 @@ return [
                     ],
                 ],
             ], 
+            'load-purchases-list' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/load-purchases-list[/:id]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-zA-Z0-9_~\-!@#\$%\^&*\(\)=]*[/]*',
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'load-purchases-list',
+                    ],
+                ],
+            ],
             'enabler-sales' => [
                 'type' => Segment::class,
                 'options' => [
@@ -726,6 +740,20 @@ return [
                     'defaults' => [
                         'controller' => Controller\AdminController::class,
                         'action' => 'enabler-sales',
+                    ],
+                ],
+            ],
+            'load-sales-list' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/load-sales-list[/:id]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-zA-Z0-9_~\-!@#\$%\^&*\(\)=]*[/]*',
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'load-sales-list',
                     ],
                 ],
             ],'enabler-invoice' => [

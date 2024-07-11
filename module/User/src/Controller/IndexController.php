@@ -864,7 +864,8 @@ class IndexController extends BaseController
   {
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
-      return new ViewModel(['userId' => $loginId['user_login_id']]);
+      $config = $this->getConfig();
+      return new ViewModel(['userId' => $loginId['user_login_id'], 'config' => $config['hybridauth'],]);
     } else {
       $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
     }
@@ -1313,7 +1314,8 @@ class IndexController extends BaseController
   {
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
-      return new ViewModel(['userId' => $loginId['user_login_id']]);
+      $config = $this->getConfig();
+      return new ViewModel(['userId' => $loginId['user_login_id'], 'config' => $config['hybridauth']]);
     } else {
       $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/enabler/login');
     }

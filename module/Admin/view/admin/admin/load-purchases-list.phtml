@@ -1,19 +1,19 @@
 <?php if(isset($type) && $type =='initialize') { ?>
 <div class="table-responsive">
-<table class="table table-hover" id="extTable">
+<table class="table table-bordered table-hover table-striped" id="table">
     <thead>
     <tr class="text-nowrap">
         <th>S.no</th>
-        <th class="text-center" data-placeholder="Transaction Date">Purchase Date</th>
-        <th class="text-center" data-placeholder="Plan Name">Plan Name</th>
-        <th class="text-center" data-placeholder="Plan Price">Plan Price</th>
-        <th class="text-center" data-placeholder="Amount Paid">Amount Paid</th>
-        <th class="text-center" data-placeholder="Coupon Code">Coupon Code</th>
-        <th class="text-center" data-placeholder="Exec Name">Exec Name</th>
-        <th class="text-center" data-placeholder="Exec Mobile">Exec Mobile</th>
-        <th class="text-center" data-placeholder="Invoice">Invoice</th>
-        <th class="text-center" data-placeholder="Receipt">Receipt</th>
-        <th class="text-center" data-placeholder="Licenses Bal">Licenses Bal</th>
+        <th class="text-center" data-placeholder="Transaction Date" data-input="purchase_date">Purchase Date</th>
+        <th class="text-center" data-placeholder="Plan Name" data-input="plan_name">Plan Name</th>
+        <th class="text-center" data-placeholder="Plan Price" data-input="actual_price">Plan Price</th>
+        <th class="text-center" data-placeholder="Amount Paid" data-input="price_after_disc">Amount Paid</th>
+        <th class="text-center" data-placeholder="Coupon Code" data-input="coupon_code">Coupon Code</th>
+        <th class="text-center" data-placeholder="Exec Name" data-input="executive_name">Exec Name</th>
+        <th class="text-center" data-placeholder="Exec Mobile" data-input="executive_mobile">Exec Mobile</th>
+        <th class="text-center" data-placeholder="Invoice" data-input="invoice">Invoice</th>
+        <th class="text-center" data-placeholder="Receipt" data-input="receipt">Receipt</th>
+        <th class="text-center" data-placeholder="Licenses Bal" data-input="lic_bal">Licenses Bal</th>
     </tr>
     <?php } ?>
 
@@ -54,7 +54,6 @@
     <?php if(isset($type) && $type =='initialize') {?>
 
 </table>
-<?php //echo "id=".$id;?>
-<input type="hidden" id="hid" value="0<?php //echo base64_encode("id=".$id);?>" />
+<input id="eid" name="eid" type="hidden" value="<?php echo base64_encode('id='.$pur['enabler_id']) ?>">
 </div>
 <?php } ?>

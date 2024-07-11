@@ -89,7 +89,81 @@ class EnablerSalesTable extends BaseTable
     try {
       $where = new Where();
       $where->equalTo('p.purchase_id', $data['purchase_id']);
-      $order = ['p.created_at desc'];
+      //$order = ['p.created_at desc'];
+      if (array_key_exists('sale_date', $data)) {
+        $where->and->like(new \Laminas\Db\Sql\Expression("LOWER(p.sale_date)"), '%' . $data['sale_date'] . "%");
+      }
+      if (array_key_exists('plan_name', $data)) {
+          $where->and->like(new \Laminas\Db\Sql\Expression("LOWER(p.plan_name)"), '%' . $data['plan_name'] . "%");
+      }
+      if (array_key_exists('tourist_name', $data)) {
+          $where->and->like(new \Laminas\Db\Sql\Expression("LOWER(p.tourist_name)"), '%' . $data['tourist_name'] . "%");
+      }
+      if (array_key_exists('tourist_mobile', $data)) {
+        $where->and->like(new \Laminas\Db\Sql\Expression("LOWER(p.tourist_mobile)"), '%' . $data['tourist_mobile'] . "%");
+      }
+      if (array_key_exists('tourist_email', $data)) {
+        $where->and->like(new \Laminas\Db\Sql\Expression("LOWER(p.tourist_email)"), '%' . $data['tourist_email'] . "%");
+      }
+      if (array_key_exists('twistt_start_date', $data)) {
+          $where->and->like(new \Laminas\Db\Sql\Expression("LOWER(p.twistt_start_date)"), '%' . $data['twistt_start_date'] . "%");
+      }
+      if (array_key_exists('lic_bal', $data)) {
+          $where->and->like(new \Laminas\Db\Sql\Expression("LOWER(p.lic_bal)"), '%' . $data['lic_bal'] . "%");
+      }
+      
+      $order = array();
+      if (array_key_exists('sale_date_order', $data)) {
+          if ($data['sale_date_order'] == 1) {
+              $order[] = 'p.sale_date asc';
+          } else if ($data['sale_date_order'] == -1) {
+              $order[] = 'p.sale_date desc';
+          }
+      }
+      if (array_key_exists('plan_name_order', $data)) {
+          if ($data['plan_name_order'] == 1) {
+              $order[] = 'p.plan_name asc';
+          } else if ($data['plan_name_order'] == -1) {
+              $order[] = 'p.plan_name desc';
+          }
+      }
+      if (array_key_exists('tourist_name_order', $data)) {
+          if ($data['tourist_name_order'] == 1) {
+              $order[] = 'p.tourist_name asc';
+          } else if ($data['tourist_name_order'] == -1) {
+              $order[] = 'p.tourist_name desc';
+          }
+      }
+      if (array_key_exists('tourist_mobile_order', $data)) {
+        if ($data['tourist_mobile_order'] == 1) {
+            $order[] = 'p.tourist_mobile asc';
+        } else if ($data['tourist_mobile_order'] == -1) {
+            $order[] = 'p.tourist_mobile desc';
+        }
+      }if (array_key_exists('tourist_email_order', $data)) {
+        if ($data['tourist_email_order'] == 1) {
+            $order[] = 'p.tourist_email asc';
+        } else if ($data['tourist_email_order'] == -1) {
+            $order[] = 'p.tourist_email desc';
+        }
+    }
+    if (array_key_exists('twistt_start_date_order', $data)) {
+        if ($data['twistt_start_date_order'] == 1) {
+            $order[] = 'p.twistt_start_date asc';
+        } else if ($data['twistt_start_date_order'] == -1) {
+            $order[] = 'p.twistt_start_date desc';
+        }
+    }
+    if (array_key_exists('lic_bal_order', $data)) {
+        if ($data['lic_bal_order'] == 1) {
+            $order[] = 'p.lic_bal asc';
+        } else if ($data['lic_bal_order'] == -1) {
+            $order[] = 'p.lic_bal desc';
+        }
+    }
+      if (!count($order)) {
+        $order = ['p.created_at desc'];
+      }
 
       $sql = $this->getSql();
       $query = $sql->select()

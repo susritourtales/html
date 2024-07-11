@@ -2922,7 +2922,7 @@ class AdminController extends BaseController
                             $searchData['country_phone_code'] = $filterData['country_code']['text'];
                         }
                         if (isset($filterData['country_code']['order']) && $filterData['country_code']['order']) {
-                            $searchData['country_phone_code'] = $filterData['country_code']['order'];
+                            $searchData['country_phone_code_order'] = $filterData['country_code']['order'];
                         }
                     }
                     if (isset($filterData['mobile'])) {
@@ -3016,40 +3016,124 @@ class AdminController extends BaseController
         return new ViewModel(['purchases' => $purchases, 'totalCount'=>$totalCount]);
     }
     public function loadPurchasesListAction()
-  {
-    if ($this->getRequest()->isXmlHttpRequest()) {
-       $paramId = $this->params()->fromRoute('id', '');
-       if (!$paramId) {
-          return $this->redirect()->toUrl($this->getBaseUrl());
-       }
-      $prIdString = rtrim($paramId, "=");
-      $prIdString = base64_decode($prIdString);
-      $prIdString = explode("=", $prIdString);
-      $eId = array_key_exists(1, $prIdString) ? $prIdString[1] : 0;
-      $request = $this->getRequest()->getPost();
-      $searchData = array('limit' => 10, 'offset' => 0);
-      $type = $request['type'];
-      $offset = 0;
-      
-      if (isset($request['page_number'])) {
-        $pageNumber = $request['page_number'];
-        $offset = ($pageNumber * 10 - 10);
-        $limit = 10;
-        $searchData['offset'] = $offset;
-        $searchData['limit'] = $limit;
-      }
-      $searchData['enabler_id'] = $eId;
-      $totalCount = 0;
+    {
+        if ($this->getRequest()->isXmlHttpRequest()) {
+        $paramId = $this->params()->fromRoute('id', '');
+        if (!$paramId) {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        $prIdString = rtrim($paramId, "=");
+        $prIdString = base64_decode($prIdString);
+        $prIdString = explode("=", $prIdString);
+        $eId = array_key_exists(1, $prIdString) ? $prIdString[1] : 0;
+        $request = $this->getRequest()->getPost();
+        $searchData = array('limit' => 10, 'offset' => 0);
+        $type = $request['type'];
+        $offset = 0;
+        $filterData = $request['filter'];
+        if ($filterData) {
+            $filterData = json_decode($filterData, true);
+            if (isset($filterData['purchase_date'])) {
+                if (isset($filterData['purchase_date']['text']) && !empty($filterData['purchase_date']['text'])) {
+                    $searchData['purchase_date'] = $filterData['purchase_date']['text'];
+                }
+                if (isset($filterData['purchase_date']['order']) && $filterData['purchase_date']['order']) {
+                    $searchData['purchase_date_order'] = $filterData['purchase_date']['order'];
+                }
+            }
+            if (isset($filterData['plan_name'])) {
+                if (isset($filterData['plan_name']['text']) && !empty($filterData['plan_name']['text'])) {
+                    $searchData['plan_name'] = $filterData['plan_name']['text'];
+                }
+                if (isset($filterData['plan_name']['order']) && $filterData['plan_name']['order']) {
+                    $searchData['plan_name_order'] = $filterData['plan_name']['order'];
+                }
+            }
+            if (isset($filterData['actual_price'])) {
+                if (isset($filterData['actual_price']['text']) && !empty($filterData['actual_price']['text'])) {
+                    $searchData['actual_price'] = $filterData['actual_price']['text'];
+                }
+                if (isset($filterData['actual_price']['order']) && $filterData['actual_price']['order']) {
+                    $searchData['actual_price_order'] = $filterData['actual_price']['order'];
+                }
+            }
+            if (isset($filterData['price_after_disc'])) {
+                if (isset($filterData['price_after_disc']['text']) && !empty($filterData['price_after_disc']['text'])) {
+                    $searchData['price_after_disc'] = $filterData['price_after_disc']['text'];
+                }
+                if (isset($filterData['price_after_disc']['order']) && $filterData['price_after_disc']['order']) {
+                    $searchData['price_after_disc_order'] = $filterData['price_after_disc']['order'];
+                }
+            }
+            if (isset($filterData['coupon_code'])) {
+                if (isset($filterData['coupon_code']['text']) && !empty($filterData['coupon_code']['text'])) {
+                    $searchData['coupon_code'] = $filterData['coupon_code']['text'];
+                }
+                if (isset($filterData['coupon_code']['order']) && $filterData['coupon_code']['order']) {
+                    $searchData['coupon_code_order'] = $filterData['coupon_code']['order'];
+                }
+            }
+            if (isset($filterData['executive_name'])) {
+                if (isset($filterData['executive_name']['text']) && !empty($filterData['executive_name']['text'])) {
+                    $searchData['executive_name'] = $filterData['executive_name']['text'];
+                }
+                if (isset($filterData['executive_name']['order']) && $filterData['executive_name']['order']) {
+                    $searchData['executive_name_order'] = $filterData['executive_name']['order'];
+                }
+            }
+            if (isset($filterData['executive_mobile'])) {
+                if (isset($filterData['executive_mobile']['text']) && !empty($filterData['executive_mobile']['text'])) {
+                    $searchData['executive_mobile'] = $filterData['executive_mobile']['text'];
+                }
+                if (isset($filterData['executive_mobile']['order']) && $filterData['executive_mobile']['order']) {
+                    $searchData['executive_mobile_order'] = $filterData['executive_mobile']['order'];
+                }
+            }
+            if (isset($filterData['invoice'])) {
+                if (isset($filterData['invoice']['text']) && !empty($filterData['invoice']['text'])) {
+                    $searchData['invoice'] = $filterData['invoice']['text'];
+                }
+                if (isset($filterData['invoice']['order']) && $filterData['invoice']['order']) {
+                    $searchData['invoice_order'] = $filterData['invoice']['order'];
+                }
+            }
+            if (isset($filterData['receipt'])) {
+                if (isset($filterData['receipt']['text']) && !empty($filterData['receipt']['text'])) {
+                    $searchData['receipt'] = $filterData['receipt']['text'];
+                }
+                if (isset($filterData['receipt']['order']) && $filterData['receipt']['order']) {
+                    $searchData['receipt_order'] = $filterData['receipt']['order'];
+                }
+            }
+            if (isset($filterData['lic_bal'])) {
+                if (isset($filterData['lic_bal']['text']) && !empty($filterData['lic_bal']['text'])) {
+                    $searchData['lic_bal'] = $filterData['lic_bal']['text'];
+                }
+                if (isset($filterData['lic_bal']['order']) && $filterData['lic_bal']['order']) {
+                    $searchData['lic_bal_order'] = $filterData['lic_bal']['order'];
+                }
+            }
+        }
+        
+        if (isset($request['page_number'])) {
+            $pageNumber = $request['page_number'];
+            $offset = ($pageNumber * 10 - 10);
+            $limit = 10;
+            $searchData['offset'] = $offset;
+            $searchData['limit'] = $limit;
+        }
+        $searchData['enabler_id'] = $eId;
+        $totalCount = 0;
 
-      if ($type && $type == 'search') {
-        $totalCount = $this->enablerPurchaseTable->getEnablerPurchasesList($searchData, 1);
-      }
-      $purchases = $this->enablerPurchaseTable->getEnablerPurchasesList($searchData);
-      $view = new ViewModel(array('purchases' => $purchases, 'totalCount' => $totalCount));
-      $view->setTerminal(true);
-      return $view;
+        if ($type && $type == 'search') {
+            $totalCount = $this->enablerPurchaseTable->getEnablerPurchasesList($searchData, 1);
+        }
+        $purchases = $this->enablerPurchaseTable->getEnablerPurchasesList($searchData);
+        $view = new ViewModel(array('purchases' => $purchases, 'totalCount' => $totalCount));
+        $view->setTerminal(true);
+        return $view;
+        }
     }
-  }
 
   public function enablerSalesAction(){
     $this->checkAdmin();
@@ -3080,7 +3164,66 @@ if ($this->getRequest()->isXmlHttpRequest()) {
   $searchData = array('limit' => 10, 'offset' => 0);
   $type = $request['type'];
   $offset = 0;
-  
+  $filterData = $request['filter'];
+    if ($filterData) {
+        $filterData = json_decode($filterData, true);
+        if (isset($filterData['sale_date'])) {
+            if (isset($filterData['sale_date']['text']) && !empty($filterData['sale_date']['text'])) {
+                $searchData['sale_date'] = $filterData['sale_date']['text'];
+            }
+            if (isset($filterData['sale_date']['order']) && $filterData['sale_date']['order']) {
+                $searchData['sale_date_order'] = $filterData['sale_date']['order'];
+            }
+        }
+        if (isset($filterData['plan_name'])) {
+            if (isset($filterData['plan_name']['text']) && !empty($filterData['plan_name']['text'])) {
+                $searchData['plan_name'] = $filterData['plan_name']['text'];
+            }
+            if (isset($filterData['plan_name']['order']) && $filterData['plan_name']['order']) {
+                $searchData['plan_name_order'] = $filterData['plan_name']['order'];
+            }
+        }
+        if (isset($filterData['tourist_name'])) {
+            if (isset($filterData['tourist_name']['text']) && !empty($filterData['tourist_name']['text'])) {
+                $searchData['tourist_name'] = $filterData['tourist_name']['text'];
+            }
+            if (isset($filterData['tourist_name']['order']) && $filterData['tourist_name']['order']) {
+                $searchData['tourist_name_order'] = $filterData['tourist_name']['order'];
+            }
+        }
+        if (isset($filterData['tourist_mobile'])) {
+            if (isset($filterData['tourist_mobile']['text']) && !empty($filterData['tourist_mobile']['text'])) {
+                $searchData['tourist_mobile'] = $filterData['tourist_mobile']['text'];
+            }
+            if (isset($filterData['tourist_mobile']['order']) && $filterData['tourist_mobile']['order']) {
+                $searchData['tourist_mobile_order'] = $filterData['tourist_mobile']['order'];
+            }
+        }
+        if (isset($filterData['tourist_email'])) {
+            if (isset($filterData['tourist_email']['text']) && !empty($filterData['tourist_email']['text'])) {
+                $searchData['tourist_email'] = $filterData['tourist_email']['text'];
+            }
+            if (isset($filterData['tourist_email']['order']) && $filterData['tourist_email']['order']) {
+                $searchData['tourist_email_order'] = $filterData['tourist_email']['order'];
+            }
+        }
+        if (isset($filterData['twistt_start_date'])) {
+            if (isset($filterData['twistt_start_date']['text']) && !empty($filterData['twistt_start_date']['text'])) {
+                $searchData['twistt_start_date'] = $filterData['twistt_start_date']['text'];
+            }
+            if (isset($filterData['twistt_start_date']['order']) && $filterData['twistt_start_date']['order']) {
+                $searchData['twistt_start_date_order'] = $filterData['twistt_start_date']['order'];
+            }
+        }
+        if (isset($filterData['lic_bal'])) {
+            if (isset($filterData['lic_bal']['text']) && !empty($filterData['lic_bal']['text'])) {
+                $searchData['lic_bal'] = $filterData['lic_bal']['text'];
+            }
+            if (isset($filterData['lic_bal']['order']) && $filterData['lic_bal']['order']) {
+                $searchData['lic_bal_order'] = $filterData['lic_bal']['order'];
+            }
+        }
+    }
   if (isset($request['page_number'])) {
     $pageNumber = $request['page_number'];
     $offset = ($pageNumber * 10 - 10);

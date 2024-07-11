@@ -12,7 +12,7 @@
         <?php echo $this->partial("/application/index/app-header"); ?>
         <div class="main-container p-lg-4">
             <div class="d-flex justify-content-between mb-4">
-                <div class="main-heading mb-3"><a href="<?php echo $this->basePath() . '/a_dMin/enablers-list' ?>"><i class="fa fa-arrow-left mr-2"></i></a> <?php echo "TWISTT Enabler Sales (Total: $totalCount)";?></div>
+                <div class="main-heading mb-3"><a href="<?php echo $this->basePath() . '/a_dMin/enabler-purchases/'. base64_encode("id=".$sales[0]['enabler_id']) ?>"><i class="fa fa-arrow-left mr-2"></i></a> <?php echo "TWISTT Enabler Sales (Total: $totalCount)";?></div>
             </div>
             <div class="overflow-auto" id="recordsList">
                 <?php echo $this->partial('/admin/admin/load-sales-list', array('sales' => $sales, 'totalCount' => $totalCount, 'type' => 'initialize')); ?>

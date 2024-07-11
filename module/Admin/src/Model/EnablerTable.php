@@ -224,7 +224,8 @@ class EnablerTable extends BaseTable
             } else if ($data['mobile_number_order'] == -1) {
                 $order[] = 'p.mobile_number desc';
             }
-          }if (array_key_exists('email_order', $data)) {
+          }
+          if (array_key_exists('email_order', $data)) {
             if ($data['email_order'] == 1) {
                 $order[] = 'p.email asc';
             } else if ($data['email_order'] == -1) {

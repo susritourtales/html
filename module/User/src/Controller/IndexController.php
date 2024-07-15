@@ -1551,7 +1551,11 @@ class IndexController extends BaseController
         return new JsonModel(array('success' => false, "message" => 'invoice not found..'));
       } 
       $config = $this->getConfig();
-      return new ViewModel(['enablerDetails' => $enablerDetails, 'prDetails' => $prDetails, 'show' => $show, 'prId'=>$paramId, 'config' => $config['hybridauth'], 'imageUrl' => $this->filesUrl()]);
+      if($enablerDetails['login_type'] == \Admin\Model\Enabler::login_type_social) 
+        $imageUrl = "";
+      else
+        $imageUrl = $this->filesUrl();
+      return new ViewModel(['enablerDetails' => $enablerDetails, 'prDetails' => $prDetails, 'show' => $show, 'prId'=>$paramId, 'config' => $config['hybridauth'], 'imageUrl' => $imageUrl]);
     } else {
       $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/enabler/login');
     }
@@ -1651,6 +1655,7 @@ class IndexController extends BaseController
         $execId = $this->couponsTable->getField(['coupon_code' => $prDetails['coupon_code']], 'executive_id');
         $userId = $this->executiveDetailsTable->getField(['id' => $execId], 'user_id');
         $execDetails = $this->userTable->getUserDetails(['id' => $userId]);
+        $execBDetails = $this->executiveDetailsTable->getExecutiveDetails(['id' => $execId]);
         $saveData['executive_name'] = $execDetails['username'];
         $saveData['executive_mobile'] = "(" . $execDetails['country_phone_code'] . ")" . $execDetails['mobile_number'];
       }
@@ -1671,6 +1676,7 @@ class IndexController extends BaseController
               $updateCoupon['redeemed_on'] = $purDetails['purchase_date'];
               $updateCoupon['redeemer_paid'] = $purDetails['price_after_disc'];
               $updateCoupon['redeemer_actual_amount'] = $purDetails['actual_price'];
+              $updateCoupon['commission_receivable'] = number_format((float)$purDetails['price_after_disc'], 2, '.', '') * number_format((float)$execBDetails['commission_percentage'], 2, '.', '') / 100;
               $updateCoupon['coupon_status'] = \Admin\Model\Coupons::Coupon_Status_Redeemed;
               $setCoupon = $this->couponsTable->setCoupons($updateCoupon, ['coupon_code' => $purDetails['coupon_code']]);
               if($setCoupon){return new JsonModel(array('success' => true, 'message' => 'plan purchased successfully..', 'rid'=>$prid,));
@@ -1768,12 +1774,15 @@ class IndexController extends BaseController
         $updateCoupon = [];
         if($setResp){
           if(!is_null($cc) && !empty($cc)){
+            $execId = $this->couponsTable->getField(['coupon_code' => $prDetails['coupon_code']], 'executive_id');
+            $execBDetails = $this->executiveDetailsTable->getExecutiveDetails(['id' => $execId]);
             $updateCoupon['redeemer_login'] = $enablerDetails['user_login_id'];
             $updateCoupon['redeemer_name'] = $enablerDetails['company_name'] == "" ? $enablerDetails['username'] : $enablerDetails['company_name'];
             $updateCoupon['redeemer_mobile'] = '(' . $enablerDetails['country_phone_code'] . ')' . $enablerDetails['mobile_number'];
             $updateCoupon['redeemed_on'] = date('Y-m-d H:i:s');
             $updateCoupon['redeemer_paid'] = $pad;
             $updateCoupon['redeemer_actual_amount'] = $pp;
+            $updateCoupon['commission_receivable'] = number_format((float)$pad, 2, '.', '') * number_format((float)$execBDetails['commission_percentage'], 2, '.', '') / 100;
             $updateCoupon['coupon_status'] = \Admin\Model\Coupons::Coupon_Status_Redeemed;
             $setCoupon = $this->couponsTable->setCoupons($updateCoupon, ['coupon_code' => $cc]);
             if($setCoupon){

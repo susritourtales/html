@@ -121,6 +121,9 @@
                 } else {
                     messageDisplay('Error submitting form: ' + data.message);
                     console.error('Error submitting form:', data.message);
+                    setTimeout(function(){
+                        window.location.href=BASE_URL+"/twistt/enabler/register";
+                    },2000);
                 }
             })
             .catch(error => {

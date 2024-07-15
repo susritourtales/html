@@ -427,8 +427,10 @@ class BaseController extends AbstractActionController
 
         try
         {
-            if ($_SERVER['APPLICATION_ENV'] === 'development') {
-                return "1111";
+            if(isset($_SERVER['APPLICATION_ENV'])){
+                if ($_SERVER['APPLICATION_ENV'] === 'development') {
+                    return "1111";
+                }
             }
             $length = intval($length);
             $characters = '0123456789';
@@ -454,8 +456,10 @@ class BaseController extends AbstractActionController
 
     public function sendOtpSms($mobile, $otp,$smsAction='otp')
     {
-        if ($_SERVER['APPLICATION_ENV'] === 'development') {
-            $mobile = '917330781638'; 
+        if(isset($_SERVER['APPLICATION_ENV'])){
+            if ($_SERVER['APPLICATION_ENV'] === 'development') {
+                $mobile = '917330781638'; 
+            }
         }
         $smsObject = new Sms();
         $response = $smsObject->send(

@@ -164,6 +164,9 @@ class IndexController extends BaseController
     $postData = $this->params()->fromPost();
     $userdetails['user_login_id'] = str_replace("+", "", $postData['loginid']);
     $userdetails['password'] = $postData['password'];
+    $checkRole = $this->userTable->getField(['user_login_id' => $userdetails['user_login_id']], 'user_type_id');
+    if($checkRole != \Admin\Model\User::TWISTT_Executive)
+      return new JsonModel(array('success' => false, "message" => 'invalid credentials'));
     $res = $this->userTable->checkPasswordWithUserId($userdetails['user_login_id'], $userdetails['password']);
     if ($res) {
       $this->authService->getAdapter()
@@ -273,6 +276,9 @@ class IndexController extends BaseController
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
       $userId = $this->userTable->userExists($loginId['user_login_id']);
+      $checkRole = $this->userTable->getField(['id' => $userId], 'user_type_id');
+      if($checkRole != \Admin\Model\User::TWISTT_Executive)
+        $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
       $postData = $this->params()->fromPost();
       $validImageFiles = array('png', 'jpg', 'jpeg');
       $userdetails = [];
@@ -376,6 +382,9 @@ class IndexController extends BaseController
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
       $userDetails = $this->userTable->getUserDetails(['user_login_id' => $loginId['user_login_id']]);
+      $checkRole = $this->userTable->getField(['id' => $userDetails['id']], 'user_type_id');
+      if($checkRole != \Admin\Model\User::TWISTT_Executive)
+        $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
       $bankDetails = $this->executiveDetailsTable->getExecutiveDetails(['user_id' => $userDetails['id']]);
       $config = $this->getConfig();
       return new ViewModel(['userDetails' => $userDetails, 'bankDetails' => $bankDetails, 'config' => $config['hybridauth'], 'imageUrl' => $this->filesUrl()]);
@@ -540,6 +549,9 @@ class IndexController extends BaseController
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
       $userDetails = $this->userTable->getUserDetails(['user_login_id' => $loginId['user_login_id']]);
+      $checkRole = $this->userTable->getField(['id' => $userDetails['id']], 'user_type_id');
+      if($checkRole != \Admin\Model\User::TWISTT_Executive)
+        $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
       $bankDetails = $this->executiveDetailsTable->getExecutiveDetails(['user_id' => $userDetails['id']]);
       $questtValid = $this->questtSubscriptionTable->isValidQuesttUser($userDetails['id']);
       $qed = $this->questtSubscriptionTable->getField(['user_id' => $loginId['id']], 'end_date');
@@ -566,6 +578,9 @@ class IndexController extends BaseController
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
       $userDetails = $this->userTable->getUserDetails(['user_login_id' => $loginId['user_login_id']]);
+      $checkRole = $this->userTable->getField(['id' => $userDetails['id']], 'user_type_id');
+      if($checkRole != \Admin\Model\User::TWISTT_Executive)
+        return new JsonModel(array('success' => false, "message" => 'invalid operation..'));
       $bankDetails = $this->executiveDetailsTable->getExecutiveDetails(['user_id' => $userDetails['id']]);
       $questtValid = $this->questtSubscriptionTable->isValidQuesttUser($userDetails['id']);
       if ($questtValid && $bankDetails['banned'] == '0') {
@@ -652,6 +667,9 @@ class IndexController extends BaseController
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
       $userDetails = $this->userTable->getUserDetails(['user_login_id' => $loginId['user_login_id']]);
+      $checkRole = $this->userTable->getField(['id' => $userDetails['id']], 'user_type_id');
+      if($checkRole != \Admin\Model\User::TWISTT_Executive)
+        return new JsonModel(array('success' => false, "message" => 'invalid operation..'));
       $bankDetails = $this->executiveDetailsTable->getExecutiveDetails(['user_id' => $userDetails['id']]);
       $questtValid = $this->questtSubscriptionTable->isValidQuesttUser($userDetails['id']);
 
@@ -732,6 +750,9 @@ class IndexController extends BaseController
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
       $userDetails = $this->userTable->getUserDetails(['user_login_id' => $loginId['user_login_id']]);
+      $checkRole = $this->userTable->getField(['id' => $userDetails['id']], 'user_type_id');
+      if($checkRole != \Admin\Model\User::TWISTT_Executive)
+        $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
       $bankDetails = $this->executiveDetailsTable->getExecutiveDetails(['user_id' => $userDetails['id']]);
       $qed = $this->questtSubscriptionTable->getField(['user_id' => $loginId['id']], 'end_date');
       $qed = date('d-m-Y', strtotime($qed));
@@ -753,6 +774,9 @@ class IndexController extends BaseController
       $offset = 0;
       $loginId = $this->authService->getIdentity();
       $userDetails = $this->userTable->getUserDetails(['user_login_id' => $loginId['user_login_id']]);
+      $checkRole = $this->userTable->getField(['id' => $userDetails['id']], 'user_type_id');
+      if($checkRole != \Admin\Model\User::TWISTT_Executive)
+        $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
       $bankDetails = $this->executiveDetailsTable->getExecutiveDetails(['user_id' => $userDetails['id']]);
 
       if (isset($request['page_number'])) {
@@ -779,6 +803,9 @@ class IndexController extends BaseController
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
       $userDetails = $this->userTable->getUserDetails(['user_login_id' => $loginId['user_login_id']]);
+      $checkRole = $this->userTable->getField(['id' => $userDetails['id']], 'user_type_id');
+      if($checkRole != \Admin\Model\User::TWISTT_Executive)
+        $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
       $bankDetails = $this->executiveDetailsTable->getExecutiveDetails(['user_id' => $userDetails['id']]);
       $qed = $this->questtSubscriptionTable->getField(['user_id' => $loginId['id']], 'end_date');
       $qed = date('d-m-Y', strtotime($qed));
@@ -800,6 +827,9 @@ class IndexController extends BaseController
       $offset = 0;
       $loginId = $this->authService->getIdentity();
       $userDetails = $this->userTable->getUserDetails(['user_login_id' => $loginId['user_login_id']]);
+      $checkRole = $this->userTable->getField(['id' => $userDetails['id']], 'user_type_id');
+      if($checkRole != \Admin\Model\User::TWISTT_Executive)
+        $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
       $bankDetails = $this->executiveDetailsTable->getExecutiveDetails(['user_id' => $userDetails['id']]);
       $qed = $this->questtSubscriptionTable->getField(['user_id' => $loginId['id']], 'end_date');
       $qed = date('d-m-Y', strtotime($qed));
@@ -844,6 +874,9 @@ class IndexController extends BaseController
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
       $userDetails = $this->userTable->getUserDetails(['user_login_id' => $loginId['user_login_id']]);
+      $checkRole = $this->userTable->getField(['id' => $userDetails['id']], 'user_type_id');
+      if($checkRole != \Admin\Model\User::TWISTT_Executive)
+        $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
       $bankDetails = $this->executiveDetailsTable->getExecutiveDetails(['user_id' => $userDetails['id']]);
       $config = $this->getConfig();
       return new ViewModel(['userDetails' => $userDetails, 'bankDetails' => $bankDetails, 'config' => $config['hybridauth'], 'imageUrl' => $this->filesUrl()]);
@@ -864,6 +897,10 @@ class IndexController extends BaseController
   {
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
+      $userId = $this->userTable->userExists($loginId['user_login_id']);
+      $checkRole = $this->userTable->getField(['id' => $userId], 'user_type_id');
+      if($checkRole != \Admin\Model\User::TWISTT_Executive)
+        $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
       $config = $this->getConfig();
       return new ViewModel(['userId' => $loginId['user_login_id'], 'config' => $config['hybridauth'],]);
     } else {
@@ -875,6 +912,10 @@ class IndexController extends BaseController
     $postData = $this->params()->fromPost();
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
+      $userId = $this->userTable->userExists($loginId['user_login_id']);
+      $checkRole = $this->userTable->getField(['id' => $userId], 'user_type_id');
+      if($checkRole != \Admin\Model\User::TWISTT_Executive)
+        $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
       $check = $this->userTable->checkPasswordWithUserId($loginId['user_login_id'], $postData['current_password']);
       if ($check) {
         $aes = new Aes();
@@ -1247,6 +1288,9 @@ class IndexController extends BaseController
   {
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
+      $enablerDetails = $this->enablerTable->getEnablerDetails(['user_login_id' => $loginId['user_login_id']]);
+      if(is_null($enablerDetails))
+        $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/enabler/login');
       $userId = $this->enablerTable->enablerExists($loginId['user_login_id']);
       $postData = $this->params()->fromPost();
       $validImageFiles = array('png', 'jpg', 'jpeg');
@@ -1314,6 +1358,9 @@ class IndexController extends BaseController
   {
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
+      $enablerDetails = $this->enablerTable->getEnablerDetails(['user_login_id' => $loginId['user_login_id']]);
+      if(is_null($enablerDetails))
+        $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/enabler/login');
       $config = $this->getConfig();
       return new ViewModel(['userId' => $loginId['user_login_id'], 'config' => $config['hybridauth']]);
     } else {
@@ -1325,6 +1372,9 @@ class IndexController extends BaseController
     $postData = $this->params()->fromPost();
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
+      $enablerDetails = $this->enablerTable->getEnablerDetails(['user_login_id' => $loginId['user_login_id']]);
+      if(is_null($enablerDetails))
+        $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/enabler/login');
       $check = $this->enablerTable->checkPasswordWithUserId($loginId['user_login_id'], $postData['current_password']);
       if ($check) {
         $aes = new Aes();
@@ -1371,6 +1421,8 @@ class IndexController extends BaseController
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
       $userDetails = $this->enablerTable->getEnablerDetails(['user_login_id' => $loginId['user_login_id']]);
+      if(is_null($userDetails))
+        $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/enabler/login');
       $config = $this->getConfig();
       if($userDetails['login_type'] == \Admin\Model\Enabler::login_type_social) 
         $imageUrl = "";
@@ -1387,6 +1439,8 @@ class IndexController extends BaseController
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
       $enablerDetails = $this->enablerTable->getEnablerDetails(['user_login_id' => $loginId['user_login_id']]);
+      if(is_null($enablerDetails))
+        $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/enabler/login');
       $epWhere['status'] = \Admin\Model\EnablerPlans::status_active;
       $cpa = $this->enablerPurchaseTable->enablerCPAvailed($enablerDetails['id']);
       if($cpa > 0)
@@ -1413,6 +1467,8 @@ class IndexController extends BaseController
       if ($this->authService->hasIdentity()) {
         $loginId = $this->authService->getIdentity();
         $enablerDetails = $this->enablerTable->getEnablerDetails(['user_login_id' => $loginId['user_login_id']]);
+        if(is_null($enablerDetails))
+          $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/enabler/login');
         $plan = $this->enablerPlansTable->getEnablerPlans(['status' => \Admin\Model\EnablerPlans::status_active, 'id' => $plan_id]);
         $planPrice = 0.00;
         $pad = 0.00;
@@ -1469,6 +1525,8 @@ class IndexController extends BaseController
       if ($this->authService->hasIdentity()) {
         $loginId = $this->authService->getIdentity();
         $enablerDetails = $this->enablerTable->getEnablerDetails(['user_login_id' => $loginId['user_login_id']]);
+        if(is_null($enablerDetails))
+          $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/enabler/login');
         $request = $this->getRequest()->getPost();
         $cc = $request['cc'];
         $pp = $request['pp'];
@@ -1533,6 +1591,8 @@ class IndexController extends BaseController
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
       $enablerDetails = $this->enablerTable->getEnablerDetails(['user_login_id' => $loginId['user_login_id']]);
+      if(is_null($enablerDetails))
+          $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/enabler/login');
       $paramId = $this->params()->fromRoute('id', '');
       if (!$paramId) {
           return $this->redirect()->toUrl($this->getBaseUrl());
@@ -1565,6 +1625,8 @@ class IndexController extends BaseController
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
       $enablerDetails = $this->enablerTable->getEnablerDetails(['user_login_id' => $loginId['user_login_id']]);
+      if(is_null($enablerDetails))
+          $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/enabler/login');
       $paramId = $this->params()->fromRoute('id', '');
       if (!$paramId) {
           return $this->redirect()->toUrl($this->getBaseUrl());
@@ -1592,6 +1654,8 @@ class IndexController extends BaseController
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
       $enablerDetails = $this->enablerTable->getEnablerDetails(['user_login_id' => $loginId['user_login_id']]);
+      if(is_null($enablerDetails))
+          $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/enabler/login');
       $request = $this->getRequest()->getPost();
       $prid = $request['prid'];
       if (!$prid) {
@@ -1679,7 +1743,8 @@ class IndexController extends BaseController
               $updateCoupon['commission_receivable'] = number_format((float)$purDetails['price_after_disc'], 2, '.', '') * number_format((float)$execBDetails['commission_percentage'], 2, '.', '') / 100;
               $updateCoupon['coupon_status'] = \Admin\Model\Coupons::Coupon_Status_Redeemed;
               $setCoupon = $this->couponsTable->setCoupons($updateCoupon, ['coupon_code' => $purDetails['coupon_code']]);
-              if($setCoupon){return new JsonModel(array('success' => true, 'message' => 'plan purchased successfully..', 'rid'=>$prid,));
+              if($setCoupon){
+                return new JsonModel(array('success' => true, 'message' => 'plan purchased successfully..', 'rid'=>$prid,));
               }else{
                 return new JsonModel(array('success' => false, 'message' => 'unable to process your request now.. unknown error..'));
               }
@@ -1736,6 +1801,8 @@ class IndexController extends BaseController
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
       $enablerDetails = $this->enablerTable->getEnablerDetails(['user_login_id' => $loginId['user_login_id']]);
+      if(is_null($enablerDetails))
+          $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/enabler/login');
       $request = $this->getRequest()->getPost();
       $prid = $request['prid'];
       if (!$prid) {
@@ -1786,7 +1853,20 @@ class IndexController extends BaseController
             $updateCoupon['coupon_status'] = \Admin\Model\Coupons::Coupon_Status_Redeemed;
             $setCoupon = $this->couponsTable->setCoupons($updateCoupon, ['coupon_code' => $cc]);
             if($setCoupon){
-              return new JsonModel(array('success' => true, 'message' => 'plan purchased successfully..', 'pid'=>$prid,));
+              // add executive txn
+              $exTxnData['coupon_id'] = $this->couponsTable->getField(['coupon_code' => $cc], 'id');
+              $exTxnData['executive_id'] = $this->couponsTable->getField(['coupon_code' => $cc], 'executive_id');
+              $exTxnData['user_id'] = $this->executiveDetailsTable->getField(['id' => $exTxnData['executive_id']], 'user_id');
+              $exTxnData['transaction_type'] = \Admin\Model\ExecutiveTransaction::transaction_due;
+              $exTxnData['transaction_date'] = date('Y-m-d H:i:s');
+              $execTxn = $this->executiveTransactionTable->getExecutiveTransaction(['executive_id' => $exTxnData['executive_id']]);
+              $exTxnData['total_earnings'] = $execTxn['total_earnings'] + $updateCoupon['commission_receivable'];
+              $exTxnData['balance_outstanding'] = $execTxn['balance_outstanding'] + $updateCoupon['commission_receivable'];
+              $txnRes = $this->executiveTransactionTable->addExecutivePurchase($exTxnData);
+              if($txnRes)
+                return new JsonModel(array('success' => true, 'message' => 'plan purchased successfully..', 'pid'=>$prid,));
+              else
+                return new JsonModel(array('success' => false, 'message' => 'unable to process your request now.. unknown error..'));
             }else{
               return new JsonModel(array('success' => false, 'message' => 'unable to process your request now.. unknown error..'));
             }
@@ -1809,6 +1889,8 @@ class IndexController extends BaseController
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
       $enablerDetails = $this->enablerTable->getEnablerDetails(['user_login_id' => $loginId['user_login_id']]);
+      if(is_null($enablerDetails))
+          $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/enabler/login');
       $purchases = $this->enablerPurchaseTable->getEnablerPurchasesList(['enabler_id' => $enablerDetails['id'], 'limit' => 10, 'offset' => 0]);
       $totalCount = $this->enablerPurchaseTable->getEnablerPurchasesList(['enabler_id' => $enablerDetails['id']], 1);
       $config = $this->getConfig();
@@ -1831,6 +1913,8 @@ class IndexController extends BaseController
       $offset = 0;
       $loginId = $this->authService->getIdentity();
       $enablerDetails = $this->enablerTable->getenablerDetails(['user_login_id' => $loginId['user_login_id']]);
+      if(is_null($enablerDetails))
+          $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/enabler/login');
       if (isset($request['page_number'])) {
         $pageNumber = $request['page_number'];
         $offset = ($pageNumber * 10 - 10);
@@ -1855,6 +1939,8 @@ class IndexController extends BaseController
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
       $enablerDetails = $this->enablerTable->getEnablerDetails(['user_login_id' => $loginId['user_login_id']]);
+      if(is_null($enablerDetails))
+          $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/enabler/login');
       $enblerPL = $this->enablerPurchaseTable->getEnablerPurchasedPlansList($enablerDetails['id']);
       $sales = $this->enablerSalesTable->getEnablerSalesList(['enabler_id' => $enablerDetails['id'], 'limit' => 10, 'offset' => 0]);
       $totalCount = $this->enablerSalesTable->getEnablerSalesList(['enabler_id' => $enablerDetails['id']], 1);
@@ -1874,6 +1960,8 @@ class IndexController extends BaseController
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
       $enablerDetails = $this->enablerTable->getEnablerDetails(['user_login_id' => $loginId['user_login_id']]);
+      if(is_null($enablerDetails))
+          $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/enabler/login');
       $request = $this->getRequest()->getPost();
       $saveData['enabler_id'] = $enablerDetails['id'];
       $saveData['purchase_id'] = $request['selPlan'];
@@ -1909,6 +1997,8 @@ class IndexController extends BaseController
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
       $userDetails = $this->enablerTable->getEnablerDetails(['user_login_id' => $loginId['user_login_id']]);
+      if(is_null($userDetails))
+          $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/enabler/login');
       $config = $this->getConfig();
       return new ViewModel(['userDetails' => $userDetails, 'config' => $config['hybridauth'], 'imageUrl' => $this->filesUrl()]);
     } else {

@@ -61,7 +61,8 @@ class ExecutiveTransactionTable extends BaseTable
       $sql = $this->getSql();
       $query = $sql->select()
         ->from($this->tableName)
-        ->where($where);
+        ->where($where)
+        ->order('p.created_at desc');
       $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
       $transaction = array();
       foreach ($resultSet as $row) {
@@ -94,16 +95,16 @@ class ExecutiveTransactionTable extends BaseTable
             $query = $sql->select()
                   ->from($this->tableName)
                   ->where($where)
-                  ->join(array('ep' => 'executive_purchase'), 'ep.executive_id=p.executive_id', array('id'))
-                  ->join(array('c' => 'coupons'), new \Laminas\Db\Sql\Expression("`c`.`purchase_id`=`p`.`id` AND `c`.`coupon_status`=1"), array('coupon_code', 'coupon_type', 'coupon_status'))
+                  ->join(array('c' => 'coupons'), new \Laminas\Db\Sql\Expression("`c`.`id`=`p`.`coupon_id` AND `c`.`coupon_status`=1"), array('coupon_code', 'coupon_type', 'coupon_status'))
+                  ->join(array('ep' => 'executive_purchase'), 'ep.id=c.purchase_id', array('id'))
                   ->join(array('u' => 'user'), 'u.id=p.user_id', array('username','mobile_number', 'country_phone_code'), Select::JOIN_LEFT)
                   ->order($order);
           } else {
             $query = $sql->select()
                   ->from($this->tableName)
                   ->where($where)
-                  ->join(array('ep' => 'executive_purchase'), 'ep.executive_id=p.executive_id', array('id'))
-                  ->join(array('c' => 'coupons'), new \Laminas\Db\Sql\Expression("`c`.`purchase_id`=`ep`.`id` AND `c`.`coupon_status`=1"), array('coupon_code', 'coupon_type', 'coupon_status'))
+                  ->join(array('c' => 'coupons'), new \Laminas\Db\Sql\Expression("`c`.`id`=`p`.`coupon_id` AND `c`.`coupon_status`=1"), array('coupon_code', 'coupon_type', 'coupon_status'))
+                  ->join(array('ep' => 'executive_purchase'), 'ep.id=c.purchase_id', array('id'))
                   ->join(array('u' => 'user'), 'u.id=p.user_id', array('username','mobile_number', 'country_phone_code'), Select::JOIN_LEFT)
                   ->order($order)
                   ->limit($data['limit'])

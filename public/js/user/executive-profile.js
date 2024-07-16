@@ -1,6 +1,12 @@
 $(document).ready(function() {
+    const maxFileSize = 2 * 1024 * 1024; // 2MB in bytes
     $('#photo').change(function(event) {
         var file = event.target.files[0];
+        if (file.size > maxFileSize) {
+            event.preventDefault(); 
+            alert('The selected file is too large. Please choose a file smaller than 2MB.');
+            return;
+        }
         if (file && file.type.match('image.*')) {
             var reader = new FileReader();
             reader.onload = function(e) {
@@ -14,6 +20,11 @@ $(document).ready(function() {
 
     $('#aadhar').change(function(event) {
         var file = event.target.files[0];
+        if (file.size > maxFileSize) {
+            event.preventDefault(); 
+            alert('The selected file is too large. Please choose a file smaller than 2MB.');
+            return;
+        }
         if (file && file.type.match('image.*')) {
             var reader = new FileReader();
             reader.onload = function(e) {
@@ -26,6 +37,11 @@ $(document).ready(function() {
     });
     $('#pan').change(function(event) {
         var file = event.target.files[0];
+        if (file.size > maxFileSize) {
+            event.preventDefault(); 
+            alert('The selected file is too large. Please choose a file smaller than 2MB.');
+            return;
+        }
         if (file && file.type.match('image.*')) {
             var reader = new FileReader();
             reader.onload = function(e) {
@@ -48,21 +64,11 @@ $(document).ready(function() {
             event.stopPropagation(); 
             return;
         }
-        const fileInput = document.querySelector('input[type="file"]');
-        const maxFileSize = 2 * 1024 * 1024; // 2MB in bytes
         
         if (!form.checkValidity()) {
             event.preventDefault(); 
             event.stopPropagation(); 
         } else {
-            if (fileInput.files.length > 0) {
-                const file = fileInput.files[0];
-                if (file.size > maxFileSize) {
-                    event.preventDefault(); 
-                    alert('The selected file is too large. Please choose a file smaller than 2MB.');
-                    return;
-                }
-            }
             event.preventDefault();
             const formData = new FormData(form);
             fetch('/twistt/executive/edit', {

@@ -240,6 +240,7 @@ class EnablerPurchaseTable extends BaseTable
       $where = new Where();
       $order = ['p.created_at desc'];
       $where->equalTo('p.enabler_id', $enablerId);
+      $where->and->equalTo('payment_status', \Admin\Model\EnablerPurchase::payment_success);
       $sql = $this->getSql();
       $query = $sql->select()
         ->from($this->tableName)

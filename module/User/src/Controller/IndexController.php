@@ -1548,7 +1548,7 @@ class IndexController extends BaseController
 
             if($checkCoupon[0]['coupon_type'] == \Admin\Model\Coupons::Coupon_Type_Complimentary){
               if(str_contains($plan[0]['plan_name'], $checkCoupon[0]['coupon_type'])){
-                $saveData['price_after_disc'] = (float)$totalAmount; //number_format((float)$totalAmount, 2, '.', '');
+                $saveData['price_after_disc'] = $totalAmount; //number_format((float)$totalAmount, 2, '.', '');
               }else{
                 return new JsonModel(array('success' => false, "message" => 'This coupon code cannot be applied for the selected plan..'));
               }
@@ -1559,7 +1559,7 @@ class IndexController extends BaseController
             return new JsonModel(array('success' => false, "message" => 'not a valid complimentary coupon..'));
           }
         }else{
-          $saveData['price_after_disc'] = (float)$totalAmount; //number_format((float)$totalAmount, 2, '.', '');
+          $saveData['price_after_disc'] = $totalAmount; //number_format((float)$totalAmount, 2, '.', '');
         }
 
         if ($enablerDetails['country_phone_code'] == "91") {

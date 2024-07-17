@@ -1496,7 +1496,7 @@ class IndexController extends BaseController
               $discount = number_format($this->subscriptionPlanTable->getField(['active' => '1'], 'cd_percentage'), 2);
               /* if(!(is_numeric($planPrice) && is_numeric($discount)))
                 return new JsonModel(array('success' => false, "message" => 'unexpected error..')); */
-              var_dump((1 - (float)$discount / 100)); exit;
+              var_dump($planPrice(1 - (float)$discount / 100)); exit;
               
               $pad = number_format((float)$planPrice * (1 - (float)$discount / 100), 2);
               if(str_contains($plan[0]['plan_name'], 'P'))

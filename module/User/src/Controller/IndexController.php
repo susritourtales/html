@@ -1494,6 +1494,9 @@ class IndexController extends BaseController
                 return new JsonModel(array('success' => false, "message" => 'This coupon code cannot be applied for the selected plan..'));
             }else{
               $discount = number_format($this->subscriptionPlanTable->getField(['active' => '1'], 'cd_percentage'), 2);
+              var_dump($discount);
+              var_dump($planPrice);
+              exit;
               $pad = number_format($planPrice * (1 - $discount / 100), 2);
               if(str_contains($plan[0]['plan_name'], 'P'))
                 return new JsonModel(array('success' => true, "message" => 'success', 'pp' => $planPrice, 'pad' => $pad));

@@ -166,7 +166,7 @@ class IndexController extends BaseController
     $userdetails['password'] = $postData['password'];
     $checkRole = $this->userTable->getField(['user_login_id' => $userdetails['user_login_id']], 'user_type_id');
     if($checkRole != \Admin\Model\User::TWISTT_Executive)
-      return new JsonModel(array('success' => false, "message" => 'invalid credentials'));
+      return new JsonModel(array('success' => false, "message" => 'not an executive'));
     $res = $this->userTable->checkPasswordWithUserId($userdetails['user_login_id'], $userdetails['password']);
     if ($res) {
       $this->authService->getAdapter()

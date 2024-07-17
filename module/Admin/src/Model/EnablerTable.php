@@ -146,7 +146,6 @@ class EnablerTable extends BaseTable
                 }
                 $decryptedPassword = $aes->decrypt($user[0]['password'], $user[0]['hash']);
                 if ($decryptedPassword == $password) {
-                    var_dump($decryptedPassword == $password); exit();
                     return $user[0];
                 } else {
                     return "";

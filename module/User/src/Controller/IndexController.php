@@ -979,6 +979,7 @@ class IndexController extends BaseController
         ->setIdentity($userdetails['user_login_id'])
         ->setCredential($userdetails['password']);
       $ares = $this->authService->authenticate();
+      var_dump($ares); exit();
       return new JsonModel(array('success' => true, "message" => 'credentials valid'));
     } else {
       return new JsonModel(array('success' => false, "message" => 'invalid credentials'));

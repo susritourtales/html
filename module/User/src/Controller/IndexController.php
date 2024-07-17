@@ -978,7 +978,7 @@ class IndexController extends BaseController
       $this->authService->getAdapter()
         ->setIdentity($userdetails['user_login_id'])
         ->setCredential($userdetails['password']);
-      //$ares = $this->authService->authenticate();
+      $ares = $this->authService->authenticate();
       return new JsonModel(array('success' => true, "message" => 'credentials valid'));
     } else {
       return new JsonModel(array('success' => false, "message" => 'invalid credentials'));
@@ -1439,6 +1439,7 @@ class IndexController extends BaseController
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
       $enablerDetails = $this->enablerTable->getEnablerDetails(['user_login_id' => $loginId['user_login_id']]);
+      var_dump($enablerDetails); exit;
       if(is_null($enablerDetails))
         $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/enabler/login');
       $epWhere['status'] = \Admin\Model\EnablerPlans::status_active;

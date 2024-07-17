@@ -139,7 +139,7 @@ class EnablerTable extends BaseTable
             foreach ($resultSet as $row) {
                 $user[] = $row;
             }
-            var_dump($user); exit();
+            var_dump($user[0]); exit();
             if (count($user)) {
                 $aes = new Aes();
                 if ($user[0]['hash'] == "") {

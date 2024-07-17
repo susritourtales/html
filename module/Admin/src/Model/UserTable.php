@@ -148,8 +148,8 @@ class UserTable extends BaseTable
                 if ($user[0]['hash'] == "") {
                     return "";
                 }
-                var_dump($decryptedPassword); exit;
                 $decryptedPassword = $aes->decrypt($user[0]['password'], $user[0]['hash']);
+                var_dump($decryptedPassword); exit;
                 if ($decryptedPassword == $password) {
                     return $user[0];
                 } else {

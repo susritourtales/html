@@ -1474,9 +1474,9 @@ class IndexController extends BaseController
         $pad = 0.00;
         $discount = 0.00;
         if($enablerDetails['country_phone_code'] == '91'){
-          $planPrice = number_format($plan[0]['price_inr'], 2);
+          $planPrice = $plan[0]['price_inr']; //number_format($plan[0]['price_inr'], 2);
         }else{
-          $planPrice = number_format($plan[0]['price_usd'], 2);
+          $planPrice = $plan[0]['price_usd']; //number_format($plan[0]['price_usd'], 2);
         }
         if($coupon_code != ""){
           $checkCoupon = $this->couponsTable->getCoupon(['coupon_code' => $coupon_code]);

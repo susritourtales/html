@@ -1474,9 +1474,9 @@ class IndexController extends BaseController
         $pad = 0.00;
         $discount = 0.00;
         if($enablerDetails['country_phone_code'] == '91'){
-          $planPrice = $plan[0]['price_inr']; //number_format($plan[0]['price_inr'], 2);
+          $planPrice = $plan[0]['price_inr'];
         }else{
-          $planPrice = $plan[0]['price_usd']; //number_format($plan[0]['price_usd'], 2);
+          $planPrice = $plan[0]['price_usd'];
         }
         if($coupon_code != ""){
           $checkCoupon = $this->couponsTable->getCoupon(['coupon_code' => $coupon_code]);
@@ -1494,8 +1494,6 @@ class IndexController extends BaseController
                 return new JsonModel(array('success' => false, "message" => 'This coupon code cannot be applied for the selected plan..'));
             }else{
               $discount = number_format($this->subscriptionPlanTable->getField(['active' => '1'], 'cd_percentage'), 2);
-              /* if(!(is_numeric($planPrice) && is_numeric($discount)))
-                return new JsonModel(array('success' => false, "message" => 'unexpected error..')); */
               $pad = number_format((float)$planPrice * (1 - (float)$discount / 100), 2);
               if(str_contains($plan[0]['plan_name'], 'P'))
                 return new JsonModel(array('success' => true, "message" => 'success', 'pp' => $planPrice, 'pad' => $pad));

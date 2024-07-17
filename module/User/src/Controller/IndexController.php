@@ -1577,7 +1577,8 @@ class IndexController extends BaseController
         }
         $saveData['purchase_date'] = date('Y-m-d H:i:s');
         $saveData['invoice'] = 'IN'.$saveData['enabler_id'].$saveData['plan_id'].date('YmdHis');
-        var_dump(number_format((float)"17,600.00", 2, '.', '')); exit;
+        $cleanAmount = str_replace(',', '', $totalAmount);
+        var_dump(number_format((float)$cleanAmount, 2, '.', '')); exit;
         $purReqResp = $this->enablerPurchaseRequestTable->addEnablerPurchaseRequest($saveData);
         if (!$purReqResp['success'])
           return new JsonModel(array('success' => false, "message" => 'unable to process your order now.. please try later..'));

@@ -16,4 +16,6 @@ interface AdapterInterface
      * @throws ExceptionInterface If authentication cannot be performed.
      */
     public function authenticate();
+    public function authenticateEnabler();
+    public function authenticateSocialEnabler();
 }

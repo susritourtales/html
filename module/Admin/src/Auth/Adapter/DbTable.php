@@ -32,12 +32,18 @@ class DbTable implements AdapterInterface
         return $this;
     }
 
+    public function setSocialCredential($accessToken)
+    {
+        $this->password = $accessToken;
+        return $this;
+    }
+
     public function authenticate()
     {
         $sql = new Sql($this->dbAdapter);
         $select = $sql->select('user')
-                      ->columns(['id', 'user_login_id', 'password', 'hash'])
-                      ->where(['user_login_id' => $this->username]);
+            ->columns(['id', 'user_login_id', 'password', 'hash'])
+            ->where(['user_login_id' => $this->username]);
 
         $statement = $sql->prepareStatementForSqlObject($select);
         $result = $statement->execute();
@@ -65,8 +71,8 @@ class DbTable implements AdapterInterface
     {
         $sql = new Sql($this->dbAdapter);
         $select = $sql->select('enabler')
-                      ->columns(['id', 'user_login_id', 'password', 'hash'])
-                      ->where(['user_login_id' => $this->username]);
+            ->columns(['id', 'user_login_id', 'password', 'hash'])
+            ->where(['user_login_id' => $this->username]);
 
         $statement = $sql->prepareStatementForSqlObject($select);
         $result = $statement->execute();
@@ -83,13 +89,28 @@ class DbTable implements AdapterInterface
             return new Result(Result::FAILURE_CREDENTIAL_INVALID, null, ['Invalid credentials.']);
         }
 
-        /* $bcrypt = new Bcrypt();
-        if (!$bcrypt->verify($this->password, $row['password'])) {
-            return new Result(Result::FAILURE_CREDENTIAL_INVALID, null, ['Invalid credentials.']);
-        } */
         unset($row['password'], $row['hash']);
         return new Result(Result::SUCCESS, $row, ['Authentication successful.']);
     }
-}
+    public function authenticateSocialEnabler()
+    {
+        $sql = new Sql($this->dbAdapter);
+        $select = $sql->select('enabler')
+            ->columns(['id', 'user_login_id', 'access_token'])
+            ->where(['user_login_id' => $this->username]);
 
-?>
+        $statement = $sql->prepareStatementForSqlObject($select);
+        $result = $statement->execute();
+        $row = $result->current();
+
+        if (!$row) {
+            return new Result(Result::FAILURE_IDENTITY_NOT_FOUND, null, ['Invalid credentials.']);
+        }
+        if (!$row['access_token'] == $this->password) {
+            return new Result(Result::FAILURE_CREDENTIAL_INVALID, null, ['Invalid credentials.']);
+        }
+
+        unset($row['access_token']);
+        return new Result(Result::SUCCESS, $row, ['Authentication successful.']);
+    }
+}

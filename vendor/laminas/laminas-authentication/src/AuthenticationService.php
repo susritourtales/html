@@ -95,8 +95,8 @@ class AuthenticationService implements AuthenticationServiceInterface
      */
     public function authenticate(?Adapter\AdapterInterface $adapter = null)
     {
-        if (! $adapter) {
-            if (! $adapter = $this->getAdapter()) {
+        if (!$adapter) {
+            if (!$adapter = $this->getAdapter()) {
                 throw new Exception\RuntimeException(
                     'An adapter must be set or passed prior to calling authenticate()'
                 );
@@ -121,14 +121,40 @@ class AuthenticationService implements AuthenticationServiceInterface
 
     public function authenticateEnabler(?Adapter\AdapterInterface $adapter = null)
     {
-        if (! $adapter) {
-            if (! $adapter = $this->getAdapter()) {
+        if (!$adapter) {
+            if (!$adapter = $this->getAdapter()) {
                 throw new Exception\RuntimeException(
                     'An adapter must be set or passed prior to calling authenticate()'
                 );
             }
         }
         $result = $adapter->authenticateEnabler();
+
+        /**
+         * Laminas-7546 - prevent multiple successive calls from storing inconsistent results
+         * Ensure storage has clean state
+         */
+        if ($this->hasIdentity()) {
+            $this->clearIdentity();
+        }
+
+        if ($result->isValid()) {
+            $this->getStorage()->write($result->getIdentity());
+        }
+
+        return $result;
+    }
+
+    public function authenticateSocialEnabler(?Adapter\AdapterInterface $adapter = null)
+    {
+        if (!$adapter) {
+            if (!$adapter = $this->getAdapter()) {
+                throw new Exception\RuntimeException(
+                    'An adapter must be set or passed prior to calling authenticate()'
+                );
+            }
+        }
+        $result = $adapter->authenticateSocialEnabler();
 
         /**
          * Laminas-7546 - prevent multiple successive calls from storing inconsistent results
@@ -152,7 +178,7 @@ class AuthenticationService implements AuthenticationServiceInterface
      */
     public function hasIdentity()
     {
-        return ! $this->getStorage()->isEmpty();
+        return !$this->getStorage()->isEmpty();
     }
 
     /**

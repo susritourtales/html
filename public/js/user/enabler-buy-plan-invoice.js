@@ -1,6 +1,9 @@
 
 $(document).ready(function(){
     $("body").on("click", "#btnCheckout", function() {
+        var element=$(this);
+        element.html('Please wait...');
+        element.prop('disabled',true);
         var prid = $('#prid').val();
         var formData=new FormData();
         formData.append('prid',prid);
@@ -44,6 +47,8 @@ $(document).ready(function(){
                             success: function(resp)
                             {
                                 messageDisplay(resp.message);
+                                element.html('Check out');
+                                element.prop('disabled',false);
                                 setTimeout(function(){
                                     window.location.href=BASE_URL+"/twistt/enabler/receipt/" + resp.pid;
                                 },2000);
@@ -51,6 +56,8 @@ $(document).ready(function(){
                             error: function(resp)
                             {
                                 messageDisplay(data.message);
+                                element.html('Check out');
+                                element.prop('disabled',false);
                                 ajaxCall=null;
                             }
                         });

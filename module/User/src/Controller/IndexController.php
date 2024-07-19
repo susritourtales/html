@@ -1731,7 +1731,11 @@ class IndexController extends BaseController
         $saveData['executive_mobile'] = "(" . $execDetails['country_phone_code'] . ")" . $execDetails['mobile_number'];
       }
       $saveData['purchase_date'] = date('Y-m-d H:i:s');
-      $purchaseResp = $this->enablerPurchaseTable->addEnablerPurchase($saveData);
+      $invoiceExists = $this->enablerPurchaseTable->getField(['invoice' => $prDetails['invoice']], 'id');
+      if ($invoiceExists)
+        $purchaseResp = $this->enablerPurchaseTable->setEnablerPurchase($saveData, ['invoice' => $prDetails['invoice']]);
+      else
+        $purchaseResp = $this->enablerPurchaseTable->addEnablerPurchase($saveData);
       if ($purchaseResp['success'])
         $purchaseId = $purchaseResp['id'];
       if ($purchaseId) {

@@ -1,11 +1,13 @@
 <?php
-    include 'vendor/autoload.php';
-    use Hybridauth\Hybridauth;
-    $hybridauth = new Hybridauth($config);
-    $adapters = $hybridauth->getConnectedAdapters();
+include 'vendor/autoload.php';
+
+use Hybridauth\Hybridauth;
+
+$hybridauth = new Hybridauth($config);
+$adapters = $hybridauth->getConnectedAdapters();
 ?>
 <link rel="stylesheet" href="<?php echo $this->basePath() ?>/css/main.css">
-<link rel="stylesheet" href="<?php echo $this->basePath();?>/css/twistt.css?v=1.0.2">
+<link rel="stylesheet" href="<?php echo $this->basePath(); ?>/css/twistt.css?v=1.0.2">
 <link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.13/css/intlTelInput.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.13/js/intlTelInput.min.js"></script>
@@ -16,35 +18,38 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 
 <style>
-    body{
+    body {
         background-color: #f5f5f5 !important;
         font-size: 14px !important;
     }
-    .navbar-brand{
+
+    .navbar-brand {
         justify-content: left;
     }
-    .iti{
+
+    .iti {
         display: block;
     }
-    .hide{
+
+    .hide {
         display: none;
     }
 </style>
 <div class="container-fluid my-5">
     <div class="container">
-        <?php 
-            $logoutUrl = $this->basePath() . '/twistt/enabler/logout';
-            if($adapters){ 
-                if($enablerDetails['oauth_provider'] == 'g'){
-                    $logoutUrl = $config['callback'] . "?logout=Google";
-                }elseif($enablerDetails['oauth_provider'] == 'f'){
-                    $logoutUrl = $config['callback'] . "?logout=Facebook";
-                }elseif($enablerDetails['oauth_provider'] == 'a'){
-                    $logoutUrl = $config['callback'] . "?logout=Apple";
-                }
+        <?php
+        $logoutUrl = $this->basePath() . '/twistt/enabler/logout';
+        if ($adapters) {
+            if ($enablerDetails['oauth_provider'] == 'g') {
+                $logoutUrl = $config['callback'] . "?logout=Google";
+            } elseif ($enablerDetails['oauth_provider'] == 'f') {
+                $logoutUrl = $config['callback'] . "?logout=Facebook";
+            } elseif ($enablerDetails['oauth_provider'] == 'a') {
+                $logoutUrl = $config['callback'] . "?logout=Apple";
             }
-            echo $this->partial('/enb-sidebar', array('activeTab'=>\Application\Constants\Constants::TWISTT_TRACK_PLANS, 'logoutUrl'=>$logoutUrl)); ?>
-        <div class="content bg-white custom-shadow p-4 color-333"> 
+        }
+        echo $this->partial('/enb-sidebar', array('activeTab' => \Application\Constants\Constants::TWISTT_TRACK_PLANS, 'logoutUrl' => $logoutUrl)); ?>
+        <div class="content bg-white custom-shadow p-4 color-333">
             <div class="bg-light border-radius-10 custom-shadow p-4 color-333">
                 <div class="user-page-name text-uppercase avant-md pb-3">
                     <h5>TWISTT Enabler Track Plans</h5>
@@ -67,7 +72,7 @@
                             </div>
                         </div>
                         <div class="col-4">
-                            <div class="row pt-1"><img src="<?php echo $imageUrl.$enablerDetails['photo_url']; ?>" style="width:100px !important;"></div>
+                            <div class="row pt-1"><img src="<?php echo $imageUrl . $enablerDetails['photo_url']; ?>" style="width:100px !important;"></div>
                         </div>
                     </div>
                 </div>
@@ -79,8 +84,8 @@
                                 <label for="selPlan" class="form-label">Select Plan</label>
                                 <select class="form-control" id="selPlan" name="selPlan" required>
                                     <option value="">Select Plan</option>
-                                    <?php foreach($epl as $e){?>
-                                    <option value="<?php echo $e['id'];?>"><?php echo $e['plan_name'] . "(" . $e['lic_bal'] . ")";?></option>
+                                    <?php foreach ($epl as $e) { ?>
+                                        <option value="<?php echo $e['id']; ?>"><?php echo $e['plan_name'] . "(" . $e['lic_bal'] . ")"; ?></option>
                                     <?php } ?>
                                 </select>
                                 <div class="invalid-feedback">Please select plan.</div>
@@ -118,9 +123,9 @@
                 </div>
                 <div class="bg-white border-radius-10 custom-shadow p-4 color-333 my-3">
                     <div class="" id="recordsList">
-                        <?php echo $this->partial("/load-sales-list", array('sales'=>$sales,'totalCount'=>$totalCount,'type'=>'initialize')); ?>
+                        <?php echo $this->partial("/load-sales-list", array('sales' => $sales, 'totalCount' => $totalCount, 'type' => 'initialize')); ?>
                     </div>
-                    <?php if($totalCount > 10){
+                    <?php if ($totalCount > 10) {
                         $paginationCount = ceil($totalCount / 10); ?>
                         <ul class="pagination justify-content-end mt-3" id="listPager"></ul>
                     <?php } ?>
@@ -130,4 +135,4 @@
     </div>
 </div>
 <script src="<?php echo $this->basePath(); ?>/js/pagination.js"></script>
-<script src="<?php echo $this->basePath(); ?>/js/user/track-plans.js"></script>
+<script src="<?php echo $this->basePath(); ?>/js/user/track-plans.js?v=1.0.1"></script>

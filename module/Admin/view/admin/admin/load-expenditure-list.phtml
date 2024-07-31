@@ -1,0 +1,75 @@
+<?php if(isset($type) && $type =='initialize') { ?>
+<div class="table-responsive">
+<table class="table table-bordered table-hover table-striped" id="table">
+<!-- <table class="table table-hover" id="extTable"> -->
+    <thead>
+    <tr class="text-nowrap">
+        <th>S.no</th>
+        <th class="text-center" data-placeholder="Txn Date" data-input="transaction_date">Txn Date</th>
+        <th class="text-center" data-placeholder="Earnings" data-input="total_earnings">Earnings</th>
+        <th class="text-center" data-placeholder="Paid" data-input="stt_paid_amount">Paid</th>
+        <th class="text-center" data-placeholder="Balance" data-input="balance_outstanding">Bal</th>
+        <th class="text-center" data-placeholder="Executive" data-input="username">Executive</th>
+        <th class="text-center" data-placeholder="bank name" data-input="bank_name">Bank</th>
+        <th class="text-center" data-placeholder="bank a/c" data-input="bank_ac_no">Bank a/c</th>
+        <th class="text-center" data-placeholder="ifsc code" data-input="ifsc_code">IFSC code</th>
+        <th class="text-center" data-placeholder="Txn Ref" data-input="transaction_ref">Txn Ref</th>
+        <th>Pay</th>
+    </tr>
+    <?php } ?>
+
+    <?php if(isset($type) && ($type =='initialize' || $type=="search") ) {?>
+    <input type="hidden" class="records" value="<?php echo $totalCount; ?>">
+    <tbody>
+    <?php } ?>
+    
+    <?php if(count($expenditureList))
+      {
+        $i=0;
+        if(isset($offset))
+        {
+            $i=$offset;
+        }
+
+        foreach ($expenditureList as $tx) { 
+          $color = "";
+          if($tx['transaction_type'] == \Admin\Model\ExecutiveTransaction::transaction_due)
+              $color = "table-danger text-nowrap";
+          else
+              $color = "table-success text-nowrap";
+          ?>
+          <tr class="<?php echo $color; ?>">
+              <td><?php echo $i+1; ?></td>
+              <td class="text-center"><?php echo date("d-m-Y",strtotime($tx['transaction_date'])); ?></td>
+              <td class="text-center"><?php echo $tx['total_earnings']; ?></td>
+              <td class="text-center"><?php echo $tx['stt_paid_amount']; ?></td>
+              <td class="text-center"><?php echo $tx['balance_outstanding']; ?></td>
+              <td class="text-center" id="spo<?php echo $tx['id'];?>"><?php echo $tx['username'] . "<br>(" . $tx['country_phone_code'] . ")" . $tx['mobile_number']; ?></td>
+              <td class="text-center"><?php echo $tx['bank_name']; ?></td>
+              <td class="text-center"><?php echo $tx['bank_account_no']; ?></td>
+              <td class="text-center"><?php echo $tx['ifsc_code']; ?></td>
+              <!-- <td class="text-center"><?php //echo "(" . $tx['country_phone_code'] . ")" . $tx['mobile_number'] ; ?></td> -->
+              <td class="text-center"><?php echo $tx['transaction_ref']; ?></td>
+              <td><?php if($tx['transaction_type'] == \Admin\Model\ExecutiveTransaction::transaction_due){?>
+                    <div class="d-flex">
+                        <div class="action-icon pay" data-id="<?php echo $tx['id']; ?>">
+                            <img src="<?php echo $this->basePath();?>/img/edit.png" class="img-fluid" >
+                        </div>
+                    </div>
+                    <?php } ?>
+                </td>
+          </tr>
+          <?php $i++; } } else { ?>
+        <tr ><td class="text-center" colspan="10">No data</td></tr>
+    <?php  } ?>
+    <?php if(isset($type) && ($type =='initialize' || $type=="search") ) {?>
+
+    </tbody>
+    <?php } ?>
+    <?php if(isset($type) && $type =='initialize') {?>
+
+</table>
+<?php //echo "id=".$id;?>
+<input type="hidden" id="hid" value="0<?php //echo base64_encode("id=".$id);?>" />
+</div>
+<?php } ?>

@@ -850,6 +850,35 @@ return [
                         'action' => 'subscription-plans',
                     ],
                 ],
+            ],'expenditure' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/expenditure',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'expenditure',
+                    ],
+                ],
+            ],
+            'expenditure-list' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route'    => '/admin/load-expenditure-list',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action'     => 'load-expenditure-list',
+                    ],
+                ],
+            ],
+            'pay-executive' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route'    => '/admin/pay-executive',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action'     => 'pay-executive',
+                    ],
+                ],
             ],
             'add-subscription-plan' => [
                 'type' => Segment::class,

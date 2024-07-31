@@ -32,7 +32,24 @@ $(document).ready(function(){
       formData.append('mobile',mobile);
       formData.append('otpType','2');
       formData.append('rb','3');
-      ajaxCall=  $.ajax({
+      ajaxData('/twistt/enabler/send-otp',formData,function(response){
+        if(response.success){
+            element.prop('disabled',false);
+            element.html('Submit');
+            messageDisplay(response.message, 2000);
+            ajaxCall=null;
+            setTimeout(function(){
+                $("#divSendOtp").addClass("d-none");
+                $("#divVerifyOtp").removeClass("d-none");
+            },2000);
+        }else{
+            messageDisplay(response.message,3000);
+            ajaxCall=null;
+            element.prop('disabled',false);
+            element.html('Submit');
+        }
+      });
+      /* ajaxCall=  $.ajax({
           type: "POST",
           url: BASE_URL+'/twistt/enabler/send-otp',
           data: formData,
@@ -58,7 +75,7 @@ $(document).ready(function(){
               element.prop('disabled',false);
               element.html('Submit');
           }
-      });
+      }); */
     });
     $("body").on("click","#verifyOtp",function(){
         var element=$(this);
@@ -79,7 +96,24 @@ $(document).ready(function(){
         formData.append('otp',otp);
         formData.append('mobile',mobile);
         formData.append('otp_type','2');
-        ajaxCall=  $.ajax({
+        ajaxData('/twistt/enabler/verify-otp',formData,function(response){
+            if(response.success){
+                element.prop('disabled',false);
+                element.html('Submit');
+                messageDisplay(response.message, 2000);
+                ajaxCall=null;
+                setTimeout(function(){
+                    $("#divVerifyOtp").addClass("d-none");
+                    $("#divPwdReset").removeClass("d-none");
+                },2000);
+            }else{
+                messageDisplay(response.message,3000);
+                ajaxCall=null;
+                element.prop('disabled',false);
+                element.html('Submit');
+            }
+        });
+        /* ajaxCall=  $.ajax({
           type: "POST",
           url: BASE_URL+'/twistt/enabler/verify-otp',
           data: formData,
@@ -105,7 +139,7 @@ $(document).ready(function(){
               element.prop('disabled',false);
               element.html('Submit');
           }
-        });
+        }); */
     });
 
     
@@ -145,7 +179,20 @@ $(document).ready(function(){
         formData.append('new_password',newPassword);
         formData.append('otp',otp);
         formData.append('type','2');
-        ajaxCall=  $.ajax({
+        ajaxData('/twistt/reset-password',formData,function(response){
+            if(response.success){
+                messageDisplay(response.message, 2000);
+                setTimeout(function(){
+                    window.location.href=BASE_URL+"/twistt/enabler/login";
+                },3000);
+            }else{
+                messageDisplay(response.message,3000);
+                ajaxCall=null;
+                element.prop('disabled',false);
+                element.html('Submit');
+            }
+        });
+        /*  ajaxCall=  $.ajax({
             type: "POST",
             url: BASE_URL+'/twistt/reset-password',
             data: formData,
@@ -160,7 +207,7 @@ $(document).ready(function(){
                 ajaxCall=null;
                 if(data.success){
                     setTimeout(function(){
-                        window.location.href=BASE_URL+"/twistt/ennabler/login";
+                        window.location.href=BASE_URL+"/twistt/enabler/login";
                     },2000);
                 }
             },
@@ -170,7 +217,7 @@ $(document).ready(function(){
                 element.prop('disabled',false);
                 element.html('Submit');
             }
-        });
-    });
+        }); */
+    }); 
 
 });

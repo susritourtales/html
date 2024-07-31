@@ -407,7 +407,7 @@ class IndexController extends BaseController
           $otp = $this->generateOtp();
           $otpRes = $this->otpTable->addOtpDetails(['otp' => $otp, 'otp_type_id' => $otpType, 'verification_mode' => $vm, 'sent_status_id' => \Admin\Model\Otp::Not_verifed, 'otp_requested_by' => $rb, 'otp_sent_to' => $ccmobile]);
           if ($otpRes) {
-            $resp = "1"; //$this->sendOtpSms($ccmobile, $otp);
+            $resp = 1; //$this->sendOtpSms($ccmobile, $otp);
             if ($resp) {
               return new JsonModel(array('success' => true, "message" => 'otp sent successfully.. please enter the otp..'));
             } else {
@@ -426,7 +426,7 @@ class IndexController extends BaseController
               $otp = $this->generateOtp();
               $otpRes = $this->otpTable->addOtpDetails(['otp' => $otp, 'otp_type_id' => $otpType, 'verification_mode' => \Admin\Model\Otp::Mobile_Verification, 'sent_status_id' => \Admin\Model\Otp::Not_verifed, 'otp_requested_by' => $rb, 'otp_sent_to' => $mobile]);
               if ($otpRes) {
-                $resp = "1"; //$this->sendOtpSms($ccmobile, $otp);
+                $resp = 1; //$this->sendOtpSms($ccmobile, $otp);
                 if ($resp) {
                   return new JsonModel(array('success' => true, "message" => 'otp sent successfully.. please enter the otp..'));
                 } else {
@@ -1090,7 +1090,7 @@ class IndexController extends BaseController
           $otp = $this->generateOtp();
           $otpRes = $this->otpTable->addOtpDetails(['otp' => $otp, 'otp_type_id' => $otpType, 'verification_mode' => $vm, 'sent_status_id' => \Admin\Model\Otp::Not_verifed, 'otp_requested_by' => $rb, 'otp_sent_to' => $ccmobile]);
           if ($otpRes) {
-            $resp = "1"; //$this->sendOtpSms($ccmobile, $otp);
+            $resp = 1; //$this->sendOtpSms($ccmobile, $otp);
             if ($resp) {
               return new JsonModel(array('success' => true, "message" => 'otp sent successfully.. please enter the otp..'));
             } else {
@@ -1122,11 +1122,19 @@ class IndexController extends BaseController
               $otp = $this->generateOtp();
               $otpRes = $this->otpTable->addOtpDetails(['otp' => $otp, 'otp_type_id' => $otpType, 'verification_mode' => \Admin\Model\Otp::Mobile_Verification, 'sent_status_id' => \Admin\Model\Otp::Not_verifed, 'otp_requested_by' => $rb, 'otp_sent_to' => $mobile]);
               if ($otpRes) {
-                $resp = "1"; //$this->sendOtpSms($ccmobile, $otp);
-                if ($resp) {
-                  return new JsonModel(array('success' => true, "message" => 'otp sent successfully.. please enter the otp..'));
+                $resp = 1; //$this->sendOtpSms($mobile, $otp, 'TEn_Password_Reset_Otp');
+                $responseData = json_decode($resp, true);
+                if ($responseData['status'] == 'success') {
+                    // Iterate through the messages to find the status
+                    foreach ($responseData['messages'] as $message) {
+                      if ($message['status'] == 'DELIVERED') {
+                        return new JsonModel(array('success' => true, "message" => 'otp sent successfully.. please enter the otp..')); //echo 'Message was delivered successfully!';
+                      } else {
+                        return new JsonModel(array('success' => false, "message" => 'Message delivery failed with status: ' . $message['status']));//echo 'Message delivery failed with status: ' . $message['status'];
+                      }
+                  }
                 } else {
-                  return new JsonModel(array('success' => false, "message" => 'unable to send otp.. please try again after sometime..'));
+                  return new JsonModel(array('success' => false, "message" => $responseData['errors'][0]['message']));
                 }
               } else {
                 return new JsonModel(array('success' => false, "message" => 'unknown error.. please try again after sometime..'));
@@ -1874,11 +1882,16 @@ class IndexController extends BaseController
               $execTxn = $this->executiveTransactionTable->getExecutiveTransaction(['executive_id' => $exTxnData['executive_id']]);
               $exTxnData['total_earnings'] = $execTxn['total_earnings'] + $updateCoupon['commission_receivable'];
               $exTxnData['balance_outstanding'] = $execTxn['balance_outstanding'] + $updateCoupon['commission_receivable'];
-              $txnRes = $this->executiveTransactionTable->addExecutivePurchase($exTxnData);
-              if ($txnRes)
-                return new JsonModel(array('success' => true, 'message' => 'plan purchased successfully..', 'pid' => $prid,));
-              else
+              $txnRes = $this->executiveTransactionTable->addExecutiveTransaction($exTxnData);
+              if ($txnRes['id']){
+                $update = $this->executiveDetailsTable->setExecutiveDetails(['last_txn_id' => $txnRes['id']], ['id' => $exTxnData['executive_id']]);
+                if($update)  
+                  return new JsonModel(array('success' => true, 'message' => 'plan purchased successfully..', 'pid' => $prid,));
+                else
+                  return new JsonModel(array('success'=>false,"message"=>'purchase unsuccessful'));
+              }else{
                 return new JsonModel(array('success' => false, 'message' => 'unable to process your request now.. unknown error..'));
+              }
             } else {
               return new JsonModel(array('success' => false, 'message' => 'unable to process your request now.. unknown error..'));
             }
@@ -2019,6 +2032,11 @@ class IndexController extends BaseController
   }
 
   public function enablerLogoutAction()
+  {
+    return new ViewModel();
+  }
+
+  public function smsStatusAction()
   {
     return new ViewModel();
   }

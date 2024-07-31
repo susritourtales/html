@@ -1,0 +1,57 @@
+<div class="sidebar">
+    <div class="side-panel" id="collapsibleNavbar">
+        <?php echo $this->partial('/application/index/left-menu', array(
+            'mainActiveTab' => \Application\Constants\Constants::Receipts_Expenditure,
+            'activeTab' => \Application\Constants\Constants::Expenditure_on_Commission
+        )); ?>
+    </div>
+</div>
+<link rel="stylesheet" href="<?php echo $this->basePath() ?>/css/main.css">
+
+<div class="wrapper">
+    <div class="main-panel ">
+        <?php echo $this->partial("/application/index/app-header"); ?>
+
+        <div class="main-container p-lg-4">
+            <div class="d-flex justify-content-between mb-4">
+                <div class="main-heading">Expenditure on Commission</div>
+            </div>
+            <div class="overflow-auto" id="recordsList">
+                <?php echo $this->partial('/admin/admin/load-expenditure-list', array('expenditureList' => $expenditureList, 'totalCount' => $totalCount, 'type' => 'initialize')); ?>
+            </div>
+            <?php if ($totalCount > 10) {
+                $paginationCount = ceil($totalCount / 10); ?>
+                <ul class="pagination float-end" id="listPager"></ul>
+            <?php } ?>
+        </div>
+    </div>
+</div>
+<div id="payModal" class="modal" role="dialog">
+    <div class="modal-dialog" style="width: 80% !important;">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title text-primary">Pay Executive</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <table>
+                    <tr class="mb-2">
+                        <td>Amount</td>
+                        <td><input type="number" id="tbamount" name="tbamount" class="form-control input-sm"></td>
+                    </tr>
+                    <tr>
+                        <td>Transaction ref</td>
+                        <td><input type="text" id="tbtref" name="tbtref" class="form-control input-sm"></td>
+                    </tr>
+               </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default btn-success pay-confirm-button">Yes</button>
+                <button type="button" class="btn btn-default btn-danger" data-bs-dismiss="modal">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="<?php echo $this->basePath(); ?>/js/pagination.js"></script>
+<script src="<?php echo $this->basePath() . '/js/admin/expenditure.js?v=1.0' ?>"></script>

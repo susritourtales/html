@@ -3151,97 +3151,97 @@ class AdminController extends BaseController
 }
 public function loadSalesListAction()
 {
-if ($this->getRequest()->isXmlHttpRequest()) {
-   $paramId = $this->params()->fromRoute('id', '');
-   if (!$paramId) {
-      return $this->redirect()->toUrl($this->getBaseUrl());
-   }
-  $prIdString = rtrim($paramId, "=");
-  $prIdString = base64_decode($prIdString);
-  $prIdString = explode("=", $prIdString);
-  $id = array_key_exists(1, $prIdString) ? $prIdString[1] : 0;
-  $request = $this->getRequest()->getPost();
-  $searchData = array('limit' => 10, 'offset' => 0);
-  $type = $request['type'];
-  $offset = 0;
-  $filterData = $request['filter'];
-    if ($filterData) {
-        $filterData = json_decode($filterData, true);
-        if (isset($filterData['sale_date'])) {
-            if (isset($filterData['sale_date']['text']) && !empty($filterData['sale_date']['text'])) {
-                $searchData['sale_date'] = $filterData['sale_date']['text'];
-            }
-            if (isset($filterData['sale_date']['order']) && $filterData['sale_date']['order']) {
-                $searchData['sale_date_order'] = $filterData['sale_date']['order'];
-            }
-        }
-        if (isset($filterData['plan_name'])) {
-            if (isset($filterData['plan_name']['text']) && !empty($filterData['plan_name']['text'])) {
-                $searchData['plan_name'] = $filterData['plan_name']['text'];
-            }
-            if (isset($filterData['plan_name']['order']) && $filterData['plan_name']['order']) {
-                $searchData['plan_name_order'] = $filterData['plan_name']['order'];
-            }
-        }
-        if (isset($filterData['tourist_name'])) {
-            if (isset($filterData['tourist_name']['text']) && !empty($filterData['tourist_name']['text'])) {
-                $searchData['tourist_name'] = $filterData['tourist_name']['text'];
-            }
-            if (isset($filterData['tourist_name']['order']) && $filterData['tourist_name']['order']) {
-                $searchData['tourist_name_order'] = $filterData['tourist_name']['order'];
-            }
-        }
-        if (isset($filterData['tourist_mobile'])) {
-            if (isset($filterData['tourist_mobile']['text']) && !empty($filterData['tourist_mobile']['text'])) {
-                $searchData['tourist_mobile'] = $filterData['tourist_mobile']['text'];
-            }
-            if (isset($filterData['tourist_mobile']['order']) && $filterData['tourist_mobile']['order']) {
-                $searchData['tourist_mobile_order'] = $filterData['tourist_mobile']['order'];
-            }
-        }
-        if (isset($filterData['tourist_email'])) {
-            if (isset($filterData['tourist_email']['text']) && !empty($filterData['tourist_email']['text'])) {
-                $searchData['tourist_email'] = $filterData['tourist_email']['text'];
-            }
-            if (isset($filterData['tourist_email']['order']) && $filterData['tourist_email']['order']) {
-                $searchData['tourist_email_order'] = $filterData['tourist_email']['order'];
-            }
-        }
-        if (isset($filterData['twistt_start_date'])) {
-            if (isset($filterData['twistt_start_date']['text']) && !empty($filterData['twistt_start_date']['text'])) {
-                $searchData['twistt_start_date'] = $filterData['twistt_start_date']['text'];
-            }
-            if (isset($filterData['twistt_start_date']['order']) && $filterData['twistt_start_date']['order']) {
-                $searchData['twistt_start_date_order'] = $filterData['twistt_start_date']['order'];
-            }
-        }
-        if (isset($filterData['lic_bal'])) {
-            if (isset($filterData['lic_bal']['text']) && !empty($filterData['lic_bal']['text'])) {
-                $searchData['lic_bal'] = $filterData['lic_bal']['text'];
-            }
-            if (isset($filterData['lic_bal']['order']) && $filterData['lic_bal']['order']) {
-                $searchData['lic_bal_order'] = $filterData['lic_bal']['order'];
-            }
-        }
+    if ($this->getRequest()->isXmlHttpRequest()) {
+    $paramId = $this->params()->fromRoute('id', '');
+    if (!$paramId) {
+        return $this->redirect()->toUrl($this->getBaseUrl());
     }
-  if (isset($request['page_number'])) {
-    $pageNumber = $request['page_number'];
-    $offset = ($pageNumber * 10 - 10);
-    $limit = 10;
-    $searchData['offset'] = $offset;
-    $searchData['limit'] = $limit;
-  }
-  $searchData['purchase_id'] = $id;
-  $totalCount = 0;
+    $prIdString = rtrim($paramId, "=");
+    $prIdString = base64_decode($prIdString);
+    $prIdString = explode("=", $prIdString);
+    $id = array_key_exists(1, $prIdString) ? $prIdString[1] : 0;
+    $request = $this->getRequest()->getPost();
+    $searchData = array('limit' => 10, 'offset' => 0);
+    $type = $request['type'];
+    $offset = 0;
+    $filterData = $request['filter'];
+        if ($filterData) {
+            $filterData = json_decode($filterData, true);
+            if (isset($filterData['sale_date'])) {
+                if (isset($filterData['sale_date']['text']) && !empty($filterData['sale_date']['text'])) {
+                    $searchData['sale_date'] = $filterData['sale_date']['text'];
+                }
+                if (isset($filterData['sale_date']['order']) && $filterData['sale_date']['order']) {
+                    $searchData['sale_date_order'] = $filterData['sale_date']['order'];
+                }
+            }
+            if (isset($filterData['plan_name'])) {
+                if (isset($filterData['plan_name']['text']) && !empty($filterData['plan_name']['text'])) {
+                    $searchData['plan_name'] = $filterData['plan_name']['text'];
+                }
+                if (isset($filterData['plan_name']['order']) && $filterData['plan_name']['order']) {
+                    $searchData['plan_name_order'] = $filterData['plan_name']['order'];
+                }
+            }
+            if (isset($filterData['tourist_name'])) {
+                if (isset($filterData['tourist_name']['text']) && !empty($filterData['tourist_name']['text'])) {
+                    $searchData['tourist_name'] = $filterData['tourist_name']['text'];
+                }
+                if (isset($filterData['tourist_name']['order']) && $filterData['tourist_name']['order']) {
+                    $searchData['tourist_name_order'] = $filterData['tourist_name']['order'];
+                }
+            }
+            if (isset($filterData['tourist_mobile'])) {
+                if (isset($filterData['tourist_mobile']['text']) && !empty($filterData['tourist_mobile']['text'])) {
+                    $searchData['tourist_mobile'] = $filterData['tourist_mobile']['text'];
+                }
+                if (isset($filterData['tourist_mobile']['order']) && $filterData['tourist_mobile']['order']) {
+                    $searchData['tourist_mobile_order'] = $filterData['tourist_mobile']['order'];
+                }
+            }
+            if (isset($filterData['tourist_email'])) {
+                if (isset($filterData['tourist_email']['text']) && !empty($filterData['tourist_email']['text'])) {
+                    $searchData['tourist_email'] = $filterData['tourist_email']['text'];
+                }
+                if (isset($filterData['tourist_email']['order']) && $filterData['tourist_email']['order']) {
+                    $searchData['tourist_email_order'] = $filterData['tourist_email']['order'];
+                }
+            }
+            if (isset($filterData['twistt_start_date'])) {
+                if (isset($filterData['twistt_start_date']['text']) && !empty($filterData['twistt_start_date']['text'])) {
+                    $searchData['twistt_start_date'] = $filterData['twistt_start_date']['text'];
+                }
+                if (isset($filterData['twistt_start_date']['order']) && $filterData['twistt_start_date']['order']) {
+                    $searchData['twistt_start_date_order'] = $filterData['twistt_start_date']['order'];
+                }
+            }
+            if (isset($filterData['lic_bal'])) {
+                if (isset($filterData['lic_bal']['text']) && !empty($filterData['lic_bal']['text'])) {
+                    $searchData['lic_bal'] = $filterData['lic_bal']['text'];
+                }
+                if (isset($filterData['lic_bal']['order']) && $filterData['lic_bal']['order']) {
+                    $searchData['lic_bal_order'] = $filterData['lic_bal']['order'];
+                }
+            }
+        }
+    if (isset($request['page_number'])) {
+        $pageNumber = $request['page_number'];
+        $offset = ($pageNumber * 10 - 10);
+        $limit = 10;
+        $searchData['offset'] = $offset;
+        $searchData['limit'] = $limit;
+    }
+    $searchData['purchase_id'] = $id;
+    $totalCount = 0;
 
-  if ($type && $type == 'search') {
-    $totalCount = $this->enablerSalesTable->getAdminEnablerSalesList($searchData, 1);
-  }
-  $sales = $this->enablerSalesTable->getAdminEnablerSalesList($searchData);
-  $view = new ViewModel(array('sales' => $sales, 'totalCount' => $totalCount));
-  $view->setTerminal(true);
-  return $view;
-}
+    if ($type && $type == 'search') {
+        $totalCount = $this->enablerSalesTable->getAdminEnablerSalesList($searchData, 1);
+    }
+    $sales = $this->enablerSalesTable->getAdminEnablerSalesList($searchData);
+    $view = new ViewModel(array('sales' => $sales, 'totalCount' => $totalCount));
+    $view->setTerminal(true);
+    return $view;
+    }
 }
   public function enablerInvoiceAction(){
     if ($this->authService->hasIdentity()) {
@@ -3293,6 +3293,161 @@ if ($this->getRequest()->isXmlHttpRequest()) {
     }
   }
 
+  public function expenditureAction(){
+    $expenditureList = $this->executiveTransactionTable->getPendingPaymentsList(['limit' => 10, 'offset' => 0]);
+    $totalCount = $this->executiveTransactionTable->getPendingPaymentsList(['limit' => 10, 'offset' => 0], 1);
+    return new ViewModel(['expenditureList' => $expenditureList, 'totalCount' => $totalCount]);
+  }
+
+  public function loadExpenditureListAction(){
+    if ($this->getRequest()->isXmlHttpRequest()) {
+        $request = $this->getRequest()->getPost();
+        $searchData = array('limit' => 10, 'offset' => 0);
+        $type = $request['type'];
+        $offset = 0;
+        $filterData = $request['filter'];
+            if ($filterData) {
+                $filterData = json_decode($filterData, true);
+                if (isset($filterData['transaction_date'])) {
+                    if (isset($filterData['transaction_date']['text']) && !empty($filterData['transaction_date']['text'])) {
+                        $searchData['transaction_date'] = $filterData['transaction_date']['text'];
+                    }
+                    if (isset($filterData['transaction_date']['order']) && $filterData['transaction_date']['order']) {
+                        $searchData['transaction_date_order'] = $filterData['transaction_date']['order'];
+                    }
+                }
+                if (isset($filterData['total_earnings'])) {
+                    if (isset($filterData['total_earnings']['text']) && !empty($filterData['total_earnings']['text'])) {
+                        $searchData['total_earnings'] = $filterData['total_earnings']['text'];
+                    }
+                    if (isset($filterData['total_earnings']['order']) && $filterData['total_earnings']['order']) {
+                        $searchData['total_earnings_order'] = $filterData['total_earnings']['order'];
+                    }
+                }
+                if (isset($filterData['stt_paid_amount'])) {
+                    if (isset($filterData['stt_paid_amount']['text']) && !empty($filterData['stt_paid_amount']['text'])) {
+                        $searchData['stt_paid_amount'] = $filterData['stt_paid_amount']['text'];
+                    }
+                    if (isset($filterData['stt_paid_amount']['order']) && $filterData['stt_paid_amount']['order']) {
+                        $searchData['stt_paid_amount_order'] = $filterData['stt_paid_amount']['order'];
+                    }
+                }
+                if (isset($filterData['balance_outstanding'])) {
+                    if (isset($filterData['balance_outstanding']['text']) && !empty($filterData['balance_outstanding']['text'])) {
+                        $searchData['balance_outstanding'] = $filterData['balance_outstanding']['text'];
+                    }
+                    if (isset($filterData['balance_outstanding']['order']) && $filterData['balance_outstanding']['order']) {
+                        $searchData['balance_outstanding_order'] = $filterData['balance_outstanding']['order'];
+                    }
+                }
+                if (isset($filterData['username'])) {
+                    if (isset($filterData['username']['text']) && !empty($filterData['username']['text'])) {
+                        $searchData['username'] = $filterData['username']['text'];
+                    }
+                    if (isset($filterData['username']['order']) && $filterData['username']['order']) {
+                        $searchData['username_order'] = $filterData['username']['order'];
+                    }
+                }
+                if (isset($filterData['bank_name'])) {
+                    if (isset($filterData['bank_name']['text']) && !empty($filterData['bank_name']['text'])) {
+                        $searchData['bank_name'] = $filterData['bank_name']['text'];
+                    }
+                    if (isset($filterData['bank_name']['order']) && $filterData['bank_name']['order']) {
+                        $searchData['bank_name_order'] = $filterData['bank_name']['order'];
+                    }
+                }
+                if (isset($filterData['bank_ac_no'])) {
+                    if (isset($filterData['bank_ac_no']['text']) && !empty($filterData['bank_ac_no']['text'])) {
+                        $searchData['bank_ac_no'] = $filterData['bank_ac_no']['text'];
+                    }
+                    if (isset($filterData['bank_ac_no']['order']) && $filterData['bank_ac_no']['order']) {
+                        $searchData['bank_ac_no_order'] = $filterData['bank_ac_no']['order'];
+                    }
+                }
+                if (isset($filterData['ifsc_code'])) {
+                    if (isset($filterData['ifsc_code']['text']) && !empty($filterData['ifsc_code']['text'])) {
+                        $searchData['ifsc_code'] = $filterData['ifsc_code']['text'];
+                    }
+                    if (isset($filterData['ifsc_code']['order']) && $filterData['ifsc_code']['order']) {
+                        $searchData['ifsc_code_order'] = $filterData['ifsc_code']['order'];
+                    }
+                }
+                if (isset($filterData['transaction_ref'])) {
+                    if (isset($filterData['transaction_ref']['text']) && !empty($filterData['transaction_ref']['text'])) {
+                        $searchData['transaction_ref'] = $filterData['transaction_ref']['text'];
+                    }
+                    if (isset($filterData['transaction_ref']['order']) && $filterData['transaction_ref']['order']) {
+                        $searchData['transaction_ref_order'] = $filterData['transaction_ref']['order'];
+                    }
+                }
+            }
+        if (isset($request['page_number'])) {
+            $pageNumber = $request['page_number'];
+            $offset = ($pageNumber * 10 - 10);
+            $limit = 10;
+            $searchData['offset'] = $offset;
+            $searchData['limit'] = $limit;
+        }
+        $totalCount = 0;
+    
+        if ($type && $type == 'search') {
+            $totalCount = $this->executiveTransactionTable->getPendingPaymentsList($searchData, 1);
+        }
+        $expenditureList = $this->executiveTransactionTable->getPendingPaymentsList($searchData);
+        $view = new ViewModel(['expenditureList' => $expenditureList, 'totalCount' => $totalCount]);
+        $view->setTerminal(true);
+        return $view;
+    }
+  }
+
+  public function payExecutiveAction(){
+    $this->checkAdmin();
+    if ($this->getRequest()->isXmlHttpRequest())
+    {
+        $request = $this->getRequest()->getPost();
+        $id = $request['id'];
+        $currentDT = date("Y-m-d H:i:s");
+        $txdata = $this->executiveTransactionTable->getExecutiveTransaction(["id"=>$id]);
+        $pdata['executive_id'] = $txdata['executive_id'];
+        $pdata['user_id'] = $txdata['user_id'];
+        $pdata['coupon_id'] = $txdata['coupon_id'];
+        $pdata['transaction_ref'] = $request['tr'];
+        $pdata['transaction_date'] = $currentDT;
+        $pdata['transaction_type'] = \Admin\Model\ExecutiveTransaction::transaction_paid;
+        $pdata['total_earnings'] = $txdata['total_earnings'];
+        $pdata['stt_paid_amount'] = $request['amt'];
+        $newBal = (float)$txdata['balance_outstanding'] - (float)$request['amt'];
+        $pdata['balance_outstanding'] = number_format($newBal, 2, '.', '');
+        $response = $this->executiveTransactionTable->addExecutiveTransaction($pdata);
+        if($response['id'])
+        {
+            if((string)$pdata['balance_outstanding'] != '0.00'){
+                $ddata = $pdata;
+                $ddata['transaction_ref'] = "";
+                $ddata['transaction_type'] = \Admin\Model\ExecutiveTransaction::transaction_due;
+                $pdata['stt_paid_amount'] = '0.00';
+                $dresp = $this->executiveTransactionTable->addExecutiveTransaction($ddata);
+                if($dresp['id']){
+                    $update = $this->executiveDetailsTable->setExecutiveDetails(['last_txn_id' => $dresp['id']], ['id' => $ddata['executive_id']]);
+                    if($update)  
+                        return new JsonModel(array('success'=>true,"message"=>'paid successfully'));
+                    else
+                        return new JsonModel(array('success'=>false,"message"=>'payment unsuccessful'));
+                }else{
+                    return new JsonModel(array('success'=>false,"message"=>'payment unsuccessful'));
+                }
+            }else{
+                $update = $this->executiveDetailsTable->setExecutiveDetails(['last_txn_id' => $response['id']], ['id' => $pdata['executive_id']]);
+                if($update)  
+                    return new JsonModel(array('success'=>true,"message"=>'paid successfully'));
+                else
+                    return new JsonModel(array('success'=>false,"message"=>'payment unsuccessful'));
+            }
+        }else{
+            return new JsonModel(array('success'=>false,"message"=>'payment unsuccessful'));
+        }
+    }
+}
     // Twistt Enablers - End
 
     // Change Password - Start

@@ -12,7 +12,7 @@ class Sms
     {
         try
         {
-            if($data['action'] == "otp"){
+            if($data['action'] == "otp" || $data['action'] == "TEn_Password_Reset_Otp"){
                 $content = $this->getContentFromTemplate($template, $data);
                 $message = rawurlencode($content);
             }else {
@@ -24,11 +24,11 @@ class Sms
             $test = false;
             // Message details
             $numbers = array($mobile);
-            $sender = urlencode('STTMSG');
+            $sender = urlencode('SSTRTL');
             $numbers = implode(',', $numbers);
         
             // Prepare data for POST request
-            $chdata = array('apikey' => $apiKey, 'numbers' => $numbers, "sender" => $sender, "message" => $message, "test"=>$test);
+            $chdata = array('apikey' => $apiKey, 'numbers' => $numbers, "sender" => $sender, "message" => $message, "test"=>$test, "receipt_url" => $data['receipt_url']);
             //echo "\n action: " . $data['action'] . "\n message: " . $message;
             // Send the POST request with cURL
             $ch = curl_init('https://api.textlocal.in/send/');

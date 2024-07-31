@@ -183,6 +183,15 @@ return [
                         'action' => 'help',
                     ],
                 ],
+            ], 'sms-status' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/sms-status',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'sms-status',
+                    ],
+                ],
             ], 'twistt' => [
                 'type' => Literal::class,
                 'options' => [

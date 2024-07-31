@@ -116,16 +116,6 @@ class ExecutiveDetailsTable extends BaseTable
           'end_date' => new Expression('MAX(end_date)')
       ]);
       $subQuery->group('user_id');
-      // Create the subquery for the latest `executive_transaction`
-      $subQueryTxn = new Select('executive_transaction');
-      $subQueryTxn->columns([
-          'executive_id',
-          'total_earnings',
-          'stt_paid_amount',
-          'balance_outstanding',
-          'transaction_date' => new Expression('MAX(transaction_date)')
-      ]);
-      $subQueryTxn->group('user_id');
       // Main query
       $query = $sql->select()
           ->from($this->tableName)
@@ -137,7 +127,7 @@ class ExecutiveDetailsTable extends BaseTable
           ->where($where)
           ->join(['u' => 'user'], 'u.id = p.user_id', ['username', 'mobile_number', 'country_phone_code'], Select::JOIN_LEFT)
           ->join(['q' => $subQuery], 'q.user_id = p.user_id', ['end_date'], Select::JOIN_LEFT)
-          ->join(['t' => $subQueryTxn], 't.executive_id = p.id', ['total_earnings', 'stt_paid_amount','balance_outstanding'], Select::JOIN_LEFT)
+          ->join(['t' => 'executive_transaction'], 't.id = p.last_txn_id', ['total_earnings', 'stt_paid_amount','balance_outstanding'], Select::JOIN_LEFT)
           ->order($order);
       if ($data['limit'] != -1) {
         $query->offset($data['offset'])

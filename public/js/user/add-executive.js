@@ -133,7 +133,7 @@
             var ccmobile=iti.getNumber();
             var countryData = iti.getSelectedCountryData();
             var countryCode = countryData.dialCode; 
-
+            $("#register").prop('disabled', true);
             $("#mobile").prop('disabled', false);
             $("#lid").prop('disabled', false);
             const formData = new FormData(form);
@@ -173,10 +173,12 @@
                     messageDisplay('Error submitting form: ' + data.message);
                     console.error('Error submitting form:', data.message);
                 }
+                $("#register").prop('disabled', false);
             })
             .catch(error => {
                 messageDisplay('Error submitting form: ' + error.message);
                 console.error('Error submitting form:', error);
+                $("#register").prop('disabled', false);
             });
         }
         form.classList.add('was-validated');

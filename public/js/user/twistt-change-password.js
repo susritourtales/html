@@ -52,9 +52,11 @@ $(document).ready(function(){
                 element.html('Submit');
                 messageDisplay(data.message, 2000);
                 ajaxCall=null;
-                setTimeout(function(){
-                    window.location.href=BASE_URL+"/twistt/executive/buy-coupons";
-                },2000);
+                if(data.success){
+                    setTimeout(function(){
+                        window.location.href=BASE_URL+"/twistt/executive/buy-coupons";
+                    },2000);
+                }
             },
             error: function()
             {

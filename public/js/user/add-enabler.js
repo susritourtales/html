@@ -85,6 +85,8 @@
 
             $("#mobile").prop('disabled', false);
             $("#email").prop('disabled', false);
+            $("#register").html('Please wait..');
+            $("#register").prop('disabled', true);
             const formData = new FormData(form);
             formData.append("ccmobile", ccmobile);
             formData.append("cc", countryCode);
@@ -129,6 +131,8 @@
             .catch(error => {
                 messageDisplay('Error submitting form: ' + error.message);
                 console.error('Error submitting form:', error);
+                $("#register").html('Register');
+                $("#register").prop('disabled', false);
             });
         }
         form.classList.add('was-validated');
@@ -148,6 +152,9 @@
             showError(msg);
             return false;
         }
+        $("#btnOtp").html('Please wait..');
+        $("#btnOtp").prop('disabled', true);
+
         var mobile=$("#mobile").val();
         var ccmobile=iti.getNumber();
         var countryData = iti.getSelectedCountryData();
@@ -169,7 +176,9 @@
         ajaxData('/twistt/enabler/send-otp',formData,function(response){
             if(response.success){
                 $('#divOtp').show();
-                messageDisplay(response.message, 2000);
+                messageDisplay(response.message, 3000);
+                $("#btnOtp").html('Resend Otp');
+                $("#btnOtp").prop('disabled', false);
             }else{
                 messageDisplay(response.message,3000);
             }

@@ -133,6 +133,7 @@
             var ccmobile=iti.getNumber();
             var countryData = iti.getSelectedCountryData();
             var countryCode = countryData.dialCode; 
+            $("#register").html('Please wait..');
             $("#register").prop('disabled', true);
             $("#mobile").prop('disabled', false);
             $("#lid").prop('disabled', false);
@@ -173,11 +174,13 @@
                     messageDisplay('Error submitting form: ' + data.message);
                     console.error('Error submitting form:', data.message);
                 }
+                $("#register").html('Register');
                 $("#register").prop('disabled', false);
             })
             .catch(error => {
                 messageDisplay('Error submitting form: ' + error.message);
                 console.error('Error submitting form:', error);
+                $("#register").html('Register');
                 $("#register").prop('disabled', false);
             });
         }
@@ -197,7 +200,7 @@
                 $('#lid').prop('disabled', true);
                 $('#userDetails').show();
                 $('#divBtn').show();
-                messageDisplay(response.message, 2000);
+                messageDisplay(response.message, 3000);
             }else{
                 messageDisplay(response.message,3000);
             }
@@ -213,6 +216,8 @@
             showError(msg);
             return false;
         }
+        $("#btnOtp").html('Please wait..');
+        $("#btnOtp").prop('disabled', true);
         var mobile=$("#mobile").val();
         var ccmobile=iti.getNumber();
         var countryData = iti.getSelectedCountryData();
@@ -232,7 +237,7 @@
                     $('#divCM').show();
                     $('#divOtp').show();
                     $("#mobile").prop('disabled', true);
-                    messageDisplay(response.message, 2000);
+                    messageDisplay(response.message, 3000);
                 }else{
                     messageDisplay(response.message,3000);
                 }
@@ -274,7 +279,7 @@
                 $("#changeMobile").hide();
                 $('.udetails').show();
                 $('#register').show();
-                messageDisplay(response.message, 2000);
+                messageDisplay(response.message, 3000);
             }else{
                 messageDisplay(response.message,3000);
             }

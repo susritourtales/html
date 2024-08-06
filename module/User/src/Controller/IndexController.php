@@ -289,55 +289,57 @@ class IndexController extends BaseController
       $i = 0;
       if (isset($uploadedFiles)) {
         foreach ($uploadedFiles as $uploadedFile) {
-          if ($uploadedFile['error'] !== UPLOAD_ERR_NO_FILE) {
-            $attachment = $uploadedFile;
-            $filename = $attachment['name'];
-            $fileExt = explode(".", $filename);
-            $ext = end($fileExt) ? end($fileExt) : "";
-            $ext = strtolower($ext);
-            $filenameWithoutExt = $this->generateRandomString() . "_" . strtotime(date("Y-m-d H:i:s"));
-            $filename = $filenameWithoutExt . "." . $ext;
-            $filePath = "data/profiles";
-            $filePath = $filePath . "/" . $filename;
-            if (!in_array(strtolower($ext), $validImageFiles)) {
-              return new JsonModel(array("success" => false, "message" => $ext . " file format is not supported !"));
-            }
-            $uploadStatus = $this->pushFiles($filePath, $attachment['tmp_name'], $attachment['type']);
-            if (!$uploadStatus) {
-              return new JsonModel(array('success' => false, "message" => 'unable to upload photo.. try agian after sometime..'));
-            } else { // new photo successfully uploaded - delete old photo
+          if ($uploadedFile !== null){
+            if ($uploadedFile['error'] !== UPLOAD_ERR_NO_FILE) {
+              $attachment = $uploadedFile;
+              $filename = $attachment['name'];
+              $fileExt = explode(".", $filename);
+              $ext = end($fileExt) ? end($fileExt) : "";
+              $ext = strtolower($ext);
+              $filenameWithoutExt = $this->generateRandomString() . "_" . strtotime(date("Y-m-d H:i:s"));
+              $filename = $filenameWithoutExt . "." . $ext;
+              $filePath = "data/profiles";
+              $filePath = $filePath . "/" . $filename;
+              if (!in_array(strtolower($ext), $validImageFiles)) {
+                return new JsonModel(array("success" => false, "message" => $ext . " file format is not supported !"));
+              }
+              $uploadStatus = $this->pushFiles($filePath, $attachment['tmp_name'], $attachment['type']);
+              if (!$uploadStatus) {
+                return new JsonModel(array('success' => false, "message" => 'unable to upload photo.. try agian after sometime..'));
+              } else { // new photo successfully uploaded - delete old photo
+                switch ($i) {
+                  case 0:
+                    $oldPPUrl = $this->userTable->getField(['id' => $userId], 'photo_url');
+                    break;
+                  case 1:
+                    $oldPPUrl = $this->userTable->getField(['id' => $userId], 'aadhar_url');
+                    break;
+                  case 2:
+                    $oldPPUrl = $this->userTable->getField(['id' => $userId], 'pan_url');
+                    break;
+                }
+                if ($this->fileExists($oldPPUrl)) {
+                  if (!$this->deleteFile($oldPPUrl)) {
+                    return new JsonModel(array('success' => false, "message" => 'unable to delete old photo..'));
+                  }
+                } /* else {
+                  return new JsonModel(array('success' => false, "message" => 'unable to find old photo to be replaced..'));
+                } */
+              }
               switch ($i) {
                 case 0:
-                  $oldPPUrl = $this->userTable->getField(['id' => $userId], 'photo_url');
+                  $userdetails['photo_url'] = $filePath;
                   break;
                 case 1:
-                  $oldPPUrl = $this->userTable->getField(['id' => $userId], 'aadhar_url');
+                  $userdetails['aadhar_url'] = $filePath;
                   break;
                 case 2:
-                  $oldPPUrl = $this->userTable->getField(['id' => $userId], 'pan_url');
+                  $userdetails['pan_url'] = $filePath;
                   break;
               }
-              if ($this->fileExists($oldPPUrl)) {
-                if (!$this->deleteFile($oldPPUrl)) {
-                  return new JsonModel(array('success' => false, "message" => 'unable to delete old photo..'));
-                }
-              } /* else {
-                return new JsonModel(array('success' => false, "message" => 'unable to find old photo to be replaced..'));
-              } */
             }
-            switch ($i) {
-              case 0:
-                $userdetails['photo_url'] = $filePath;
-                break;
-              case 1:
-                $userdetails['aadhar_url'] = $filePath;
-                break;
-              case 2:
-                $userdetails['pan_url'] = $filePath;
-                break;
-            }
+            $i++;
           }
-          $i++;
         }
       } else {
         return new JsonModel(array('success' => false, "message" => 'Photo not submitted.'));
@@ -386,8 +388,10 @@ class IndexController extends BaseController
       if ($checkRole != \Admin\Model\User::TWISTT_Executive)
         $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
       $bankDetails = $this->executiveDetailsTable->getExecutiveDetails(['user_id' => $userDetails['id']]);
+      $qed = $this->questtSubscriptionTable->getField(['user_id' => $loginId['id']], 'end_date');
+      $qed = date('d-m-Y', strtotime($qed));
       $config = $this->getConfig();
-      return new ViewModel(['userDetails' => $userDetails, 'bankDetails' => $bankDetails, 'config' => $config['hybridauth'], 'imageUrl' => $this->filesUrl()]);
+      return new ViewModel(['userDetails' => $userDetails, 'bankDetails' => $bankDetails, 'qed' => $qed, 'config' => $config['hybridauth'], 'imageUrl' => $this->filesUrl()]);
     } else {
       $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
     }
@@ -1286,7 +1290,7 @@ class IndexController extends BaseController
       $this->authService->getAdapter()
         ->setIdentity($enablerdetails['user_login_id'])
         ->setCredential($enablerdetails['password']);
-      $ares = $this->authService->authenticate();
+      $ares = $this->authService->authenticateEnabler();
       return new JsonModel(array('success' => true, "message" => 'you have succesfully registered as TWISTT Enabler..'));
     } else {
       return new JsonModel(array('success' => false, "message" => 'error saving your details.. please try after sometime..'));

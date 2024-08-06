@@ -1,4 +1,8 @@
 function updateAmt(){
+    if($('#dc').val() =="")
+        $('#dc').val('0');
+    if($('#cc').val() =="")
+        $('#cc').val('0');
     $('#amt').html($('#dc').val() * $('#udcp').val() + $('#cc').val() * $('#uccp').val());
 }
 
@@ -33,9 +37,6 @@ $(document).ready(function(){
                     "image": "http://susritourtales.com/img/susri.png",
                     "order_id": data.order['id'],
                     "handler": function (response){
-                        /* alert(response.razorpay_payment_id);
-                        alert(response.razorpay_order_id);
-                        alert(response.razorpay_signature); */
                         var formData=new FormData();
                         formData.append('dc',dc);
                         formData.append('cc',cc);

@@ -87,7 +87,7 @@
                             <button type="button" class="btn primary-btn mt-3" id="btnBuy" name="btnBuy" <?php echo ($today > $lpd) ? '' : 'disabled'; ?>>Buy</button>
                         </div>
                         <div class="col-12 text-danger pt-2">
-                            <small><?php echo ($today > $lpd) ? '' : 'Last Purchase date: ' . date('d-m-Y', strtotime($lpd)); ?></small>
+                            <p id="lpd"><?php echo ($today > $lpd) ? '' : 'Last Purchase date: ' . date('d-m-Y', strtotime($lpd)); ?></p>
                         </div>
                     </div>
                 </div>
@@ -95,4 +95,4 @@
         </div>
     </div>
 </div>
-<script src="<?php echo $this->basePath(); ?>/js/user/enabler-buy-plans.js?v=1.0.3"></script>
+<script src="<?php echo $this->basePath(); ?>/js/user/enabler-buy-plans.js?v=1.0.4"></script>

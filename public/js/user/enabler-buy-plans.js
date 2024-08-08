@@ -9,7 +9,8 @@ function updateAmt(){
             if(response.success){
                 $('#pp').html(response.pp);
                 $('#pad').html(response.pad);
-                $("#btnBuy").prop('disabled', false);
+                if($('#lpd').html() == "")
+                    $("#btnBuy").prop('disabled', false);
             }else{
                 $("#btnBuy").prop('disabled', true);
                 $('#pp').html('NA');

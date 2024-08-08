@@ -9,9 +9,9 @@ $(document).ready(function(){
       var mobile=$("#Y3VycmVudFBhc3N3b3Jk").val();
       if(mobile=="")
         {
-            messageDisplay("Please enter registered mobile number");
+            messageDisplay("Please enter your enabler login id..");
             return false;
-        }else{
+        }/* else{
           //if (!(/^\d{10}$/.test(mobile)) && !(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mobile))) {
             if (!(/^\d{10}$/.test(mobile))) {
               element.html('Send Otp');
@@ -19,7 +19,7 @@ $(document).ready(function(){
               messageDisplay("Please enter valid mobile number");
               return false;
           }
-        }
+        } */
       
       if(ajaxCall!=null)
       {
@@ -46,7 +46,7 @@ $(document).ready(function(){
             messageDisplay(response.message,3000);
             ajaxCall=null;
             element.prop('disabled',false);
-            element.html('Submit');
+            element.html('Send Otp');
         }
       });
       /* ajaxCall=  $.ajax({
@@ -110,7 +110,7 @@ $(document).ready(function(){
                 messageDisplay(response.message,3000);
                 ajaxCall=null;
                 element.prop('disabled',false);
-                element.html('Submit');
+                element.html('Verify Otp');
             }
         });
         /* ajaxCall=  $.ajax({
@@ -179,7 +179,7 @@ $(document).ready(function(){
         formData.append('new_password',newPassword);
         formData.append('otp',otp);
         formData.append('type','2');
-        ajaxData('/twistt/reset-password',formData,function(response){
+        ajaxData('/twistt/enabler/reset-password',formData,function(response){
             if(response.success){
                 messageDisplay(response.message, 2000);
                 setTimeout(function(){

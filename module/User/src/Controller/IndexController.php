@@ -1108,7 +1108,7 @@ class IndexController extends BaseController
           $otp = $this->generateOtp();
           $otpRes = $this->otpTable->addOtpDetails(['otp' => $otp, 'otp_type_id' => $otpType, 'verification_mode' => $vm, 'sent_status_id' => \Admin\Model\Otp::Not_verifed, 'otp_requested_by' => $rb, 'otp_sent_to' => $email]);
           if ($otpRes) {
-            $resp = $this->sendmail($email, 'otp to reset your password', 'ten-verify-email', $otp);
+            $resp = $this->sendmail($email, 'otp to reset your password', 'TEn_Registration_Otp', $otp);
             if ($resp) {
               return new JsonModel(array('success' => true, "message" => 'otp sent successfully.. please enter the otp..'));
             } else {
@@ -1120,54 +1120,45 @@ class IndexController extends BaseController
         }
       } else if ($otpType == \Admin\Model\Otp::Forgot_Password) {
         if (!empty($mobile)) {
-          $isMobileNoRegistered = $this->userTable->getField(['mobile_number' => $mobile], 'id');
-          if ($isMobileNoRegistered) {
-            $getcc = $this->userTable->getField(['mobile_number' => $mobile], 'country_phone_code');
-            if ($getcc == "91") {
+          $isEnabler = $this->enablerTable->getField(['user_login_id' => $mobile], 'id');
+          if ($isEnabler) {
+            $enablerDetails = $this->enablerTable->getEnablerDetails(['user_login_id' => $mobile]);
+            if($enablerDetails['login_type'] == \Admin\Model\Enabler::login_type_social){
+              return new JsonModel(array('success' => false, "message" => 'reset the password for your social login using the corresponding social platform..'));
+            }
+            if($enablerDetails['country_phone_code'] == '91'){
               $otp = $this->generateOtp();
               $otpRes = $this->otpTable->addOtpDetails(['otp' => $otp, 'otp_type_id' => $otpType, 'verification_mode' => \Admin\Model\Otp::Mobile_Verification, 'sent_status_id' => \Admin\Model\Otp::Not_verifed, 'otp_requested_by' => $rb, 'otp_sent_to' => $mobile]);
               if ($otpRes) {
                 $resp = $this->sendOtpSms($mobile, $otp, 'TEn_Password_Reset_Otp');
                 $responseData = json_decode($resp, true);
                 if ($responseData['status'] == 'success') {
-                    // Iterate through the messages to find the status
-                    foreach ($responseData['messages'] as $message) {
-                      if ($message['status'] == 'DELIVERED') {
-                        return new JsonModel(array('success' => true, "message" => 'otp sent successfully.. please enter the otp..')); //echo 'Message was delivered successfully!';
-                      } else {
-                        return new JsonModel(array('success' => false, "message" => 'Message delivery failed with status: ' . $message['status']));//echo 'Message delivery failed with status: ' . $message['status'];
-                      }
-                  }
+                  return new JsonModel(array('success' => true, "message" => 'otp sent successfully to your registeres mobile.. please enter the otp..')); 
                 } else {
                   return new JsonModel(array('success' => false, "message" => $responseData['errors'][0]['message']));
                 }
               } else {
                 return new JsonModel(array('success' => false, "message" => 'unknown error.. please try again after sometime..'));
               }
-            } else {
-              return new JsonModel(array('success' => false, "message" => 'not a registered mobile no..'));
-            }
-          } else {
-            $isEmailRegistered = $this->userTable->getField(['email' => $email], 'id');
-            if ($isEmailRegistered) {
+            }else{
               $otp = $this->generateOtp();
-              $otpRes = $this->otpTable->addOtpDetails(['otp' => $otp, 'otp_type_id' => $otpType, 'verification_mode' => \Admin\Model\Otp::Email_Verification, 'sent_status_id' => \Admin\Model\Otp::Not_verifed, 'otp_requested_by' => $rb, 'otp_sent_to' => $email]);
+              $otpRes = $this->otpTable->addOtpDetails(['otp' => $otp, 'otp_type_id' => $otpType, 'verification_mode' => \Admin\Model\Otp::Email_Verification, 'sent_status_id' => \Admin\Model\Otp::Not_verifed, 'otp_requested_by' => $rb, 'otp_sent_to' => $enablerDetails['email']]);
               if ($otpRes) {
-                $resp = $this->sendmail($email, 'otp to reset your password', 'forgot-password', $otp);
+                $resp = $this->sendmail($enablerDetails['email'], 'otp to reset your password', 'TEn_Password_Reset_Otp', $otp);
                 if ($resp) {
-                  return new JsonModel(array('success' => true, "message" => 'otp sent successfully.. please enter the otp..'));
+                  return new JsonModel(array('success' => true, "message" => 'otp sent successfully to your registered email id.. please enter the otp..'));
                 } else {
                   return new JsonModel(array('success' => false, "message" => 'unable to send otp.. please try again after sometime..'));
                 }
               } else {
                 return new JsonModel(array('success' => false, "message" => 'unknown error.. please try again after sometime..'));
               }
-            } else {
-              return new JsonModel(array('success' => false, "message" => 'not a registered mobile no / email id'));
             }
+          }else{
+            return new JsonModel(array('success' => false, "message" => 'not a valid enabler login id..'));
           }
         } else {
-          return new JsonModel(array('success' => false, "message" => 'please provide valid mobile no / email id'));
+          return new JsonModel(array('success' => false, "message" => 'please provide valid enabler login id..'));
         }
       }
       return new JsonModel(array('success' => true, "message" => 'otp sent successfully.. please enter the otp..'));
@@ -1215,7 +1206,10 @@ class IndexController extends BaseController
           return new JsonModel(array("success" => false, "message" => "otp not valid.. please try again"));
         }
       } elseif ($type == \Admin\Model\Otp::Forgot_Password) {
-        $data = ['otp' => $otp, 'otp_type_id' => \Admin\Model\Otp::Forgot_Password, 'verification_mode' => \Admin\Model\Otp::Mobile_Verification, 'sent_status_id' => \Admin\Model\Otp::Not_verifed, 'otp_requested_by' => \Admin\Model\Otp::TWISTT_Request, 'otp_sent_to' => $mobile];
+        $vm = \Admin\Model\Otp::Email_Verification;
+        if(str_starts_with($mobile, "91"))
+          $vm = \Admin\Model\Otp::Mobile_Verification;
+        $data = ['otp' => $otp, 'otp_type_id' => \Admin\Model\Otp::Forgot_Password, 'verification_mode' => $vm, 'sent_status_id' => \Admin\Model\Otp::Not_verifed, 'otp_requested_by' => \Admin\Model\Otp::TWISTT_Request, 'otp_sent_to' => $mobile]; 
         $verify = $this->otpTable->verifyOtp($data);
         if ($verify) {
           $updateResponse = $this->otpTable->setOtpDetails(array('sent_status_id' => \Admin\Model\Otp::Is_verifed), $data);
@@ -1410,14 +1404,17 @@ class IndexController extends BaseController
         $otp = $request['otp'];
         $mobile = $request['mobile'];
         $new_password = $request['new_password'];
-        $data = ['otp' => $otp, 'otp_type_id' => $type, 'verification_mode' => \Admin\Model\Otp::Mobile_Verification, 'sent_status_id' => \Admin\Model\Otp::Is_verifed, 'otp_requested_by' => \Admin\Model\Otp::TWISTT_Request, 'otp_sent_to' => $mobile];
+        $vm = \Admin\Model\Otp::Email_Verification;
+        if(str_starts_with($mobile, "91"))
+          $vm = \Admin\Model\Otp::Mobile_Verification;
+        $data = ['otp' => $otp, 'otp_type_id' => $type, 'verification_mode' => $vm, 'sent_status_id' => \Admin\Model\Otp::Is_verifed, 'otp_requested_by' => \Admin\Model\Otp::TWISTT_Request, 'otp_sent_to' => $mobile];
         $verify = $this->otpTable->verifyOtp($data);
         if ($verify) {
           $aes = new Aes();
           $encodeContent = $aes->encrypt($new_password);
           $userdetails['password'] = $encodeContent['password'];
           $userdetails['hash'] = $encodeContent['hash'];
-          $res = $this->enablerTable->updateEnabler($userdetails, ['mobile_number' => $mobile]);
+          $res = $this->enablerTable->updateEnabler($userdetails, ['user_login_id' => $mobile]);
           if ($res)
             return new JsonModel(array('success' => true, "message" => 'password changed succesfully..'));
           else

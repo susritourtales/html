@@ -4,6 +4,12 @@ if ($action == 'otp'){
      echo $message = "Please use OTP ". $otp ." to verify your mobile phone number for Susri Tour Tales App ";
 }else if($action =='TEn_Password_Reset_Otp'){
     echo $message = "Otp to reset your password for TWISTT Enabler login is ".$otp.". Please visit www.susritourtales.com";
+}else if($action =='TEx_Password_Reset_Otp'){
+    echo $message = "Otp to reset your password for TWISTT Executive login is ".$otp.". Please visit www.susritourtales.com";
+}else if($action =='TEn_Registration_Otp'){
+    echo $message = "Otp to verify your mobile number for TWISTT Enabler registration is ".$otp.". Please visit www.susritourtales.com";
+}else if($action =='TEx_Registration_Otp'){
+    echo $message = "Otp to verify your mobile number for TWISTT Executive registration is ".$otp.". Please visit www.susritourtales.com";
 }else if($action =='booking'){
     echo $message = $data['text'];
 }else if($action =='password'){

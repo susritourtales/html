@@ -12,7 +12,7 @@ class Sms
     {
         try
         {
-            if($data['action'] == "otp" || $data['action'] == "TEn_Password_Reset_Otp"){
+            if($data['action'] == "TEn_Registration_Otp" || $data['action'] == "TEx_Registration_Otp" || $data['action'] == "TEn_Password_Reset_Otp" || $data['action'] == "TEx_Password_Reset_Otp"){
                 $content = $this->getContentFromTemplate($template, $data);
                 $message = rawurlencode($content);
             }else {

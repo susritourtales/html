@@ -446,8 +446,8 @@ class BaseController extends AbstractActionController
                     $otp .= 0;
                 }
             }
-            //return $otp;
-            return '1111';
+            return $otp;
+            // return '1111';
         }catch(\Exception $e)
         {
             return "";
@@ -469,8 +469,8 @@ class BaseController extends AbstractActionController
             array(
                 'action' => $smsAction,
                 "otp" => $otp,
-                "receipt_url" => $this->getBaseUrl() . "/sms-status"
-                //"text" => $test,
+                "receipt_url" => $this->getBaseUrl() . "/sms-status",
+                "text" => ""
             )
         );
         return $response;

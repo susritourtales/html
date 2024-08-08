@@ -411,7 +411,7 @@ class IndexController extends BaseController
           $otp = $this->generateOtp();
           $otpRes = $this->otpTable->addOtpDetails(['otp' => $otp, 'otp_type_id' => $otpType, 'verification_mode' => $vm, 'sent_status_id' => \Admin\Model\Otp::Not_verifed, 'otp_requested_by' => $rb, 'otp_sent_to' => $ccmobile]);
           if ($otpRes) {
-            $resp = 1; //$this->sendOtpSms($ccmobile, $otp);
+            $resp = $this->sendOtpSms($ccmobile, $otp, 'TEx_Registration_Otp');
             if ($resp) {
               return new JsonModel(array('success' => true, "message" => 'otp sent successfully.. please enter the otp..'));
             } else {
@@ -430,11 +430,12 @@ class IndexController extends BaseController
               $otp = $this->generateOtp();
               $otpRes = $this->otpTable->addOtpDetails(['otp' => $otp, 'otp_type_id' => $otpType, 'verification_mode' => \Admin\Model\Otp::Mobile_Verification, 'sent_status_id' => \Admin\Model\Otp::Not_verifed, 'otp_requested_by' => $rb, 'otp_sent_to' => $mobile]);
               if ($otpRes) {
-                $resp = 1; //$this->sendOtpSms($ccmobile, $otp);
-                if ($resp) {
+                $resp = $this->sendOtpSms($mobile, $otp, 'TEx_Password_Reset_Otp');
+                $jsonResp = json_decode($resp, true);
+                if($jsonResp['status'] == 'success'){
                   return new JsonModel(array('success' => true, "message" => 'otp sent successfully.. please enter the otp..'));
-                } else {
-                  return new JsonModel(array('success' => false, "message" => 'unable to send otp.. please try again after sometime..'));
+                }else{
+                  return new JsonModel(array('success' => false, "message" => $jsonResp['errors'][0]['message']));
                 }
               } else {
                 return new JsonModel(array('success' => false, "message" => 'unknown error.. please try again after sometime..'));
@@ -1094,7 +1095,7 @@ class IndexController extends BaseController
           $otp = $this->generateOtp();
           $otpRes = $this->otpTable->addOtpDetails(['otp' => $otp, 'otp_type_id' => $otpType, 'verification_mode' => $vm, 'sent_status_id' => \Admin\Model\Otp::Not_verifed, 'otp_requested_by' => $rb, 'otp_sent_to' => $ccmobile]);
           if ($otpRes) {
-            $resp = 1; //$this->sendOtpSms($ccmobile, $otp);
+            $resp = $this->sendOtpSms($ccmobile, $otp, 'TEn_Registration_Otp');
             if ($resp) {
               return new JsonModel(array('success' => true, "message" => 'otp sent successfully.. please enter the otp..'));
             } else {
@@ -1126,7 +1127,7 @@ class IndexController extends BaseController
               $otp = $this->generateOtp();
               $otpRes = $this->otpTable->addOtpDetails(['otp' => $otp, 'otp_type_id' => $otpType, 'verification_mode' => \Admin\Model\Otp::Mobile_Verification, 'sent_status_id' => \Admin\Model\Otp::Not_verifed, 'otp_requested_by' => $rb, 'otp_sent_to' => $mobile]);
               if ($otpRes) {
-                $resp = 1; //$this->sendOtpSms($mobile, $otp, 'TEn_Password_Reset_Otp');
+                $resp = $this->sendOtpSms($mobile, $otp, 'TEn_Password_Reset_Otp');
                 $responseData = json_decode($resp, true);
                 if ($responseData['status'] == 'success') {
                     // Iterate through the messages to find the status

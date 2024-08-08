@@ -55,7 +55,7 @@ $(document).ready(function(){
                             },
                             error: function(resp)
                             {
-                                messageDisplay(data.message);
+                                messageDisplay(resp.message);
                                 element.html('Check out');
                                 element.prop('disabled',false);
                                 ajaxCall=null;

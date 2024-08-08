@@ -5,9 +5,9 @@ $(document).ready(function(){
     element.prop('disabled',true);
 
     $("body").on("click","#sendOtp",function(){
-      var element=$(this);
-      var mobile=$("#Y3VycmVudFBhc3N3b3Jk").val();
-      if(mobile=="")
+        var element=$(this);
+        var mobile=$("#Y3VycmVudFBhc3N3b3Jk").val();
+        if(mobile=="")
         {
             messageDisplay("Please enter registered mobile number");
             return false;
@@ -21,18 +21,34 @@ $(document).ready(function(){
           }
         }
       
-      if(ajaxCall!=null)
-      {
-          ajaxCall.abort();
-      }
-      
-      element.html('Please wait...');
-      element.prop('disabled',true);
-      var formData=new FormData();
-      formData.append('mobile',mobile);
-      formData.append('otpType','2');
-      formData.append('rb','3');
-      ajaxCall=  $.ajax({
+        if(ajaxCall!=null)
+        {
+            ajaxCall.abort();
+        }
+        
+        element.html('Please wait...');
+        element.prop('disabled',true);
+        var formData=new FormData();
+        formData.append('mobile',mobile);
+        formData.append('otpType','2');
+        formData.append('rb','3');
+        ajaxData('/twistt/executive/send-otp',formData,function(response){
+            if(response.success)
+            {
+                element.prop('disabled',false);
+                element.html('Submit');
+                messageDisplay(response.message);
+                setTimeout(function(){
+                    $("#divSendOtp").addClass("d-none");
+                    $("#divVerifyOtp").removeClass("d-none");
+                },2000);
+            }else{
+                messageDisplay(response.message);
+                element.prop('disabled',false);
+                element.html('Submit');
+            }
+        });
+      /* ajaxCall=  $.ajax({
           type: "POST",
           url: BASE_URL+'/twistt/executive/send-otp',
           data: formData,
@@ -58,7 +74,7 @@ $(document).ready(function(){
               element.prop('disabled',false);
               element.html('Submit');
           }
-      });
+      }); */
     });
     $("body").on("click","#verifyOtp",function(){
         var element=$(this);
@@ -79,7 +95,23 @@ $(document).ready(function(){
         formData.append('otp',otp);
         formData.append('mobile',mobile);
         formData.append('otp_type','2');
-        ajaxCall=  $.ajax({
+        ajaxData('/twistt/executive/verify-otp',formData,function(response){
+            if(response.success)
+            {
+                element.prop('disabled',false);
+                element.html('Submit');
+                messageDisplay(response.message);
+                setTimeout(function(){
+                    $("#divVerifyOtp").addClass("d-none");
+                    $("#divPwdReset").removeClass("d-none");
+                },2000);
+            }else{
+                messageDisplay(response.message);
+                element.prop('disabled',false);
+                element.html('Submit');
+            }
+        });
+        /* ajaxCall=  $.ajax({
           type: "POST",
           url: BASE_URL+'/twistt/executive/verify-otp',
           data: formData,
@@ -105,7 +137,7 @@ $(document).ready(function(){
               element.prop('disabled',false);
               element.html('Submit');
           }
-        });
+        }); */
     });
 
     
@@ -145,7 +177,22 @@ $(document).ready(function(){
         formData.append('new_password',newPassword);
         formData.append('otp',otp);
         formData.append('type','2');
-        ajaxCall=  $.ajax({
+        ajaxData('/twistt/reset-password',formData,function(response){
+            if(response.success)
+            {
+                element.prop('disabled',false);
+                element.html('Submit');
+                messageDisplay(response.message);
+                setTimeout(function(){
+                    window.location.href=BASE_URL+"/twistt/executive/login";
+                },2000);
+            }else{
+                messageDisplay(response.message);
+                element.prop('disabled',false);
+                element.html('Submit');
+            }
+        });
+        /* ajaxCall=  $.ajax({
             type: "POST",
             url: BASE_URL+'/twistt/reset-password',
             data: formData,
@@ -166,11 +213,12 @@ $(document).ready(function(){
             },
             error: function()
             {
+                messageDisplay(data.message);
                 ajaxCall=null;
                 element.prop('disabled',false);
                 element.html('Submit');
             }
-        });
+        }); */
     });
 
 });

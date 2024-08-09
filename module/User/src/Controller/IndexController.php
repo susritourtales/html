@@ -116,6 +116,7 @@ class IndexController extends BaseController
         $userdetails['city'] = $userProfile->city;
         $userdetails['state'] = $userProfile->region;
         $userdetails['gender'] = $userProfile->gender;
+        $userdetails['oauth_provider'] = $provider;
         $userdetails['user_type_id'] = \Admin\Model\User::TWISTT_Executive;
         if ($userProfile->photoURL !== null && $userProfile->photoURL !== "")
           $userdetails['photo_url'] = strtok($userProfile->photoURL, '?');
@@ -128,10 +129,11 @@ class IndexController extends BaseController
         $userId = $this->userTable->getField(['user_login_id' => $userdetails['user_login_id']], 'id');
         if ($userId) {
           $execId = $this->executiveDetailsTable->executiveExists($userId);
+          $updateValues['access_token'] = $userdetails['access_token'];
+          $updateValues['password'] = $userdetails['password'];
+          $updateValues['hash'] = $userdetails['hash'];
           if ($execId) {
-            $updateValues['access_token'] = $userdetails['access_token'];
-            $updateValues['password'] = $userdetails['password'];
-            $updateValues['hash'] = $userdetails['hash'];
+            $updateValues['user_type_id'] = \Admin\Model\User::TWISTT_Executive;
             $ures = $this->userTable->updateUser($updateValues, ['id' => $userId]);
             if (!$ures)
               return new ViewModel(['success' => false, "message" => 'unknown error.. please try again later..']);
@@ -239,6 +241,7 @@ class IndexController extends BaseController
     $encodeContent = $aes->encrypt($postData['ccmobile']);
     $userdetails['password'] = $encodeContent['password'];
     $userdetails['hash'] = $encodeContent['hash'];
+    $userdetails['user_type_id'] = \Admin\Model\User::TWISTT_Executive;
     $userId = $this->userTable->userExists($userdetails['user_login_id']);
     if ($userId) {
       $ures = $this->userTable->updateUser($userdetails, ['id' => $userId]);
@@ -1011,7 +1014,7 @@ class IndexController extends BaseController
           $adapter->disconnect();
           session_unset();
           $storage->clear();
-          header("Location: /twistt/executive/login");
+          header("Location: /twistt/enabler/login");
           exit;
         } else {
           $error = $_GET['logout'];
@@ -1038,7 +1041,7 @@ class IndexController extends BaseController
         $userdetails['email'] = $userProfile->email;
         $userdetails['country'] = $userProfile->country;
         $userdetails['city'] = $userProfile->city;
-        $userDetails['oauth_provider'] = $provider;
+        $userdetails['oauth_provider'] = $provider;
         $userdetails['login_type'] = \Admin\Model\Enabler::login_type_social;
         if ($userProfile->photoURL !== null && $userProfile->photoURL !== "")
           $userdetails['photo_url'] = strtok($userProfile->photoURL, '?');
@@ -1050,12 +1053,18 @@ class IndexController extends BaseController
         $userdetails['hash'] = $encodeContent['hash']; */
         $userId = $this->enablerTable->getField(['user_login_id' => $userdetails['user_login_id']], 'id');
         if ($userId) {
-          $updateValues['access_token'] = $userdetails['access_token'];
-          /* $updateValues['password'] = $userdetails['password'];
-          $updateValues['hash'] = $userdetails['hash']; */
-          $ures = $this->enablerTable->updateEnabler($updateValues, ['id' => $userId]);
-          if (!$ures)
-            return new ViewModel(['success' => false, "message" => 'unknown error.. please try again later..']);
+          $loginType = $this->enablerTable->getField(['user_login_id' => $userdetails['user_login_id']], 'login_type');
+          if($loginType == \Admin\Model\Enabler::login_type_social){
+            $updateValues['access_token'] = $userdetails['access_token'];
+            /* $updateValues['password'] = $userdetails['password'];
+            $updateValues['hash'] = $userdetails['hash']; */
+            $ures = $this->enablerTable->updateEnabler($updateValues, ['id' => $userId]);
+            if (!$ures){
+              return new ViewModel(['success' => false, "message" => 'unknown error.. please try again later..']);
+            }
+          }else {
+              return new ViewModel(['success' => false, "message" => 'wrong login type']);
+          }
         } else {
           $ures = $this->enablerTable->addEnabler($userdetails);
           if (!$ures)

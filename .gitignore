@@ -4,3 +4,6 @@ susri_booking_*.pdf
 module/User/view/user/index/config.php
 storage/
 module/Application/src/Handler/Razorpay.php
+public/logs/
+public/logs/httplogs/
+public/logs/httplogs/*.log

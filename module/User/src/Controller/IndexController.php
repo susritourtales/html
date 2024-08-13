@@ -17,6 +17,7 @@ class IndexController extends BaseController
 
   public function indexAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     $marqText = "Awareness enhances enjoyment... Know about the place you visit by listening to Susri Tour Tales...";
     $banners = $this->bannerTable->getBanners();
     $this->layout()->setVariable('activeTab', \Application\Constants\Constants::MAIN_SITE_HOME_PAGE);
@@ -24,38 +25,45 @@ class IndexController extends BaseController
   }
   public function aboutUsAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     $this->layout()->setVariable('activeTab', \Application\Constants\Constants::MAIN_SITE_ABOUT_PAGE);
     return new ViewModel();
   }
 
   public function contactAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     $this->layout()->setVariable('activeTab', \Application\Constants\Constants::MAIN_SITE_CONTACT_PAGE);
     return new ViewModel();
   }
 
   public function twisttAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     return new ViewModel();
   }
 
   public function executiveRegisterAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     $config = $this->getConfig();
     return new ViewModel(['callbackUrl' => $config['hybridauth']['callback']]);
   }
 
   public function executiveLoginAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     $config = $this->getConfig();
     return new ViewModel(['callbackUrl' => $config['hybridauth']['callback']]);
   }
   public function executiveLogoutAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     return new ViewModel();
   }
   public function executiveAuthAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     try {
       $config = $this->getConfig();
       $hybridauth = new Hybridauth($config['hybridauth']);
@@ -163,6 +171,7 @@ class IndexController extends BaseController
   }
   public function sttAuthAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     $postData = $this->params()->fromPost();
     $userdetails['user_login_id'] = str_replace("+", "", $postData['loginid']);
     $userdetails['password'] = $postData['password'];
@@ -183,6 +192,7 @@ class IndexController extends BaseController
 
   public function executiveAddAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     $postData = $this->params()->fromPost();
     $validImageFiles = array('png', 'jpg', 'jpeg');
     $userdetails = [];
@@ -276,6 +286,7 @@ class IndexController extends BaseController
   }
   public function executiveEditAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
       $userId = $this->userTable->userExists($loginId['user_login_id']);
@@ -384,6 +395,7 @@ class IndexController extends BaseController
   }
   public function executiveProfileAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
       $userDetails = $this->userTable->getUserDetails(['user_login_id' => $loginId['user_login_id']]);
@@ -401,6 +413,7 @@ class IndexController extends BaseController
   }
   public function executiveSendOtpAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     if ($this->getRequest()->isXmlHttpRequest()) {
       $request = $this->getRequest()->getPost();
       $mobile = $request['mobile'];
@@ -474,6 +487,7 @@ class IndexController extends BaseController
   }
   public function executiveVerifyOtpAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     if ($this->getRequest()->isXmlHttpRequest()) {
       $request = $this->getRequest()->getPost();
       $mobile = $request['mobile'];
@@ -538,6 +552,7 @@ class IndexController extends BaseController
   }
   public function executiveVerifyMobileAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     if ($this->getRequest()->isXmlHttpRequest()) {
       $request = $this->getRequest()->getPost();
       $mobile = $request['mobile'];
@@ -554,6 +569,7 @@ class IndexController extends BaseController
   }
   public function executiveBuyCouponsAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
       $userDetails = $this->userTable->getUserDetails(['user_login_id' => $loginId['user_login_id']]);
@@ -583,6 +599,7 @@ class IndexController extends BaseController
   }
   public function executivePayAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
       $userDetails = $this->userTable->getUserDetails(['user_login_id' => $loginId['user_login_id']]);
@@ -668,6 +685,7 @@ class IndexController extends BaseController
   }
   public function executiveCheckoutAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
       $userDetails = $this->userTable->getUserDetails(['user_login_id' => $loginId['user_login_id']]);
@@ -751,6 +769,7 @@ class IndexController extends BaseController
   }
   public function executiveTrackCouponsAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
       $userDetails = $this->userTable->getUserDetails(['user_login_id' => $loginId['user_login_id']]);
@@ -771,6 +790,7 @@ class IndexController extends BaseController
 
   public function loadCouponsListAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     if ($this->getRequest()->isXmlHttpRequest()) {
       $request = $this->getRequest()->getPost();
       $searchData = array('limit' => 10, 'offset' => 0);
@@ -804,6 +824,7 @@ class IndexController extends BaseController
   }
   public function executiveTrackCommissionsAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
       $userDetails = $this->userTable->getUserDetails(['user_login_id' => $loginId['user_login_id']]);
@@ -824,6 +845,7 @@ class IndexController extends BaseController
 
   public function loadTransactionsListAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     if ($this->getRequest()->isXmlHttpRequest()) {
       $request = $this->getRequest()->getPost();
       $searchData = array('limit' => 10, 'offset' => 0);
@@ -858,6 +880,7 @@ class IndexController extends BaseController
   }
   public function questtValidityAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     if ($this->getRequest()->isXmlHttpRequest()) {
       $request = $this->getRequest()->getPost();
       $lid = $request['lid'];
@@ -875,6 +898,7 @@ class IndexController extends BaseController
   }
   public function twisttExecutiveTermsAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
       $userDetails = $this->userTable->getUserDetails(['user_login_id' => $loginId['user_login_id']]);
@@ -890,15 +914,18 @@ class IndexController extends BaseController
   }
   public function executiveTermsAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     return new ViewModel();
   }
   public function executiveForgotPasswordAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     return new ViewModel();
   }
 
   public function changePasswordAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
       $userId = $this->userTable->userExists($loginId['user_login_id']);
@@ -913,6 +940,7 @@ class IndexController extends BaseController
   }
   public function resetPasswordAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     $postData = $this->params()->fromPost();
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
@@ -963,17 +991,20 @@ class IndexController extends BaseController
 
   public function enablerRegisterAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     $config = $this->getConfig();
     return new ViewModel(['callbackUrl' => $config['hybridauth']['callback']]);
   }
 
   public function enablerLoginAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     $config = $this->getConfig();
     return new ViewModel(['callbackUrl' => $config['enbhybridauth']['callback']]);
   }
   public function sttEnablerAuthAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     $postData = $this->params()->fromPost();
     $userdetails['user_login_id'] = str_replace("+", "", $postData['loginid']);
     $userdetails['password'] = $postData['password'];
@@ -990,6 +1021,7 @@ class IndexController extends BaseController
   }
   public function enablerAuthAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     try {
       $config = $this->getConfig();
       $hybridauth = new Hybridauth($config['enbhybridauth']);
@@ -1086,6 +1118,7 @@ class IndexController extends BaseController
 
   public function enablerSendOtpAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     if ($this->getRequest()->isXmlHttpRequest()) {
       $request = $this->getRequest()->getPost();
       $mobile = $request['mobile'];
@@ -1174,6 +1207,7 @@ class IndexController extends BaseController
 
   public function enablerVerifyOtpAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     if ($this->getRequest()->isXmlHttpRequest()) {
       $request = $this->getRequest()->getPost();
       $mobile = $request['mobile'];
@@ -1236,6 +1270,7 @@ class IndexController extends BaseController
 
   public function enablerAddAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     $postData = $this->params()->fromPost();
     $validImageFiles = array('png', 'jpg', 'jpeg');
     $enablerdetails = [];
@@ -1299,6 +1334,7 @@ class IndexController extends BaseController
 
   public function enablerEditAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
       $enablerDetails = $this->enablerTable->getEnablerDetails(['user_login_id' => $loginId['user_login_id']]);
@@ -1364,11 +1400,13 @@ class IndexController extends BaseController
 
   public function enablerForgotPasswordAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     return new ViewModel();
   }
 
   public function enablerChangePasswordAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
       $enablerDetails = $this->enablerTable->getEnablerDetails(['user_login_id' => $loginId['user_login_id']]);
@@ -1382,6 +1420,7 @@ class IndexController extends BaseController
   }
   public function enablerResetPasswordAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     $postData = $this->params()->fromPost();
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
@@ -1434,6 +1473,7 @@ class IndexController extends BaseController
 
   public function enablerProfileAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
       $userDetails = $this->enablerTable->getEnablerDetails(['user_login_id' => $loginId['user_login_id']]);
@@ -1452,6 +1492,7 @@ class IndexController extends BaseController
 
   public function enablerBuyPlansAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
       $enablerDetails = $this->enablerTable->getEnablerDetails(['user_login_id' => $loginId['user_login_id']]);
@@ -1477,6 +1518,7 @@ class IndexController extends BaseController
 
   public function getPlanPriceAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     if ($this->getRequest()->isXmlHttpRequest()) {
       $request = $this->getRequest()->getPost();
       $plan_id = $request['pid'];
@@ -1539,6 +1581,7 @@ class IndexController extends BaseController
 
   public function enablerPurchaseRequestAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     if ($this->getRequest()->isXmlHttpRequest()) {
       if ($this->authService->hasIdentity()) {
         $loginId = $this->authService->getIdentity();
@@ -1609,6 +1652,7 @@ class IndexController extends BaseController
 
   public function enablerInvoiceAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
       $enablerDetails = $this->enablerTable->getEnablerDetails(['user_login_id' => $loginId['user_login_id']]);
@@ -1644,6 +1688,7 @@ class IndexController extends BaseController
 
   public function enablerReceiptAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
       $enablerDetails = $this->enablerTable->getEnablerDetails(['user_login_id' => $loginId['user_login_id']]);
@@ -1673,6 +1718,7 @@ class IndexController extends BaseController
 
   public function enablerPayAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
       $enablerDetails = $this->enablerTable->getEnablerDetails(['user_login_id' => $loginId['user_login_id']]);
@@ -1825,6 +1871,7 @@ class IndexController extends BaseController
   }
   public function enablerCheckoutAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
       $enablerDetails = $this->enablerTable->getEnablerDetails(['user_login_id' => $loginId['user_login_id']]);
@@ -1918,6 +1965,7 @@ class IndexController extends BaseController
 
   public function enablerTrackPurchasesAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
       $enablerDetails = $this->enablerTable->getEnablerDetails(['user_login_id' => $loginId['user_login_id']]);
@@ -1938,6 +1986,7 @@ class IndexController extends BaseController
 
   public function loadPurchasesListAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     if ($this->getRequest()->isXmlHttpRequest()) {
       $request = $this->getRequest()->getPost();
       $searchData = array('limit' => 10, 'offset' => 0);
@@ -1968,6 +2017,7 @@ class IndexController extends BaseController
   }
   public function enablerTrackPlansAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
       $enablerDetails = $this->enablerTable->getEnablerDetails(['user_login_id' => $loginId['user_login_id']]);
@@ -1989,6 +2039,7 @@ class IndexController extends BaseController
 
   public function enablerSellAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
       $enablerDetails = $this->enablerTable->getEnablerDetails(['user_login_id' => $loginId['user_login_id']]);
@@ -2026,6 +2077,7 @@ class IndexController extends BaseController
   }
   public function enablerTermsAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     if ($this->authService->hasIdentity()) {
       $loginId = $this->authService->getIdentity();
       $userDetails = $this->enablerTable->getEnablerDetails(['user_login_id' => $loginId['user_login_id']]);
@@ -2040,15 +2092,18 @@ class IndexController extends BaseController
 
   public function enablerLogoutAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     return new ViewModel();
   }
 
   public function smsStatusAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     return new ViewModel();
   }
   public function termsPrivacyAction()
   {
+    $logResult = $this->logRequest($this->getRequest()->toString());
     $this->layout()->setVariable('activeTab', \Application\Constants\Constants::MAIN_SITE_TERMS_PAGE);
     return new ViewModel();
   }

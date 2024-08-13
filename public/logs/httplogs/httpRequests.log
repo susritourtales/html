@@ -1,0 +1,93 @@
+
+
+13-08-2024 10:34:58 >> 
+GET  HTTP/1.1
+
+
+
+
+13-08-2024 11:08:12 >> 
+GET  HTTP/1.1
+
+
+
+
+13-08-2024 11:08:12 >> 
+GET  HTTP/1.1
+
+
+
+
+13-08-2024 11:10:32 >> 
+GET  HTTP/1.1
+
+
+
+
+13-08-2024 11:11:29 >> 
+GET  HTTP/1.1
+
+
+
+
+13-08-2024 11:17:39 >> 
+GET  HTTP/1.1
+
+
+
+
+13-08-2024 11:18:17 >> 
+GET  HTTP/1.1
+
+
+
+
+13-08-2024 11:40:48 >> 
+GET https://www.sttandapp.com/twistt HTTP/1.1
+Cookie: PHPSESSID=3h2monrktta6i4j3q35aovttji
+Host: www.sttandapp.com
+Connection: keep-alive
+Sec-Ch-Ua: "Not)A;Brand";v="99", "Google Chrome";v="127", "Chromium";v="127"
+Sec-Ch-Ua-Mobile: ?0
+Sec-Ch-Ua-Platform: "macOS"
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36
+Accept: text/html, application/xhtml+xml, application/xml;q=0.9, image/avif, image/webp, image/apng, */*;q=0.8, application/signed-exchange;v=b3;q=0.7
+Sec-Fetch-Site: none
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Accept-Encoding: gzip, deflate, br, zstd
+Accept-Language: en-GB, en-US;q=0.9, en;q=0.8
+
+
+
+
+13-08-2024 12:02:52 >> 
+GET http://www.sttandapp.com/twistt/executive/track-commissions HTTP/1.1
+Cookie: PHPSESSID=f2b8hua3duf1nu9v43v2fonkcl
+Host: www.sttandapp.com
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36
+Accept: text/html, application/xhtml+xml, application/xml;q=0.9, image/avif, image/webp, image/apng, */*;q=0.8, application/signed-exchange;v=b3;q=0.7
+Referer: http://www.sttandapp.com/twistt/executive/track-coupons
+Accept-Encoding: gzip, deflate
+Accept-Language: en-GB, en-US;q=0.9, en;q=0.8
+
+
+
+
+13-08-2024 12:03:21 >> 
+GET http://www.sttandapp.com/twistt/executive/buy-coupons HTTP/1.1
+Cookie: PHPSESSID=8h3n1vkuhljaaumdrsqou5b7r0
+Host: www.sttandapp.com
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36
+Accept: text/html, application/xhtml+xml, application/xml;q=0.9, image/avif, image/webp, image/apng, */*;q=0.8, application/signed-exchange;v=b3;q=0.7
+Referer: http://www.sttandapp.com/twistt/executive/track-commissions
+Accept-Encoding: gzip, deflate
+Accept-Language: en-GB, en-US;q=0.9, en;q=0.8
+
+

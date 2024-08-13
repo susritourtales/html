@@ -6,6 +6,7 @@ use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\Authentication\AuthenticationService;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Session\Container as SessionContainer;
+use Laminas\Http\PhpEnvironment\Request;
 use Aws\Exception\AwsException;
 use Aws\ResultInterface;
 use Aws\CommandPool;
@@ -130,8 +131,22 @@ class BaseController extends AbstractActionController
         $this->enablerPurchaseRequestTable = $enabler_purchase_request_table;
         $this->enablerSalesTable = $enabler_sales_table;
         $this->enablerPlansTable = $enabler_plans_table;
+
+        //$this->logRequest();
     }
 
+    public function logRequest($logString){
+        //$logString = $this->getRequest()->toString();
+        $logDirectory =  __DIR__ . '/../../../../public/logs/httplogs';
+        $fullPath = "$logDirectory/httpRequests.log"; //"$logDirectory/httpRequests-$mY.log";
+        $timestamp = "\n\n" . date("d-m-Y H:i:s") . " >> \n";
+        $myfile = file_put_contents($fullPath, $timestamp . $logString . PHP_EOL, FILE_APPEND | LOCK_EX);
+        if ($myfile === false) {
+            error_log("Failed to write to log file: $fullPath");
+        }
+        // print_r(error_get_last());
+        return $myfile; 
+    }
     public function getLoggedInUserId()
     {
         try {

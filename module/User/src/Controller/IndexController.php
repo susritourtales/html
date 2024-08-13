@@ -640,26 +640,22 @@ class IndexController extends BaseController
             $razorpayOrder = [];
             try {
               $response = $api->paymentRequestCreate($orderData);
-              $razorpayOrder['id'] = $response['id'];
-              $razorpayOrder['amount'] = $response['amount'];
-              $razorpayOrder['currency'] = $response['currency'];
-              $razorpayOrder['receipt'] = $response['receipt'];
-            } catch (\Exception $e) {
-              return new JsonModel(array('success' => false, 'message' => $e->getMessage()));
-            }
-            if ($response) {
-              $setResp = $this->executivePurchaseTable->setExecutivePurchase(['receipt' => $razorpayOrder['receipt'], 'razorpay_order_id' => $razorpayOrder['id']], ['id' => $purchaseId]);
-              /* if (session_status() == PHP_SESSION_NONE) {
-                session_start();
-              }
-               $_SESSION['razorpay_order_id'] = $razorpayOrder['id']; */
-              if ($setResp) {
-                return new JsonModel(array('success' => true, 'message' => 'order created', 'order' => $razorpayOrder));
+              if ($response) {
+                $razorpayOrder['id'] = $response['id'];
+                $razorpayOrder['amount'] = $response['amount'];
+                $razorpayOrder['currency'] = $response['currency'];
+                $razorpayOrder['receipt'] = $response['receipt'];
+                $setResp = $this->executivePurchaseTable->setExecutivePurchase(['receipt' => $razorpayOrder['receipt'], 'razorpay_order_id' => $razorpayOrder['id']], ['id' => $purchaseId]);
+                if ($setResp) {
+                  return new JsonModel(array('success' => true, 'message' => 'order created', 'order' => $razorpayOrder));
+                } else {
+                  return new JsonModel(array('success' => false, 'message' => 'unable to process your payment now.. please try after sometime..'));
+                }
               } else {
                 return new JsonModel(array('success' => false, 'message' => 'unable to process your payment now.. please try after sometime..'));
               }
-            } else {
-              return new JsonModel(array('success' => false, 'message' => 'unable to process your payment now.. please try after sometime..'));
+            } catch (\Exception $e) {
+              return new JsonModel(array('success' => false, 'message' => $e->getMessage()));
             }
           }
         }

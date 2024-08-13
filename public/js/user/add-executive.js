@@ -256,6 +256,8 @@
         $('#divCM').hide();
         $('#divOtp').hide();
         $("#mobile").prop('disabled', false);
+        $("#btnOtp").html('Send Otp');
+        $("#btnOtp").prop('disabled', false);
         $("#mobile").val('');
     }).on("click","#btnVerify",function(){
         var otp=$("#otp").val();

@@ -463,7 +463,7 @@ class IndexController extends BaseController
               return new JsonModel(array('success' => false, "message" => 'not a registered mobile no..'));
             }
           } else {
-            return new JsonModel(array('success' => false, "message" => 'mobile number not registered.. - ' . $isMobileNoRegistered));
+            return new JsonModel(array('success' => false, "message" => 'mobile number not registered..'));
           } /* else{
             $isEmailRegistered = $this->userTable->getField(['email' => $mobile], 'id');
             if($isEmailRegistered){

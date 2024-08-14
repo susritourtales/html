@@ -885,6 +885,9 @@ class IndexController extends BaseController
       $request = $this->getRequest()->getPost();
       $lid = $request['lid'];
       $userId = $this->userTable->getField(['user_login_id' => $lid], 'id');
+      $execId = $this->executiveDetailsTable->getField(['user_id' => $userId], 'id');
+      if ($execId)
+        return new JsonModel(array('success' => false, "message" => 'TWISTT Executive already registered.. you can directly login...'));
       if ($userId) {
         $isValidQuesttUser = $this->questtSubscriptionTable->isValidQuesttUser($userId);
         if ($isValidQuesttUser)
@@ -1056,7 +1059,7 @@ class IndexController extends BaseController
         exit;
       }
 
-      if ($provider = $storage->get('provider')) {
+      if ($provider == $storage->get('provider')) {
         $hybridauth->authenticate($provider);
         $storage->set('provider', null);
         // Retrieve the provider record

@@ -441,6 +441,9 @@ class IndexController extends BaseController
         if (!empty($mobile)) {
           $isMobileNoRegistered = $this->userTable->getField(['mobile_number' => $mobile], 'id');
           if ($isMobileNoRegistered) {
+            $loginType = $this->userTable->getField(['mobile_number' => $mobile], 'login_type');
+            if ($loginType == \Admin\Model\User::login_type_social)
+              return new JsonModel(array('success' => false, "message" => 'reset the password for your social login using the corresponding social platform..'));
             $getcc = $this->userTable->getField(['mobile_number' => $mobile], 'country_phone_code');
             if ($getcc == "91") {
               $otp = $this->generateOtp();
@@ -459,6 +462,8 @@ class IndexController extends BaseController
             } else {
               return new JsonModel(array('success' => false, "message" => 'not a registered mobile no..'));
             }
+          } else {
+            return new JsonModel(array('success' => false, "message" => 'mobile number not registered..'));
           } /* else{
             $isEmailRegistered = $this->userTable->getField(['email' => $mobile], 'id');
             if($isEmailRegistered){
@@ -482,7 +487,7 @@ class IndexController extends BaseController
           return new JsonModel(array('success' => false, "message" => 'please provide registered mobile no / email id'));
         }
       }
-      return new JsonModel(array('success' => true, "message" => 'otp sent successfully.. please enter the otp..'));
+      //return new JsonModel(array('success' => true, "message" => 'otp sent successfully.. please enter the otp..'));
     }
   }
   public function executiveVerifyOtpAction()

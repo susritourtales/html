@@ -932,8 +932,9 @@ class IndexController extends BaseController
       $checkRole = $this->userTable->getField(['id' => $userId], 'user_type_id');
       if ($checkRole != \Admin\Model\User::TWISTT_Executive)
         $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
+      $userDetails = $this->userTable->getUserDetails(['user_login_id' => $loginId['user_login_id']]);
       $config = $this->getConfig();
-      return new ViewModel(['userId' => $loginId['user_login_id'], 'config' => $config['hybridauth'],]);
+      return new ViewModel(['userId' => $loginId['user_login_id'], 'config' => $config['hybridauth'], 'userDetails' => $userDetails]);
     } else {
       $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
     }

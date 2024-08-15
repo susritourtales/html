@@ -1679,7 +1679,7 @@ class IndexController extends BaseController
       $iId = array_key_exists(1, $prIdString) ? $prIdString[1] : 0;
       if ($iId != 0) {
         $prDetails = $this->enablerPurchaseRequestTable->getEnablerPurchaseRequest(['id' => $iId]);
-        $prRes = $this->enablerPurchaseTable->getField(['invoice' => $prDetails['invoice']], 'id');
+        $prRes = $this->enablerPurchaseTable->getField(['invoice' => $prDetails['invoice']], 'payment_status');
         $show = 1;
         if ($prRes)
           $show = 0;

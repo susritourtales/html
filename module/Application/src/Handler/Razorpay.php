@@ -31,7 +31,10 @@ class Razorpay
     {
         try{
             $razorpayOrder = $this->api->order->create($orderData);
-            return $razorpayOrder;
+            return [
+                'success' => true,
+                'razorpayOrder' => $razorpayOrder
+            ];
         }catch (\Exception $e)
         {
             //  return array();

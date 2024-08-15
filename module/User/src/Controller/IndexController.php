@@ -664,11 +664,12 @@ class IndexController extends BaseController
               $response = $api->paymentRequestCreate($orderData);
               if(!$response['success'])
                 return new JsonModel(array('success' => false, 'message' => $response['error']));
-              if ($response['status'] == 'created') {
-                $razorpayOrder['id'] = $response['id'];
-                $razorpayOrder['amount'] = $response['amount'];
-                $razorpayOrder['currency'] = $response['currency'];
-                $razorpayOrder['receipt'] = $response['receipt'];
+              if ($response['razorpayOrder']) {
+                $rzpResp = $response['razorpayOrder'];
+                $razorpayOrder['id'] = $rzpResp['id'];
+                $razorpayOrder['amount'] = $rzpResp['amount'];
+                $razorpayOrder['currency'] = $rzpResp['currency'];
+                $razorpayOrder['receipt'] = $rzpResp['receipt'];
                 $setResp = $this->executivePurchaseTable->setExecutivePurchase(['receipt' => $razorpayOrder['receipt'], 'razorpay_order_id' => $razorpayOrder['id']], ['id' => $purchaseId]);
                 if ($setResp) {
                   return new JsonModel(array('success' => true, 'message' => 'order created', 'order' => $razorpayOrder));
@@ -1864,11 +1865,12 @@ class IndexController extends BaseController
           if(!$response['success'])
             return new JsonModel(array('success' => false, 'message' => $response['error']));
 
-          if($response['status'] == 'created') {
-            $razorpayOrder['id'] = $response['id'];
-            $razorpayOrder['amount'] = $response['amount'];
-            $razorpayOrder['currency'] = $response['currency'];
-            $razorpayOrder['receipt'] = $response['receipt'];
+          if($response['razorpayOrder']) {
+            $rzpResp = $response['razorpayOrder'];
+            $razorpayOrder['id'] = $rzpResp['id'];
+            $razorpayOrder['amount'] = $rzpResp['amount'];
+            $razorpayOrder['currency'] = $rzpResp['currency'];
+            $razorpayOrder['receipt'] = $rzpResp['receipt'];
             $setResp = $this->enablerPurchaseTable->setEnablerPurchase(['receipt' => $razorpayOrder['receipt'], 'razorpay_order_id' => $razorpayOrder['id']], ['id' => $purchaseId]);
             if ($setResp) {
               return new JsonModel(array('success' => true, 'message' => 'order created', 'order' => $razorpayOrder));

@@ -17,11 +17,19 @@ $(document).ready(function(){
             success: function(data)
             {
                 if(data.rid){
-                    messageDisplay(data.message);
+                    messageDisplay(data.message, 3000);
                     setTimeout(function(){
                         window.location.href=BASE_URL+"/twistt/enabler/receipt/" + data.rid;
                     },2000);
                 }
+                if(!data.success){
+                    messageDisplay(data.message, 3000);
+                    element.html('Check out');
+                    element.prop('disabled',false);
+                    ajaxCall=null;
+                    return false;
+                }
+
                 ajaxCall=null;
                 var options = {
                     "key": "rzp_test_dn58ZwDYwvA7U3",
@@ -55,7 +63,7 @@ $(document).ready(function(){
                             },
                             error: function(resp)
                             {
-                                messageDisplay(resp.message);
+                                messageDisplay(resp.message, 3000);
                                 element.html('Check out');
                                 element.prop('disabled',false);
                                 ajaxCall=null;

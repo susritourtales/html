@@ -659,10 +659,12 @@ class IndexController extends BaseController
                 'payment_capture' => 1
               ];
             }
-            $razorpayOrder = [];
+            $razorpayOrder = ['id' => "", 'amount' => "", 'currency' => "", 'receipt' => ""];
             try {
               $response = $api->paymentRequestCreate($orderData);
-              if ($response) {
+              if(!$response['success'])
+                return new JsonModel(array('success' => false, 'message' => $response['error']));
+              if ($response['status'] == 'created') {
                 $razorpayOrder['id'] = $response['id'];
                 $razorpayOrder['amount'] = $response['amount'];
                 $razorpayOrder['currency'] = $response['currency'];
@@ -671,10 +673,10 @@ class IndexController extends BaseController
                 if ($setResp) {
                   return new JsonModel(array('success' => true, 'message' => 'order created', 'order' => $razorpayOrder));
                 } else {
-                  return new JsonModel(array('success' => false, 'message' => 'unable to process your payment now.. please try after sometime..'));
+                  return new JsonModel(array('success' => false, 'message' => 'server unable to process your order now.. please try after sometime..'));
                 }
               } else {
-                return new JsonModel(array('success' => false, 'message' => 'unable to process your payment now.. please try after sometime..'));
+                return new JsonModel(array('success' => false, 'message' => 'unable to place your order now.. please try after sometime..'));
               }
             } catch (\Exception $e) {
               return new JsonModel(array('success' => false, 'message' => $e->getMessage()));
@@ -1856,25 +1858,30 @@ class IndexController extends BaseController
             'payment_capture' => 1
           ];
         }
-        $razorpayOrder = [];
+        $razorpayOrder = ['id' => "", 'amount' => "", 'currency' => "", 'receipt' => ""];
         try {
           $response = $api->paymentRequestCreate($orderData);
-          $razorpayOrder['id'] = $response['id'];
-          $razorpayOrder['amount'] = $response['amount'];
-          $razorpayOrder['currency'] = $response['currency'];
-          $razorpayOrder['receipt'] = $response['receipt'];
+          if(!$response['success'])
+            return new JsonModel(array('success' => false, 'message' => $response['error']));
+
+          if($response['status'] == 'created') {
+            $razorpayOrder['id'] = $response['id'];
+            $razorpayOrder['amount'] = $response['amount'];
+            $razorpayOrder['currency'] = $response['currency'];
+            $razorpayOrder['receipt'] = $response['receipt'];
+            $setResp = $this->enablerPurchaseTable->setEnablerPurchase(['receipt' => $razorpayOrder['receipt'], 'razorpay_order_id' => $razorpayOrder['id']], ['id' => $purchaseId]);
+            if ($setResp) {
+              return new JsonModel(array('success' => true, 'message' => 'order created', 'order' => $razorpayOrder));
+            } else {
+              return new JsonModel(array('success' => false, 'message' => 'server unable to process your order now.. please try after sometime..'));
+            }
+          } else {
+            return new JsonModel(array('success' => false, 'message' => 'unable to place your order now.. please try after sometime..'));
+          }
+        }catch (\Razorpay\Api\Errors\BadRequestError $e) {
+          return new JsonModel(array('success' => false, 'message' => $e->getMessage()));
         } catch (\Exception $e) {
           return new JsonModel(array('success' => false, 'message' => $e->getMessage()));
-        }
-        if ($response) {
-          $setResp = $this->enablerPurchaseTable->setEnablerPurchase(['receipt' => $razorpayOrder['receipt'], 'razorpay_order_id' => $razorpayOrder['id']], ['id' => $purchaseId]);
-          if ($setResp) {
-            return new JsonModel(array('success' => true, 'message' => 'order created', 'order' => $razorpayOrder));
-          } else {
-            return new JsonModel(array('success' => false, 'message' => 'unable to process your payment now.. please try after sometime..'));
-          }
-        } else {
-          return new JsonModel(array('success' => false, 'message' => 'unable to process your payment now.. please try after sometime..'));
         }
       }
     } else {

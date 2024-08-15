@@ -34,7 +34,12 @@ class Razorpay
             return $razorpayOrder;
         }catch (\Exception $e)
         {
-              return array();
+            //  return array();
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+                'code' => $e->getCode(),  
+            ];
         }
     }
 

@@ -31,7 +31,20 @@ class EnablerPurchaseTable extends BaseTable
         return array("success" => false);
     }
   }
-
+  public function setEnablerPurchase($data, $where)
+  {
+    try {
+      $update = $this->update($data, $where);
+      if ($update) {
+        $id = $this->getField($where, 'id');
+        return array("success" => true, "id" => $id);
+    } else {
+        return array("success" => false);
+    }
+    } catch (\Exception $e) {
+      return false;
+    }
+  }
   public function getField($where, $column)
   {
     try {
@@ -283,15 +296,6 @@ class EnablerPurchaseTable extends BaseTable
       return count($enabler);
     } catch (\Exception $e) {
       return array();
-    }
-  }
-
-  public function setEnablerPurchase($data, $where)
-  {
-    try {
-      return $this->update($data, $where);
-    } catch (\Exception $e) {
-      return false;
     }
   }
 }

@@ -1064,7 +1064,7 @@ class IndexController extends BaseController
         exit;
       }
 
-      if ($provider == $storage->get('provider')) {
+      if ($provider = $storage->get('provider')) {
         $hybridauth->authenticate($provider);
         $storage->set('provider', null);
         // Retrieve the provider record

@@ -114,7 +114,7 @@ $(document).ready(function() {
             })
             .then(data => {
                 if (data.success) {
-                    messageDisplay('TWISTT plan offer successfull!');
+                    messageDisplay(data.message);
                     console.log('TWISTT plan offer successfull!', data);
                     setTimeout(function(){
                         window.location.href=BASE_URL+"/twistt/enabler/track-plans";

@@ -39,10 +39,35 @@
                 </div>
                 <div class="content">
                     <?php if($action == 'TEn_Registration_Otp'){ ?>
-                    <div>Otp to verify your email for TWISTT Enabler registration is - <?php echo $data;?></div>
+                        <div>Otp to verify your email for TWISTT Enabler registration is - <?php echo $data;?></div>
                     <?php } elseif($action == 'TEn_Password_Reset_Otp'){ ?>
-                    <div>Otp to reset your password for TWISTT Enabler login is - <?php echo $data;?></div>
+                        <div>Otp to reset your password for TWISTT Enabler login is - <?php echo $data;?></div>
+                    <?php } elseif($action == 'TEx_Registration_Mail'){ ?>
+                        <p>Dear <?php echo $data['username']; ?></p>
+                        <p>Your TWISTT Executive Registration is under processing by the Susri Tour Tales Admin.</p>
+                        <p>You will recieve an approval email from us with login credentials after the processing is done.</p>
+                    <?php } elseif($action == 'TEx_Registration_Approval'){ ?>
+                        <p>Dear <?php echo $data['username']; ?></p>
+                        <p>Your TWISTT Executive Registration is Approved.</p>
+                        <p>Your login credentials for TWISTT Executive Portal are.</p>
+                        <p>Username : <?php echo $data['user_login_id'] ?></p>
+                        <p>Password : <?php echo $data['user_login_id'] ?></p>
+                        <p>Do not forget to change your password immediately after you login.</p>
+                    <?php } elseif($action == 'TEx_Banned'){ ?>
+                        <p>Dear <?php echo $data['username']; ?></p>
+                        <p>Your TWISTT Executive Registration (login in: <?php echo $data['user_login_id'] ?>) is banned by the Susri Tour Tales Admin.</p>
+                        <p>Please contact the Admin for further details.</p>
+                    <?php } elseif($action == 'TEx_unBanned'){ ?>
+                        <p>Dear <?php echo $data['username']; ?></p>
+                        <p>Your TWISTT Executive Registration (login in: <?php echo $data['user_login_id'] ?>) is revived by the Susri Tour Tales Admin.</p>
+                        <p>You may login and reusme your services as TWISTT Executive.</p>
                     <?php } ?>
+                </div>
+                <div class="m-3">
+                    <p class="mt-3">Thank you</p>
+                    <p>Susri Tour Tales</p>
+                    <p>+91 90596 44412</p>
+                    <p>www.susritourtales.com/</p>
                 </div>
                 <div class="footer">
                     <p>Susri Tour Tales &copy; 2019</p>

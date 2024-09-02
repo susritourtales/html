@@ -92,7 +92,7 @@ $(document).ready(function() {
             })
             .then(data => {
                 if (data.success) {
-                    messageDisplay('Executive profile saved successfully!');
+                    messageDisplay(data.message);
                     console.log('Executive profile saved successfully!', data);
                     setTimeout(function(){
                         location.reload();

@@ -2520,8 +2520,25 @@ class AdminController extends BaseController
             $executiveId = $rId[1];
             if(str_starts_with($rId[0], 'v')){
                 $response = $this->executiveDetailsTable->setExecutiveDetails(array('verified' => $request['val']), array('id' => $executiveId));
+                if($response){
+                    $execDetails = $this->executiveDetailsTable->getExecutiveDetails(['id' => $executiveId]);
+                    $userDetails = $this->userTable->getUserDetails(['id' => $execDetails['user_id']]);
+                    $mresp = $this->sendmail($userDetails['email'], 'TWISTT Executive Registration Approved', 'TEx_Registration_Approval', $userDetails);
+                    $resp = $this->sendOtpSms($userDetails['country_phone_code'].$userDetails['mobile_number'], '1111', 'TEx_Registration_Otp');
+                }
             }elseif(str_starts_with($rId[0], 'b')){
                 $response = $this->executiveDetailsTable->setExecutiveDetails(array('banned' => $request['val']), array('id' => $executiveId));
+                if($response){
+                    $execDetails = $this->executiveDetailsTable->getExecutiveDetails(['id' => $executiveId]);
+                    $userDetails = $this->userTable->getUserDetails(['id' => $execDetails['user_id']]);
+                    if($execDetails['banned'] == '1'){
+                        $mresp = $this->sendmail($userDetails['email'], 'TWISTT Executive banned', 'TEx_Banned', $userDetails);
+                        $resp = $this->sendOtpSms($userDetails['country_phone_code'].$userDetails['mobile_number'], '1111', 'TEx_Registration_Otp');
+                    }else{
+                        $mresp = $this->sendmail($userDetails['email'], 'TWISTT Executive revived', 'TEx_unBanned', $userDetails);
+                        $resp = $this->sendOtpSms($userDetails['country_phone_code'].$userDetails['mobile_number'], '1111', 'TEx_Registration_Otp');
+                    }
+                }
             }
             if ($response) {
                 return new JsonModel(array('success' => true, "message" => 'Updated successfully'));

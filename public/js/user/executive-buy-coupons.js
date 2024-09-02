@@ -1,8 +1,18 @@
 function updateAmt(){
-    if($('#dc').val() =="")
+    if($('#dc').val() ==""){
         $('#dc').val('0');
-    if($('#cc').val() =="")
+    }else if($('#dc').val() > 99){
+        $('#dc').val('0');
+        messageDisplay("No of discount coupons cannot exceed 99..", 3000);
+        return;
+    }
+    if($('#cc').val() ==""){
         $('#cc').val('0');
+    }else if($('#cc').val() > 99){
+        $('#cc').val('0');
+        messageDisplay("No of complimentary coupons cannot exceed 99..", 3000);
+        return;
+    }
     $('#amt').html($('#dc').val() * $('#udcp').val() + $('#cc').val() * $('#uccp').val());
 }
 
@@ -87,7 +97,3 @@ $(document).ready(function(){
         });
     });
 });
-
- /* */
-
-    /*  */

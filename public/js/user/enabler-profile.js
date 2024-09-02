@@ -56,7 +56,7 @@ $(document).ready(function() {
             })
             .then(data => {
                 if (data.success) {
-                    messageDisplay('Enabler profile saved successfully!');
+                    messageDisplay(data.message);
                     console.log('Enabler profile saved successfully!', data);
                     setTimeout(function(){
                         location.reload();

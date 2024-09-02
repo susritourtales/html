@@ -272,11 +272,13 @@ class IndexController extends BaseController
         return new JsonModel(array('success' => false, "message" => 'TWISTT Executive already exists..'));
       }
       if ($bres) {
-        $this->authService->getAdapter()
+        /* $this->authService->getAdapter()
           ->setIdentity($userdetails['user_login_id'])
           ->setCredential($userdetails['password']);
-        $ares = $this->authService->authenticate();
-        return new JsonModel(array('success' => true, "message" => 'you have succesfully registered as TWISTT Executive.'));
+        $ares = $this->authService->authenticate(); */
+        $resp = $this->sendmail($postData['email'], 'TWISTT Executive Registration', 'TEx_Registration_Mail', $userdetails);
+        $resp = $this->sendOtpSms($postData['ccmobile'], '1111', 'TEx_Registration_Otp');
+        return new JsonModel(array('success' => true, "message" => 'Your Log-in credentials will be sent to your registered Mail Id by STT Admin.'));
       } else {
         return new JsonModel(array('success' => false, "message" => 'error saving user bank details.. please try after sometime..'));
       }
@@ -685,7 +687,7 @@ class IndexController extends BaseController
           }
         }
       } else {
-        return new JsonModel(array('success' => false, "message" => 'coupons purchase not allowed..'));
+        return new JsonModel(array('success' => false, "message" => 'user banned.. coupons purchase not allowed..'));
       }
     } else {
       $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
@@ -917,8 +919,10 @@ class IndexController extends BaseController
       if ($checkRole != \Admin\Model\User::TWISTT_Executive)
         $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
       $bankDetails = $this->executiveDetailsTable->getExecutiveDetails(['user_id' => $userDetails['id']]);
+      $qed = $this->questtSubscriptionTable->getField(['user_id' => $loginId['id']], 'end_date');
+      $qed = date('d-m-Y', strtotime($qed));
       $config = $this->getConfig();
-      return new ViewModel(['userDetails' => $userDetails, 'bankDetails' => $bankDetails, 'config' => $config['hybridauth'], 'imageUrl' => $this->filesUrl()]);
+      return new ViewModel(['userDetails' => $userDetails, 'bankDetails' => $bankDetails, 'config' => $config['hybridauth'], 'qed' => $qed,'imageUrl' => $this->filesUrl()]);
     } else {
       $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
     }

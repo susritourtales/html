@@ -3,7 +3,6 @@
     $('#divOtp').hide();
     $('#divBtn').hide();
     $('#userDetails').hide();
-    // $('#bankDetails').hide();
     $('#register').hide();
     $('#preview').hide();
     $('#apreview').hide();
@@ -105,7 +104,12 @@
     });
 
     const form = document.getElementById('registrationForm');
+    
     form.addEventListener('submit', function(event) {
+        event.preventDefault();  
+        $("#register").html('Registering...');
+        $("#register").prop('disabled', true);
+
         if($('#bankAccountConf').val() != $('#bankAccount').val()){
             messageDisplay('Please check the Bank Account number you have entered..', 2000);
             event.preventDefault(); 
@@ -165,10 +169,10 @@
             })
             .then(data => {
                 if (data.success) {
-                    messageDisplay('Executive registration successfull!');
                     console.log('Executive registration successfull!', data);
+                    alert(data.message);
                     setTimeout(function(){
-                        window.location.href=BASE_URL+"/twistt/change-password";
+                        window.location.href=BASE_URL+"/twistt/executive/login";
                     },2000);
                 } else {
                     messageDisplay('Error submitting form: ' + data.message);

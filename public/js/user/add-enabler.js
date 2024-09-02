@@ -115,7 +115,7 @@
             })
             .then(data => {
                 if (data.success) {
-                    messageDisplay('TWISTT Enabler registration successfull!');
+                    messageDisplay(data.message);
                     console.log('TWISTT Enabler registration successfull!', data);
                     setTimeout(function(){
                         window.location.href=BASE_URL+"/twistt/enabler/change-password";

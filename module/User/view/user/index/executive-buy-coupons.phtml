@@ -39,6 +39,15 @@
                     </div>
                 </div>
                 <?php if($isQUESTTValid) {?>
+                    <?php   $selectedDate = date('Y-m-d', strtotime($qed));
+                        $selectedDateTime = new DateTime($selectedDate);
+                        $today = new DateTime();
+                        $interval = $today->diff($selectedDateTime);
+                        if ($interval->days <= 30 && $selectedDateTime >= $today) { ?>
+                            <div class="row mt-3 p-2 border-radius-10 bg-danger">
+                                <div class="col text-white">Your QUESTT subscription is about to expire.. Please renew..</div>
+                            </div>
+                <?php }?>
                 <div class="row">
                     <div class="col col-lg-4 pt-3">
                         <label for="dc" class="form-label">No. of Discount Coupons</label>
@@ -106,4 +115,4 @@
     </div>
 </div>
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-<script src="<?php echo $this->basePath(); ?>/js/user/executive-buy-coupons.js?v=1.0.2"></script>
+<script src="<?php echo $this->basePath(); ?>/js/user/executive-buy-coupons.js?v=1.0.4"></script>

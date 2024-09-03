@@ -2,7 +2,9 @@ $(document).ready(function() {
     $('#divEmail').hide();
     var today = new Date();
     $('#datepicker').datepicker({
-      startDate: today
+      startDate: today,
+      endDate: '+1Y',
+        datesDisabled: '+1Y',
     });
     // Initialize intlTelInput
     var input = document.querySelector("#mobile");

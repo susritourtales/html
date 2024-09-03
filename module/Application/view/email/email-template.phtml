@@ -61,6 +61,9 @@
                         <p>Dear <?php echo $data['username']; ?></p>
                         <p>Your TWISTT Executive Registration (login in: <?php echo $data['user_login_id'] ?>) is revived by the Susri Tour Tales Admin.</p>
                         <p>You may login and reusme your services as TWISTT Executive.</p>
+                    <?php } elseif($action == 'TWISTT_Enabled'){ ?>
+                        <p>Dear <?php echo $data['tourist_name']; ?></p>
+                        <p>M/s <?php echo $data['display_name']; ?> has sponsored free TWISTT subscription from <?php echo date('d-m-Y', strtotime($data['twistt_start_date'])); ?> to <?php echo date('d-m-Y', strtotime($data['twistt_end_date'])); ?>. Please install the app to avail the offer.</p>
                     <?php } ?>
                 </div>
                 <div class="m-3">

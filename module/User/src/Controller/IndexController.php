@@ -2100,6 +2100,11 @@ class IndexController extends BaseController
       $addESData = $this->enablerSalesTable->addEnablerSale($saveData);
       if (!$addESData)
         return new JsonModel(array('success' => false, 'message' => 'unable to process your request..'));
+      $data = array_merge($enablerDetails, $saveData, $epd);
+      if($request['cc'] == '91')
+        $this->sendOtpSms($request['cc'] . $request['mobile'], '1111', 'TEx_Registration_Otp');
+      else
+        $this->sendmail($request['email'], 'TWISTT Enabled', 'TWISTT_Enabled', $data);
       return new JsonModel(array('success' => true, 'message' => 'successfull'));
     } else {
       $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/enabler/login');

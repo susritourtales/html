@@ -73,7 +73,29 @@ $(document).ready(function () {
 				$(".delete-conform-button").prop("disabled", true);
 			}
 		})
-	}).on('click', '.fa-sort',  function (){
+	}).on("click",".pay",function () {
+        var id=$(this).data("id");
+        $(".pay-confirm-button").attr("data-id",id);
+        var spoid = "#spo" + id;
+        $(".modal-title").html("Pay " + $(spoid).html());
+        $("#payModal").modal("show");
+    }) .on("click",'.pay-confirm-button',function () {
+        $(this).prop("disabled",true);
+        var id = $(this).attr("data-id");
+        var amount = $('#tbamount').val();
+        var tref = $('#tbtref').val();
+        postData("/admin/pay-executive", {id:id, amt: amount, tr:tref},function (response){
+            var jsonRespnse = parseJsonData(response);
+            messageDisplay(jsonRespnse.message);
+            if(jsonRespnse.success) {
+                setTimeout(function(){
+                    window.location.reload();
+                },2000);
+            }else {
+                $(".pay-confirm-button").prop("disabled",true);
+            }
+        })
+    }) .on('click', '.fa-sort',  function (){
         $('.fa-sort').removeClass("d-none");
         $('.fa-sort-up').addClass("d-none");
         $('.fa-sort-down').addClass("d-none");

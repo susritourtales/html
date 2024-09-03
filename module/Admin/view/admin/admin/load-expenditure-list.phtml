@@ -14,7 +14,7 @@
         <th class="text-center" data-placeholder="bank a/c" data-input="bank_ac_no">Bank a/c</th>
         <th class="text-center" data-placeholder="ifsc code" data-input="ifsc_code">IFSC code</th>
         <th class="text-center" data-placeholder="Txn Ref" data-input="transaction_ref">Txn Ref</th>
-        <th>Pay</th>
+        <!-- <th>Pay</th> -->
     </tr>
     <?php } ?>
 
@@ -50,14 +50,14 @@
               <td class="text-center"><?php echo $tx['ifsc_code']; ?></td>
               <!-- <td class="text-center"><?php //echo "(" . $tx['country_phone_code'] . ")" . $tx['mobile_number'] ; ?></td> -->
               <td class="text-center"><?php echo $tx['transaction_ref']; ?></td>
-              <td><?php if($tx['transaction_type'] == \Admin\Model\ExecutiveTransaction::transaction_due){?>
+              <!-- <td><?php /* if($tx['transaction_type'] == \Admin\Model\ExecutiveTransaction::transaction_due){?>
                     <div class="d-flex">
                         <div class="action-icon pay" data-id="<?php echo $tx['id']; ?>">
                             <img src="<?php echo $this->basePath();?>/img/edit.png" class="img-fluid" >
                         </div>
                     </div>
-                    <?php } ?>
-                </td>
+                    <?php } */ ?>
+                </td> -->
           </tr>
           <?php $i++; } } else { ?>
         <tr ><td class="text-center" colspan="10">No data</td></tr>

@@ -3424,7 +3424,8 @@ public function loadSalesListAction()
         $request = $this->getRequest()->getPost();
         $id = $request['id'];
         $currentDT = date("Y-m-d H:i:s");
-        $txdata = $this->executiveTransactionTable->getExecutiveTransaction(["id"=>$id]);
+        //$txdata = $this->executiveTransactionTable->getExecutiveTransaction(["id"=>$id]);
+        $txdata = $this->executiveTransactionTable->getExecutiveTransaction(["executive_id"=>$id]);
         $pdata['executive_id'] = $txdata['executive_id'];
         $pdata['user_id'] = $txdata['user_id'];
         $pdata['coupon_id'] = $txdata['coupon_id'];

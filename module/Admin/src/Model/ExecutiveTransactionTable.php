@@ -62,7 +62,8 @@ class ExecutiveTransactionTable extends BaseTable
       $query = $sql->select()
         ->from($this->tableName)
         ->where($where)
-        ->order('p.created_at desc');
+        ->order('p.created_at desc')
+        ->limit(1);
       $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
       $transaction = array();
       foreach ($resultSet as $row) {

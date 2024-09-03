@@ -1,3 +1,8 @@
+<style>
+    .cc{
+        cursor: pointer;
+    }
+</style>
 <?php if(isset($type) && $type =='initialize') { ?>
 <table class="table table-bordered table-hover table-striped" id="table">
     <thead>
@@ -13,7 +18,8 @@
         <th>Total Balance</th>
         <th>Verified</th>
         <th>Banned</th>
-        <th>Action</th>
+        <th>Pay</th>
+        <th>Delete</th>
     </tr>
     <?php } ?>
 
@@ -33,10 +39,10 @@
         foreach ($executivesList as $executive) : 
             $encodedID = base64_encode('executiveId='.$executive['id']);?>
             <tr>
-                <td><?= $i+1 ?></td>
-                <td><?= $executive['username'] ?></td>
-                <td><?= date("d-m-Y",strtotime($executive['end_date'])) ?></td>
-                <td><?= "(" . $executive['country_phone_code'] . ") " . $executive['mobile_number'] ?></td>
+                <td class="cc" data-url="<?php echo $this->basePath() . '/a_dMin/edit-executive/' . base64_encode('id=' . $executive['id']) ?>"><?= $i+1 ?></td>
+                <td class="cc" data-url="<?php echo $this->basePath() . '/a_dMin/edit-executive/' . base64_encode('id=' . $executive['id']) ?>"><?= $executive['username'] ?></td>
+                <td class="cc" data-url="<?php echo $this->basePath() . '/a_dMin/edit-executive/' . base64_encode('id=' . $executive['id']) ?>"><?= date("d-m-Y",strtotime($executive['end_date'])) ?></td>
+                <td class="cc" data-url="<?php echo $this->basePath() . '/a_dMin/edit-executive/' . base64_encode('id=' . $executive['id']) ?>"><?= "(" . $executive['country_phone_code'] . ") " . $executive['mobile_number'] ?></td>
                 <td class="cc text-center" data-url="<?php echo $this->basePath() . '/a_dMin/executive/coupons-commissions/' . base64_encode('id=' . $executive['id']) ?>"><?= $executive['d_coupon_count'] ?></td>
                 <td class="cc text-center" data-url="<?php echo $this->basePath() . '/a_dMin/executive/coupons-commissions/' . base64_encode('id=' . $executive['id']) ?>"><?= $executive['c_coupon_count'] ?></td>
                 <td class="cc text-center" data-url="<?php echo $this->basePath() . '/a_dMin/executive/commissions-payments/' . base64_encode('id=' . $executive['id']) ?>"><?= $executive['total_earnings'] == null ? "0.00" : $executive['total_earnings'] ?></td>
@@ -50,9 +56,20 @@
                 </td>
                 <td>
                     <div class="d-flex">
-                        <a class="action-icon" href="<?php echo $this->basePath() . '/a_dMin/edit-executive/' . base64_encode('id=' . $executive['id']) ?>">
-                            <img src="<?php echo $this->basePath(); ?>/img/edit.png" class="img-fluid">
-                        </a>
+                        <!-- <a class="action-icon" href="<?php echo $this->basePath() . '/a_dMin/edit-executive/' . base64_encode('id=' . $executive['id']) ?>">
+                            <img src="<?php //echo $this->basePath(); ?>/img/edit.png" class="img-fluid">
+                        </a> -->
+                        <?php if(!is_null($executive['balance_outstanding']) || $executive['balance_outstanding'] == "0.00"){?>
+                        <div class="d-flex">
+                            <div class="action-icon pay" data-id="<?php echo $executive['id']; ?>">
+                                <img src="<?php echo $this->basePath();?>/img/edit.png" class="img-fluid" >
+                            </div>
+                        </div>
+                        <?php } ?>
+                    </div>
+                </td>
+                <td>
+                    <div class="d-flex">
                         <div class="action-icon delete-executive" data-id="<?php echo $executive['id']; ?>">
                             <img src="<?php echo $this->basePath(); ?>/img/delete.png" class="img-fluid">
                         </div>

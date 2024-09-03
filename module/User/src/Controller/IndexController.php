@@ -1614,6 +1614,11 @@ class IndexController extends BaseController
         $saveData['display_name'] = $dname;
         $saveData['plan_id'] = $pid;
         $saveData['stt_disc'] = $enablerDetails['stt_disc'];
+        if ($enablerDetails['country_phone_code'] == "91") {
+          $saveData['currency'] = "INR";
+        } else {
+          $saveData['currency'] = "USD";
+        }
         $saveData['actual_price'] = number_format((float)$pp, 2, '.', '');
         $plan = $this->enablerPlansTable->getEnablerPlans(['status' => \Admin\Model\EnablerPlans::status_active, 'id' => $pid]);
         if ($totalAmount == 0 && round($totalAmount) == 0) {
@@ -1633,16 +1638,13 @@ class IndexController extends BaseController
               return new JsonModel(array('success' => false, "message" => 'not a complimentary coupon..'));
             }
           } else {
-            return new JsonModel(array('success' => false, "message" => 'not a valid complimentary coupon..'));
+            if(($saveData['currency'] == "INR" && round($plan[0]['price_inr']) == 0) || ($saveData['currency'] == "USD" && round($plan[0]['price_usd']) == 0))
+              $saveData['price_after_disc'] = $totalAmount;
+            else
+              return new JsonModel(array('success' => false, "message" => 'not a valid complimentary coupon..'));
           }
         } else {
           $saveData['price_after_disc'] = $totalAmount; //number_format((float)$totalAmount, 2, '.', '');
-        }
-
-        if ($enablerDetails['country_phone_code'] == "91") {
-          $saveData['currency'] = "INR";
-        } else {
-          $saveData['currency'] = "USD";
         }
         if ($cc != "") {
           $saveData['coupon_code'] = $cc;
@@ -1763,6 +1765,11 @@ class IndexController extends BaseController
       $saveData['display_name'] = $prDetails['display_name'];
       $saveData['plan_id'] = $prDetails['plan_id'];
       $saveData['invoice'] = $prDetails['invoice'];
+      if ($enablerDetails['country_phone_code'] == "91") {
+        $saveData['currency'] = "INR";
+      } else {
+        $saveData['currency'] = "USD";
+      }
       $saveData['actual_price'] = number_format((float)$prDetails['actual_price'], 2, '.', '');
       $plan = $this->enablerPlansTable->getEnablerPlans(['status' => \Admin\Model\EnablerPlans::status_active, 'id' => $prDetails['plan_id']]);
       $lic_bal = '0';
@@ -1789,17 +1796,15 @@ class IndexController extends BaseController
             return new JsonModel(array('success' => false, "message" => 'not a complimentary coupon..'));
           }
         } else {
+          if(($saveData['currency'] == "INR" && round($plan[0]['price_inr']) == 0) || ($saveData['currency'] == "USD" && round($plan[0]['price_usd']) == 0))
+            $saveData['price_after_disc'] = $totalAmount;
+          else
           return new JsonModel(array('success' => false, "message" => 'not a valid complimentary coupon..'));
         }
       } else {
         $saveData['price_after_disc'] = number_format((float)$totalAmount, 2, '.', '');
       }
 
-      if ($enablerDetails['country_phone_code'] == "91") {
-        $saveData['currency'] = "INR";
-      } else {
-        $saveData['currency'] = "USD";
-      }
       if ($prDetails['coupon_code'] != "") {
         $saveData['coupon_code'] = $prDetails['coupon_code'];
         $execId = $this->couponsTable->getField(['coupon_code' => $prDetails['coupon_code']], 'executive_id');

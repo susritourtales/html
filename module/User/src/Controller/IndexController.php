@@ -1558,7 +1558,9 @@ class IndexController extends BaseController
           if ($checkCoupon) {
             if ($checkCoupon[0]['coupon_status'] == \Admin\Model\Coupons::Coupon_Status_Redeemed)
               return new JsonModel(array('success' => false, "message" => 'Coupon code already redeemed..'));
-            $today = date('Y-m-d');
+            if ($checkCoupon[0]['banned'] == \Admin\Model\ExecutiveDetails::Is_Banned)
+              return new JsonModel(array('success' => false, "message" => 'Coupon code cannot be redeemed.. TWISTT executive banned..'));
+              $today = date('Y-m-d');
             if ($checkCoupon[0]['validity_end_date'] < $today)
               return new JsonModel(array('success' => false, "message" => 'This coupon code expired..'));
 

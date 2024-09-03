@@ -122,6 +122,7 @@ class CouponsTable extends BaseTable
       $query = $sql->select()
         ->from($this->tableName)
         ->where($where)
+        ->join(array('b' => 'executive_details'), 'b.id=p.executive_id', array('banned'))
         ->limit(1);
       $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
       $coupons = [];

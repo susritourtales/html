@@ -60,7 +60,7 @@
                             <img src="<?php //echo $this->basePath(); ?>/img/edit.png" class="img-fluid">
                         </a> -->
                         <?php echo $executive['balance_outstanding'];
-                        if(!is_null($executive['balance_outstanding']) || $executive['balance_outstanding'] != "0.00"){?>
+                        if(!is_null($executive['balance_outstanding']) && $executive['balance_outstanding'] != "0.00"){?>
                         <div class="d-flex">
                             <div class="action-icon pay" data-id="<?php echo $executive['id']; ?>">
                                 <img src="<?php echo $this->basePath();?>/img/edit.png" class="img-fluid" >

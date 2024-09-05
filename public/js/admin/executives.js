@@ -58,6 +58,8 @@ $(document).ready(function () {
     $("body").on("click", ".delete-executive", function() {
 		var id = $(this).data("id");
 		$(".delete-conform-button").attr("data-id", id);
+        var spoid = "#spo" + id;
+        $(".modal-title").html("Delete " + $(spoid).html());
 		$("#deleteEntityModal").modal("show");
 	}).on("click", '.delete-conform-button', function() {
 		$(this).prop("disabled", true);
@@ -84,6 +86,18 @@ $(document).ready(function () {
         var id = $(this).attr("data-id");
         var amount = $('#tbamount').val();
         var tref = $('#tbtref').val();
+        if(amount == "")
+        {
+            messageDisplay("Please enter amount");
+            $(".pay-confirm-button").prop("disabled",false);
+            return false;
+        }
+        if(tref == "")
+        {
+            messageDisplay("Please enter Transaction ref");
+            $(".pay-confirm-button").prop("disabled",false);
+            return false;
+        }
         postData("/admin/pay-executive", {id:id, amt: amount, tr:tref},function (response){
             var jsonRespnse = parseJsonData(response);
             messageDisplay(jsonRespnse.message);

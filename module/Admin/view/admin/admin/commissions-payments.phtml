@@ -13,7 +13,7 @@
 
         <div class="main-container p-lg-4">
             <div class="d-flex justify-content-between mb-4">
-                <div class="main-heading mb-3"><a href="<?php echo $this->basePath() . '/a_dMin/executives' ?>"><i class="fa fa-arrow-left mr-2"></i></a> Commissions & Payments</div>
+                <div class="main-heading mb-3"><a href="<?php echo $this->basePath() . '/a_dMin/executives' ?>"><i class="fa fa-arrow-left mr-2"></i></a> Commissions Paid <?php echo ' - ' . $execDetails['username']  . " - (" . $execDetails['country_phone_code'] . ") " . $execDetails['mobile_number']; ?></div>
             </div>
             <div class="overflow-auto" id="recordsList">
                 <?php echo $this->partial('/admin/admin/load-commissions-payments-list', array(

@@ -1,0 +1,78 @@
+<?php
+    include 'vendor/autoload.php';
+    use Hybridauth\Hybridauth;
+    $hybridauth = new Hybridauth($config);
+    $adapters = $hybridauth->getConnectedAdapters();
+?>
+<link rel="stylesheet" href="<?php echo $this->basePath();?>/css/twistt.css?v=1.0.1">
+<div class="container-fluid my-5">
+    <div class="container">
+        <?php 
+            $logoutUrl = $this->basePath() . '/twistt/executive/logout';
+            if($adapters){ 
+                if($userDetails['oauth_provider'] == 'g'){
+                    $logoutUrl = $config['callback'] . "?logout=Google";
+                }elseif($userDetails['oauth_provider'] == 'f'){
+                    $logoutUrl = $config['callback'] . "?logout=Facebook";
+                }elseif($userDetails['oauth_provider'] == 'a'){
+                    $logoutUrl = $config['callback'] . "?logout=Apple";
+                }
+            }
+            echo $this->partial('/exec-sidebar', array('activeTab'=>\Application\Constants\Constants::TWISTT_PLANS_DISCOUNTS, 'logoutUrl'=>$logoutUrl)); ?>
+        <div class="content bg-white custom-shadow p-4 color-333"> 
+            <div class="bg-light border-radius-10 custom-shadow p-4 color-333">
+                <div class="user-page-name text-uppercase avant-md pb-3">
+                    <h5><?php echo "TWISTT Enabler Plans & Discounts"; ?></h5>
+                </div>
+                <div class="bg-white border-radius-10 custom-shadow color-333 ">
+                    <?php $selectedDate = date('Y-m-d', strtotime($qed));
+                        $selectedDateTime = new DateTime($selectedDate);
+                        $today = new DateTime();
+                        $interval = $today->diff($selectedDateTime);
+                        if($interval->days <= 30 && $selectedDateTime >= $today) {?>
+                            <div class="row p-4 my-3"><div class="col text-danger">Your QUESTT subscription is about to expire.. Please renew..</div></div>
+                    <?php } else { ?>
+                        <div class="row p-4">
+                            <div class="col">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-hover table-striped" id="table">
+                                        <thead>
+                                            <tr>
+                                                <th>S.no</th>
+                                                <th data-placeholder="Plan Name" data-input="plan_name">Plan Name</th>
+                                                <th data-placeholder="Price (INR)" data-input="price_inr">Price (INR)</th>
+                                                <th data-placeholder="Price (USD)" data-input="price_usd">Price (USD)</th>
+                                                <th data-placeholder="CD (INR)" data-input="coupon_disc_inr">Coupon Disc (INR)</th>
+                                                <th data-placeholder="CD (USD)" data-input="coupon_disc_usd">Coupon Disc (USD)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        <?php if (count($plansList)) {
+                                            $i = 0;
+                                            foreach ($plansList as $plan) { ?>
+                                                <tr>
+                                                    <td class="text-center"><?php echo $i + 1; ?></td>
+                                                    <td class="text-center"><?php echo $plan['plan_name']; ?></td>
+                                                    <td class="text-center"><?php echo $plan['price_inr']; ?></td>
+                                                    <td class="text-center"><?php echo $plan['price_usd']; ?></td>
+                                                    <td class="text-center"><?php echo $plan['coupon_disc_inr']; ?></td>
+                                                    <td class="text-center"><?php echo $plan['coupon_disc_usd']; ?></td>
+                                                </tr>
+                                            <?php $i++;
+                                            }
+                                        } else { ?>
+                                            <tr>
+                                                <td class="text-center" colspan="7">No data</td>
+                                            </tr>
+                                        <?php  } ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    <?php } ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

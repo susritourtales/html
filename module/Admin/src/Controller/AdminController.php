@@ -2558,9 +2558,11 @@ class AdminController extends BaseController
         $executiveIdString = base64_decode($executiveIdString);
         $executiveIdString = explode("=", $executiveIdString);
         $executiveId = array_key_exists(1, $executiveIdString) ? $executiveIdString[1] : 0;
+        $userId = $this->executiveDetailsTable->getField(['id' => $executiveId], 'user_id');
+        $execDetails = $this->userTable->getUserDetails(['id' => $userId]);
         $coupons = $this->couponsTable->getCouponsList(['executive_id' => $executiveId, 'limit' => 10, 'offset' => 0]);
         $totalCount = $this->couponsTable->getCouponsList(['executive_id' => $executiveId], 1);
-        return new ViewModel(['coupons' => $coupons, 'totalCount' => $totalCount, 'id' => $executiveId]);
+        return new ViewModel(['coupons' => $coupons, 'totalCount' => $totalCount, 'id' => $executiveId, 'execDetails' => $execDetails]);
     }
 
     public function loadCouponsCommissionsListAction()
@@ -2608,9 +2610,11 @@ class AdminController extends BaseController
         $executiveIdString = base64_decode($executiveIdString);
         $executiveIdString = explode("=", $executiveIdString);
         $executiveId = array_key_exists(1, $executiveIdString) ? $executiveIdString[1] : 0;
-        $transactions = $this->executiveTransactionTable->getTransactionsList(['executive_id' => $executiveId, 'limit' => 10, 'offset' => 0]);
-        $totalCount = $this->executiveTransactionTable->getTransactionsList(['executive_id' => $executiveId], 1);
-        return new ViewModel(['transactions' => $transactions, 'totalCount' => $totalCount, 'id' => $executiveId]);
+        $userId = $this->executiveDetailsTable->getField(['id' => $executiveId], 'user_id');
+        $execDetails = $this->userTable->getUserDetails(['id' => $userId]);
+        $transactions = $this->executiveTransactionTable->getTransactionsList(['executive_id' => $executiveId, 'limit' => 10, 'offset' => 0], 0, \Admin\Model\ExecutiveTransaction::transaction_paid);
+        $totalCount = $this->executiveTransactionTable->getTransactionsList(['executive_id' => $executiveId], 1, \Admin\Model\ExecutiveTransaction::transaction_paid);
+        return new ViewModel(['transactions' => $transactions, 'totalCount' => $totalCount, 'id' => $executiveId, 'execDetails' => $execDetails]);
     }
 
     public function loadCommissionsPaymentsListAction()
@@ -2638,9 +2642,59 @@ class AdminController extends BaseController
         $searchData['executive_id'] = $executiveId;
         $totalCount = 0;
         if ($type && $type == 'search') {
-            $totalCount = $this->executiveTransactionTable->getTransactionsList($searchData, 1);
+            $totalCount = $this->executiveTransactionTable->getTransactionsList($searchData, 1, \Admin\Model\ExecutiveTransaction::transaction_paid);
         }
-        $transactions = $this->executiveTransactionTable->getTransactionsList($searchData);
+        $transactions = $this->executiveTransactionTable->getTransactionsList($searchData, 0, \Admin\Model\ExecutiveTransaction::transaction_paid);
+        $view = new ViewModel(array('transactions' => $transactions, 'totalCount' => $totalCount));
+        $view->setTerminal(true);
+        return $view;
+        }
+    }
+    public function commissionsEarnedAction(){
+        $this->checkAdmin();
+        $paramId = $this->params()->fromRoute('id', '');
+        if (!$paramId) {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        $executiveIdString = rtrim($paramId, "=");
+        $executiveIdString = base64_decode($executiveIdString);
+        $executiveIdString = explode("=", $executiveIdString);
+        $executiveId = array_key_exists(1, $executiveIdString) ? $executiveIdString[1] : 0;
+        $userId = $this->executiveDetailsTable->getField(['id' => $executiveId], 'user_id');
+        $execDetails = $this->userTable->getUserDetails(['id' => $userId]);
+        $transactions = $this->couponsTable->getCouponsList(['executive_id' => $executiveId, 'limit' => 10, 'offset' => 0], 0, \Admin\Model\Coupons::Coupon_Status_Redeemed);
+        $totalCount = $this->couponsTable->getCouponsList(['executive_id' => $executiveId], 1, \Admin\Model\Coupons::Coupon_Status_Redeemed);
+        return new ViewModel(['transactions' => $transactions, 'totalCount' => $totalCount, 'id' => $executiveId, 'execDetails' => $execDetails]);
+    }
+
+    public function loadCommissionsEarnedListAction()
+    {
+        if ($this->getRequest()->isXmlHttpRequest()) {
+        $request = $this->getRequest()->getPost();
+        $searchData = array('limit' => 10, 'offset' => 0);
+        $type = $request['type'];
+        $paramId = $request['id'];
+        if (!$paramId) {
+            return $this->redirect()->toUrl($this->getBaseUrl());
+        }
+        $executiveIdString = rtrim($paramId, "=");
+        $executiveIdString = base64_decode($executiveIdString);
+        $executiveIdString = explode("=", $executiveIdString);
+        $executiveId = array_key_exists(1, $executiveIdString) ? $executiveIdString[1] : 0;
+        $offset = 0;
+        if (isset($request['page_number'])) {
+            $pageNumber = $request['page_number'];
+            $offset = ($pageNumber * 10 - 10);
+            $limit = 10;
+            $searchData['offset'] = $offset;
+            $searchData['limit'] = $limit;
+        }
+        $searchData['executive_id'] = $executiveId;
+        $totalCount = 0;
+        if ($type && $type == 'search') {
+            $totalCount = $this->couponsTable->getCouponsList($searchData, 1, \Admin\Model\Coupons::Coupon_Status_Redeemed);
+        }
+        $transactions = $this->couponsTable->getCouponsList($searchData, 0, \Admin\Model\Coupons::Coupon_Status_Redeemed);
         $view = new ViewModel(array('transactions' => $transactions, 'totalCount' => $totalCount));
         $view->setTerminal(true);
         return $view;
@@ -2863,6 +2917,10 @@ class AdminController extends BaseController
             $plan['plan_type'] = $request['pt'];
             $plan['price_inr'] = $request['ppinr'];
             $plan['price_usd'] = $request['ppusd'];
+            $plan['coupon_disc_inr'] = $request['cdinr'];
+            $plan['coupon_disc_usd'] = $request['cdusd'];
+            $plan['coupon_comm_inr'] = $request['ccinr'];
+            $plan['coupon_comm_usd'] = $request['ccusd'];
             $plan['status'] = \Admin\Model\EnablerPlans::status_active;
             $res = $this->enablerPlansTable->setEnablerPlans($plan,['id' => $planId]);
             if(!$res)
@@ -3028,9 +3086,10 @@ class AdminController extends BaseController
         $prIdString = base64_decode($prIdString);
         $prIdString = explode("=", $prIdString);
         $eId = array_key_exists(1, $prIdString) ? $prIdString[1] : 0;
+        $eDetails = $this->enablerTable->getEnablerDetails(['id' => $eId]);
         $purchases = $this->enablerPurchaseTable->getEnablerPurchasesList(['enabler_id' => $eId, 'limit' => 10, 'offset' => 0]);
         $totalCount = $this->enablerPurchaseTable->getEnablerPurchasesList(['enabler_id' => $eId], 1);
-        return new ViewModel(['purchases' => $purchases, 'totalCount'=>$totalCount]);
+        return new ViewModel(['purchases' => $purchases, 'totalCount'=>$totalCount, 'eDetails'=>$eDetails]);
     }
     public function loadPurchasesListAction()
     {
@@ -3163,8 +3222,10 @@ class AdminController extends BaseController
     $prIdString = explode("=", $prIdString);
     $id = array_key_exists(1, $prIdString) ? $prIdString[1] : 0;
     $sales = $this->enablerSalesTable->getAdminEnablerSalesList(['purchase_id' => $id, 'limit' => 10, 'offset' => 0]);
+    $enabler_id = $this->enablerPurchaseTable->getField(['id' => $id], 'enabler_id');
+    $eDetails = $this->enablerTable->getEnablerDetails(['id' => $enabler_id]);
     $totalCount = $this->enablerSalesTable->getAdminEnablerSalesList(['purchase_id' => $id], 1);
-    return new ViewModel(['sales' => $sales, 'totalCount'=>$totalCount]);
+    return new ViewModel(['sales' => $sales, 'totalCount'=>$totalCount, 'eDetails'=>$eDetails]);
 }
 public function loadSalesListAction()
 {

@@ -14,7 +14,7 @@
             <div class="d-flex justify-content-between mb-4">
                 <div class="main-heading"><?php echo "TWISTT Enabler Plans (Total: $totalCount)";?></div> <a class="text-end" href="<?php echo $this->basePath() . '/a_dMin/add-enabler-plan' ?>"><button type="button" class="btn add-btn">Add Plan</button></a>
             </div>
-            <div class="" id="recordsList">
+            <div class="overflow-auto" id="recordsList">
                 <?php echo $this->partial('/admin/admin/load-enabler-plans', array('plansList' => $plansList, 'totalCount' => $totalCount, 'type' => 'initialize')); ?>
             </div>
             <?php if ($totalCount > 10) {

@@ -26,10 +26,14 @@ $(document).ready(function(){
         var pt = $("#pt").val();
         var ppinr = $("#ppinr").val();
         var ppusd = $("#ppusd").val();
+        var cdinr = $("#cdinr").val();
+        var cdusd = $("#cdusd").val();
+        var ccinr = $("#ccinr").val();
+        var ccusd = $("#ccusd").val();
         var element=$(this);
         element.html('Please wait...');
         element.prop('disabled',true);
-        postData("/a_dMin/edit-enabler-plan",{'id':id, 'pn':pn, 'pt':pt, 'ppinr':ppinr, 'ppusd':ppusd},function(response){
+        postData("/a_dMin/edit-enabler-plan",{'id':id, 'pn':pn, 'pt':pt, 'ppinr':ppinr, 'ppusd':ppusd, 'cdinr':cdinr, 'cdusd':cdusd, 'ccinr':ccinr, 'ccusd':ccusd},function(response){
             if(response)
             {
                 element.prop('disabled',false);

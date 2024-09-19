@@ -282,6 +282,42 @@ return [
                         'action' => 'load-transactions-list',
                     ],
                 ],
+            ],  'twistt-executive-track-commissions-earned' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/twistt/executive/track-commissions-earned',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'executive-track-commissions-earned',
+                    ],
+                ],
+            ],  'twistt-executive-load-commissions-earned' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/twistt/executive/load-transactions-earned-list',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'load-transactions-earned-list',
+                    ],
+                ],
+            ],  'twistt-executive-track-commissions-received' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/twistt/executive/track-commissions-received',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'executive-track-commissions-received',
+                    ],
+                ],
+            ],  'twistt-executive-load-commissions-received' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/twistt/executive/load-transactions-received-list',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'load-transactions-received-list',
+                    ],
+                ],
             ], 'twistt-executiveterms' => [
                 'type' => Literal::class,
                 'options' => [
@@ -291,7 +327,16 @@ return [
                         'action' => 'twistt-executive-terms',
                     ],
                 ],
-            ], 'twistt-executive-auth' => [
+            ],  'twistt-plans-discounts' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/twistt/plans-discounts',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'twistt-plans-discounts',
+                    ],
+                ],
+            ],'twistt-executive-auth' => [
                 'type' => Literal::class,
                 'options' => [
                     'route' => '/twistt/executive/auth',

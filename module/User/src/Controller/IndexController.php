@@ -888,6 +888,124 @@ class IndexController extends BaseController
       return $view;
     }
   }
+
+  public function executiveTrackCommissionsEarnedAction()
+  {
+    $logResult = $this->logRequest($this->getRequest()->toString());
+    if ($this->authService->hasIdentity()) {
+      $loginId = $this->authService->getIdentity();
+      $userDetails = $this->userTable->getUserDetails(['user_login_id' => $loginId['user_login_id']]);
+      $checkRole = $this->userTable->getField(['id' => $userDetails['id']], 'user_type_id');
+      if ($checkRole != \Admin\Model\User::TWISTT_Executive)
+        $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
+      $bankDetails = $this->executiveDetailsTable->getExecutiveDetails(['user_id' => $userDetails['id']]);
+      $qed = $this->questtSubscriptionTable->getField(['user_id' => $loginId['id']], 'end_date');
+      $qed = date('d-m-Y', strtotime($qed));
+      //$transactions = $this->executiveTransactionTable->getTransactionsList(['executive_id' => $bankDetails['id'], 'limit' => 10, 'offset' => 0], 0, \Admin\Model\ExecutiveTransaction::transaction_due);
+      //$totalCount = $this->executiveTransactionTable->getTransactionsList(['executive_id' => $bankDetails['id']], 1);
+      $transactions = $this->couponsTable->getCouponsList(['executive_id' => $bankDetails['id'], 'limit' => 10, 'offset' => 0], 0, \Admin\Model\Coupons::Coupon_Status_Redeemed);
+      $totalCount = $this->couponsTable->getCouponsList(['executive_id' => $bankDetails['id']], 1, \Admin\Model\Coupons::Coupon_Status_Redeemed);
+      $config = $this->getConfig();
+      return new ViewModel(['userDetails' => $userDetails, 'bankDetails' => $bankDetails, 'transactions' => $transactions, 'totalCount' => $totalCount, 'config' => $config['hybridauth'], 'qed' => $qed, 'imageUrl' => $this->filesUrl()]);
+    } else {
+      $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
+    }
+  }
+
+  public function loadTransactionsEarnedListAction()
+  {
+    $logResult = $this->logRequest($this->getRequest()->toString());
+    if ($this->getRequest()->isXmlHttpRequest()) {
+      $request = $this->getRequest()->getPost();
+      $searchData = array('limit' => 10, 'offset' => 0);
+      $type = $request['type'];
+      $offset = 0;
+      $loginId = $this->authService->getIdentity();
+      $userDetails = $this->userTable->getUserDetails(['user_login_id' => $loginId['user_login_id']]);
+      $checkRole = $this->userTable->getField(['id' => $userDetails['id']], 'user_type_id');
+      if ($checkRole != \Admin\Model\User::TWISTT_Executive)
+        $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
+      $bankDetails = $this->executiveDetailsTable->getExecutiveDetails(['user_id' => $userDetails['id']]);
+      $qed = $this->questtSubscriptionTable->getField(['user_id' => $loginId['id']], 'end_date');
+      $qed = date('d-m-Y', strtotime($qed));
+      if (isset($request['page_number'])) {
+        $pageNumber = $request['page_number'];
+        $offset = ($pageNumber * 10 - 10);
+        $limit = 10;
+        $searchData['offset'] = $offset;
+        $searchData['limit'] = $limit;
+      }
+      $searchData['executive_id'] = $bankDetails['id'];
+      $totalCount = 0;
+
+      if ($type && $type == 'search') {
+        //$totalCount = $this->executiveTransactionTable->getTransactionsList($searchData, 1, \Admin\Model\ExecutiveTransaction::transaction_due);
+        $totalCount = $this->couponsTable->getCouponsList($searchData, 1, \Admin\Model\Coupons::Coupon_Status_Redeemed);
+      }
+      //$transactions = $this->executiveTransactionTable->getTransactionsList($searchData);
+      $transactions = $this->couponsTable->getCouponsList($searchData, 0, \Admin\Model\Coupons::Coupon_Status_Redeemed);
+      $view = new ViewModel(array('transactions' => $transactions, 'totalCount' => $totalCount));
+      $view->setTerminal(true);
+      return $view;
+    }
+  }
+
+  public function executiveTrackCommissionsReceivedAction()
+  {
+    $logResult = $this->logRequest($this->getRequest()->toString());
+    if ($this->authService->hasIdentity()) {
+      $loginId = $this->authService->getIdentity();
+      $userDetails = $this->userTable->getUserDetails(['user_login_id' => $loginId['user_login_id']]);
+      $checkRole = $this->userTable->getField(['id' => $userDetails['id']], 'user_type_id');
+      if ($checkRole != \Admin\Model\User::TWISTT_Executive)
+        $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
+      $bankDetails = $this->executiveDetailsTable->getExecutiveDetails(['user_id' => $userDetails['id']]);
+      $qed = $this->questtSubscriptionTable->getField(['user_id' => $loginId['id']], 'end_date');
+      $qed = date('d-m-Y', strtotime($qed));
+      $transactions = $this->executiveTransactionTable->getTransactionsList(['executive_id' => $bankDetails['id'], 'limit' => 10, 'offset' => 0], 0, \Admin\Model\ExecutiveTransaction::transaction_paid);
+      $totalCount = $this->executiveTransactionTable->getTransactionsList(['executive_id' => $bankDetails['id']], 1, \Admin\Model\ExecutiveTransaction::transaction_paid);
+      $config = $this->getConfig();
+      return new ViewModel(['userDetails' => $userDetails, 'bankDetails' => $bankDetails, 'transactions' => $transactions, 'totalCount' => $totalCount, 'config' => $config['hybridauth'], 'qed' => $qed, 'imageUrl' => $this->filesUrl()]);
+    } else {
+      $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
+    }
+  }
+
+  public function loadTransactionsReceivedListAction()
+  {
+    $logResult = $this->logRequest($this->getRequest()->toString());
+    if ($this->getRequest()->isXmlHttpRequest()) {
+      $request = $this->getRequest()->getPost();
+      $searchData = array('limit' => 10, 'offset' => 0);
+      $type = $request['type'];
+      $offset = 0;
+      $loginId = $this->authService->getIdentity();
+      $userDetails = $this->userTable->getUserDetails(['user_login_id' => $loginId['user_login_id']]);
+      $checkRole = $this->userTable->getField(['id' => $userDetails['id']], 'user_type_id');
+      if ($checkRole != \Admin\Model\User::TWISTT_Executive)
+        $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
+      $bankDetails = $this->executiveDetailsTable->getExecutiveDetails(['user_id' => $userDetails['id']]);
+      $qed = $this->questtSubscriptionTable->getField(['user_id' => $loginId['id']], 'end_date');
+      $qed = date('d-m-Y', strtotime($qed));
+      if (isset($request['page_number'])) {
+        $pageNumber = $request['page_number'];
+        $offset = ($pageNumber * 10 - 10);
+        $limit = 10;
+        $searchData['offset'] = $offset;
+        $searchData['limit'] = $limit;
+      }
+      $searchData['executive_id'] = $bankDetails['id'];
+      $totalCount = 0;
+
+      if ($type && $type == 'search') {
+        $totalCount = $this->executiveTransactionTable->getTransactionsList($searchData, 1, \Admin\Model\ExecutiveTransaction::transaction_paid);
+      }
+      $transactions = $this->executiveTransactionTable->getTransactionsList($searchData, 0, \Admin\Model\ExecutiveTransaction::transaction_paid);
+      $view = new ViewModel(array('transactions' => $transactions, 'totalCount' => $totalCount));
+      $view->setTerminal(true);
+      return $view;
+    }
+  }
   public function questtValidityAction()
   {
     $logResult = $this->logRequest($this->getRequest()->toString());
@@ -923,6 +1041,24 @@ class IndexController extends BaseController
       $qed = date('d-m-Y', strtotime($qed));
       $config = $this->getConfig();
       return new ViewModel(['userDetails' => $userDetails, 'bankDetails' => $bankDetails, 'config' => $config['hybridauth'], 'qed' => $qed,'imageUrl' => $this->filesUrl()]);
+    } else {
+      $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
+    }
+  }
+  public function twisttPlansDiscountsAction()
+  {
+    $logResult = $this->logRequest($this->getRequest()->toString());
+    if ($this->authService->hasIdentity()) {
+      $loginId = $this->authService->getIdentity();
+      $userDetails = $this->userTable->getUserDetails(['user_login_id' => $loginId['user_login_id']]);
+      $checkRole = $this->userTable->getField(['id' => $userDetails['id']], 'user_type_id');
+      if ($checkRole != \Admin\Model\User::TWISTT_Executive)
+        $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
+      $qed = $this->questtSubscriptionTable->getField(['user_id' => $loginId['id']], 'end_date');
+      $qed = date('d-m-Y', strtotime($qed));
+      $config = $this->getConfig();
+      $plansList = $this->enablerPlansTable->getAllEnablerPlans();
+      return new ViewModel(['userDetails' => $userDetails, 'plansList' => $plansList, 'config' => $config['hybridauth'], 'qed' => $qed,'imageUrl' => $this->filesUrl()]);
     } else {
       $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
     }
@@ -1550,8 +1686,10 @@ class IndexController extends BaseController
         $discount = 0.00;
         if ($enablerDetails['country_phone_code'] == '91') {
           $planPrice = $plan[0]['price_inr'];
+          $discount = $plan[0]['coupon_disc_inr'];
         } else {
           $planPrice = $plan[0]['price_usd'];
+          $discount = $plan[0]['coupon_disc_usd'];
         }
         if ($coupon_code != "") {
           $checkCoupon = $this->couponsTable->getCoupon(['coupon_code' => $coupon_code]);
@@ -1570,8 +1708,9 @@ class IndexController extends BaseController
               else
                 return new JsonModel(array('success' => false, "message" => 'This coupon code cannot be applied for the selected plan..'));
             } else {
-              $discount = number_format($this->subscriptionPlanTable->getField(['active' => '1'], 'cd_percentage'), 2);
-              $pad = number_format((float)$planPrice * (1 - (float)$discount / 100), 2);
+              /* $discount = number_format($this->subscriptionPlanTable->getField(['active' => '1'], 'cd_percentage'), 2);
+              $pad = number_format((float)$planPrice * (1 - (float)$discount / 100), 2); */
+              $pad = number_format((float)$planPrice - (float)$discount, 2);
               if (str_contains($plan[0]['plan_name'], 'P'))
                 return new JsonModel(array('success' => true, "message" => 'success', 'pp' => $planPrice, 'pad' => $pad));
               else
@@ -1583,7 +1722,8 @@ class IndexController extends BaseController
         } else {
           if ($enablerDetails['stt_disc'] != "0.00") {
             $discount = number_format($enablerDetails['stt_disc'], 2);
-            $pad = number_format($planPrice * (1 - $discount / 100), 2);
+            //$pad = number_format($planPrice * (1 - $discount / 100), 2);
+            $pad = number_format((float)$planPrice - (float)$discount, 2);
             return new JsonModel(array('success' => true, "message" => 'success', 'pp' => $planPrice, 'pad' => $pad));
           } else {
             return new JsonModel(array('success' => true, "message" => 'success', 'pp' => $planPrice, 'pad' => $planPrice));
@@ -1767,13 +1907,13 @@ class IndexController extends BaseController
       $saveData['display_name'] = $prDetails['display_name'];
       $saveData['plan_id'] = $prDetails['plan_id'];
       $saveData['invoice'] = $prDetails['invoice'];
+      $plan = $this->enablerPlansTable->getEnablerPlans(['status' => \Admin\Model\EnablerPlans::status_active, 'id' => $prDetails['plan_id']]);
       if ($enablerDetails['country_phone_code'] == "91") {
         $saveData['currency'] = "INR";
       } else {
         $saveData['currency'] = "USD";
       }
       $saveData['actual_price'] = number_format((float)$prDetails['actual_price'], 2, '.', '');
-      $plan = $this->enablerPlansTable->getEnablerPlans(['status' => \Admin\Model\EnablerPlans::status_active, 'id' => $prDetails['plan_id']]);
       $lic_bal = '0';
       if ($plan[0]['plan_type'] == \Admin\Model\EnablerPlans::Complimentary_Plan)
         $lic_bal = substr($plan[0]['plan_name'], strpos($plan[0]['plan_name'], 'C') + 1);
@@ -1838,7 +1978,12 @@ class IndexController extends BaseController
               $updateCoupon['redeemed_on'] = $purDetails['purchase_date'];
               $updateCoupon['redeemer_paid'] = $purDetails['price_after_disc'];
               $updateCoupon['redeemer_actual_amount'] = $purDetails['actual_price'];
-              $updateCoupon['commission_receivable'] = number_format((float)$purDetails['price_after_disc'], 2, '.', '') * number_format((float)$execBDetails['commission_percentage'], 2, '.', '') / 100;
+              //$updateCoupon['commission_receivable'] = number_format((float)$purDetails['price_after_disc'], 2, '.', '') * number_format((float)$execBDetails['commission_percentage'], 2, '.', '') / 100;
+              if ($enablerDetails['country_phone_code'] == "91") {
+                $updateCoupon['commission_receivable'] = number_format((float)$plan[0]['coupon_comm_inr'], 2, '.', '') + number_format((float)$execBDetails['commission_percentage'], 2, '.', '');
+              } else {
+                $updateCoupon['commission_receivable'] = number_format((float)$plan[0]['coupon_comm_usd'], 2, '.', '') + number_format((float)$execBDetails['commission_percentage'], 2, '.', '');
+              }
               $updateCoupon['coupon_status'] = \Admin\Model\Coupons::Coupon_Status_Redeemed;
               $setCoupon = $this->couponsTable->setCoupons($updateCoupon, ['coupon_code' => $purDetails['coupon_code']]);
               if ($setCoupon) {
@@ -1923,6 +2068,7 @@ class IndexController extends BaseController
       } else {
         return new JsonModel(array('success' => false, "message" => 'invoice not found..'));
       }
+      $plan = $this->enablerPlansTable->getEnablerPlans(['status' => \Admin\Model\EnablerPlans::status_active, 'id' => $prDetails['plan_id']]);
       $cc = $prDetails['coupon_code'];
       $pp = $prDetails['actual_price'];
       $pad = $prDetails['price_after_disc'];
@@ -1955,7 +2101,12 @@ class IndexController extends BaseController
             $updateCoupon['redeemed_on'] = date('Y-m-d H:i:s');
             $updateCoupon['redeemer_paid'] = $pad;
             $updateCoupon['redeemer_actual_amount'] = $pp;
-            $updateCoupon['commission_receivable'] = number_format((float)$pad, 2, '.', '') * number_format((float)$execBDetails['commission_percentage'], 2, '.', '') / 100;
+            //$updateCoupon['commission_receivable'] = number_format((float)$pad, 2, '.', '') * number_format((float)$execBDetails['commission_percentage'], 2, '.', '') / 100;
+            if ($prDetails['currency'] == "INR") {
+              $updateCoupon['commission_receivable'] = number_format((float)$plan[0]['coupon_comm_inr'], 2, '.', '') + number_format((float)$execBDetails['commission_percentage'], 2, '.', '');
+            } else {
+              $updateCoupon['commission_receivable'] = number_format((float)$plan[0]['coupon_comm_inr'], 2, '.', '') + number_format((float)$execBDetails['commission_percentage'], 2, '.', '');
+            }
             $updateCoupon['coupon_status'] = \Admin\Model\Coupons::Coupon_Status_Redeemed;
             $setCoupon = $this->couponsTable->setCoupons($updateCoupon, ['coupon_code' => $cc]);
             if ($setCoupon) {

@@ -73,6 +73,28 @@ class EnablerPlansTable extends BaseTable
     }
   }
 
+  public function getAllEnablerPlans($status = \Admin\Model\EnablerPlans::status_active){
+    try {
+      $where = new Where();
+      $where->equalTo('p.status', $status);
+      $order = ['p.created_at desc'];
+
+      $sql = $this->getSql();
+      $query = $sql->select()
+        ->from($this->tableName)
+        ->where($where)
+        ->order($order);
+
+      $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
+      foreach ($resultSet as $row) {
+        $plan[] = $row;
+      }
+      return $plan;
+    } catch (\Exception $e) {
+      return array();
+    }
+  }
+
   public function getAdminEnablerPlans($data = array('limit' => 10, 'offset' => 0), $gc = 0){
     try {
       $where = new Where();

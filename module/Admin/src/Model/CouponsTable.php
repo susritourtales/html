@@ -76,33 +76,97 @@ class CouponsTable extends BaseTable
     }
   }
 
-  public function getCouponsList($data = array('limit' => 10, 'offset' => 0), $gc = 0)
+  public function getCouponsList($data = array('limit' => 10, 'offset' => 0), $gc = 0, $cs=2)
   {
       try {
-          $where = new Where();
+          /* $where = new Where();
           $where->equalTo('p.executive_id', $data['executive_id']);
+          if($cs != 2)
+            $where->equalTo('p.coupon_status', $cs);
           $order = ['p.created_at desc'];
+          $where = $where->expression(
+            'ext.id = (
+                SELECT MAX(id)
+                FROM executive_transaction
+                WHERE coupon_id = p.id
+            ) OR ext.id IS NULL', []
+          );
           
           $sql = $this->getSql();
-          if ($gc == 1) {
-            $query = $sql->select()
+          $query = $sql->select()
                   ->from($this->tableName)
                   ->where($where)
                   ->join(array('b' => 'executive_details'), 'b.id=p.executive_id', array('commission_percentage'))
-                  //->join(array('u' => 'user'), 'u.id=p.redeemer_id', array('username'), Select::JOIN_LEFT)
-                  //->where($where)
-                  ->order($order);
+                  ->join(array('enp' => 'enabler_purchase'), 'enp.coupon_code=p.coupon_code', array('purid' => 'id', 'enabler_id'), Select::JOIN_LEFT)
+                  ->join(array('en' => 'enabler'), 'en.id=enp.enabler_id', array('username','company_name'), Select::JOIN_LEFT)
+                  ->join(array('ext' => 'executive_transaction'), 'ext.coupon_id=p.id', array('total_earnings','transaction_date', 'txid' => 'id'), Select::JOIN_LEFT)
+                  ->order($order); */
+          
+          $where = new Where();
+          $where->equalTo('p.executive_id', $data['executive_id']);
+          if ($cs != 2) {
+              $where->equalTo('p.coupon_status', $cs);
+          }
+          
+          // Use `nest()` to group the `ext.id` condition and apply `OR` correctly
+          $where->nest()
+              ->expression(
+                  'ext.id = (SELECT MAX(id) FROM executive_transaction WHERE coupon_id = p.id)', []
+              )
+              ->or
+              ->isNull('ext.id')
+          ->unnest(); // Unnest after the group to close the condition
+          
+          // Define the order clause
+          $order = ['p.redeemed_on desc'];
+          
+          // Build the query using the SQL object
+          $sql = $this->getSql();
+          $query = $sql->select()
+              ->from($this->tableName)
+              ->where($where) // Apply the where conditions
+              ->join(
+                  array('b' => 'executive_details'),
+                  'b.id = p.executive_id',
+                  array('commission_percentage')
+              )
+              ->join(
+                  array('enp' => 'enabler_purchase'),
+                  'enp.coupon_code = p.coupon_code',
+                  array('purid' => 'id', 'enabler_id'),
+                  Select::JOIN_LEFT
+              )
+              ->join(
+                  array('en' => 'enabler'),
+                  'en.id = enp.enabler_id',
+                  array('username', 'company_name'),
+                  Select::JOIN_LEFT
+              )
+              ->join(
+                  array('ext' => 'executive_transaction'),
+                  'ext.coupon_id = p.id',
+                  array('total_earnings', 'transaction_date', 'txid' => 'id'),
+                  Select::JOIN_LEFT // Ensure it's a LEFT JOIN
+              )
+              ->order($order); // Apply the order
+                  
+          if ($gc == 0) {
+            $query->limit($data['limit'])
+                  ->offset($data['offset']);
+          }
+          /* if ($gc == 1) {
+            
           } else {
             $query = $sql->select()
                   ->from($this->tableName)
                   ->where($where)
                   ->join(array('b' => 'executive_details'), 'b.id=p.executive_id', array('commission_percentage'))
-                  //->join(array('u' => 'user'), 'u.id=p.redeemer_id', array('username','mobile_number', 'country_phone_code'), Select::JOIN_LEFT)
-                  //->where($where)
+                  ->join(array('enp' => 'enabler_purchase'), 'enp.coupon_code=p.coupon_code', array('purid' => 'id', 'enabler_id'), Select::JOIN_LEFT)
+                  ->join(array('en' => 'enabler'), 'en.id=enp.enabler_id', array('username','company_name'))
                   ->order($order)
                   ->limit($data['limit'])
                   ->offset($data['offset']);
-          }
+          } */
           $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
           if ($gc == 1)
               return count($resultSet);

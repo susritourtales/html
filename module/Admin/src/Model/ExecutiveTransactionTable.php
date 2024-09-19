@@ -84,13 +84,15 @@ class ExecutiveTransactionTable extends BaseTable
     }
   }
 
-  public function getTransactionsList($data = array('limit' => 10, 'offset' => 0), $gc = 0)
+  public function getTransactionsList($data = array('limit' => 10, 'offset' => 0), $gc = 0, $tt=-1)
   {
       try {
           $where = new Where();
           if(array_key_exists('executive_id', $data))
             $where->equalTo('p.executive_id', $data['executive_id']);
-          
+          if($tt != -1)
+            $where->equalTo('p.transaction_type', $tt);
+
           $where->equalTo('ed.banned', '0');
           $where->and->equalTo('ed.verified', '1');
           //$order = ['p.created_at desc'];
@@ -194,8 +196,9 @@ class ExecutiveTransactionTable extends BaseTable
           $query = $sql->select()
                   ->from($this->tableName)
                   ->where($where)
-                  ->join(array('c' => 'coupons'), new \Laminas\Db\Sql\Expression("`c`.`id`=`p`.`coupon_id` AND `c`.`coupon_status`=1"), array('coupon_code', 'coupon_type', 'coupon_status','redeemer_name', 'redeemer_mobile'))
+                  ->join(array('c' => 'coupons'), new \Laminas\Db\Sql\Expression("`c`.`id`=`p`.`coupon_id` AND `c`.`coupon_status`=1"), array('coupon_code', 'coupon_type', 'coupon_status','redeemer_name', 'redeemer_mobile', 'redeemer_paid', 'commission_receivable'))
                   ->join(array('ep' => 'executive_purchase'), 'ep.id=c.purchase_id', array('pid' => 'id'))
+                  ->join(array('enp' => 'enabler_purchase'), 'enp.coupon_code=c.coupon_code', array('en_currency' => 'currency'))
                   ->join(array('u' => 'user'), 'u.id=p.user_id', array('username','mobile_number', 'country_phone_code'), Select::JOIN_LEFT)
                   ->join(array('ed' => 'executive_details'), 'ed.id=p.executive_id', array('bank_account_no','ifsc_code', 'bank_name'), Select::JOIN_LEFT)
                   ->order($order);

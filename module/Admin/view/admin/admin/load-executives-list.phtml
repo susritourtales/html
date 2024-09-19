@@ -45,7 +45,7 @@
                 <td class="cc" data-url="<?php echo $this->basePath() . '/a_dMin/edit-executive/' . base64_encode('id=' . $executive['id']) ?>"><?= "(" . $executive['country_phone_code'] . ") " . $executive['mobile_number'] ?></td>
                 <td class="cc text-center" data-url="<?php echo $this->basePath() . '/a_dMin/executive/coupons-commissions/' . base64_encode('id=' . $executive['id']) ?>"><?= $executive['d_coupon_count'] ?></td>
                 <td class="cc text-center" data-url="<?php echo $this->basePath() . '/a_dMin/executive/coupons-commissions/' . base64_encode('id=' . $executive['id']) ?>"><?= $executive['c_coupon_count'] ?></td>
-                <td class="cc text-center" data-url="<?php echo $this->basePath() . '/a_dMin/executive/commissions-payments/' . base64_encode('id=' . $executive['id']) ?>"><?= $executive['total_earnings'] == null ? "0.00" : $executive['total_earnings'] ?></td>
+                <td class="cc text-center" data-url="<?php echo $this->basePath() . '/a_dMin/executive/commissions-earned/' . base64_encode('id=' . $executive['id']) ?>"><?= $executive['total_earnings'] == null ? "0.00" : $executive['total_earnings'] ?></td>
                 <td class="cc text-center" data-url="<?php echo $this->basePath() . '/a_dMin/executive/commissions-payments/' . base64_encode('id=' . $executive['id']) ?>"><?= $executive['stt_paid_amount'] == null ? "0.00" : $executive['stt_paid_amount'] ?></td>
                 <td class="cc text-center" data-url="<?php echo $this->basePath() . '/a_dMin/executive/commissions-payments/' . base64_encode('id=' . $executive['id']) ?>"><?= $executive['balance_outstanding'] == null ? "0.00" : $executive['balance_outstanding'] ?></td>
                 <td class="text-center">

@@ -7,6 +7,10 @@
                 <th data-placeholder="Plan Type" data-input="plan_type">Plan Type</th>
                 <th data-placeholder="Price (INR)" data-input="price_inr">Price (INR)</th>
                 <th data-placeholder="Price (USD)" data-input="price_usd">Price (USD)</th>
+                <th data-placeholder="CD (INR)" data-input="coupon_disc_inr">Coupon Disc (INR)</th>
+                <th data-placeholder="CD (USD)" data-input="coupon_disc_usd">Coupon Disc (USD)</th>
+                <th data-placeholder="CC (INR)" data-input="coupon_comm_inr">Coupon Comm (INR)</th>
+                <th data-placeholder="CC (USD)" data-input="coupon_comm_usd">Coupon Comm (USD)</th>
                 <th>Action</th>
             </tr>
         <?php } ?>
@@ -27,6 +31,10 @@
                     <td class="text-center"><?php echo $plan['plan_type']; ?></td>
                     <td class="text-center"><?php echo $plan['price_inr']; ?></td>
                     <td class="text-center"><?php echo $plan['price_usd']; ?></td>
+                    <td class="text-center"><?php echo $plan['coupon_disc_inr']; ?></td>
+                    <td class="text-center"><?php echo $plan['coupon_disc_usd']; ?></td>
+                    <td class="text-center"><?php echo $plan['coupon_comm_inr']; ?></td>
+                    <td class="text-center"><?php echo $plan['coupon_comm_usd']; ?></td>
                     <td>
                         <div class="d-flex">
                             <a class="action-icon " href="<?php echo $this->basePath() . '/a_dMin/edit-enabler-plan/' . base64_encode('enablerPlanId=' . $plan['id']) ?>">

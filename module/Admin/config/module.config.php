@@ -830,6 +830,29 @@ return [
                         'action' => 'load-commissions-payments-list',
                     ],
                 ],
+            ],'executive-commissions-earned' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/a_dMin/executive/commissions-earned[/:id]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[a-zA-Z0-9_~\-!@#\$%\^&*\(\)=]*[/]*',
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'commissions-earned',
+                    ],
+                ],
+            ],
+            'load-commissions-earned' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/a_dMin/load-commissions-earned-list',
+                    'defaults' => [
+                        'controller' => Controller\AdminController::class,
+                        'action' => 'load-commissions-earned-list',
+                    ],
+                ],
             ],
             'change-password' => [
                 'type' => Segment::class,

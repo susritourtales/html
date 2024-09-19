@@ -54,9 +54,13 @@ class Constants
     const TWISTT_EXEC_PROFILE = 1;
     const TWISTT_BUY_COUPONS = 2;
     const TWISTT_TRACK_COMMISSION = 4;
+    const TWISTT_TRACK_COMMISSION_EARNED = 41;
+    const TWISTT_TRACK_COMMISSION_RECEIVED = 42;
     const TWISTT_EXEC_TERMS = 5;
     const TWISTT_EXEC_LOGOUT = 6;
     const TWISTT_TRACK_COUPONS = 7;
+    const TWISTT_PLANS_DISCOUNTS = 8;
+    
 
     const TWISTT_EN_PROFILE = 1;
     const TWISTT_BUY_PLANS = 2;

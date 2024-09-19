@@ -13,13 +13,12 @@
 
         <div class="main-container p-lg-4">
             <div class="d-flex justify-content-between mb-4">
-                <div class="main-heading mb-3"><a href="<?php echo $this->basePath() . '/a_dMin/executives' ?>"><i class="fa fa-arrow-left mr-2"></i></a> Coupons <?php echo ' - ' . $execDetails['username']  . " - (" . $execDetails['country_phone_code'] . ") " . $execDetails['mobile_number']; ?></div>
+                <div class="main-heading mb-3"><a href="<?php echo $this->basePath() . '/a_dMin/executives' ?>"><i class="fa fa-arrow-left mr-2"></i></a> Commissions Earned <?php echo ' - ' . $execDetails['username']  . " - (" . $execDetails['country_phone_code'] . ") " . $execDetails['mobile_number']; ?></div>
             </div>
             <div class="overflow-auto" id="recordsList">
-                <?php echo $this->partial('/admin/admin/load-coupons-commissions-list', array(
-                    'coupons' => $coupons, 'totalCount' => $totalCount, 'type' => 'initialize'
+                <?php echo $this->partial('/admin/admin/load-commissions-earned-list', array(
+                    'transactions' => $transactions, 'totalCount' => $totalCount, 'type' => 'initialize'
                 )); ?>
-
             </div>
             <?php if ($totalCount > 10) {
                 $paginationCount = ceil($totalCount / 10); ?>
@@ -30,4 +29,4 @@
     <input type="hidden" id="hid" name="hid" value="<?php echo base64_encode("id=". $id);?>" />
 </div>
 <script src="<?php echo $this->basePath(); ?>/js/pagination.js"></script>
-<script src="<?php echo $this->basePath() . '/js/admin/coupons.js' ?>"></script>
+<script src="<?php echo $this->basePath() . '/js/admin/transactions.js' ?>"></script>

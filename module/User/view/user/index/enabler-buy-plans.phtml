@@ -84,10 +84,10 @@
                         </div>
                         <div class="col-12">
                             <?php $today = date('Y-m-d')?>
-                            <button type="button" class="btn primary-btn mt-3" id="btnBuy" name="btnBuy" <?php echo ($today > $lpd) ? '' : 'disabled'; ?>>Buy</button>
+                            <button type="button" class="btn primary-btn mt-3" id="btnBuy" name="btnBuy" <?php //echo ($today > $lpd) ? '' : 'disabled'; ?>>Buy</button>
                         </div>
                         <div class="col-12 text-danger pt-2">
-                            <p id="lpd"><?php echo ($today > $lpd) ? '' : 'Last Purchase date: ' . date('d-m-Y', strtotime($lpd)) . "<br>Only one purchase per day allowed.<br>Please Purchase tomorrow."; ?></p>
+                            <p id="lpd"><?php //echo ($today > $lpd) ? '' : 'Last Purchase date: ' . date('d-m-Y', strtotime($lpd)) . "<br>Only one purchase per day allowed.<br>Please Purchase tomorrow."; ?></p>
                         </div>
                     </div>
                 </div>

@@ -18,7 +18,7 @@
     <?php echo $this->partial("/application/index/app-header"); ?>
 
     <div class="main-container p-lg-4">
-        <div class="main-heading mb-3"><a href="<?php echo $this->basePath() . '/a_dMin/executives' ?>"><i class="fa fa-arrow-left mr-2"></i></a> Edit Executive</div>
+        <div class="main-heading mb-3"><a href="<?php echo $this->basePath() . '/a_dMin/executives' ?>"><i class="fa fa-arrow-left mr-2"></i></a> Edit Executive <?php echo ' - ' . $userDetails['username'] . " - (" . $userDetails['country_phone_code'] . ") " . $userDetails['mobile_number']; ?></div>
         <form id="profileForm" enctype="multipart/form-data" novalidate>
             <div class="row">
                 <div class="col-12 col-lg-10">

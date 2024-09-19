@@ -4,15 +4,13 @@
     <thead>
     <tr class="text-nowrap">
         <th>S.no</th>
-        <th class="text-center" data-placeholder="Transaction Date">Transaction Date</th>
+        <th class="text-center" data-placeholder="Transaction Date">Redemption Date</th>
         <th class="text-center" data-placeholder="Coupon Code">Coupon Code</th>
-        <th class="text-center" data-placeholder="Coupon Type">Coupon Type</th>
         <th class="text-center" data-placeholder="Redeemer Name">Redeemer Name</th>
         <th class="text-center" data-placeholder="Redeemer Mobile">Redeemer Mobile</th>
-        <th class="text-center" data-placeholder="Txn Ref ">Txn Ref</th>
-        <th class="text-center" data-placeholder="Amount Paid ">Amount Paid</th>
-        <th class="text-center" data-placeholder="Total Earnings">Total Earnings</th>
-        <th class="text-center" data-placeholder="Balance">Balance</th>
+        <th class="text-center" data-placeholder="Redeemer Paid">Redeemer Paid</th>
+        <th class="text-center" data-placeholder="Comm. earned">Comm. earned</th>
+        <th class="text-center" data-placeholder="Total Comm. earned">Total Comm. earned</th>
     </tr>
     <?php } ?>
 
@@ -30,23 +28,17 @@
         }
 
         foreach ($transactions as $tx) { 
-          $color = "";
-          if($tx['transaction_type'] == \Admin\Model\ExecutiveTransaction::transaction_due)
-              $color = "table-danger text-nowrap";
-          else
-              $color = "table-success text-nowrap";
+          $color = "table-danger text-nowrap";
           ?>
           <tr class="<?php echo $color; ?>">
               <td><?php echo $i+1; ?></td>
-              <td class="text-center"><?php echo date("d-m-Y",strtotime($tx['transaction_date'])); ?></td>
+              <td class="text-center"><?php echo date("d-m-Y",strtotime($tx['redeemed_on'])); ?></td>
               <td class="text-center"><?php echo $tx['coupon_code']; ?></td>
-              <td class="text-center"><?php echo $tx['coupon_type']; ?></td>
               <td class="text-center"><?php echo $tx['redeemer_name']; ?></td>
               <td class="text-center"><?php echo $tx['redeemer_mobile']; ?></td>
-              <td class="text-center"><?php echo $tx['transaction_ref']; ?></td>
-              <td class="text-center"><?php echo $tx['stt_paid_amount']; ?></td>
-              <td class="text-center"><?php echo $tx['total_earnings'] . ' ' . $tx['en_currency']; ?></td>
-              <td class="text-center"><?php echo $tx['balance_outstanding']; ?></td>
+              <td class="text-center"><?php echo $tx['redeemer_paid']; ?></td>
+              <td class="text-center"><?php echo $tx['commission_receivable']; ?></td>
+              <td class="text-center"><?php echo $tx['total_earnings']; ?></td>
           </tr>
           <?php $i++; } } else { ?>
         <tr ><td class="text-center" colspan="10">No data</td></tr>

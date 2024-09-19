@@ -7,13 +7,14 @@
         <th>S.no</th>
         <th class="text-center" data-placeholder="Purchase Date">Purchase Date</th>
         <th class="text-center" data-placeholder="Coupon Code">Coupon Code</th>
-        <th class="text-center" data-placeholder="Coupon Type">Coupon Type</th>
-        <th class="text-center" data-placeholder="Coupon Amount">Coupon Amount</th>
-        <th class="text-center" data-placeholder="Validity End Date">Validity End Date</th>
+        <!-- <th class="text-center" data-placeholder="Coupon Type">Coupon Type</th> -->
+        <th class="text-center" data-placeholder="Coupon Amount">Coupon Price</th>
+        <th class="text-center" data-placeholder="Coupon Valid Till">Coupon Valid Till</th>
+        <th class="text-center" data-placeholder="Redeemer">Redeemer</th>
         <th class="text-center" data-placeholder="Redeemer Mobile">Redeemer Mobile</th>
-        <th class="text-center" data-placeholder="Redeemer Paid">Redeemer Paid</th>
-        <th class="text-center" data-placeholder="Actual Price">Actual Price</th>
-        <th class="text-center" data-placeholder="Commission">Commission receivable</th>
+        <th class="text-center" data-placeholder="Redeemer Payment">Redeemer Payment</th>
+        <!-- <th class="text-center" data-placeholder="Actual Price">Actual Price</th>
+        <th class="text-center" data-placeholder="Commission">Commission receivable</th> -->
     </tr>
     <?php } ?>
 
@@ -41,13 +42,14 @@
               <td><?= $i+1; ?></td>
               <td class="text-center"><?= date("d-m-Y",strtotime($cd['created_at'])); ?></td>
               <td class="text-center"><?= $cd['coupon_code']; ?></td>
-              <td class="text-center"><?= $cd['coupon_type']; ?></td>
+             <!--  <td class="text-center"><?= $cd['coupon_type']; ?></td> -->
               <td class="text-center"><?= $cd['amount']; ?></td>
               <td class="text-center"><?= date("d-m-Y",strtotime($cd['validity_end_date'])); ?></td>
-              <td class="text-center"><?= $cd['redeemer_mobile']; ?></td>
+              <td class="text-center"><?= $cd['coupon_status'] == \Admin\Model\Coupons::Coupon_Status_Redeemed ? $cd['username'] . ' [' . $cd['company_name'] . ']' : "-"; ?></td>
+              <td class="text-center"><?= $cd['coupon_status'] == \Admin\Model\Coupons::Coupon_Status_Redeemed ? $cd['redeemer_mobile'] : "-"; ?></td>
               <td class="text-center"><?= $cd['redeemer_paid'] == null ? "0.00" : $cd['redeemer_paid']; ?></td>
-              <td class="text-center"><?= $cd['redeemer_actual_amount'] == null ? "0.00" : $cd['redeemer_actual_amount']; ?></td>
-              <td class="text-center"><?= $cd['commission_receivable'] == null ? "0.00" : $cd['commission_receivable']; ?></td>
+              <!-- <td class="text-center"><?= $cd['redeemer_actual_amount'] == null ? "0.00" : $cd['redeemer_actual_amount']; ?></td>
+              <td class="text-center"><?= $cd['commission_receivable'] == null ? "0.00" : $cd['commission_receivable']; ?></td> -->
           </tr>
           <?php $i++;  } } else { ?>
         <tr ><td class="text-center" colspan="10">No data</td></tr>

@@ -34,7 +34,7 @@
           <tr>
               <td><?php echo $i+1; ?></td>
               <td class="text-center"><?php echo date("d-m-Y",strtotime($pur['purchase_date'])); ?></td>
-              <td class="text-center"><?php echo $pur['plan_name']; ?></td>
+              <td class="text-center"><?php echo $pur['plan_name'] . "-" . $pur['id']; ?></td>
               <td class="text-center"><?php echo $pur['actual_price'] . " " .  $pur['currency']; ?></td>
               <td class="text-center"><?php echo $pur['price_after_disc'] . " " .  $pur['currency']; ?></td>
               <td class="text-center"><?php echo $pur['coupon_code']; ?></td>

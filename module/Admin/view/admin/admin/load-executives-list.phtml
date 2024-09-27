@@ -11,6 +11,7 @@
         <th data-placeholder="Name" data-input="username">Name</th>
         <th>QUESTT Exp. Dt</th>
         <th>Mobile</th>
+        <th>Extra Comm.</th>
         <th>D Coupons Count</th>
         <th>C Coupons Count</th>
         <th>Total Comm. earned</th>
@@ -43,6 +44,7 @@
                 <td class="cc" data-url="<?php echo $this->basePath() . '/a_dMin/edit-executive/' . base64_encode('id=' . $executive['id']) ?>" id="spo<?php echo $executive['id'];?>"><?= $executive['username'] ?></td>
                 <td class="cc" data-url="<?php echo $this->basePath() . '/a_dMin/edit-executive/' . base64_encode('id=' . $executive['id']) ?>"><?= date("d-m-Y",strtotime($executive['end_date'])) ?></td>
                 <td class="cc" data-url="<?php echo $this->basePath() . '/a_dMin/edit-executive/' . base64_encode('id=' . $executive['id']) ?>"><?= "(" . $executive['country_phone_code'] . ") " . $executive['mobile_number'] ?></td>
+                <td class="cc text-center" data-url="<?php echo $this->basePath() . '/a_dMin/edit-executive/' . base64_encode('id=' . $executive['id']) ?>"><?= $executive['commission_percentage'] ?></td>
                 <td class="cc text-center" data-url="<?php echo $this->basePath() . '/a_dMin/executive/coupons-commissions/' . base64_encode('id=' . $executive['id']) ?>"><?= $executive['d_coupon_count'] ?></td>
                 <td class="cc text-center" data-url="<?php echo $this->basePath() . '/a_dMin/executive/coupons-commissions/' . base64_encode('id=' . $executive['id']) ?>"><?= $executive['c_coupon_count'] ?></td>
                 <td class="cc text-center" data-url="<?php echo $this->basePath() . '/a_dMin/executive/commissions-earned/' . base64_encode('id=' . $executive['id']) ?>"><?= $executive['total_earnings'] == null ? "0.00" : $executive['total_earnings'] ?></td>

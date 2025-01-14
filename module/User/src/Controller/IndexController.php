@@ -1143,6 +1143,86 @@ class IndexController extends BaseController
     }
   }
 
+  public function appAuthAction(){
+    $logResult = $this->logRequest($this->getRequest()->toString());
+    try {
+      $config = $this->getConfig();
+      $hybridauth = new Hybridauth($config['apphybridauth']);
+      $storage = new Session();
+      $error = false;
+
+      if (isset($_GET['provider'])) {
+        if (in_array($_GET['provider'], $hybridauth->getProviders())) {
+          $storage->set('provider', $_GET['provider']);
+        } else {
+          $error = $_GET['provider'];
+        }
+      }
+
+      if (isset($_GET['logout'])) {
+        if (in_array($_GET['logout'], $hybridauth->getProviders())) {
+          $adapter = $hybridauth->getAdapter($_GET['logout']);
+          $adapter->disconnect();
+          session_unset();
+          $storage->clear();
+          // header("Location: /twistt/enabler/login");
+          exit;
+        } else {
+          $error = $_GET['logout'];
+        }
+      }
+
+      if ($error) {
+        error_log('Hybridauth Error: Provider ' . json_encode($error) . ' not found or not enabled in $config');
+        echo 'Hybridauth Error: Provider ' . json_encode($error) . ' not found or not enabled in $config';
+        exit;
+      }
+
+      if ($provider = $storage->get('provider')) {
+        $hybridauth->authenticate($provider);
+        $storage->set('provider', null);
+        // Retrieve the provider record
+        $adapter = $hybridauth->getAdapter($provider);
+        $userProfile = $adapter->getUserProfile();
+        $accessToken = $adapter->getAccessToken();
+
+        $userdetails['user_login_id'] = $userProfile->identifier;
+        $user = $this->userTable->getUserDetails(['user_login_id' => $userdetails['user_login_id'], 'display' => 1]);
+        if(!count($user)){
+          $userdetails['username'] = $userProfile->displayName;
+          $userdetails['email'] = $userProfile->email;
+          $userdetails['country'] = $userProfile->country;
+          $userdetails['oauth_provider'] =strtolower(substr($provider, 0,1));
+          $userdetails['login_type'] = \Admin\Model\Enabler::login_type_social;
+          // $userdetails['access_token'] = $accessToken['access_token'];
+          $insertResult = $this->userTable->addUser($userdetails);
+          if($insertResult['success']){
+            $user = $this->userTable->getUserDetails(['id' => $insertResult['id'], 'display' => 1]);
+          }else{
+              return new JsonModel(array('success'=>false,'message'=>$insertResult['message']));
+          }
+        }
+        $user['isLoggedIn'] = true;
+        $user['subscriptionType'] = "U";
+        $user['access_token'] = $this->generateAccessToken(['userId' => $user['id'], 'loginId' => $userdetails['user_login_id']]);
+        $user['isSubscribed'] = $this->questtSubscriptionTable->isValidQuesttUser($user['id']);
+        if($user['isSubscribed']){
+            $user['subscriptionType'] = "Q";
+            $qed = $this->questtSubscriptionTable->getField(['user_id' => $user['id']], 'end_date');
+            $user['subscriptionExpiry'] = date('Y-m-d', strtotime($qed));
+        }
+        $user = array_map(function ($value) {
+            return $value === null ? '' : $value;
+        }, $user);
+        return new JsonModel(array('success'=>true,'data'=>$user));
+      }
+    } catch (Exception $e) {
+      error_log($e->getMessage());
+      echo $e->getMessage();
+    }
+    // return new JsonModel(array('success' => true, "message" => 'App auth action called..'));
+  }
+
   public function enablerRegisterAction()
   {
     $logResult = $this->logRequest($this->getRequest()->toString());
@@ -1174,9 +1254,6 @@ class IndexController extends BaseController
     }
   }
 
-  public function appAuthAction(){
-    return new JsonModel(array('success' => true, "message" => 'App auth action called..'));
-}
   public function enablerAuthAction()
   {
     $logResult = $this->logRequest($this->getRequest()->toString());

@@ -1145,7 +1145,7 @@ class IndexController extends BaseController
 
   public function appAuthAction(){
     $logResult = $this->logRequest($this->getRequest()->toString());
-    $request = $this->getRequest();
+    $request = $this->getRequest()->getPost();
     print_r($request); exit;
     try {
       $config = $this->getConfig();

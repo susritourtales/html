@@ -1145,6 +1145,7 @@ class IndexController extends BaseController
 
   public function appAuthAction(){
     $logResult = $this->logRequest($this->getRequest()->toString());
+    print_r("callback called 222");
     try {
       $config = $this->getConfig();
       $hybridauth = new Hybridauth($config['apphybridauth']);
@@ -1159,7 +1160,6 @@ class IndexController extends BaseController
         }
       }
 
-      print_r("callback called 222");
       if (isset($_GET['logout'])) {
         if (in_array($_GET['logout'], $hybridauth->getProviders())) {
           $adapter = $hybridauth->getAdapter($_GET['logout']);

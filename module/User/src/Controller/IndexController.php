@@ -1150,6 +1150,7 @@ class IndexController extends BaseController
       $hybridauth = new Hybridauth($config['apphybridauth']);
       $storage = new Session();
       $error = false;
+      print_r("callback called");
 
       if (isset($_GET['provider'])) {
         if (in_array($_GET['provider'], $hybridauth->getProviders())) {

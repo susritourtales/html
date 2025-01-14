@@ -1177,7 +1177,7 @@ class IndexController extends BaseController
         echo 'Hybridauth Error: Provider ' . json_encode($error) . ' not found or not enabled in $config';
         exit;
       }
-      print_r("callback called 7");
+      print_r($storage->get('provider'));
       if ($provider = $storage->get('provider')) {
       print_r("callback called 6");
         $hybridauth->authenticate($provider);

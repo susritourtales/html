@@ -1185,7 +1185,7 @@ class IndexController extends BaseController
         $adapter = $hybridauth->getAdapter($provider);
         $userProfile = $adapter->getUserProfile();
         $accessToken = $adapter->getAccessToken();
-
+        print_r($userProfile); exit;
         $userdetails['user_login_id'] = $userProfile->identifier;
         $user = $this->userTable->getUserDetails(['user_login_id' => $userdetails['user_login_id'], 'display' => 1]);
         if(!count($user)){

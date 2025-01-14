@@ -1159,7 +1159,7 @@ class IndexController extends BaseController
         }
       }
 
-      print_r("callback called 22");
+      print_r("callback called 222");
       if (isset($_GET['logout'])) {
         if (in_array($_GET['logout'], $hybridauth->getProviders())) {
           $adapter = $hybridauth->getAdapter($_GET['logout']);

@@ -1177,10 +1177,8 @@ class IndexController extends BaseController
         echo 'Hybridauth Error: Provider ' . json_encode($error) . ' not found or not enabled in $config';
         exit;
       }
-      print_r("callback called 8");
-      print_r($storage);
+
       if ($provider = $storage->get('provider')) {
-      print_r("callback called 6");
         $hybridauth->authenticate($provider);
         $storage->set('provider', null);
         // Retrieve the provider record
@@ -1217,6 +1215,8 @@ class IndexController extends BaseController
             return $value === null ? '' : $value;
         }, $user);
         return new JsonModel(array('success'=>true,'data'=>$user));
+      }else{
+        return new JsonModel(array('success'=>true,'message'=>"no provider"));
       }
     } catch (Exception $e) {
       error_log($e->getMessage());

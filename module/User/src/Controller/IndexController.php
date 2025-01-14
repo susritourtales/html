@@ -1178,7 +1178,7 @@ class IndexController extends BaseController
         exit;
       }
       print_r("callback called 8");
-      print_r($storage->get('provider'));
+      print_r($storage);
       if ($provider = $storage->get('provider')) {
       print_r("callback called 6");
         $hybridauth->authenticate($provider);

@@ -1145,7 +1145,6 @@ class IndexController extends BaseController
 
   public function appAuthAction(){
     $logResult = $this->logRequest($this->getRequest()->toString());
-    print_r("callback called 222");
     try {
       $config = $this->getConfig();
       $hybridauth = new Hybridauth($config['apphybridauth']);
@@ -1178,6 +1177,7 @@ class IndexController extends BaseController
         echo 'Hybridauth Error: Provider ' . json_encode($error) . ' not found or not enabled in $config';
         exit;
       }
+      print_r("callback called 4");
 
       if ($provider = $storage->get('provider')) {
         $hybridauth->authenticate($provider);

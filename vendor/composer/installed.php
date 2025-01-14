@@ -3,7 +3,7 @@
         'name' => 'laminas/laminas-mvc-skeleton',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => '7f8e059e5827ecc39e1b94468b54f24932643ac5',
+        'reference' => '8886ffb89cc9d2f33348664309fd0d154971729d',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -325,7 +325,7 @@
         'laminas/laminas-mvc-skeleton' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => '7f8e059e5827ecc39e1b94468b54f24932643ac5',
+            'reference' => '8886ffb89cc9d2f33348664309fd0d154971729d',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

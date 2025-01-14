@@ -1145,6 +1145,8 @@ class IndexController extends BaseController
 
   public function appAuthAction(){
     $logResult = $this->logRequest($this->getRequest()->toString());
+    $request = $this->getRequest();
+    print_r($request); exit;
     try {
       $config = $this->getConfig();
       $hybridauth = new Hybridauth($config['apphybridauth']);

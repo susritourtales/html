@@ -1171,7 +1171,7 @@ class IndexController extends BaseController
           $error = $_GET['logout'];
         }
       }
-      print_r("callback called 3");
+      print_r("callback called 34");
 
       if ($error) {
         error_log('Hybridauth Error: Provider ' . json_encode($error) . ' not found or not enabled in $config');

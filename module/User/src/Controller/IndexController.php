@@ -1158,7 +1158,7 @@ class IndexController extends BaseController
           $error = $_GET['provider'];
         }
       }
-      print_r("callback called");
+      print_r("callback called 2");
 
       if (isset($_GET['logout'])) {
         if (in_array($_GET['logout'], $hybridauth->getProviders())) {

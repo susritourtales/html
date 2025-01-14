@@ -9,6 +9,7 @@ use Laminas\EventManager\ResponseCollection;
 use Laminas\EventManager\StaticEventManager;
 use Laminas\Http\Request as HttpRequest;
 use Laminas\Http\Response;
+use Laminas\ModuleManager\ModuleManager;
 use Laminas\Mvc\Application;
 use Laminas\Mvc\ApplicationInterface;
 use Laminas\Mvc\Controller\ControllerManager;
@@ -30,6 +31,7 @@ use Throwable;
 use function array_diff;
 use function array_intersect;
 use function array_key_exists;
+use function array_keys;
 use function array_merge;
 use function assert;
 use function class_exists;
@@ -381,7 +383,8 @@ abstract class AbstractControllerTestCase extends TestCase
     public function assertModulesLoaded(array $modules)
     {
         $moduleManager = $this->getApplicationServiceLocator()->get('ModuleManager');
-        $modulesLoaded = $moduleManager->getModules();
+        assert($moduleManager instanceof ModuleManager);
+        $modulesLoaded = array_keys($moduleManager->getLoadedModules());
         $list          = array_diff($modules, $modulesLoaded);
         if ($list) {
             throw new ExpectationFailedException($this->createFailureMessage(
@@ -789,7 +792,10 @@ abstract class AbstractControllerTestCase extends TestCase
         }
 
         $viewModel = $application->getMvcEvent()->getViewModel();
-        $this->assertTrue($this->searchTemplates($viewModel, $templateName));
+        $this->assertTrue(
+            $this->searchTemplates($viewModel, $templateName),
+            sprintf('Failed asserting that view model tree contains template "%s"', $templateName)
+        );
     }
 
     /**
@@ -802,7 +808,10 @@ abstract class AbstractControllerTestCase extends TestCase
     public function assertNotTemplateName($templateName)
     {
         $viewModel = $this->getApplication()->getMvcEvent()->getViewModel();
-        $this->assertFalse($this->searchTemplates($viewModel, $templateName));
+        $this->assertFalse(
+            $this->searchTemplates($viewModel, $templateName),
+            sprintf('Failed asserting that view model tree does not contain template "%s"', $templateName)
+        );
     }
 
     /**
@@ -817,8 +826,11 @@ abstract class AbstractControllerTestCase extends TestCase
         if ($viewModel->getTemplate($templateName) === $templateName) {
             return true;
         }
+
         foreach ($viewModel->getChildren() as $child) {
-            return $this->searchTemplates($child, $templateName);
+            if ($this->searchTemplates($child, $templateName)) {
+                return true;
+            }
         }
 
         return false;

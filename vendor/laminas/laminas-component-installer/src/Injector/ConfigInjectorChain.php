@@ -10,9 +10,7 @@ use Laminas\ComponentInstaller\ConfigDiscovery\DiscoveryChainInterface;
 use function array_merge;
 use function array_unique;
 use function array_values;
-use function assert;
 use function in_array;
-use function is_bool;
 
 /**
  * @internal
@@ -24,7 +22,7 @@ final class ConfigInjectorChain implements InjectorInterface
      *
      * @var Collection<string,InjectorInterface>
      */
-    private Collection $chain;
+    private readonly Collection $chain;
 
     /**
      * Types this injector is allowed to register.
@@ -112,8 +110,6 @@ final class ConfigInjectorChain implements InjectorInterface
                 $injected = $injector->inject($package, $type) || $injected;
             });
 
-        assert(is_bool($injected));
-
         return $injected;
     }
 
@@ -129,7 +125,6 @@ final class ConfigInjectorChain implements InjectorInterface
                 $removed = $injector->remove($package) || $removed;
             });
 
-        assert(is_bool($removed));
         return $removed;
     }
 

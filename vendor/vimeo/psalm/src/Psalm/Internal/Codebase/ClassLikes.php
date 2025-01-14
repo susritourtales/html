@@ -356,6 +356,7 @@ final class ClassLikes
             }
         }
 
+        // fixme: this looks like a crazy caching hack
         if (!isset($this->existing_classes_lc[$fq_class_name_lc])
             || !$this->existing_classes_lc[$fq_class_name_lc]
             || !$this->classlike_storage_provider->has($fq_class_name_lc)
@@ -396,13 +397,14 @@ final class ClassLikes
     ): bool {
         $fq_class_name_lc = strtolower($this->getUnAliasedName($fq_class_name));
 
+        // fixme: this looks like a crazy caching hack
         if (!isset($this->existing_interfaces_lc[$fq_class_name_lc])
             || !$this->existing_interfaces_lc[$fq_class_name_lc]
             || !$this->classlike_storage_provider->has($fq_class_name_lc)
         ) {
             if ((
-                !isset($this->existing_classes_lc[$fq_class_name_lc])
-                    || $this->existing_classes_lc[$fq_class_name_lc]
+                !isset($this->existing_interfaces_lc[$fq_class_name_lc])
+                    || $this->existing_interfaces_lc[$fq_class_name_lc]
                 )
                 && !$this->classlike_storage_provider->has($fq_class_name_lc)
             ) {
@@ -463,13 +465,14 @@ final class ClassLikes
     ): bool {
         $fq_class_name_lc = strtolower($this->getUnAliasedName($fq_class_name));
 
+        // fixme: this looks like a crazy caching hack
         if (!isset($this->existing_enums_lc[$fq_class_name_lc])
             || !$this->existing_enums_lc[$fq_class_name_lc]
             || !$this->classlike_storage_provider->has($fq_class_name_lc)
         ) {
             if ((
-                !isset($this->existing_classes_lc[$fq_class_name_lc])
-                    || $this->existing_classes_lc[$fq_class_name_lc]
+                !isset($this->existing_enums_lc[$fq_class_name_lc])
+                    || $this->existing_enums_lc[$fq_class_name_lc]
                 )
                 && !$this->classlike_storage_provider->has($fq_class_name_lc)
             ) {
@@ -1596,7 +1599,7 @@ final class ClassLikes
                 $storage->constants,
                 static fn(ClassConstantStorage $constant): bool => $constant->type
                     && ($constant->visibility === ClassLikeAnalyzer::VISIBILITY_PUBLIC
-                        || $constant->visibility === ClassLikeAnalyzer::VISIBILITY_PROTECTED)
+                        || $constant->visibility === ClassLikeAnalyzer::VISIBILITY_PROTECTED),
             );
         }
 
@@ -1748,6 +1751,12 @@ final class ClassLikes
 
                         if ($codebase->classImplements($classlike_storage->name, 'Serializable')
                             && ($method_name === 'serialize' || $method_name === 'unserialize')
+                        ) {
+                            continue;
+                        }
+
+                        if ($codebase->classImplements($classlike_storage->name, 'JsonSerializable')
+                            && ($method_name === 'jsonserialize')
                         ) {
                             continue;
                         }
@@ -2407,7 +2416,7 @@ final class ClassLikes
             fn(ClassConstantStorage $resolved_constant) => $this->filterConstantNameByVisibility(
                 $resolved_constant,
                 $visibility,
-            )
+            ),
         );
 
         if ($filtered_constants_by_visibility === []) {

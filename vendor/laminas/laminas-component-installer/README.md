@@ -63,24 +63,24 @@ one or more of the following keys under the `extra.laminas` configuration in the
   a `Module` class **must** be present in the namespace associated with it.
   The setting indicates a low-level component that should be injected to the top
   of the modules list of one of:
-  - `config/application.config.php`
-  - `config/modules.config.php`
-  - `config/development.config.php`
+    - `config/application.config.php`
+    - `config/modules.config.php`
+    - `config/development.config.php`
 
 - A **module** is for use specifically with laminas-mvc + laminas-modulemanager;
   a `Module` class **must** be present in the namespace associated with it.
   The setting indicates a userland or third-party module that should be injected
   to the bottom of the modules list of one of:
-  - `config/application.config.php`
-  - `config/modules.config.php`
-  - `config/development.config.php`
+    - `config/application.config.php`
+    - `config/modules.config.php`
+    - `config/development.config.php`
 
 - A **config-provider** is for use with applications that utilize
   [laminas-config-aggregator](https://github.com/laminas/laminas-config-aggregator)
   (which may or may not be Mezzio applications). The class listed must be an
   invokable that returns an array of configuration, and will be injected at the
   top of:
-  - `config/config.php`
+    - `config/config.php`
 
 ## Marking Packages to Auto-Install or to Be Ignored
 

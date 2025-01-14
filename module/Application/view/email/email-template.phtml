@@ -64,7 +64,11 @@
                     <?php } elseif($action == 'TWISTT_Enabled'){ ?>
                         <p>Dear <?php echo $data['tourist_name']; ?></p>
                         <p>M/s <?php echo $data['display_name']; ?> has sponsored free TWISTT subscription from <?php echo date('d-m-Y', strtotime($data['twistt_start_date'])); ?> to <?php echo date('d-m-Y', strtotime($data['twistt_end_date'])); ?>. Please install the app to avail the offer.</p>
-                    <?php } ?>
+                    <?php } elseif($action == 'App_Registration_Otp'){ ?>
+                        <div>Otp to verify your email for TWISTT App registration is - <?php echo $data;?></div>
+                    <?php } elseif($action == 'App_Forgot_Password_Otp'){ ?>
+                        <div>Otp to reset your password for TWISTT App login is - <?php echo $data;?></div>
+                    <?php } ?>    
                 </div>
                 <div class="m-3">
                     <p class="mt-3">Thank you</p>

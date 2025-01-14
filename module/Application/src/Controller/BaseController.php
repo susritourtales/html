@@ -12,6 +12,9 @@ use Aws\ResultInterface;
 use Aws\CommandPool;
 use Aws\Sdk;
 use Application\Channel\Sms;
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
+use Laminas\View\Model\JsonModel;
 
 use Admin\Model\LanguageTable;
 use Admin\Model\CountriesTable;
@@ -49,6 +52,9 @@ class BaseController extends AbstractActionController
     protected $s3;
     protected $config;
     protected $mailer;
+    protected $jwtSecret;
+    protected $tokenIssuer;
+    protected $tokenExpiry;
 
     protected $userTable;
     protected $languageTable;
@@ -107,6 +113,7 @@ class BaseController extends AbstractActionController
         $this->sessionManager->rememberMe(604800); // = 60 * 60 * 24 * 7
         $this->authService = $authService;
         $this->dbAdapter = $dbAdapter;
+        $this->tokenExpiry = 100 * 24 * 60 * 60; //100 days
 
         $this->languageTable = $language_table;
         $this->countriesTable = $countries_table;
@@ -133,6 +140,61 @@ class BaseController extends AbstractActionController
         $this->enablerPlansTable = $enabler_plans_table;
 
         //$this->logRequest();
+    }
+
+    public function getJWTSecret(){
+        return $this->jwtSecret;
+    }
+
+    public function generateAccessToken($data){
+        $config = $this->getConfig();
+        $this->jwtSecret = isset($config['JWT_SECRET']) ? $config['JWT_SECRET'] : "";
+        $this->tokenIssuer = isset($config['TOKEN_ISSUER']) ? $config['TOKEN_ISSUER'] : "";
+
+        // Generate JWT token
+        $secretKey = $this->jwtSecret;
+        $issuer = $this->tokenIssuer;
+        $issuedAt = time();
+        $expiration = $issuedAt + (int)$this->tokenExpiry;
+        $payload = [
+            'iss' => $issuer,
+            'iat' => $issuedAt,
+            'exp' => $expiration,
+            'data' => $data,
+        ];
+        $accessToken = JWT::encode($payload, $secretKey, 'HS256');
+        return $accessToken;
+    }
+
+    public function validateAccessToken($request){
+        // Retrieve the Authorization header
+        $authorizationHeader = $request->getHeaders('Authorization');
+        if (!$authorizationHeader) {
+            return new JsonModel(['success' => false, 'message' => 'Authorization header is missing'], [401]);
+        }
+        $authorizationHeaderValue = $authorizationHeader->getFieldValue();
+        // Extract the token (assuming "Bearer <token>" format)
+        $token = str_replace('Bearer ', '', $authorizationHeaderValue);
+        $config = $this->getConfig();
+        $this->jwtSecret = isset($config['JWT_SECRET']) ? $config['JWT_SECRET'] : "";
+        $this->tokenIssuer = isset($config['TOKEN_ISSUER']) ? $config['TOKEN_ISSUER'] : "";
+
+        try {
+            // Decode and verify the token
+            $decoded = JWT::decode($token, new Key($this->jwtSecret, 'HS256'));
+            // Optional: Validate claims like `exp` and `iss`
+            if ($decoded->exp < time()) {
+                return new JsonModel(['success' => false, 'message' => 'Token has expired. Please login again.'], [401]);
+            }
+            if ($decoded->iss !== $this->tokenIssuer) {
+                return new JsonModel(['success' => false, 'message' => 'Invalid token issuer'], [401]);
+            }
+            // Attach user data to the request
+            //$request = $request->withAttribute('user', $decoded->data);
+            return new JsonModel(['success' => true, 'message' => 'Token valid', 'user' => $decoded->data]);
+        } catch (\Exception $e) {
+            return new JsonModel(['success' => false, 'message' => 'Invalid token'], [401]);
+        }
     }
 
     public function logRequest($logString){

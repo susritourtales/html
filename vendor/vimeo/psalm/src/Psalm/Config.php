@@ -129,7 +129,11 @@ use const SCANDIR_SORT_NONE;
  */
 class Config
 {
-    private const DEFAULT_FILE_NAME = 'psalm.xml';
+    private const DEFAULT_FILE_NAMES = [
+        'psalm.xml',
+        'psalm.xml.dist',
+        'psalm.dist.xml',
+    ];
     public const CONFIG_NAMESPACE = 'https://getpsalm.org/schema/config';
     public const REPORT_INFO = 'info';
     public const REPORT_ERROR = 'error';
@@ -244,7 +248,7 @@ class Config
     protected $extra_files;
 
     /**
-     * The base directory of this config file
+     * The base directory of this config file without trailing slash
      *
      * @var string
      */
@@ -444,6 +448,11 @@ class Config
      * @var bool
      */
     public $ensure_array_int_offsets_exist = false;
+
+    /**
+     * @var bool
+     */
+    public $ensure_override_attribute = false;
 
     /**
      * @var array<lowercase-string, bool>
@@ -768,10 +777,10 @@ class Config
         }
 
         do {
-            $maybe_path = $dir_path . DIRECTORY_SEPARATOR . self::DEFAULT_FILE_NAME;
-
-            if (file_exists($maybe_path) || file_exists($maybe_path .= '.dist')) {
-                return $maybe_path;
+            foreach (self::DEFAULT_FILE_NAMES as $defaultFileName) {
+                if (file_exists($maybe_path = $dir_path . DIRECTORY_SEPARATOR . $defaultFileName)) {
+                    return $maybe_path;
+                }
             }
 
             $dir_path = dirname($dir_path);
@@ -1081,6 +1090,7 @@ class Config
             'includePhpVersionsInErrorBaseline' => 'include_php_versions_in_error_baseline',
             'ensureArrayStringOffsetsExist' => 'ensure_array_string_offsets_exist',
             'ensureArrayIntOffsetsExist' => 'ensure_array_int_offsets_exist',
+            'ensureOverrideAttribute' => 'ensure_override_attribute',
             'reportMixedIssues' => 'show_mixed_issues',
             'skipChecksOnUnresolvableIncludes' => 'skip_checks_on_unresolvable_includes',
             'sealAllMethods' => 'seal_all_methods',
@@ -1445,7 +1455,7 @@ class Config
                 if (!$file_path) {
                     throw new ConfigException(
                         'Cannot resolve stubfile path '
-                            . rtrim($config->base_dir, DIRECTORY_SEPARATOR)
+                            . $config->base_dir
                             . DIRECTORY_SEPARATOR
                             . $stub_file['name'],
                     );
@@ -1582,11 +1592,11 @@ class Config
     private function loadFileExtensions(SimpleXMLElement $extensions): void
     {
         foreach ($extensions as $extension) {
-            $extension_name = preg_replace('/^\.?/', '', (string)$extension['name'], 1);
+            $extension_name = preg_replace('/^\.?/', '', (string) $extension['name'], 1);
             $this->file_extensions[] = $extension_name;
 
             if (isset($extension['scanner'])) {
-                $path = $this->base_dir . (string)$extension['scanner'];
+                $path = $this->base_dir . DIRECTORY_SEPARATOR . (string) $extension['scanner'];
 
                 if (!file_exists($path)) {
                     throw new ConfigException('Error parsing config: cannot find file ' . $path);
@@ -1596,7 +1606,7 @@ class Config
             }
 
             if (isset($extension['checker'])) {
-                $path = $this->base_dir . (string)$extension['checker'];
+                $path = $this->base_dir . DIRECTORY_SEPARATOR . (string) $extension['checker'];
 
                 if (!file_exists($path)) {
                     throw new ConfigException('Error parsing config: cannot find file ' . $path);
@@ -1817,7 +1827,13 @@ class Config
     public function shortenFileName(string $to): string
     {
         if (!is_file($to)) {
-            return preg_replace('/^' . preg_quote($this->base_dir, '/') . '/', '', $to, 1);
+            // if cwd is the root directory it will be just the directory separator - trim it off first
+            return preg_replace(
+                '/^' . preg_quote(rtrim($this->base_dir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR, '/') . '/',
+                '',
+                $to,
+                1,
+            );
         }
 
         $from = $this->base_dir;
@@ -2314,6 +2330,10 @@ class Config
 
         foreach ($stub_files as $file_path) {
             $file_path = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $file_path);
+            // fix mangled phar paths on Windows
+            if (strpos($file_path, 'phar:\\\\') === 0) {
+                $file_path = 'phar://'. substr($file_path, 7);
+            }
             $codebase->scanner->addFileToDeepScan($file_path);
         }
 
@@ -2411,6 +2431,10 @@ class Config
 
         foreach ($stub_files as $file_path) {
             $file_path = str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $file_path);
+            // fix mangled phar paths on Windows
+            if (strpos($file_path, 'phar:\\\\') === 0) {
+                $file_path = 'phar://' . substr($file_path, 7);
+            }
             $codebase->scanner->addFileToDeepScan($file_path);
         }
 
@@ -2761,8 +2785,22 @@ class Config
                 $version_parser = new VersionParser();
 
                 $constraint = $version_parser->parseConstraints($php_version);
+                $php_versions = [
+                    '5.4',
+                    '5.5',
+                    '5.6',
+                    '7.0',
+                    '7.1',
+                    '7.2',
+                    '7.3',
+                    '7.4',
+                    '8.0',
+                    '8.1',
+                    '8.2',
+                    '8.3',
+                ];
 
-                foreach (['5.4', '5.5', '5.6', '7.0', '7.1', '7.2', '7.3', '7.4', '8.0', '8.1'] as $candidate) {
+                foreach ($php_versions as $candidate) {
                     if ($constraint->matches(new Constraint('<=', "$candidate.0.0-dev"))
                         || $constraint->matches(new Constraint('<=', "$candidate.999"))
                     ) {

@@ -483,7 +483,8 @@ final class CliUtils
 
         if (isset($options['php-version'])) {
             if (!is_string($options['php-version'])) {
-                die('Expecting a version number in the format x.y' . PHP_EOL);
+                fwrite(STDERR, 'Expecting a version number in the format x.y' . PHP_EOL);
+                exit(1);
             }
             $version = $options['php-version'];
             $source = 'cli';
@@ -548,7 +549,7 @@ final class CliUtils
 
         $missing_extensions = array_filter(
             $required_extensions,
-            static fn(string $ext) => !extension_loaded($ext)
+            static fn(string $ext) => !extension_loaded($ext),
         );
 
         if ($missing_extensions) {

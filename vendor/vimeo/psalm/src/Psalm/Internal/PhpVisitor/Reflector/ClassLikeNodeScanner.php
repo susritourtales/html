@@ -32,6 +32,7 @@ use Psalm\Internal\MethodIdentifier;
 use Psalm\Internal\Provider\NodeDataProvider;
 use Psalm\Internal\Scanner\ClassLikeDocblockComment;
 use Psalm\Internal\Scanner\FileScanner;
+use Psalm\Internal\Scanner\UnresolvedConstantComponent;
 use Psalm\Internal\Type\TypeAlias;
 use Psalm\Internal\Type\TypeAlias\ClassTypeAlias;
 use Psalm\Internal\Type\TypeAlias\InlineTypeAlias;
@@ -47,6 +48,7 @@ use Psalm\Issue\InvalidDocblock;
 use Psalm\Issue\InvalidEnumBackingType;
 use Psalm\Issue\InvalidEnumCaseValue;
 use Psalm\Issue\InvalidTypeImport;
+use Psalm\Issue\MissingClassConstType;
 use Psalm\Issue\MissingDocblockType;
 use Psalm\Issue\MissingPropertyType;
 use Psalm\Issue\ParseError;
@@ -65,7 +67,6 @@ use Psalm\Type\Atomic\TNull;
 use Psalm\Type\Atomic\TString;
 use Psalm\Type\Atomic\TTemplateParam;
 use Psalm\Type\Union;
-use RuntimeException;
 use UnexpectedValueException;
 
 use function array_merge;
@@ -78,10 +79,11 @@ use function get_class;
 use function implode;
 use function is_int;
 use function is_string;
+use function ltrim;
 use function preg_match;
 use function preg_replace;
 use function preg_split;
-use function str_replace;
+use function sprintf;
 use function strtolower;
 use function trim;
 use function usort;
@@ -161,7 +163,7 @@ final class ClassLikeNodeScanner
                 throw new LogicException('Anonymous classes are always classes');
             }
 
-            $fq_classlike_name = ClassAnalyzer::getAnonymousClassName($node, $this->file_path);
+            $fq_classlike_name = ClassAnalyzer::getAnonymousClassName($node, $this->aliases, $this->file_path);
         } else {
             $name_location = new CodeLocation($this->file_scanner, $node->name);
 
@@ -422,7 +424,7 @@ final class ClassLikeNodeScanner
 
                 usort(
                     $docblock_info->templates,
-                    static fn(array $l, array $r): int => $l[4] > $r[4] ? 1 : -1
+                    static fn(array $l, array $r): int => $l[4] > $r[4] ? 1 : -1,
                 );
 
                 foreach ($docblock_info->templates as $i => $template_map) {
@@ -434,9 +436,11 @@ final class ClassLikeNodeScanner
                             try {
                                 $type_string = CommentAnalyzer::splitDocLine($type_string)[0];
                             } catch (DocblockParseException $e) {
-                                throw new DocblockParseException(
-                                    $type_string . ' is not a valid type: ' . $e->getMessage(),
+                                $storage->docblock_issues[] = new InvalidDocblock(
+                                    $e->getMessage() . ' in docblock for ' . $fq_classlike_name,
+                                    $name_location ?? $class_location,
                                 );
+                                continue;
                             }
                             $type_string = CommentAnalyzer::sanitizeDocblockType($type_string);
                             try {
@@ -753,6 +757,9 @@ final class ClassLikeNodeScanner
                         $values_types[] = Type::getAtomicStringFromLiteral($enumCaseStorage->value);
                     } elseif (is_int($enumCaseStorage->value)) {
                         $values_types[] = new Type\Atomic\TLiteralInt($enumCaseStorage->value);
+                    } elseif ($enumCaseStorage->value instanceof UnresolvedConstantComponent) {
+                        // backed enum with a type yet unknown
+                        $values_types[] = new Type\Atomic\TMixed;
                     }
                 }
             }
@@ -1331,10 +1338,8 @@ final class ClassLikeNodeScanner
             );
 
             $type_location = null;
-            $suppressed_issues = [];
-            if ($var_comment !== null && $var_comment->type !== null) {
+            if ($var_comment && $var_comment->type !== null) {
                 $const_type = $var_comment->type;
-                $suppressed_issues = $var_comment->suppressed_issues;
 
                 if ($var_comment->type_start !== null
                     && $var_comment->type_end !== null
@@ -1350,6 +1355,7 @@ final class ClassLikeNodeScanner
             } else {
                 $const_type = $inferred_type;
             }
+            $suppressed_issues = $var_comment ? $var_comment->suppressed_issues : [];
 
             $attributes = [];
             foreach ($stmt->attrGroups as $attr_group) {
@@ -1413,6 +1419,23 @@ final class ClassLikeNodeScanner
                 $description,
             );
 
+            if ($this->codebase->analysis_php_version_id >= 8_03_00
+                && !$storage->final
+                && $stmt->type === null
+            ) {
+                IssueBuffer::maybeAdd(
+                    new MissingClassConstType(
+                        sprintf(
+                            'Class constant "%s::%s" should have a declared type.',
+                            $storage->name,
+                            $const->name->name,
+                        ),
+                        new CodeLocation($this->file_scanner, $const),
+                    ),
+                    $suppressed_issues,
+                );
+            }
+
             if ($exists) {
                 $existing_constants[$const->name->name] = $constant_storage;
             }
@@ -1463,7 +1486,12 @@ final class ClassLikeNodeScanner
                     );
                 }
             } else {
-                throw new RuntimeException('Failed to infer case value for ' . $stmt->name->name);
+                $enum_value = ExpressionResolver::getUnresolvedClassConstExpr(
+                    $stmt->expr,
+                    $this->aliases,
+                    $fq_classlike_name,
+                    $storage->parent_class,
+                );
             }
         }
 
@@ -1913,10 +1941,6 @@ final class ClassLikeNodeScanner
                 continue;
             }
 
-            $var_line = preg_replace('/[ \t]+/', ' ', preg_replace('@^[ \t]*\*@m', '', $var_line));
-            $var_line = preg_replace('/,\n\s+\}/', '}', $var_line);
-            $var_line = str_replace("\n", '', $var_line);
-
             $var_line_parts = preg_split('/( |=)/', $var_line, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
 
             if (!$var_line_parts) {
@@ -1929,7 +1953,7 @@ final class ClassLikeNodeScanner
                 continue;
             }
 
-            if ($var_line_parts[0] === ' ') {
+            while (isset($var_line_parts[0]) && $var_line_parts[0] === ' ') {
                 array_shift($var_line_parts);
             }
 
@@ -1945,11 +1969,12 @@ final class ClassLikeNodeScanner
                 continue;
             }
 
-            if ($var_line_parts[0] === ' ') {
+            while (isset($var_line_parts[0]) && $var_line_parts[0] === ' ') {
                 array_shift($var_line_parts);
             }
 
-            $type_string = str_replace("\n", '', implode('', $var_line_parts));
+            $type_string = implode('', $var_line_parts);
+            $type_string = ltrim($type_string, "* \n\r");
             try {
                 $type_string = CommentAnalyzer::splitDocLine($type_string)[0];
             } catch (DocblockParseException $e) {

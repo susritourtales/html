@@ -34,11 +34,10 @@ $(document).ready(function(){
         }
         var element=$(this);
         element.html('Please wait...');
-
         element.prop('disabled',true);
         var formData=new FormData();
-        formData.append('current_password',currentPassword);
-        formData.append('new_password',newPassword);
+        formData.append('current_password',currentPasswordHash);
+        formData.append('new_password',newPasswordHash);
         ajaxCall=  $.ajax({
             type: "POST",
             url: BASE_URL+'/twistt/reset-password',
@@ -66,6 +65,5 @@ $(document).ready(function(){
                 messageDisplay(data.message, 2000);
             }
         });
-    });
-
+    });   
 });

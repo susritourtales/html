@@ -137,11 +137,7 @@ abstract class AbstractSessionArrayStorage implements
     #[ReturnTypeWillChange]
     public function offsetGet(mixed $key)
     {
-        if (isset($_SESSION[$key])) {
-            return $_SESSION[$key];
-        }
-
-        return null;
+        return $_SESSION[$key] ?? null;
     }
 
     /**
@@ -150,9 +146,9 @@ abstract class AbstractSessionArrayStorage implements
      * @return void
      */
     #[ReturnTypeWillChange]
-    public function offsetSet(mixed $key, mixed $value)
+    public function offsetSet(mixed $offset, mixed $value)
     {
-        $_SESSION[$key] = $value;
+        $_SESSION[$offset] = $value;
     }
 
     /**
@@ -161,9 +157,9 @@ abstract class AbstractSessionArrayStorage implements
      * @return void
      */
     #[ReturnTypeWillChange]
-    public function offsetUnset(mixed $key)
+    public function offsetUnset(mixed $offset)
     {
-        unset($_SESSION[$key]);
+        unset($_SESSION[$offset]);
     }
 
     /**
@@ -210,7 +206,6 @@ abstract class AbstractSessionArrayStorage implements
      *
      * Ensures $_SESSION is set to an instance of the object when complete.
      *
-     * @param  array          $array
      * @return SessionStorage
      */
     public function fromArray(array $array)

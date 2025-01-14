@@ -22,7 +22,7 @@ class QuesttSubscriptionTable extends BaseTable
     try {
       return $this->insert($data);
     } catch (\Exception $e) {
-      return false;
+      return $e;
     }
   }
 
@@ -47,7 +47,7 @@ class QuesttSubscriptionTable extends BaseTable
         return "";
       }
     } catch (\Exception $e) {
-      return "";
+      return $e;
     }
   }
 
@@ -74,7 +74,7 @@ class QuesttSubscriptionTable extends BaseTable
         }
         return $validity;
       } catch (\Exception $e) {
-        return array();
+        return $e;
       }
   }
 
@@ -92,7 +92,7 @@ class QuesttSubscriptionTable extends BaseTable
       }
       return $plans;
     } catch (\Exception $e) {
-      return array();
+      return $e;
     }
   }
 
@@ -101,7 +101,7 @@ class QuesttSubscriptionTable extends BaseTable
     try {
       return $this->update($data, $where);
     } catch (\Exception $e) {
-      return false;
+      return $e;
     }
   }
 }

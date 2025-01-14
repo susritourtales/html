@@ -463,7 +463,7 @@ final class FunctionLikeNodeScanner
             if ($docblock_info) {
                 if ($docblock_info->since_php_major_version && !$this->aliases->namespace) {
                     $analysis_major_php_version = $this->codebase->getMajorAnalysisPhpVersion();
-                    $analysis_minor_php_version = $this->codebase->getMajorAnalysisPhpVersion();
+                    $analysis_minor_php_version = $this->codebase->getMinorAnalysisPhpVersion();
                     if ($docblock_info->since_php_major_version > $analysis_major_php_version) {
                         return false;
                     }
@@ -825,7 +825,9 @@ final class FunctionLikeNodeScanner
                 $this->codebase->analysis_php_version_id,
             );
 
-            if ($is_nullable) {
+            if ($param_type->isMixed()) {
+                $is_nullable = false;
+            } elseif ($is_nullable) {
                 $param_type = $param_type->getBuilder()->addType(new TNull)->freeze();
             } else {
                 $is_nullable = $param_type->isNullable();
@@ -1045,7 +1047,7 @@ final class FunctionLikeNodeScanner
                     if ($docblock_info) {
                         if ($docblock_info->since_php_major_version && !$this->aliases->namespace) {
                             $analysis_major_php_version = $this->codebase->getMajorAnalysisPhpVersion();
-                            $analysis_minor_php_version = $this->codebase->getMajorAnalysisPhpVersion();
+                            $analysis_minor_php_version = $this->codebase->getMinorAnalysisPhpVersion();
                             if ($docblock_info->since_php_major_version > $analysis_major_php_version) {
                                 return false;
                             }

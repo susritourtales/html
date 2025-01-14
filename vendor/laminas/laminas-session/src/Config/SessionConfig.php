@@ -214,7 +214,7 @@ class SessionConfig extends StandardConfig
             'use_trans_sid',
             'cookie_httponly' => (bool) ini_get('session.' . $storageOption),
 
-            'save_handler' => $this->saveHandler ?: $this->sessionModuleName(),
+            'save_handler' => $this->saveHandler ?? $this->sessionModuleName(),
 
             default => ini_get('session.' . $storageOption),
         };
@@ -364,6 +364,8 @@ class SessionConfig extends StandardConfig
 
     /**
      * Set session.sid_bits_per_character
+     *
+     * @deprecated see https://wiki.php.net/rfc/deprecations_php_8_4#sessionsid_length_and_sessionsid_bits_per_character
      *
      * @param  int $sidBitsPerCharacter
      * @return SessionConfig

@@ -46,6 +46,7 @@ use function substr;
  *    useTldCheck?: bool,
  *    ipValidator?: null|ValidatorInterface,
  * }
+ * @final
  */
 class Hostname extends AbstractValidator
 {
@@ -182,7 +183,6 @@ class Hostname extends AbstractValidator
         'author',
         'auto',
         'autos',
-        'avianca',
         'aw',
         'aws',
         'ax',
@@ -193,7 +193,6 @@ class Hostname extends AbstractValidator
         'baby',
         'baidu',
         'banamex',
-        'bananarepublic',
         'band',
         'bank',
         'bar',
@@ -358,7 +357,6 @@ class Hostname extends AbstractValidator
         'college',
         'cologne',
         'com',
-        'comcast',
         'commbank',
         'community',
         'company',
@@ -609,7 +607,6 @@ class Hostname extends AbstractValidator
         'gs',
         'gt',
         'gu',
-        'guardian',
         'gucci',
         'guge',
         'guide',
@@ -903,7 +900,6 @@ class Hostname extends AbstractValidator
         'nab',
         'nagoya',
         'name',
-        'natura',
         'navy',
         'nba',
         'nc',
@@ -952,7 +948,6 @@ class Hostname extends AbstractValidator
         'okinawa',
         'olayan',
         'olayangroup',
-        'oldnavy',
         'ollo',
         'om',
         'omega',
@@ -1141,7 +1136,6 @@ class Hostname extends AbstractValidator
         'sh',
         'shangrila',
         'sharp',
-        'shaw',
         'shell',
         'shia',
         'shiksha',
@@ -1373,7 +1367,6 @@ class Hostname extends AbstractValidator
         'wtf',
         'xbox',
         'xerox',
-        'xfinity',
         'xihuan',
         'xin',
         'कॉम',
@@ -1839,6 +1832,8 @@ class Hostname extends AbstractValidator
     /**
      * Returns the set ip validator
      *
+     * @deprecated Since 2.61.0 all options getters and setters will be removed in 3.0
+     *
      * @return Ip
      */
     public function getIpValidator()
@@ -1847,6 +1842,8 @@ class Hostname extends AbstractValidator
     }
 
     /**
+     * @deprecated Since 2.61.0 all options getters and setters will be removed in 3.0
+     *
      * @param Ip $ipValidator OPTIONAL
      * @return self
      */
@@ -1863,6 +1860,8 @@ class Hostname extends AbstractValidator
     /**
      * Returns the allow option
      *
+     * @deprecated Since 2.61.0 all options getters and setters will be removed in 3.0
+     *
      * @return int
      */
     public function getAllow()
@@ -1873,7 +1872,9 @@ class Hostname extends AbstractValidator
     /**
      * Sets the allow option
      *
-     * @param  int $allow
+     * @deprecated Since 2.61.0 all options getters and setters will be removed in 3.0
+     *
+     * @param int $allow
      * @return $this Provides a fluent interface
      */
     public function setAllow($allow)
@@ -1884,6 +1885,8 @@ class Hostname extends AbstractValidator
 
     /**
      * Returns the set idn option
+     *
+     * @deprecated Since 2.61.0 all options getters and setters will be removed in 3.0
      *
      * @return bool
      */
@@ -1897,7 +1900,9 @@ class Hostname extends AbstractValidator
      *
      * This only applies when DNS hostnames are validated
      *
-     * @param  bool $useIdnCheck Set to true to validate IDN domains
+     * @deprecated Since 2.61.0 all options getters and setters will be removed in 3.0
+     *
+     * @param bool $useIdnCheck Set to true to validate IDN domains
      * @return $this
      */
     public function useIdnCheck($useIdnCheck)
@@ -1908,6 +1913,8 @@ class Hostname extends AbstractValidator
 
     /**
      * Returns the set tld option
+     *
+     * @deprecated Since 2.61.0 all options getters and setters will be removed in 3.0
      *
      * @return bool
      */
@@ -1921,7 +1928,9 @@ class Hostname extends AbstractValidator
      *
      * This only applies when DNS hostnames are validated
      *
-     * @param  bool $useTldCheck Set to true to validate TLD elements
+     * @deprecated Since 2.61.0 all options getters and setters will be removed in 3.0
+     *
+     * @param bool $useTldCheck Set to true to validate TLD elements
      * @return $this
      */
     public function useTldCheck($useTldCheck)
@@ -2210,7 +2219,7 @@ class Hostname extends AbstractValidator
         $index = 0;
         $char  = 0x80;
 
-        for ($indexe = $separator ? $separator + 1 : 0; $indexe < $lengthe; ++$lengthd) {
+        for ($indexe = $separator !== false ? $separator + 1 : 0; $indexe < $lengthe; ++$lengthd) {
             for ($oldIndex = $index, $pos = 1, $key = 36; 1; $key += 36) {
                 if (! isset($encoded[$indexe])) {
                     break 2;

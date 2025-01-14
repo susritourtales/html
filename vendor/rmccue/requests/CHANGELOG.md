@@ -1,6 +1,23 @@
 Changelog
 =========
 
+2.0.13
+------
+
+### Overview of changes
+- Update bundled certificates as of 2024-09-24. [#900]
+- Various minor documentation improvements and other general housekeeping.
+
+[#900]: https://github.com/WordPress/Requests/pull/900
+
+2.0.12
+------
+
+### Overview of changes
+- Update bundled certificates as of 2024-07-02. [#877]
+
+[#877]: https://github.com/WordPress/Requests/pull/877
+
 2.0.11
 ------
 

@@ -117,7 +117,7 @@ class IndexController extends BaseController
         $userProfile = $adapter->getUserProfile();
         $accessToken = $adapter->getAccessToken();
 
-        $userdetails['user_login_id'] = $userProfile->email;
+        $userdetails['user_login_id'] = $userProfile->identifier;
         $userdetails['username'] = $userProfile->displayName;
         $userdetails['email'] = $userProfile->email;
         $userdetails['country'] = $userProfile->country;
@@ -247,6 +247,7 @@ class IndexController extends BaseController
     $userdetails['gender'] = $postData['gender'];
     $userdetails['user_type_id'] = \Admin\Model\User::TWISTT_Executive;
     $postData['ccmobile'] = str_replace("+", "", $postData['ccmobile']);
+    // $userdetails['password'] = hash('sha256', $postData['ccmobile']);
     $aes = new Aes();
     $encodeContent = $aes->encrypt($postData['ccmobile']);
     $userdetails['password'] = $encodeContent['password'];
@@ -1102,6 +1103,7 @@ class IndexController extends BaseController
         $this->redirect()->toUrl($this->getBaseUrl() . '/twistt/executive/login');
       $check = $this->userTable->checkPasswordWithUserId($loginId['user_login_id'], $postData['current_password']);
       if ($check) {
+        // $userdetails['password'] = $postData['new_password']; // hash('sha256', $postData['new_password']);
         $aes = new Aes();
         $encodeContent = $aes->encrypt($postData['new_password']);
         $userdetails['password'] = $encodeContent['password'];
@@ -1171,6 +1173,10 @@ class IndexController extends BaseController
       return new JsonModel(array('success' => false, "message" => 'invalid credentials'));
     }
   }
+
+  public function appAuthAction(){
+    return new JsonModel(array('success' => true, "message" => 'App auth action called..'));
+}
   public function enablerAuthAction()
   {
     $logResult = $this->logRequest($this->getRequest()->toString());
@@ -1215,7 +1221,7 @@ class IndexController extends BaseController
         $userProfile = $adapter->getUserProfile();
         $accessToken = $adapter->getAccessToken();
 
-        $userdetails['user_login_id'] = $userProfile->email;
+        $userdetails['user_login_id'] = $userProfile->identifier;
         $userdetails['username'] = $userProfile->displayName;
         $userdetails['company_name'] = $userProfile->displayName;
         $userdetails['email'] = $userProfile->email;
@@ -1464,6 +1470,7 @@ class IndexController extends BaseController
     }
     $enablerdetails['country'] = $postData['country'];
     $enablerdetails['city'] = $postData['city'];
+    // $enablerdetails['password'] = hash('sha256', $postData['ccmobile']);
     $aes = new Aes();
     $encodeContent = $aes->encrypt($postData['ccmobile']);
     $enablerdetails['password'] = $encodeContent['password'];

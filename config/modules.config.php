@@ -15,4 +15,5 @@ return [
     'Application',
     'Admin',
     'User',
+    'Api',
 ];

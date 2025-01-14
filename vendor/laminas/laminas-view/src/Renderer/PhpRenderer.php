@@ -45,7 +45,7 @@ use function sprintf;
  * mark them as part of the internal implementation, and thus prevent conflict
  * with variables injected into the renderer.
  *
- * Convenience methods for build in helpers (@see __call):
+ * Convenience methods for built-in helpers (@see __call):
  *
  * @method string asset($asset)
  * @method string|null basePath($file = null)
@@ -73,7 +73,7 @@ use function sprintf;
  * @method mixed|null identity()
  * @method \Laminas\View\Helper\InlineScript inlineScript($mode = \Laminas\View\Helper\HeadScript::FILE, $spec = null, $placement = 'APPEND', array $attrs = array(), $type = 'text/javascript')
  * @method string|void json($data, array $jsonOptions = array())
- * @method \Laminas\View\Helper\Layout layout($template = null)
+ * @method Model|\Laminas\View\Helper\Layout layout($template = null)
  * @method \Laminas\View\Helper\Navigation navigation($container = null)
  * @method string paginationControl(\Laminas\Paginator\Paginator $paginator = null, $scrollingStyle = null, $partial = null, $params = null)
  * @method string|\Laminas\View\Helper\Partial partial($name = null, $values = null)
@@ -518,7 +518,7 @@ class PhpRenderer implements Renderer, TreeRendererInterface
         $this->__content = '';
         while ($this->__template = array_pop($this->__templates)) {
             $this->__file = $this->resolver($this->__template);
-            if (! $this->__file) {
+            if (! is_string($this->__file)) {
                 throw new Exception\RuntimeException(sprintf(
                     '%s: Unable to render template "%s"; resolver could not resolve to a file',
                     __METHOD__,
@@ -534,7 +534,7 @@ class PhpRenderer implements Renderer, TreeRendererInterface
                 throw $ex;
             }
 
-            if ($includeReturn === false && empty($this->__content)) {
+            if ($includeReturn === false && $this->__content === '') {
                 throw new Exception\UnexpectedValueException(sprintf(
                     '%s: Unable to render template "%s"; file include failed',
                     __METHOD__,

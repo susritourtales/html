@@ -58,7 +58,7 @@ final class ConstantTypeResolver
     public static function resolve(
         ClassLikes $classlikes,
         UnresolvedConstantComponent $c,
-        StatementsAnalyzer $statements_analyzer = null,
+        ?StatementsAnalyzer $statements_analyzer = null,
         array $visited_constant_ids = []
     ): Atomic {
         $c_id = spl_object_id($c);
@@ -344,6 +344,13 @@ final class ConstantTypeResolver
                             return Type::getString($value)->getSingleAtomic();
                         } elseif (is_int($value)) {
                             return Type::getInt(false, $value)->getSingleAtomic();
+                        } elseif ($value instanceof UnresolvedConstantComponent) {
+                            return self::resolve(
+                                $classlikes,
+                                $value,
+                                $statements_analyzer,
+                                $visited_constant_ids + [$c_id => true],
+                            );
                         }
                     } elseif ($c instanceof EnumNameFetch) {
                         return Type::getString($c->case)->getSingleAtomic();

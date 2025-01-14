@@ -2,11 +2,9 @@
 
 namespace User;
 
-use User\Controller\IndexController;
 use Laminas\Router\Http\Literal;
 use Laminas\Router\Http\Segment;
 use Laminas\ServiceManager\AbstractFactory\ReflectionBasedAbstractFactory;
-use Laminas\ServiceManager\Factory\InvokableFactory;
 
 return [
     'router' => [
@@ -336,7 +334,16 @@ return [
                         'action' => 'twistt-plans-discounts',
                     ],
                 ],
-            ],'twistt-executive-auth' => [
+            ],'twistt-app-auth' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route' => '/twistt/app/auth',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action' => 'app-auth',
+                    ],
+                ],
+            ], 'twistt-executive-auth' => [
                 'type' => Literal::class,
                 'options' => [
                     'route' => '/twistt/executive/auth',

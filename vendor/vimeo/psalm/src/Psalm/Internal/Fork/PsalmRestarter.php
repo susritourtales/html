@@ -7,6 +7,8 @@ use Composer\XdebugHandler\XdebugHandler;
 use function array_filter;
 use function array_merge;
 use function array_splice;
+use function assert;
+use function count;
 use function extension_loaded;
 use function file_get_contents;
 use function file_put_contents;
@@ -61,7 +63,7 @@ final class PsalmRestarter extends XdebugHandler
     {
         $this->required = (bool) array_filter(
             $this->disabled_extensions,
-            static fn(string $extension): bool => extension_loaded($extension)
+            static fn(string $extension): bool => extension_loaded($extension),
         );
 
         $opcache_loaded = extension_loaded('opcache') || extension_loaded('Zend OPcache');
@@ -82,6 +84,11 @@ final class PsalmRestarter extends XdebugHandler
                     return true;
                 }
             }
+        }
+
+        // opcache.save_comments is required for json mapper (used in language server) to work
+        if ($opcache_loaded && in_array(ini_get('opcache.save_comments'), ['0', 'false', 0, false])) {
+            return true;
         }
 
         return $default || $this->required;
@@ -120,7 +127,7 @@ final class PsalmRestarter extends XdebugHandler
     /**
      * No type hint to allow xdebug-handler v1 and v2 usage
      *
-     * @param string[] $command
+     * @param non-empty-list<string> $command
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
      */
     protected function restart($command): void
@@ -152,12 +159,17 @@ final class PsalmRestarter extends XdebugHandler
             ];
         }
 
+        if ($opcache_loaded) {
+            $additional_options[] = '-dopcache.save_comments=1';
+        }
+
         array_splice(
             $command,
             1,
             0,
             $additional_options,
         );
+        assert(count($command) > 1);
 
         parent::restart($command);
     }

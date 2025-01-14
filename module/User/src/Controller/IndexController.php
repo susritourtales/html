@@ -1160,6 +1160,7 @@ class IndexController extends BaseController
     $applePublicKeyUrl = 'https://appleid.apple.com/auth/keys';
     // Fetch Apple's public keys
     $keys = json_decode(file_get_contents($applePublicKeyUrl), true)['keys'];
+    print_r($keys);
 
     // Decode the JWT (id_token)
     try {

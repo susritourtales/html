@@ -1194,8 +1194,8 @@ class IndexController extends BaseController
       'refreshToken' => $data['refresh_token'] ?? null,
     ]);
     // $this->redirect()->toUrl($appUrl);
-    // header("Location: $appUrl"); exit;
-    return new JsonModel(array('success'=>true,'data'=>$data));
+    header("Location: $appUrl"); //exit;
+    // return new JsonModel(array('success'=>true,'data'=>$data));
   }
 
   public function bkup_appAuthAction(){

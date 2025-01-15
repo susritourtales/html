@@ -1150,7 +1150,7 @@ class IndexController extends BaseController
     // Apple Keys
     $client_id = 'com.susritourtales.twistt'; // Your Service ID
     $client_secret = $this->generateClientSecret();
-    $redirect_uri = 'myapp://callback'; //'https://www.susritourtales.com/twistt/app/auth';
+    $redirect_uri = 'https://www.susritourtales.com/twistt/app/auth'; // 'myapp://callback'; 
 
     // Get the authorization code from the request
     $auth_code = $_POST['code'] ?? null;

@@ -1164,6 +1164,12 @@ class IndexController extends BaseController
     // Exchange the authorization code for tokens
     $token_url = 'https://appleid.apple.com/auth/token';
 
+    $req = ['client_id' => $client_id,
+                'client_secret' => $client_secret,
+                'code' => $auth_code,
+                'grant_type' => 'authorization_code',
+                'redirect_uri' => $redirect_uri,];
+    print_r($req);         
     $response = file_get_contents($token_url, false, stream_context_create([
         'http' => [
             'method' => 'POST',

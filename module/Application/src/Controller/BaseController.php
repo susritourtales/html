@@ -150,7 +150,7 @@ class BaseController extends AbstractActionController
         $key_id = 'YOUR_KEY_ID';
         $team_id = 'YOUR_TEAM_ID';
         $client_id = 'com.yourapp.service'; // Your Service ID
-        $key_file_path = __DIR__ . '/AuthKey.p8';
+        $key_file_path = '/var/www/html/storage/keys/AuthKey_R43YS75FGX.p8'; // _DIR__ . '/AuthKey.p8';
 
         $header = ['alg' => 'ES256', 'kid' => $key_id];
         $claims = [

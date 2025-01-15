@@ -1169,7 +1169,7 @@ class IndexController extends BaseController
                 'code' => $auth_code,
                 'grant_type' => 'authorization_code',
                 'redirect_uri' => $redirect_uri,];
-    print_r($req);         
+    // print_r($req);         
     $response = file_get_contents($token_url, false, stream_context_create([
         'http' => [
             'method' => 'POST',
@@ -1194,10 +1194,10 @@ class IndexController extends BaseController
       'authorizationCode' => $data['access_token'],
       'idToken' => $data['id_token'],
       'refreshToken' => $data['refresh_token'] ?? null,
-  ]);
+    ]);
 
-  header("Location: $appUrl");
-    // return new JsonModel(array('success'=>true,'data'=>$data));
+    header("Location: $appUrl");
+    return new JsonModel(array('success'=>true,'data'=>$data));
   }
 
   public function bkup_appAuthAction(){

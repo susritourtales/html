@@ -1157,6 +1157,9 @@ class IndexController extends BaseController
       return new JsonModel(array('success'=>false,'message'=>'Missing authorization code or id_token'));
     }
 
+    print_r($_POST);
+    print_r("=============================");
+
     $applePublicKeyUrl = 'https://appleid.apple.com/auth/keys';
     // Fetch Apple's public keys
     $keys = json_decode(file_get_contents($applePublicKeyUrl), true)['keys'];

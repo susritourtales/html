@@ -147,10 +147,12 @@ class BaseController extends AbstractActionController
      * Generate a client secret using your .p8 key
      */
     function generateClientSecret() {
-        $key_id = 'YOUR_KEY_ID';
-        $team_id = 'YOUR_TEAM_ID';
-        $client_id = 'com.yourapp.service'; // Your Service ID
-        $key_file_path = '/var/www/html/storage/keys/AuthKey_R43YS75FGX.p8'; // _DIR__ . '/AuthKey.p8';
+        $config = $this->getConfig();
+        $appauth = $config['apphybridauth']['providers']['Apple']['keys'];
+        $key_id = $appauth['key_id'];
+        $team_id = $appauth['team_id'];
+        $client_id = $appauth['id'];
+        $key_file_path = $appauth['key_file']; 
 
         $header = ['alg' => 'ES256', 'kid' => $key_id];
         $claims = [

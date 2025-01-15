@@ -1196,7 +1196,7 @@ class IndexController extends BaseController
       'refreshToken' => $data['refresh_token'] ?? null,
   ]);
 
-  header("Location: $appUrl");
+  header("Location: $appUrl"); exit;
     // return new JsonModel(array('success'=>true,'data'=>$data));
   }
 

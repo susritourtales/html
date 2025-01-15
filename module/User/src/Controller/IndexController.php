@@ -1193,11 +1193,11 @@ class IndexController extends BaseController
     //   'idToken' => $data['id_token'],
     //   'refreshToken' => $data['refresh_token'] ?? null,
     // ]);
-    $appUrl = "signinwithapple://callback" . '?' . http_build_query([
+    $appUrl = "intent://callback" . '?' . http_build_query([
       'authorizationCode' => $data['access_token'],
       'idToken' => $data['id_token'],
       'refreshToken' => $data['refresh_token'] ?? null,
-    ]);
+    ]). '#Intent;package=com.susritourtales.auth;scheme=signinwithapple;end';
     $logResult = $this->logRequest("appurl: $appUrl");
     header("Location: $appUrl"); exit;
     //return new ViewModel(['success' =>true,'appUrl' => $appUrl]);

@@ -1188,18 +1188,17 @@ class IndexController extends BaseController
 
     // Parse and return the tokens
     $data = json_decode($response, true);
-    $appUrl = "myapp://callback" . '?' . http_build_query([
+    // $appUrl = "myapp://callback" . '?' . http_build_query([
+    //   'authorizationCode' => $data['access_token'],
+    //   'idToken' => $data['id_token'],
+    //   'refreshToken' => $data['refresh_token'] ?? null,
+    // ]);
+    $appUrl = "signinwithapple://callback" . '?' . http_build_query([
       'authorizationCode' => $data['access_token'],
       'idToken' => $data['id_token'],
       'refreshToken' => $data['refresh_token'] ?? null,
     ]);
-    // $this->redirect()->toUrl($appUrl);
-
-    // $appUrl = 'intent://callback?${'.http_build_query([
-    //   'authorizationCode' => $data['access_token'],
-    //   'idToken' => $data['id_token'],
-    //   'refreshToken' => $data['refresh_token'] ?? null,
-    // ]).'}#Intent;package=com.susritourtales.sttandapp;scheme=signinwithapple;end';
+    $logResult = $this->logRequest("appurl: $appUrl");
     header("Location: $appUrl"); exit;
     //return new ViewModel(['success' =>true,'appUrl' => $appUrl]);
     // return new JsonModel(array('success'=>true,'data'=>$data));

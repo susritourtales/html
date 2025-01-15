@@ -4,15 +4,17 @@
       <div class="col-12">
         <div class="mb-5">
           <h2 class="fw-bold text-center">TWISTT App Login Error</h2>
-          <h4 class="text-center m-3 fw-bold text-danger">
-            <?php if(isset($message) && !empty($message)) 
-                echo $message;
-              elseif(isset($appUrl) && !empty($appUrl)){
-                echo $appUrl;
-                echo '<p class="text-center m-2"><a href="'.$appUrl.'">return to app</a></p>';
-              } ?>
-          </h4>
-          
+          <?php if($success){
+            if(isset($appUrl) && !empty($appUrl)){
+              echo $appUrl;
+              echo '<p class="text-center m-2"><a href="'.$appUrl.'">return to app</a></p>';
+            }
+          }else{
+            if(isset($message) && !empty($message)) 
+                echo '<h4 class="text-center m-3 fw-bold text-danger">'.$message.'</h4>';
+            else
+              echo '<h4 class="text-center m-3 fw-bold text-danger">Unknown error..</h4>';
+          } ?>
         </div>
       </div>
     </div>

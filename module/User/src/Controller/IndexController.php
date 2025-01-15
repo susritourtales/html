@@ -1156,7 +1156,7 @@ class IndexController extends BaseController
     $auth_code = $_POST['code'] ?? null;
 
     if (!$auth_code) {
-      return new JsonModel(array('success'=>false,'message'=>'Authorization code not provided'));
+      return new ViewModel(array('success'=>false,'message'=>'Authorization code not provided'));
     }
 
     // Exchange the authorization code for tokens
@@ -1183,7 +1183,7 @@ class IndexController extends BaseController
     ]));
 
     if ($response === false) {
-      return new JsonModel(array('success'=>false,'message'=>'Failed to get token'));
+      return new ViewModel(array('success'=>false,'message'=>'Failed to get token'));
     }
 
     // Parse and return the tokens
@@ -1195,7 +1195,7 @@ class IndexController extends BaseController
     ]);
     // $this->redirect()->toUrl($appUrl);
     //header("Location: $appUrl"); //exit;
-    return new ViewModel(['appUrl' => $appUrl]);
+    return new ViewModel(['success' =>true,'appUrl' => $appUrl]);
     // return new JsonModel(array('success'=>true,'data'=>$data));
   }
 

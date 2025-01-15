@@ -1197,7 +1197,7 @@ class IndexController extends BaseController
   ]);
 
   header("Location: $appUrl");
-    return new JsonModel(array('success'=>true,'data'=>$data));
+    // return new JsonModel(array('success'=>true,'data'=>$data));
   }
 
   public function bkup_appAuthAction(){

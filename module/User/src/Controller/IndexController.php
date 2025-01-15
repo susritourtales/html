@@ -1156,8 +1156,9 @@ class IndexController extends BaseController
     $auth_code = $_POST['code'] ?? null;
 
     if (!$auth_code) {
-        echo json_encode(['error' => 'Authorization code not provided']);
-        exit;
+      return new JsonModel(array('success'=>false,'message'=>'Authorization code not provided'));
+        // echo json_encode(['error' => 'Authorization code not provided']);
+        // exit;
     }
 
     // Exchange the authorization code for tokens
@@ -1178,8 +1179,9 @@ class IndexController extends BaseController
     ]));
 
     if ($response === false) {
-        echo json_encode(['error' => 'Failed to get token']);
-        exit;
+      return new JsonModel(array('success'=>false,'message'=>'Failed to get token'));
+        // echo json_encode(['error' => 'Failed to get token']);
+        // exit;
     }
 
     // Parse and return the tokens

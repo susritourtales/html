@@ -1190,13 +1190,13 @@ class IndexController extends BaseController
 
     // Parse and return the tokens
     $data = json_decode($response, true);
-    $redirectUri = "com.susritourtales.sttandapp://callback" . '?' . http_build_query([
+    $appUrl = "sttandapp://callback" . '?' . http_build_query([
       'authorizationCode' => $data['access_token'],
       'idToken' => $data['id_token'],
       'refreshToken' => $data['refresh_token'] ?? null,
   ]);
 
-    $this->redirect()->toUrl($redirectUri);
+  header("Location: $appUrl");
     return new JsonModel(array('success'=>true,'data'=>$data));
   }
 

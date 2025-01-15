@@ -162,14 +162,16 @@ class BaseController extends AbstractActionController
             'aud' => 'https://appleid.apple.com',
             'sub' => $client_id,
         ];
+        $privateKey = file_get_contents($key_file_path);
+        $jwt = JWT::encode($claims, $privateKey, 'ES256', $key_id);
 
-        $header_encoded = $this->base64UrlEncode(json_encode($header));
-        $claims_encoded = $this->base64UrlEncode(json_encode($claims));
+        // $header_encoded = $this->base64UrlEncode(json_encode($header));
+        // $claims_encoded = $this->base64UrlEncode(json_encode($claims));
 
-        $signature = '';
-        openssl_sign("$header_encoded.$claims_encoded", $signature, file_get_contents($key_file_path), OPENSSL_ALGO_SHA256);
+        // $signature = '';
+        // openssl_sign("$header_encoded.$claims_encoded", $signature, file_get_contents($key_file_path), OPENSSL_ALGO_SHA256);
 
-        $jwt = "$header_encoded.$claims_encoded." . $this->base64UrlEncode($signature);
+        // $jwt = "$header_encoded.$claims_encoded." . $this->base64UrlEncode($signature);
         return $jwt;
     }
 

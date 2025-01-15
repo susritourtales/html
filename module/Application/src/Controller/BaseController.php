@@ -153,7 +153,7 @@ class BaseController extends AbstractActionController
         $team_id = $appauth['team_id'];
         $client_id = $appauth['id'];
         $key_file_path = $appauth['key_file']; 
-
+print_r($appauth); exit;
         $header = ['alg' => 'ES256', 'kid' => $key_id];
         $claims = [
             'iss' => $team_id,

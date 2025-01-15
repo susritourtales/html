@@ -1193,7 +1193,9 @@ class IndexController extends BaseController
     // Parse and return the tokens
     $data = json_decode($response, true);
     $encData = json_encode($data);
-    return new JsonModel(array('success'=>true,'data'=>$data));
+    $appUrl = "com.susritourtales.sttandapp://Homewidgettoslack";
+    header("Location: $appUrl");
+    //return new JsonModel(array('success'=>true,'data'=>$data));
     // echo json_encode($data);
   }
 

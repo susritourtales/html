@@ -1195,8 +1195,26 @@ class IndexController extends BaseController
       'idToken' => $data['id_token'],
       'refreshToken' => $data['refresh_token'] ?? null,
     ]);
+    $alturl = 'https://www.susritourtales.com';
+    // header("Location: $appUrl");
 
-    header("Location: $appUrl");
+    echo "<html>
+      <head>
+          <title>Redirecting...</title>
+          <script>
+              // Try to open the app
+              window.location.href = '$appUrl';
+
+              // Fallback to a webpage if app does not open
+              setTimeout(() => {
+                  window.location.href = '$alturl';
+              }, 3000);
+          </script>
+      </head>
+      <body>
+          <p>Redirecting to the app. If it doesn't open, <a href='$appUrl'>click here</a>.</p>
+      </body>
+      </html>";
     return new JsonModel(array('success'=>true,'data'=>$data));
   }
 

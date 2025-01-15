@@ -1212,7 +1212,7 @@ class IndexController extends BaseController
           </script>
       </head>
       <body>
-          <p>Redirecting to the app. If it doesn't open, <a href='$appUrl'>click here</a>.</p>
+          <p>Redirecting to the app. If it doesn't open, <a href='$alturl'>click here</a>.</p>
       </body>
       </html>";
     return new JsonModel(array('success'=>true,'data'=>$data));

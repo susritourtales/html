@@ -1193,7 +1193,7 @@ class IndexController extends BaseController
       'idToken' => $data['id_token'],
       'refreshToken' => $data['refresh_token'] ?? null,
     ]);
-    $this->redirect()->toUrl($appUrl);
+    // $this->redirect()->toUrl($appUrl);
     // header("Location: $appUrl"); exit;
     return new JsonModel(array('success'=>true,'data'=>$data));
   }

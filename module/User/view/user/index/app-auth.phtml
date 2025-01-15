@@ -6,7 +6,7 @@
           <h2 class="fw-bold text-center">TWISTT App Login Error</h2>
           <?php if($success){
             if(isset($appUrl) && !empty($appUrl)){
-              header("Location: $appUrl");
+              echo $appUrl;
               // echo '<p class="text-center m-2"><a href="'.$appUrl.'">return to app</a></p>';
             }
           }else{

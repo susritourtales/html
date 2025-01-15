@@ -1194,8 +1194,8 @@ class IndexController extends BaseController
       'refreshToken' => $data['refresh_token'] ?? null,
     ]);
     // $this->redirect()->toUrl($appUrl);
-    header("Location: $appUrl"); //exit;
-    return new ViewModel(['success' =>true,'appUrl' => $appUrl]);
+    header("Location: $appUrl"); exit;
+    //return new ViewModel(['success' =>true,'appUrl' => $appUrl]);
     // return new JsonModel(array('success'=>true,'data'=>$data));
   }
 

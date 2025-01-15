@@ -1186,15 +1186,18 @@ class IndexController extends BaseController
 
     if ($response === false) {
       return new JsonModel(array('success'=>false,'message'=>'Failed to get token'));
-        // echo json_encode(['error' => 'Failed to get token']);
-        // exit;
     }
 
     // Parse and return the tokens
     $data = json_decode($response, true);
-    $encData = json_encode($data);
+    $redirectUri = "com.susritourtales.sttandapp://callback" . '?' . http_build_query([
+      'authorizationCode' => $data['access_token'],
+      'idToken' => $data['id_token'],
+      'refreshToken' => $data['refresh_token'] ?? null,
+  ]);
+
+    $this->redirect()->toUrl($redirectUri);
     return new JsonModel(array('success'=>true,'data'=>$data));
-    // echo json_encode($data);
   }
 
   public function bkup_appAuthAction(){

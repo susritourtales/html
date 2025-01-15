@@ -1195,7 +1195,7 @@ class IndexController extends BaseController
     $encData = json_encode($data);
     $appUrl = "com.susritourtales.sttandapp://Homewidgettoslack";
     header("Location: $appUrl");
-    //return new JsonModel(array('success'=>true,'data'=>$data));
+    return new JsonModel(array('success'=>true,'data'=>$data));
     // echo json_encode($data);
   }
 

@@ -1199,7 +1199,7 @@ class IndexController extends BaseController
       'authorizationCode' => $data['access_token'],
       'idToken' => $data['id_token'],
       'refreshToken' => $data['refresh_token'] ?? null,
-    ]).'}#Intent;scheme=signinwithapple;end';
+    ]).'}#Intent;package=com.aboutyou.dart_packages.sign_in_with_apple.SignInWithAppleCallback;scheme=signinwithapple;end';
     header("Location: $appUrl"); exit;
     //return new ViewModel(['success' =>true,'appUrl' => $appUrl]);
     // return new JsonModel(array('success'=>true,'data'=>$data));

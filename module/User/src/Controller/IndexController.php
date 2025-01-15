@@ -1190,7 +1190,7 @@ class IndexController extends BaseController
 
     // Parse and return the tokens
     $data = json_decode($response, true);
-    $appUrl = "sttandapp://callback" . '?' . http_build_query([
+    $appUrl = "myapp://callback" . '?' . http_build_query([
       'authorizationCode' => $data['access_token'],
       'idToken' => $data['id_token'],
       'refreshToken' => $data['refresh_token'] ?? null,

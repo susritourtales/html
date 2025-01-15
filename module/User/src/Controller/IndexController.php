@@ -1150,15 +1150,13 @@ class IndexController extends BaseController
     // Apple Keys
     $client_id = 'com.susritourtales.twistt'; // Your Service ID
     $client_secret = $this->generateClientSecret();
-    $redirect_uri = 'https://www.susritourtales.com/twistt/app/auth'; // 'myapp://callback'; 
+    $redirect_uri = 'https://www.susritourtales.com/twistt/app/auth'; 
 
     // Get the authorization code from the request
     $auth_code = $_POST['code'] ?? null;
 
     if (!$auth_code) {
       return new JsonModel(array('success'=>false,'message'=>'Authorization code not provided'));
-        // echo json_encode(['error' => 'Authorization code not provided']);
-        // exit;
     }
 
     // Exchange the authorization code for tokens
@@ -1195,7 +1193,7 @@ class IndexController extends BaseController
       'idToken' => $data['id_token'],
       'refreshToken' => $data['refresh_token'] ?? null,
     ]);
-
+    print_r($appUrl); exit;
     header("Location: $appUrl"); exit;
     //return new JsonModel(array('success'=>true,'data'=>$data));
   }

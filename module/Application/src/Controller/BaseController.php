@@ -142,6 +142,42 @@ class BaseController extends AbstractActionController
         //$this->logRequest();
     }
 
+
+    /**
+     * Generate a client secret using your .p8 key
+     */
+    function generateClientSecret() {
+        $key_id = 'YOUR_KEY_ID';
+        $team_id = 'YOUR_TEAM_ID';
+        $client_id = 'com.yourapp.service'; // Your Service ID
+        $key_file_path = __DIR__ . '/AuthKey.p8';
+
+        $header = ['alg' => 'ES256', 'kid' => $key_id];
+        $claims = [
+            'iss' => $team_id,
+            'iat' => time(),
+            'exp' => time() + (86400 * 180), // Valid for 180 days
+            'aud' => 'https://appleid.apple.com',
+            'sub' => $client_id,
+        ];
+
+        $header_encoded = $this->base64UrlEncode(json_encode($header));
+        $claims_encoded = $this->base64UrlEncode(json_encode($claims));
+
+        $signature = '';
+        openssl_sign("$header_encoded.$claims_encoded", $signature, file_get_contents($key_file_path), OPENSSL_ALGO_SHA256);
+
+        $jwt = "$header_encoded.$claims_encoded." . $this->base64UrlEncode($signature);
+        return $jwt;
+    }
+
+    /**
+     * Base64 URL Encode
+     */
+    function base64UrlEncode($data) {
+        return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
+    }
+
     public function getJWTSecret(){
         return $this->jwtSecret;
     }

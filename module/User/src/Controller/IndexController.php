@@ -1147,56 +1147,63 @@ class IndexController extends BaseController
   }
 
   public function appAuthAction(){
+    // Apple Keys
+    $client_id = 'com.susritourtales.twistt'; // Your Service ID
+    $client_secret = $this->generateClientSecret();
+    $redirect_uri = 'https://www.susritourtales.com/twistt/app/auth';
+
+    // Get the authorization code from the request
+    $auth_code = $_POST['code'] ?? null;
+
+    if (!$auth_code) {
+        echo json_encode(['error' => 'Authorization code not provided']);
+        exit;
+    }
+
+    // Exchange the authorization code for tokens
+    $token_url = 'https://appleid.apple.com/auth/token';
+
+    $response = file_get_contents($token_url, false, stream_context_create([
+        'http' => [
+            'method' => 'POST',
+            'header' => "Content-Type: application/x-www-form-urlencoded",
+            'content' => http_build_query([
+                'client_id' => $client_id,
+                'client_secret' => $client_secret,
+                'code' => $auth_code,
+                'grant_type' => 'authorization_code',
+                'redirect_uri' => $redirect_uri,
+            ]),
+        ],
+    ]));
+
+    if ($response === false) {
+        echo json_encode(['error' => 'Failed to get token']);
+        exit;
+    }
+
+    // Parse and return the tokens
+    $data = json_decode($response, true);
+    $encData = json_encode($data);
+    return new JsonModel(array('success'=>true,'data'=>$encData));
+    // echo json_encode($data);
+  }
+
+  public function bkup_appAuthAction(){
     $logResult = $this->logRequest($this->getRequest()->toString());
     $_POST = $this->getRequest()->getPost();
     // Get 'code' and 'id_token' from the request
-    $authorizationCode = "c078b4629667049c4826cedfb27ab9458.0.mryz.SA9Tij18HHIg3q5yNWeI7Q"; //$_POST['code'] ?? null;
-    $idToken = "eyJraWQiOiJyQlJmVm1xc2puIiwiYWxnIjoiUlMyNTYifQ.eyJpc3MiOiJodHRwczovL2FwcGxlaWQuYXBwbGUuY29tIiwiYXVkIjoiY29tLnN1c3JpdG91cnRhbGVzLnR3aXN0dCIsImV4cCI6MTczNjk5OTg5NCwiaWF0IjoxNzM2OTEzNDk0LCJzdWIiOiIwMDAxODkuMmU0Mzk1MjEwNjkxNDU1OGFhNTYzNjU0MzM0YTMxNDUuMDY1NyIsImNfaGFzaCI6Ik45LVE3U3JhbkFaMC1obF9nQUtpRnciLCJhdXRoX3RpbWUiOjE3MzY5MTM0OTQsIm5vbmNlX3N1cHBvcnRlZCI6dHJ1ZX0.abyRdlsPN9VzjVi15KDRK6_2tF4XqutzQeTBQLpBar-mQrt4zjMmsPIiiV9A4DoglRAOchfajqvVJJxpj6_t5aAzziopOBBhqKvRqolTpPNrFv7IC1h7qpebbIJXoTYqygNOiuOvV3rVzPaw0KkZpYt7-Do895fZLzPzJyh8167Wh-iPM14OMaFzAJEl3822L3bmjKR4q5f5UG49D2r6CphakKSB-85odlxvwFCfFS-_t-sMNqSvId9gJH2hDtLVSHiF8_5zNDXIsSAhvIC3PT1QBdgIF8CmMVD7oCJPyRYjeW6nEobv7hBoVuBhOOEdGLwAoEoJMEmraCm_vc3MzA"; // $_POST['id_token'] ?? null;
+    $authorizationCode = $_POST['code'] ?? null;
+    $idToken = $_POST['id_token'] ?? null;
 
     if (!$authorizationCode || !$idToken) {
       return new JsonModel(array('success'=>false,'message'=>'Missing authorization code or id_token'));
     }
 
-
     $applePublicKeyUrl = 'https://appleid.apple.com/auth/keys';
     // Fetch Apple's public keys
-    // $keys = json_decode(file_get_contents($applePublicKeyUrl), true)['keys'];
+    $keys = json_decode(file_get_contents($applePublicKeyUrl), true)['keys'];
     // print_r($keys);
-
-    $keys = [
-      [
-          'kty' => 'RSA',
-          'kid' => 'dMlERBaFdK',
-          'use' => 'sig',
-          'alg' => 'RS256',
-          'n' => 'ryLWkB74N6SJNRVBjKF6xKMfP-QW3AAsJotv0LjVtf7m4NZNg_gTL78e7O8wmvngF8FuzBrvqf1mGW17Ct8BgNK6YXxnoGL0YLmlwXbmCZvTXki0VlEW1PDXeViWy7qXaCp2caF5v4OOdPsgroxNO_DgJRTuA_izJ4DFZYHCHXwojfdWJiDYG67j5PlD5pXKGx7zaqyryjovZTEII_Z1_bhFCRUZRjfJ3TVoK0fZj2z7iAZWjn33i-V3zExUhwzEyeuGph0118NfmOLCUEy_Jd4xvLf_X4laPpe9nq8UeORfs72yz2qH7cHDKL85W6oG08Gu05JWuAs5Ay49WxJrmw',
-          'e' => 'AQAB',
-      ],
-      [
-          'kty' => 'RSA',
-          'kid' => 'FftONTxoEg',
-          'use' => 'sig',
-          'alg' => 'RS256',
-          'n' => 'wio-SFzFvKKQ9vl5ctaYSi09o8k3Uh7r6Ht2eJv-hSaZ6A6xTXVIBVSm0KvPxaJlpjYPTCcl2sdEyXlD2Uh1khUKU7r9ON3rpN8pFHAere5ig_JGVEShxmt5E_jzMymYnSfkoSW44ulevQeUwP_MiC5VC1KJjTfD73ghX0tQ0-_RjTJJ2cLyFC4VFNboBMCVioUrz8IA3c0KIOl507qswQvMsh2vBTMDDSJfippAGLzUiWXxUlid-vyOC8GCtag61taSorxCw14irk-tsh7hWjDDkSTFn2gChPMfXXj10_lCv0UG29TVUVCAsay4pszzgmc4zwhgSsqQRd939BJexw',
-          'e' => 'AQAB',
-      ],
-      [
-          'kty' => 'RSA',
-          'kid' => 'rBRfVmqsjn',
-          'use' => 'sig',
-          'alg' => 'RS256',
-          'n' => 'pPOaiF5yL-y42FaKg9PYASR5-rdTK7NEiteNUAzNp0zkta-HW-tgLNLNlsft3zcrsgOLqXxhX7qzlI3JGH-wSs7_v2XNSg57QhOTxPDqtUfy5DegtiSOgwE947OBTwCWo2R6cGZD1T8ysfO2HuKheq2hEwZU4Y-8qT19WWOhZHs4CVt7A5mzpIgWuUVw766VTyqrqKev32DOUPIqFocFz3tuty95S9t_OYnaPCcET-b6DV_eT7psPhqhl5nNUm0lzkCQ53-9kxQNJxBciy0wiBcAexD4KppKRRD3evFpOSxD1R6Kg2DIG5UnbVVqn5nhZA9RH-t50f_biqV3KlSHJQ',
-          'e' => 'AQAB',
-      ],
-      [
-          'kty' => 'RSA',
-          'kid' => 'rs0M3kOV9p',
-          'use' => 'sig',
-          'alg' => 'RS256',
-          'n' => 'zH5so3zLsgmRypxAAYJimfF9cx3ISSyHyzjDP3yvE9ieqpnjFJhzgCP8L4oKO9vUFNpoG1ub7I3paYNY6Vb2yc4chnsjJxB3j0jomJ3iI9MlWoVecTFG2tywyx5NRhy3YfTUpw2uCLafzWrpIJIoKUCGM6iUgaIFjvfi-cGT5T_5eUSWZHN-ziH69mGcbMRGLQEixQUatwru9i4i-OSk-w-JmLOqAzRP1mVn1tcZRIoGSB2PFSSJX9SK90OX8i5sj7dpIO_2xbGMtyNJkDzGq88x1pMJ4sv6HMj-tx4QrpGDbUi7zBCgbBnNSGSB_LBv4dbswwWY96ckHgx9yf_7IQ',
-          'e' => 'AQAB',
-      ],
-    ];
 
     // Decode the JWT (id_token)
     try {

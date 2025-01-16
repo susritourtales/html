@@ -1199,8 +1199,8 @@ class IndexController extends BaseController
     //   'refreshToken' => $data['refresh_token'] ?? null,
     // ]). '#Intent;package=com.susritourtales.auth;scheme=signinwithapple;end';
     $logResult = $this->logRequest("appurl: $appUrl");
-    header("Location: $appUrl");// exit;
-    return new ViewModel(['success' =>true,'appUrl' => $appUrl]);
+    header("Location: $appUrl"); exit;
+    //return new ViewModel(['success' =>true,'appUrl' => $appUrl]);
     // return new JsonModel(array('success'=>true,'data'=>$data));
   }
 

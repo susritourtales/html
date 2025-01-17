@@ -1,7 +1,6 @@
 <?php
 
 namespace User\Controller;
-require 'vendor/autoload.php';
 
 use Application\Controller\BaseController;
 use Application\Handler\Aes;
@@ -10,10 +9,7 @@ use Laminas\View\Model\ViewModel;
 use Hybridauth\Exception\Exception;
 use Hybridauth\Hybridauth;
 use Hybridauth\Storage\Session;
-use Laminas\Mvc\Controller\AbstractActionController;
 use Application\Handler\Razorpay;
-use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
 
 class IndexController extends BaseController
 { //AbstractActionController
@@ -1162,11 +1158,11 @@ class IndexController extends BaseController
     // Exchange the authorization code for tokens
     $token_url = 'https://appleid.apple.com/auth/token';
 
-    $req = ['client_id' => $client_id,
-                'client_secret' => $client_secret,
-                'code' => $auth_code,
-                'grant_type' => 'authorization_code',
-                'redirect_uri' => $redirect_uri,];
+    // $req = ['client_id' => $client_id,
+    //             'client_secret' => $client_secret,
+    //             'code' => $auth_code,
+    //             'grant_type' => 'authorization_code',
+    //             'redirect_uri' => $redirect_uri,];
     // print_r($req);         
     $response = file_get_contents($token_url, false, stream_context_create([
         'http' => [
@@ -1199,76 +1195,10 @@ class IndexController extends BaseController
     //   'refreshToken' => $data['refresh_token'] ?? null,
     // ]). '#Intent;package=com.susritourtales.auth;scheme=signinwithapple;end';
     $logResult = $this->logRequest("appurl: $appUrl");
+    $decodedToken = $this->validateAppleIdToken($data['id_token']);
     header("Location: $appUrl"); exit;
     //return new ViewModel(['success' =>true,'appUrl' => $appUrl]);
     // return new JsonModel(array('success'=>true,'data'=>$data));
-  }
-
-  public function bkup_appAuthAction(){
-    $logResult = $this->logRequest($this->getRequest()->toString());
-    $_POST = $this->getRequest()->getPost();
-    // Get 'code' and 'id_token' from the request
-    $authorizationCode = $_POST['code'] ?? null;
-    $idToken = $_POST['id_token'] ?? null;
-
-    if (!$authorizationCode || !$idToken) {
-      return new JsonModel(array('success'=>false,'message'=>'Missing authorization code or id_token'));
-    }
-
-    $applePublicKeyUrl = 'https://appleid.apple.com/auth/keys';
-    // Fetch Apple's public keys
-    $keys = json_decode(file_get_contents($applePublicKeyUrl), true)['keys'];
-    // print_r($keys);
-
-    // Decode the JWT (id_token)
-    try {
-      $decodedToken = null;
-      foreach ($keys as $key) {
-          $decodedToken = JWT::decode($idToken, new Key(json_encode($key), 'RS256'));
-          if ($decodedToken) break;
-      }
-      // Extract user details
-      $userId = $decodedToken->sub;
-      $email = $decodedToken->email ?? null;
-      $isEmailVerified = $decodedToken->email_verified ?? false;
-
-      return new JsonModel(array('success'=>true,'data'=>['userId' => $userId, 'email' => $email, 'isEmailVerified' => $isEmailVerified]));
-      
-    } catch (Exception $e) {
-      error_log($e->getMessage());
-      echo $e->getMessage();
-    }
-
-    // $userdetails['user_login_id'] = $userProfile->identifier;
-    //     $user = $this->userTable->getUserDetails(['user_login_id' => $userdetails['user_login_id'], 'display' => 1]);
-    //     if(!count($user)){
-    //       $userdetails['username'] = $userProfile->displayName;
-    //       $userdetails['email'] = $userProfile->email;
-    //       $userdetails['country'] = $userProfile->country;
-    //       $userdetails['oauth_provider'] =strtolower(substr($provider, 0,1));
-    //       $userdetails['login_type'] = \Admin\Model\Enabler::login_type_social;
-    //       // $userdetails['access_token'] = $accessToken['access_token'];
-    //       $insertResult = $this->userTable->addUser($userdetails);
-    //       if($insertResult['success']){
-    //         $user = $this->userTable->getUserDetails(['id' => $insertResult['id'], 'display' => 1]);
-    //       }else{
-    //           return new JsonModel(array('success'=>false,'message'=>$insertResult['message']));
-    //       }
-    //     }
-    //     $user['isLoggedIn'] = true;
-    //     $user['subscriptionType'] = "U";
-    //     $user['access_token'] = $this->generateAccessToken(['userId' => $user['id'], 'loginId' => $userdetails['user_login_id']]);
-    //     $user['isSubscribed'] = $this->questtSubscriptionTable->isValidQuesttUser($user['id']);
-    //     if($user['isSubscribed']){
-    //         $user['subscriptionType'] = "Q";
-    //         $qed = $this->questtSubscriptionTable->getField(['user_id' => $user['id']], 'end_date');
-    //         $user['subscriptionExpiry'] = date('Y-m-d', strtotime($qed));
-    //     }
-    //     $user = array_map(function ($value) {
-    //         return $value === null ? '' : $value;
-    //     }, $user);
-    //     return new JsonModel(array('success'=>true,'data'=>$user));
-
   }
 
   public function enablerRegisterAction()

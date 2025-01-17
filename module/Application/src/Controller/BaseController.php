@@ -1,7 +1,7 @@
 <?php
 
 namespace Application\Controller;
-
+require 'vendor/autoload.php';
 use Laminas\Mvc\Controller\AbstractActionController;
 use Laminas\Authentication\AuthenticationService;
 use Laminas\Db\Adapter\Adapter;
@@ -13,6 +13,7 @@ use Aws\CommandPool;
 use Aws\Sdk;
 use Application\Channel\Sms;
 use Firebase\JWT\JWT;
+use Firebase\JWT\JWK;
 use Firebase\JWT\Key;
 use Laminas\View\Model\JsonModel;
 
@@ -164,15 +165,74 @@ class BaseController extends AbstractActionController
         ];
         $privateKey = file_get_contents($key_file_path);
         $jwt = JWT::encode($claims, $privateKey, 'ES256', $key_id);
-
-        // $header_encoded = $this->base64UrlEncode(json_encode($header));
-        // $claims_encoded = $this->base64UrlEncode(json_encode($claims));
-
-        // $signature = '';
-        // openssl_sign("$header_encoded.$claims_encoded", $signature, file_get_contents($key_file_path), OPENSSL_ALGO_SHA256);
-
-        // $jwt = "$header_encoded.$claims_encoded." . $this->base64UrlEncode($signature);
         return $jwt;
+    }
+
+    function validateAppleIdToken($idToken) {
+        // Step 1: Fetch Apple's public keys
+        $keysUrl = "https://appleid.apple.com/auth/keys";
+        $keysResponse = file_get_contents($keysUrl);
+        if ($keysResponse === false) {
+            throw new Exception("Failed to fetch Apple's public keys.");
+        }
+    
+        $keys = json_decode($keysResponse, true);
+        if (!isset($keys['keys'])) {
+            throw new Exception("Invalid key format from Apple.");
+        }
+    
+        // Step 2: Decode the JWT header to get the `kid` (Key ID)
+        $jwtParts = explode('.', $idToken);
+        if (count($jwtParts) !== 3) {
+            throw new Exception("Invalid id_token format.");
+        }
+        $header = json_decode(base64_decode($jwtParts[0]), true);
+        if (!isset($header['kid'])) {
+            throw new Exception("Invalid id_token header.");
+        }
+        $kid = $header['kid'];
+    
+        // Step 3: Find the matching public key
+        $publicKey = null;
+        foreach ($keys['keys'] as $key) {
+            if ($key['kid'] === $kid) {
+                $publicKey = $key;
+                break;
+            }
+        }
+        if (!$publicKey) {
+            throw new Exception("No matching public key found for kid: $kid");
+        }
+    
+        // Step 4: Convert the public key to a format usable by firebase/php-jwt
+        $jwks = ['keys' => [$publicKey]];
+        $keySet = JWK::parseKeySet($jwks);
+    
+        // Step 5: Decode and validate the id_token
+        try {
+            $decoded = JWT::decode($idToken, $keySet);
+        } catch (\Exception $e) {
+            throw new Exception("Failed to decode id_token: " . $e->getMessage());
+        }
+    
+        // Step 6: Verify token claims
+        $iss = "https://appleid.apple.com"; 
+        $aud = "com.susritourtales.twistt"; 
+    
+        if ($decoded->iss !== $iss) {
+            throw new Exception("Invalid issuer: " . $decoded->iss);
+        }
+    
+        if ($decoded->aud !== $aud) {
+            throw new Exception("Invalid audience: " . $decoded->aud);
+        }
+    
+        if ($decoded->exp < time()) {
+            throw new Exception("Token has expired.");
+        }
+    
+        // Token is valid
+        return (array) $decoded;
     }
 
     /**

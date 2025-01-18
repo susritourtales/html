@@ -1194,7 +1194,7 @@ class IndexController extends BaseController
       'authorizationCode' => $data['access_token'],
       'idToken' => $data['id_token'],
       'refreshToken' => $data['refresh_token'] ?? null,
-    ]). '#Intent;package=com.susritourtales.twistt;scheme=myapp;end';
+    ]). '#Intent;package=com.susritourtales.twistt;scheme=signinwithapple;end';
     $logResult = $this->logRequest("appurl: $appUrl");
     /* $decodedToken = $this->validateAppleIdToken($data['id_token']);
     $user_login_id = $decodedToken->sub;

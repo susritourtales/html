@@ -1262,7 +1262,7 @@ class IndexController extends BaseController
     }
 
     $data = json_decode($response, true);
-    $appUrl = "signinwithapple://callback" . '?' . http_build_query([
+    $appUrl = "myapp://callback" . '?' . http_build_query([
       'authorizationCode' => $data['access_token'],
       'idToken' => $data['id_token'],
       'refreshToken' => $data['refresh_token'] ?? null,

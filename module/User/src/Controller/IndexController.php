@@ -1226,9 +1226,9 @@ class IndexController extends BaseController
         return $value === null ? '' : $value;
     }, $user);
     return new JsonModel(array('success'=>true,'data'=>$user)); */
-    // header("Location: $appUrl"); exit;
+     header("Location: $appUrl"); exit;
     //return new ViewModel(['success' =>true,'appUrl' => $appUrl]);
-     return new JsonModel(array('success'=>true,'data'=>$data));
+    //  return new JsonModel(array('success'=>true,'data'=>$data));
   }
 
   public function enablerRegisterAction()

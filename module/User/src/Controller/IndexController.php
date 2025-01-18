@@ -1268,7 +1268,7 @@ class IndexController extends BaseController
     //   'refreshToken' => $data['refresh_token'] ?? null,
     // ]);
     $decodedToken = $this->validateAppleIdToken($data['id_token']);
-    return new JsonModel(array('success'=>true,'appUrl'=>$decodedToken));
+    // return new JsonModel(array('success'=>true,'appUrl'=>$decodedToken));
     $user_login_id = $decodedToken->sub;
     $user = $this->userTable->getUserDetails(['user_login_id' => $user_login_id, 'display' => 1]);
     if(!count($user)){
@@ -1278,6 +1278,7 @@ class IndexController extends BaseController
         $saveUser['oauth_provider'] = 'a';
         $saveUser['username'] = 'Apple user';
         $saveUser['country'] = '';
+        $saveUser['email'] = $decodedToken->email ?? "";
         $saveUser['user_type_id'] = \Admin\Model\User::New_User;
         $insertResult = $this->userTable->addUser($saveUser);
         if($insertResult['success']){
@@ -1299,7 +1300,6 @@ class IndexController extends BaseController
         return $value === null ? '' : $value;
     }, $user);
     $user['success'] = true;
-    //return new JsonModel(array('success'=>true,'data'=>$user));
     $appUrl = "signinwithapple://callback" . '?' . http_build_query( $user);
      header("Location: $appUrl");
      exit;

@@ -1142,7 +1142,7 @@ class IndexController extends BaseController
     }
   }
 
-  public function appAuthAction(){
+  public function authTest(){
     // Apple Keys
     $client_id = 'com.susritourtales.twistt'; // Your Service ID
     $client_secret = $this->generateClientSecret();
@@ -1230,6 +1230,45 @@ class IndexController extends BaseController
      header("Location: $appUrl"); exit;
     //return new ViewModel(['success' =>true,'appUrl' => $appUrl]);
     //  return new JsonModel(array('success'=>true,'data'=>$data));
+  }
+
+  public function appAuthAction(){
+    $client_id = 'com.susritourtales.twistt'; 
+    $client_secret = $this->generateClientSecret();
+    $redirect_uri = 'https://www.susritourtales.com/twistt/app/auth'; 
+    $auth_code = $_POST['code'] ?? null;
+
+    if (!$auth_code) {
+      return new ViewModel(array('success'=>false,'message'=>'Authorization code not provided'));
+    }
+
+    $token_url = 'https://appleid.apple.com/auth/token';     
+    $response = file_get_contents($token_url, false, stream_context_create([
+        'http' => [
+            'method' => 'POST',
+            'header' => "Content-Type: application/x-www-form-urlencoded",
+            'content' => http_build_query([
+                'client_id' => $client_id,
+                'client_secret' => $client_secret,
+                'code' => $auth_code,
+                'grant_type' => 'authorization_code',
+                'redirect_uri' => $redirect_uri,
+            ]),
+        ],
+    ]));
+
+    if ($response === false) {
+      return new ViewModel(array('success'=>false,'message'=>'Failed to get token'));
+    }
+
+    $data = json_decode($response, true);
+    $appUrl = "signinwithapple://callback" . '?' . http_build_query([
+      'authorizationCode' => $data['access_token'],
+      'idToken' => $data['id_token'],
+      'refreshToken' => $data['refresh_token'] ?? null,
+    ]);
+     header("Location: $appUrl");
+     exit;
   }
 
   public function enablerRegisterAction()

@@ -1195,10 +1195,40 @@ class IndexController extends BaseController
     //   'refreshToken' => $data['refresh_token'] ?? null,
     // ]). '#Intent;package=com.susritourtales.auth;scheme=signinwithapple;end';
     $logResult = $this->logRequest("appurl: $appUrl");
-    $decodedToken = $this->validateAppleIdToken($data['id_token']);
-    header("Location: $appUrl"); exit;
+    /* $decodedToken = $this->validateAppleIdToken($data['id_token']);
+    $user_login_id = $decodedToken->sub;
+    $user = $this->userTable->getUserDetails(['user_login_id' => $user_login_id, 'display' => 1]);
+    if(!count($user)){
+        $saveUser = [];
+        $saveUser['user_login_id'] = $user_login_id;
+        $saveUser['login_type'] = 's';
+        $saveUser['oauth_provider'] = 'a';
+        $saveUser['username'] = $request['username'];
+        $saveUser['country'] = $request['country'];
+        $saveUser['user_type_id'] = \Admin\Model\User::New_User;
+        $insertResult = $this->userTable->addUser($saveUser);
+        if($insertResult['success']){
+            $user = $this->userTable->getUserDetails(['id' => $insertResult['id'], 'display' => 1]);
+        }else{
+            return new JsonModel(array('success'=>false,'message'=>$insertResult['message']));
+        }
+    }
+    $user['isLoggedIn'] = true;
+    $user['subscriptionType'] = "U";
+    $user['access_token'] = $this->generateAccessToken(['userId' => $user['id'], 'loginId' => $user_login_id]);
+    $user['isSubscribed'] = $this->questtSubscriptionTable->isValidQuesttUser($user['id']);
+    if($user['isSubscribed']){
+        $user['subscriptionType'] = "Q";
+        $qed = $this->questtSubscriptionTable->getField(['user_id' => $user['id']], 'end_date');
+        $user['subscriptionExpiry'] = date('Y-m-d', strtotime($qed));
+    }
+    $user = array_map(function ($value) {
+        return $value === null ? '' : $value;
+    }, $user);
+    return new JsonModel(array('success'=>true,'data'=>$user)); */
+    // header("Location: $appUrl"); exit;
     //return new ViewModel(['success' =>true,'appUrl' => $appUrl]);
-    // return new JsonModel(array('success'=>true,'data'=>$data));
+     return new JsonModel(array('success'=>true,'data'=>$data));
   }
 
   public function enablerRegisterAction()

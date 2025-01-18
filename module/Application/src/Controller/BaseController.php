@@ -232,7 +232,7 @@ class BaseController extends AbstractActionController
         }
     
         // Token is valid
-        return (array) $decoded;
+        return $decoded;// return (array) $decoded;
     }
 
     /**

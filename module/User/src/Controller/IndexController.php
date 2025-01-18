@@ -1297,11 +1297,9 @@ class IndexController extends BaseController
     $user = array_map(function ($value) {
         return $value === null ? '' : $value;
     }, $user);
+    $user['success'] = true;
     //return new JsonModel(array('success'=>true,'data'=>$user));
-    $appUrl = "signinwithapple://callback" . '?' . http_build_query([
-      'success' => true,
-      'data' => $user,
-    ]);
+    $appUrl = "signinwithapple://callback" . '?' . http_build_query( $user);
      header("Location: $appUrl");
      exit;
   }

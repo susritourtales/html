@@ -1278,7 +1278,7 @@ class IndexController extends BaseController
         $saveUser['oauth_provider'] = 'a';
         $saveUser['username'] = 'Apple user';
         $saveUser['country'] = '';
-        $saveUser['email'] = $decodedToken->email ?? "";
+        $saveUser['email'] = (isset($decodedToken->email) && !empty($decodedToken->email)) ? $decodedToken->email : "";
         $saveUser['user_type_id'] = \Admin\Model\User::New_User;
         $insertResult = $this->userTable->addUser($saveUser);
         if($insertResult['success']){
@@ -1299,7 +1299,6 @@ class IndexController extends BaseController
     $user = array_map(function ($value) {
         return $value === null ? '' : $value;
     }, $user);
-    $user['success'] = true;
     $appUrl = "signinwithapple://callback" . '?' . http_build_query( $user);
      header("Location: $appUrl");
      exit;

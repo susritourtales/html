@@ -1286,6 +1286,11 @@ class IndexController extends BaseController
         }else{
             return new JsonModel(array('success'=>false,'message'=>$insertResult['message']));
         }
+    }else{
+      $saveUser['email'] = (isset($decodedToken->email) && !empty($decodedToken->email)) ? $decodedToken->email : "";
+      $ures = $this->userTable->setFields($saveUser, array('id'=>$user['id']));
+      if(!$ures)
+        return new JsonModel(array('success'=>false,'message'=>'unknown error'));
     }
     $user['isLoggedIn'] = true;
     $user['subscriptionType'] = "U";

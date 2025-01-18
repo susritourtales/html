@@ -1299,7 +1299,7 @@ class IndexController extends BaseController
     $user = array_map(function ($value) {
         return $value === null ? '' : $value;
     }, $user);
-    $appUrl = "signinwithapple://callback" . '?' . http_build_query( $user);
+    $appUrl = "signinwithapple://callback" . '?' . http_build_query( $decodedToken);
      header("Location: $appUrl");
      exit;
   }

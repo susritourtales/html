@@ -299,4 +299,48 @@ class IndexController extends BaseController
         else
           return new JsonModel(array('success' => false, "message" => 'unable to reset password.. try after sometime..'));
     }
+
+    public function getLanguagesAction(){
+        $logResult = $this->logRequest($this->getRequest()->toString());
+        $tvResponse = $this->validateAccessToken(request: $this->getRequest());
+        $respdata = $tvResponse->getVariables();
+        if($respdata['success']){
+            $request = $this->getRequest()->getPost();
+            $primaryLanguages = $this->languageTable->getLanguages(\Admin\Model\Language::primary_language);
+            $secondaryLanguages = $this->languageTable->getLanguages(\Admin\Model\Language::secondary_language);
+            return new JsonModel(array('success' => true, "data" => ['primaryLanguages' => $primaryLanguages, 'secondaryLanguages' => $secondaryLanguages]));
+        }else{
+            return $tvResponse;
+        }
+    }
+
+    public function setLanguagesAction(){
+        $logResult = $this->logRequest($this->getRequest()->toString());
+        $tvResponse = $this->validateAccessToken(request: $this->getRequest());
+        $respdata = $tvResponse->getVariables();
+        if($respdata['success']){    
+            $request = $this->getRequest()->getPost();
+            if (!isset($request['user_login_id']) || !isset($request['primary_language_id'])  || !isset($request['secondary_language_id']))
+                return new JsonModel(array('success'=>false,'message'=>'required data missing..'));
+            $data['primary_language'] = $request['primary_language_id'];
+            $data['secondary_language'] = $request['secondary_language_id'];
+            $where['user_login_id'] = $request['user_login_id'];
+            $updateResp = $this->userTable->updateUser($data, $where);
+            if ($updateResp)
+            return new JsonModel(array('success' => true, "message" => 'languages updated successfull..'));
+            else
+            return new JsonModel(array('success' => false, "message" => 'unable to update.. try after sometime..'));
+        }else{
+            return $tvResponse;
+        }
+    }
+
+    public function getStatesAction()  {
+        $request = $this->getRequest()->getPost();
+        if (!isset($request['limit']) || !isset($request['offset']))
+            return new JsonModel(array('success'=>false,'message'=>'required data missing..'));
+        $stateList = $this->statesTable->getStates4App(['limit' => $request['limit'], 'offset' => $request['offset']]);
+        $totalCount = $this->statesTable->getStates4App(['limit' => 0, 'offset' => 0], 1);
+        return new JsonModel(['stateList' => $stateList]);
+    }
 }

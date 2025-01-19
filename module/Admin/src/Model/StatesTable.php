@@ -435,6 +435,39 @@ class StatesTable extends BaseTable
         }
     }
 
+    public function getStates4App($data = array('limit' => 10, 'offset' => 0), $gc = 0){
+        try {
+            $where = new Where();
+            $where->equalTo('display', 1);
+            $order = array('id desc');
+        
+            $sql = $this->getSql();
+            $placeFiles = $sql->select()
+                ->from(array('tf' => 'tourism_files'))
+                ->columns(array("file_path", 'tourism_file_id', 'file_data_id', 'file_extension_type', 'file_language_id', 'file_name'))
+                ->where(array('tf.display' => 1, 'tf.file_data_type' => \Admin\Model\TourismFiles::file_data_type_state, 'tf.file_extension_type' => \Admin\Model\TourismFiles::file_extension_type_image));
+            $query = $sql->select()
+                ->from($this->tableName)
+                ->columns(array("id", "state_name"))
+                ->join(array('tfl' => $placeFiles), 'tfl.file_data_id = s.id', array('file_path'), Select::JOIN_LEFT)
+                ->where($where);
+            if ($gc == 0) {
+                $query->limit($data['limit'])
+                        ->offset($data['offset']);
+            }
+            $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
+            if ($gc == 1)
+                return count($resultSet);
+            $states = array();
+            foreach ($resultSet as $row) {
+                $states[] = $row;
+            }
+            return $states;
+        } catch (\Exception $e) {
+            return array();
+        }
+    }
+
     public function statesList($stateId)
     {
         try {

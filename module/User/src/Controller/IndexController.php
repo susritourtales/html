@@ -1142,96 +1142,6 @@ class IndexController extends BaseController
     }
   }
 
-  public function authTest(){
-    // Apple Keys
-    $client_id = 'com.susritourtales.twistt'; // Your Service ID
-    $client_secret = $this->generateClientSecret();
-    $redirect_uri = 'https://www.susritourtales.com/twistt/app/auth'; 
-
-    // Get the authorization code from the request
-    $auth_code = $_POST['code'] ?? null;
-
-    if (!$auth_code) {
-      return new ViewModel(array('success'=>false,'message'=>'Authorization code not provided'));
-    }
-
-    // Exchange the authorization code for tokens
-    $token_url = 'https://appleid.apple.com/auth/token';
-
-    // $req = ['client_id' => $client_id,
-    //             'client_secret' => $client_secret,
-    //             'code' => $auth_code,
-    //             'grant_type' => 'authorization_code',
-    //             'redirect_uri' => $redirect_uri,];
-    // print_r($req);         
-    $response = file_get_contents($token_url, false, stream_context_create([
-        'http' => [
-            'method' => 'POST',
-            'header' => "Content-Type: application/x-www-form-urlencoded",
-            'content' => http_build_query([
-                'client_id' => $client_id,
-                'client_secret' => $client_secret,
-                'code' => $auth_code,
-                'grant_type' => 'authorization_code',
-                'redirect_uri' => $redirect_uri,
-            ]),
-        ],
-    ]));
-
-    if ($response === false) {
-      return new ViewModel(array('success'=>false,'message'=>'Failed to get token'));
-    }
-
-    // Parse and return the tokens
-    $data = json_decode($response, true);
-    $appUrl = "myapp://callback" . '?' . http_build_query([
-      'authorizationCode' => $data['access_token'],
-      'idToken' => $data['id_token'],
-      'refreshToken' => $data['refresh_token'] ?? null,
-    ]);
-    
-    // $appUrl = "intent://callback" . '?' . http_build_query([
-    //   'authorizationCode' => $data['access_token'],
-    //   'idToken' => $data['id_token'],
-    //   'refreshToken' => $data['refresh_token'] ?? null,
-    // ]). '#Intent;package=com.susritourtales.twistt;scheme=signinwithapple;end';
-    $logResult = $this->logRequest("appurl: $appUrl");
-    /* $decodedToken = $this->validateAppleIdToken($data['id_token']);
-    $user_login_id = $decodedToken->sub;
-    $user = $this->userTable->getUserDetails(['user_login_id' => $user_login_id, 'display' => 1]);
-    if(!count($user)){
-        $saveUser = [];
-        $saveUser['user_login_id'] = $user_login_id;
-        $saveUser['login_type'] = 's';
-        $saveUser['oauth_provider'] = 'a';
-        $saveUser['username'] = $request['username'];
-        $saveUser['country'] = $request['country'];
-        $saveUser['user_type_id'] = \Admin\Model\User::New_User;
-        $insertResult = $this->userTable->addUser($saveUser);
-        if($insertResult['success']){
-            $user = $this->userTable->getUserDetails(['id' => $insertResult['id'], 'display' => 1]);
-        }else{
-            return new JsonModel(array('success'=>false,'message'=>$insertResult['message']));
-        }
-    }
-    $user['isLoggedIn'] = true;
-    $user['subscriptionType'] = "U";
-    $user['access_token'] = $this->generateAccessToken(['userId' => $user['id'], 'loginId' => $user_login_id]);
-    $user['isSubscribed'] = $this->questtSubscriptionTable->isValidQuesttUser($user['id']);
-    if($user['isSubscribed']){
-        $user['subscriptionType'] = "Q";
-        $qed = $this->questtSubscriptionTable->getField(['user_id' => $user['id']], 'end_date');
-        $user['subscriptionExpiry'] = date('Y-m-d', strtotime($qed));
-    }
-    $user = array_map(function ($value) {
-        return $value === null ? '' : $value;
-    }, $user);
-    return new JsonModel(array('success'=>true,'data'=>$user)); */
-     header("Location: $appUrl"); exit;
-    //return new ViewModel(['success' =>true,'appUrl' => $appUrl]);
-    //  return new JsonModel(array('success'=>true,'data'=>$data));
-  }
-
   public function appAuthAction(){
     $client_id = 'com.susritourtales.twistt'; 
     $client_secret = $this->generateClientSecret();
@@ -1262,13 +1172,7 @@ class IndexController extends BaseController
     }
 
     $data = json_decode($response, true);
-    // $appUrl = "signinwithapple://callback" . '?' . http_build_query([
-    //   'authorizationCode' => $data['access_token'],
-    //   'idToken' => $data['id_token'],
-    //   'refreshToken' => $data['refresh_token'] ?? null,
-    // ]);
     $decodedToken = $this->validateAppleIdToken($data['id_token']);
-    // return new JsonModel(array('success'=>true,'appUrl'=>$decodedToken));
     $user_login_id = $decodedToken->sub;
     $user = $this->userTable->getUserDetails(['user_login_id' => $user_login_id, 'display' => 1]);
     if(!count($user)){
@@ -1276,7 +1180,7 @@ class IndexController extends BaseController
         $saveUser['user_login_id'] = $user_login_id;
         $saveUser['login_type'] = 's';
         $saveUser['oauth_provider'] = 'a';
-        $saveUser['username'] = 'Apple user';
+        $saveUser['username'] = 'New user';
         $saveUser['country'] = '';
         $saveUser['email'] = (isset($decodedToken->email) && !empty($decodedToken->email)) ? $decodedToken->email : "";
         $saveUser['user_type_id'] = \Admin\Model\User::New_User;

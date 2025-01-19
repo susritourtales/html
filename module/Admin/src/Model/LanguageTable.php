@@ -3,6 +3,7 @@
 
 namespace Admin\Model;
 
+use Admin\Controller\AdminController;
 use Application\Model\BaseTable;
 use Laminas\Db\Sql\Where;
 use Laminas\Db\TableGateway\TableGateway;
@@ -104,7 +105,7 @@ class LanguageTable extends BaseTable
             $sql = $this->getSql();
             $query = $sql->select()
                 ->from($this->tableName)
-                ->columns(array("id","name","language_type"))
+                ->columns(array("id","language_name","language_type"))
                 ->where(['language_type'=>1]);
                 //->where($where->like("name","%hindi%")->or->like("name","%english%"));
 
@@ -126,10 +127,33 @@ class LanguageTable extends BaseTable
             $where=new Where();
             $query = $sql->select()
                 ->from($this->tableName)
-                ->columns(array("id","name","language_type"))
+                ->columns(array("id","language_name","language_type"))
             ->where($where->greaterThan('id',$maxId));
 
 
+            $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
+            $languages = array();
+
+            foreach($resultSet as $row){
+                $languages[] = $row;
+            }
+
+            return $languages;
+        }catch(\Exception $e){
+            return array();
+        }
+    }
+
+    public function getLanguages($language_type){
+        try{
+            $where=new Where();
+            $sql = $this->getSql();
+            $query = $sql->select()
+                ->from($this->tableName)
+                ->columns(array("language_name","id"))
+                ->where(['language_type'=>$language_type, 'display' => '1']);
+            
+            // echo $sql->getSqlStringForSqlObject($query);exit;
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             $languages = array();
 

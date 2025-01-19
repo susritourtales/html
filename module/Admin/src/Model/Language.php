@@ -9,8 +9,8 @@ class Language
     public $language_type;
     public $display;
 
-    const primary_language = 1;
-    const preferred_language = 2;
+    const primary_language = 2;
+    const secondary_language = 1;
 
 
     public function exchangeArray(array $data)

@@ -412,6 +412,73 @@ class CitiesTable extends BaseTable
             return array();
         }
     }
+
+    public function getWorldCities4App($data, $gc, $countryId)
+    {
+        try {
+            $where = new Where();
+            $where->equalTo('c.display', 1)->equalTo('co.id', $countryId);
+            $order = array('city_name asc');
+            $sql = $this->getSql();
+            $placeFiles = $sql->select()
+                ->from(array('tf' => 'tourism_files'))
+                ->columns(array("file_path", 'tourism_file_id', 'file_data_id', 'file_extension_type', 'file_language_id', 'file_name'))
+                ->where(array('tf.display' => 1, 'tf.file_data_type' => \Admin\Model\TourismFiles::file_data_type_city));
+            $query = $sql->select()
+                ->from($this->tableName)
+                ->columns(array("id", "name" =>  "city_name"))
+                ->join(array('co' => 'country'), 'c.country_id = co.id', array())
+                ->join(array('tfl' => $placeFiles), 'tfl.file_data_id = c.id', array('file_path'), Select::JOIN_LEFT)
+                ->where($where)
+                ->order($order);
+            if ($gc == 0) {
+                $query->limit($data['limit'])
+                        ->offset($data['offset']);
+            }
+            $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
+            $countries = array();
+            foreach ($resultSet as $row) {
+                $countries[] = $row;
+            }
+            return $countries;
+        } catch (\Exception $e) {
+            return array();
+        }
+    }
+    public function getIndiaCities4App($data, $gc, $stateId)
+    {
+        try {
+            $where = new Where();
+            $where->equalTo('c.display', 1)->equalTo('s.id', $stateId);
+            $order = array('city_name asc');
+            $sql = $this->getSql();
+            $placeFiles = $sql->select()
+                ->from(array('tf' => 'tourism_files'))
+                ->columns(array("file_path", 'tourism_file_id', 'file_data_id', 'file_extension_type', 'file_language_id', 'file_name'))
+                ->where(array('tf.display' => 1, 'tf.file_data_type' => \Admin\Model\TourismFiles::file_data_type_city));
+            $query = $sql->select()
+                ->from($this->tableName)
+                ->columns(array("id", "name" =>  "city_name"))
+                ->join(array('s' => 'state'), 'c.state_id = s.id', array("state_id" => "id"))
+                ->join(array('co' => 'country'), 'c.country_id = co.id', array())
+                ->join(array('tfl' => $placeFiles), 'tfl.file_data_id = c.id', array('file_path'), Select::JOIN_LEFT)
+                ->where($where)
+                ->order($order);
+            if ($gc == 0) {
+                $query->limit($data['limit'])
+                        ->offset($data['offset']);
+            }
+            //  echo $sql->getSqlStringForSqlObject($query);exit;
+            $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
+            $countries = array();
+            foreach ($resultSet as $row) {
+                $countries[] = $row;
+            }
+            return $countries;
+        } catch (\Exception $e) {
+            return array();
+        }
+    }
     public function getCityId($cityName)
     {
         try {

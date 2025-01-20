@@ -439,7 +439,7 @@ class StatesTable extends BaseTable
         try {
             $where = new Where();
             $where->equalTo('display', 1);
-            $order = array('id desc');
+            $order = array('state_name asc');
         
             $sql = $this->getSql();
             $placeFiles = $sql->select()
@@ -448,13 +448,15 @@ class StatesTable extends BaseTable
                 ->where(array('tf.display' => 1, 'tf.file_data_type' => \Admin\Model\TourismFiles::file_data_type_state, 'tf.file_extension_type' => \Admin\Model\TourismFiles::file_extension_type_image));
             $query = $sql->select()
                 ->from($this->tableName)
-                ->columns(array("id", "state_name"))
+                ->columns(array("id", "name" => "state_name"))
                 ->join(array('tfl' => $placeFiles), 'tfl.file_data_id = s.id', array('file_path'), Select::JOIN_LEFT)
-                ->where($where);
+                ->where($where)
+                ->order($order);
             if ($gc == 0) {
                 $query->limit($data['limit'])
                         ->offset($data['offset']);
             }
+            // echo $sql->getSqlStringForSqlObject($query);exit;
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             if ($gc == 1)
                 return count($resultSet);

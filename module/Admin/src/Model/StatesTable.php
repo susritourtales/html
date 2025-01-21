@@ -438,7 +438,7 @@ class StatesTable extends BaseTable
     public function getStates4App($data = array('limit' => 10, 'offset' => 0), $gc = 0){
         try {
             $where = new Where();
-            $where->equalTo('display', 1);
+            $where->equalTo('s.display', 1); // ->equalTo('ci.display', 1)->equalTo('p.display', 1);
             $order = array('state_name asc');
         
             $sql = $this->getSql();
@@ -446,17 +446,38 @@ class StatesTable extends BaseTable
                 ->from(array('tf' => 'tourism_files'))
                 ->columns(array("file_path", 'tourism_file_id', 'file_data_id', 'file_extension_type', 'file_language_id', 'file_name'))
                 ->where(array('tf.display' => 1, 'tf.file_data_type' => \Admin\Model\TourismFiles::file_data_type_state, 'tf.file_extension_type' => \Admin\Model\TourismFiles::file_extension_type_image));
+
+            $placesCountSubquery = $sql->select()
+                ->from(array('p' => 'place'))
+                ->columns(array('state_id', 'display', 'places_count' => new \Laminas\Db\Sql\Expression('COUNT(p.id)')))
+                ->group('p.state_id')
+                ->having(new \Laminas\Db\Sql\Predicate\Expression('COUNT(p.id) > 0'));
+
             $query = $sql->select()
                 ->from($this->tableName)
                 ->columns(array("id", "name" => "state_name"))
-                ->join(array('tfl' => $placeFiles), 'tfl.file_data_id = s.id', array('file_path'), Select::JOIN_LEFT)
+                // ->join(array('ci' => 'city'), 'ci.state_id = s.id', array('city_name'))
+                // ->join(array('p' => 'place'), 'p.city_id = ci.id', array('place_name'))
+                ->join(
+                    array('cc' => $placesCountSubquery), 
+                    'cc.state_id = s.id', 
+                    array()
+                )
+                ->join(
+                    array('tfl' => $placeFiles), 
+                    'tfl.file_data_id = s.id', 
+                    array(
+                        'file_path' => new \Laminas\Db\Sql\Expression("COALESCE(tfl.file_path, 'data/images/ph150x150.png')")
+                    ), 
+                    Select::JOIN_LEFT
+                )
                 ->where($where)
                 ->order($order);
+            //  echo $sql->getSqlStringForSqlObject($query);exit;
             if ($gc == 0) {
                 $query->limit($data['limit'])
                         ->offset($data['offset']);
             }
-            // echo $sql->getSqlStringForSqlObject($query);exit;
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             if ($gc == 1)
                 return count($resultSet);

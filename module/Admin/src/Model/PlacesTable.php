@@ -640,4 +640,157 @@ class PlacesTable extends  BaseTable
             return array();
         }
     }
+
+    public function getPlaces4App($data, $gc, $cityId)
+    {
+        try {
+            $sql = $this->getSql();
+            $where = new Where();
+            $where->equalTo('tp.display', 1)->equalTo('c.id', $cityId);
+            $order = array('place_name asc');
+            $placeFiles = $sql->select()
+                ->from(array('tf' => 'tourism_files'))
+                ->columns(array("file_path", 'tourism_file_id', 'file_data_id', 'file_extension_type', 'file_language_id', 'file_name'))
+                ->where(array('tf.display' => 1, 'tf.file_data_type' => \Admin\Model\TourismFiles::file_data_type_places, 'tf.file_extension_type' => \Admin\Model\TourismFiles::file_extension_type_image));
+            $query = $sql->select()
+                ->from($this->tableName)
+                ->columns(array('id', "name" => "place_name"))
+                ->join(array('c' => 'city'), 'tp.city_id = c.id', array("city_id" => "id"))
+                ->join(array('co' => 'country'), 'tp.country_id = co.id', array())
+                ->join(
+                    array('tfl' => $placeFiles), 
+                    'tfl.file_data_id = tp.id', 
+                    array(
+                        'file_path' => new \Laminas\Db\Sql\Expression("COALESCE(tfl.file_path, 'data/images/ph150x150.png')")
+                    ), 
+                    Select::JOIN_LEFT
+                )
+                // ->join(array('tfl' => $placeFiles), 'tfl.file_data_id = tp.id', array('file_path'), Select::JOIN_LEFT)
+                ->where($where)
+                ->order($order);
+            if ($gc == 0) {
+                $query->limit($data['limit'])
+                        ->offset($data['offset']);
+            }
+            $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
+            $places = array();
+            foreach ($resultSet as $row) {
+                $places[] = $row;
+            }
+            return $places;
+        } catch (\Exception $e) {
+            return array();
+        }
+    }
+
+    public function getAllPlaceDetails($it, $data)
+    {
+        try {
+            $sql = $this->getSql();
+            $where = new Where();
+            $where->equalTo('tp.display', 1);
+
+            $placeFiles = $sql->select()
+                    ->from(array('tf' => 'tourism_files'))
+                    ->columns(array("file_path", 'tourism_file_id', 'file_data_id', 'file_extension_type', 'file_language_id', 'file_name'))
+                    ->where(array('tf.display' => 1, 'tf.file_data_type' => \Admin\Model\TourismFiles::file_data_type_places));
+
+            $cityFiles = $sql->select()
+                ->from(array('tf' => 'tourism_files'))
+                ->columns(array("file_path", 'tourism_file_id', 'file_data_id', 'file_extension_type', 'file_language_id', 'file_name'))
+                ->where(array('tf.display' => 1, 'tf.file_data_type' => \Admin\Model\TourismFiles::file_data_type_city, 'tf.file_extension_type' => \Admin\Model\TourismFiles::file_extension_type_image));
+
+            $stateFiles = $sql->select()
+                ->from(array('tf' => 'tourism_files'))
+                ->columns(array("file_path", 'tourism_file_id', 'file_data_id', 'file_extension_type', 'file_language_id', 'file_name'))
+                ->where(array('tf.display' => 1, 'tf.file_data_type' => \Admin\Model\TourismFiles::file_data_type_state, 'tf.file_extension_type' => \Admin\Model\TourismFiles::file_extension_type_image));
+
+            $countryFiles = $sql->select()
+                ->from(array('tf' => 'tourism_files'))
+                ->columns(array("file_path", 'tourism_file_id', 'file_data_id', 'file_extension_type', 'file_language_id', 'file_name'))
+                ->where(array('tf.display' => 1, 'tf.file_data_type' => \Admin\Model\TourismFiles::file_data_type_country, 'tf.file_extension_type' => \Admin\Model\TourismFiles::file_extension_type_image));
+
+            if($it == '1'){
+                $where->equalTo('co.id', 101);
+                $query = $sql->select()
+                    ->from($this->tableName)
+                    ->columns(array('id', 'city_id', 'state_id', "place_name"))
+                    ->join(array('co' => 'country'), 'tp.country_id = co.id', array())
+                    ->join(array('ci' => 'city'), 'tp.city_id = ci.id', array('city_name'))
+                    ->join(array('s' => 'state'), 'tp.state_id = s.id', array('state_name'))
+                    ->join(
+                        array('tfl' => $placeFiles), 
+                        'tfl.file_data_id = tp.id', 
+                        array(
+                            'place_file_path' => new \Laminas\Db\Sql\Expression("COALESCE(tfl.file_path, 'data/images/ph150x150.png')")
+                        ), 
+                        Select::JOIN_LEFT
+                    )
+                    ->join(
+                        array('cifl' => $cityFiles), 
+                        'cifl.file_data_id = ci.id', 
+                        array(
+                            'city_file_path' => new \Laminas\Db\Sql\Expression("COALESCE(cifl.file_path, 'data/images/ph150x150.png')")
+                        ), 
+                        Select::JOIN_LEFT
+                    )
+                    ->join(
+                        array('sfl' => $stateFiles), 
+                        'sfl.file_data_id = s.id', 
+                        array(
+                            'state_file_path' => new \Laminas\Db\Sql\Expression("COALESCE(sfl.file_path, 'data/images/ph150x150.png')")
+                        ), 
+                        Select::JOIN_LEFT
+                    )
+                    ->where($where)
+                    ->order(['state_name city_name place_name asc']);
+            }else{
+                $where->and->notEqualTo("co.id", '101');
+                $query = $sql->select()
+                    ->from($this->tableName)
+                    ->columns(array('id', 'city_id', "country_id", "place_name"))
+                    ->join(array('ci' => 'city'), 'tp.city_id = ci.id', array('city_name'))
+                    ->join(array('co' => 'country'), 'tp.country_id = co.id', array('country_name'))
+                    ->join(
+                        array('tfl' => $placeFiles), 
+                        'tfl.file_data_id = tp.id', 
+                        array(
+                            'place_file_path' => new \Laminas\Db\Sql\Expression("COALESCE(tfl.file_path, 'data/images/ph150x150.png')")
+                        ), 
+                        Select::JOIN_LEFT
+                    )
+                    ->join(
+                        array('cifl' => $cityFiles), 
+                        'cifl.file_data_id = ci.id', 
+                        array(
+                            'city_file_path' => new \Laminas\Db\Sql\Expression("COALESCE(cifl.file_path, 'data/images/ph150x150.png')")
+                        ), 
+                        Select::JOIN_LEFT
+                    )
+                    ->join(
+                        array('cofl' => $stateFiles), 
+                        'cofl.file_data_id = co.id', 
+                        array(
+                            'country_file_path' => new \Laminas\Db\Sql\Expression("COALESCE(cofl.file_path, 'data/images/ph150x150.png')")
+                        ), 
+                        Select::JOIN_LEFT
+                    )
+                    ->where($where)
+                    ->order(['country_name city_name place_name asc']);
+            }
+            if($data['limit']){
+                $query->limit($data['limit'])
+                        ->offset($data['offset']);
+            }
+            
+            $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
+            $countries = array();
+            foreach ($resultSet as $row) {
+                $countries[] = $row;
+            }
+            return $countries;
+        } catch (\Exception $e) {
+            return array();
+        }
+    }
 }

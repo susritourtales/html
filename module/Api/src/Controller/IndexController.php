@@ -344,20 +344,47 @@ class IndexController extends BaseController
             if (!isset($request['limit']) || !isset($request['offset']))
                 return new JsonModel(array('success'=>false,'message'=>'required data missing..'));
             $stateList = $this->statesTable->getStates4App(['limit' => $request['limit'], 'offset' => $request['offset']]);
-            $totalCount = $this->statesTable->getStates4App(['limit' => 0, 'offset' => 0], 1);
             return new JsonModel(['places' => $stateList]);
         }else{
             return $tvResponse;
         }
     }
 
+    public function getCountriesAction()  {
+        $logResult = $this->logRequest($this->getRequest()->toString());
+        $tvResponse = $this->validateAccessToken(request: $this->getRequest());
+        $respdata = $tvResponse->getVariables();
+        if($respdata['success']){
+            $request = $this->getRequest()->getPost();
+            if (!isset($request['limit']) || !isset($request['offset']))
+                return new JsonModel(array('success'=>false,'message'=>'required data missing..'));
+            $countryList = $this->countriesTable->getCountries4App(['limit' => $request['limit'], 'offset' => $request['offset']]);
+            return new JsonModel(['places' => $countryList]);
+        }else{
+            return $tvResponse;
+        }
+    }
+
     public function getWorldCitiesAction()  {
-        $request = $this->getRequest()->getPost();
-        if (!isset($request['limit']) || !isset($request['offset']) || !isset($request['country_id']))
-            return new JsonModel(array('success'=>false,'message'=>'required data missing..'));
-        $stateList = $this->citiesTable->getWorldCities4App(['limit' => $request['limit'], 'offset' => $request['offset']], 0, $request['country_id']);
-        $totalCount = $this->citiesTable->getWorldCities4App(['limit' => 0, 'offset' => 0], 1, $request['country_id']);
-        return new JsonModel(['places' => $stateList]);
+        $logResult = $this->logRequest($this->getRequest()->toString());
+        $tvResponse = $this->validateAccessToken(request: $this->getRequest());
+        $respdata = $tvResponse->getVariables();
+        if($respdata['success']){
+            $request = $this->getRequest()->getPost();
+            if (!isset($request['limit']) || !isset($request['offset']))
+                return new JsonModel(array('success'=>false,'message'=>'required data missing..'));
+            $countryid = "";
+            if(!isset($request['country_id'])){
+                $countryList = $this->countriesTable->getCountries4App(['limit' => 1, 'offset' => 0]);
+                $countryid = $countryList[0]['id'];
+            }else{
+                $countryid = $request['country_id'];
+            }
+            $cityList = $this->citiesTable->getWorldCities4App(['limit' => $request['limit'], 'offset' => $request['offset']], 0, $countryid);
+            return new JsonModel(['places' => $cityList]);
+        }else{
+            return $tvResponse;
+        }
     }
     public function getIndiaCitiesAction()  {
         $logResult = $this->logRequest($this->getRequest()->toString());
@@ -374,21 +401,67 @@ class IndexController extends BaseController
             }else{
                 $stateid = $request['state_id'];
             }
-                
-            $stateList = $this->citiesTable->getIndiaCities4App(['limit' => $request['limit'], 'offset' => $request['offset']], 0, $stateid);
-            $totalCount = $this->citiesTable->getIndiaCities4App(['limit' => 0, 'offset' => 0], 1, $request['state_id']);
-            return new JsonModel(['places' => $stateList]);
+            $cityList = $this->citiesTable->getIndiaCities4App(['limit' => $request['limit'], 'offset' => $request['offset']], 0, $stateid);
+            return new JsonModel(['places' => $cityList]);
         }else{
             return $tvResponse;
         }
     }
 
-    public function getPlacesAction()  {
+    public function getIndiaPlacesAction()  {
+        $logResult = $this->logRequest($this->getRequest()->toString());
+        $tvResponse = $this->validateAccessToken(request: $this->getRequest());
+        $respdata = $tvResponse->getVariables();
+        if($respdata['success']){
+            $request = $this->getRequest()->getPost();
+            if (!isset($request['limit']) || !isset($request['offset']))
+                return new JsonModel(array('success'=>false,'message'=>'required data missing..'));
+            $stateid = "";
+            $stateList = $this->statesTable->getStates4App(['limit' => 1, 'offset' => 0]);
+            $stateid = $stateList[0]['id'];
+            $cityid = "";
+            if(!isset($request['city_id'])){
+                $cityList = $this->citiesTable->getIndiaCities4App(['limit' => 1, 'offset' => 0],0, $stateid);
+                $cityid = $cityList[0]['id'];
+            }else{
+                $cityid = $request['city_id'];
+            }
+            $placeList = $this->placesTable->getPlaces4App(['limit' => $request['limit'], 'offset' => $request['offset']], 0, $cityid);
+            // $totalCount = $this->placesTable->getIndiaPlaces4App(['limit' => 0, 'offset' => 0], 1, $cityid);
+            return new JsonModel(['places' => $placeList]);
+        }else{
+            return $tvResponse;
+        }
+    }
+
+    public function getWorldPlacesAction()  {
+        $logResult = $this->logRequest($this->getRequest()->toString());
+        $tvResponse = $this->validateAccessToken(request: $this->getRequest());
+        $respdata = $tvResponse->getVariables();
+        if($respdata['success']){
+            $request = $this->getRequest()->getPost();
+            if (!isset($request['limit']) || !isset($request['offset']))
+                return new JsonModel(array('success'=>false,'message'=>'required data missing..'));
+            $countryid = "";
+            $countryList = $this->countriesTable->getCountries4App(['limit' => 1, 'offset' => 0]);
+            $countryid = $countryList[0]['id'];
+            $cityid = "";
+            if(!isset($request['city_id'])){
+                $cityList = $this->citiesTable->getWorldCities4App(['limit' => 1, 'offset' => 0],0, $countryid);
+                $cityid = $cityList[0]['id'];
+            }else{
+                $cityid = $request['city_id'];
+            }
+            $placeList = $this->placesTable->getPlaces4App(['limit' => $request['limit'], 'offset' => $request['offset']], 0, $cityid);
+            return new JsonModel(['places' => $placeList]);
+        }else{
+            return $tvResponse;
+        }
+    }
+
+    public function getAllPlacesAction(){
         $request = $this->getRequest()->getPost();
-        if (!isset($request['limit']) || !isset($request['offset']))
-            return new JsonModel(array('success'=>false,'message'=>'required data missing..'));
-        $stateList = $this->statesTable->getStates4App(['limit' => $request['limit'], 'offset' => $request['offset']]);
-        $totalCount = $this->statesTable->getStates4App(['limit' => 0, 'offset' => 0], 1);
-        return new JsonModel(['places' => $stateList]);
+        $placeList = $this->placesTable->getAllPlaceDetails($request['it'], ['limit' => $request['limit'], 'offset' => $request['offset']]);
+        return new JsonModel(['places' => $placeList]);
     }
 }

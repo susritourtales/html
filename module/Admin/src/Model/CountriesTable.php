@@ -441,4 +441,97 @@ class CountriesTable extends  BaseTable
             return '';
         }
     }
+
+    public function getCountries4App($data = array('limit' => 10, 'offset' => 0), $gc = 0){
+        try {
+            $where = new Where();
+            $where->equalTo('c.display', 1); // ->equalTo('cc.display', 1)->equalTo('p.display', 1);
+            $where->and->notEqualTo("c.id", '101');
+            $order = array('country_name asc');
+            $sql = $this->getSql();
+            $placeFiles = $sql->select()
+                ->from(array('tf' => 'tourism_files'))
+                ->columns(array(
+                    "file_path", 
+                    'tourism_file_id', 
+                    'file_data_id', 
+                    'file_extension_type', 
+                    'file_language_id', 
+                    'file_name'
+                ))
+                ->where(array(
+                    'tf.display' => 1, 
+                    'tf.file_data_type' => \Admin\Model\TourismFiles::file_data_type_country, 
+                    'tf.file_extension_type' => \Admin\Model\TourismFiles::file_extension_type_image
+                ));
+            /*
+            $citiesCountSubquery = $sql->select()
+                ->from(array('ci' => 'city'))
+                ->columns(array('country_id', 'display', 'city_count' => new \Laminas\Db\Sql\Expression('COUNT(ci.id)')))
+                ->group('ci.country_id')
+                ->having(new \Laminas\Db\Sql\Predicate\Expression('COUNT(ci.id) > 1'));
+                */
+            
+            $placesCountSubquery = $sql->select()
+                ->from(array('p' => 'place'))
+                ->columns(array('country_id', 'display', 'places_count' => new \Laminas\Db\Sql\Expression('COUNT(p.id)')))
+                ->group('p.country_id')
+                ->having(new \Laminas\Db\Sql\Predicate\Expression('COUNT(p.id) > 0'));
+
+            $query = $sql->select()
+                ->from($this->tableName)
+                ->columns(array(
+                    "id", 
+                    "name" => "country_name"
+                ))
+                ->join(
+                    array('cc' => $placesCountSubquery), 
+                    'cc.country_id = c.id', 
+                    array()
+                )
+                ->join(
+                    array('tfl' => $placeFiles), 
+                    'tfl.file_data_id = c.id', 
+                    array(
+                        'file_path' => new \Laminas\Db\Sql\Expression("COALESCE(tfl.file_path, 'data/images/ph150x150.png')")
+                    ), 
+                    Select::JOIN_LEFT
+                )
+                ->where($where)
+                ->order($order);
+
+            /* $placeFiles = $sql->select()
+                ->from(array('tf' => 'tourism_files'))
+                ->columns(array("file_path", 'tourism_file_id', 'file_data_id', 'file_extension_type', 'file_language_id', 'file_name'))
+                ->where(array('tf.display' => 1, 'tf.file_data_type' => \Admin\Model\TourismFiles::file_data_type_country, 'tf.file_extension_type' => \Admin\Model\TourismFiles::file_extension_type_image));
+            $query = $sql->select()
+                ->from($this->tableName)
+                ->columns(array("id", "name" => "country_name"))
+                ->join(array('ci' => 'city'), 'ci.country_id = c.id', array('city_name'))
+                ->join(array('p' => 'place'), 'p.city_id = ci.id', array('place_name'))
+                ->join(
+                    array('tfl' => $placeFiles), 
+                    'tfl.file_data_id = c.id', 
+                    array(
+                        'file_path' => new \Laminas\Db\Sql\Expression("COALESCE(tfl.file_path, 'data/images/ph150x150.png')")
+                    ), 
+                    Select::JOIN_LEFT
+                )
+                ->where($where)
+                ->order($order); */
+            //   echo $sql->getSqlStringForSqlObject($query);exit;
+            if ($gc == 0) {
+                $query->limit($data['limit'])
+                        ->offset($data['offset']);
+            }
+            $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
+            $countries = array();
+            foreach ($resultSet as $row) {
+                $countries[] = $row;
+            }
+            return $countries;
+        } catch (\Exception $e) {
+            return array();
+        }
+    }
 }

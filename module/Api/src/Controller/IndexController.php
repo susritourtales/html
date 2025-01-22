@@ -374,11 +374,11 @@ class IndexController extends BaseController
             if (!isset($request['limit']) || !isset($request['offset']))
                 return new JsonModel(array('success'=>false,'message'=>'required data missing..'));
             $countryid = "";
-            if(!isset($request['country_id'])){
+            if(!isset($request['id'])){
                 $countryList = $this->countriesTable->getCountries4App(['limit' => 1, 'offset' => 0]);
                 $countryid = $countryList[0]['id'];
             }else{
-                $countryid = $request['country_id'];
+                $countryid = $request['id'];
             }
             $cityList = $this->citiesTable->getWorldCities4App(['limit' => $request['limit'], 'offset' => $request['offset']], 0, $countryid);
             return new JsonModel(['places' => $cityList]);
@@ -395,11 +395,11 @@ class IndexController extends BaseController
             if (!isset($request['limit']) || !isset($request['offset']))
                 return new JsonModel(array('success'=>false,'message'=>'required data missing..'));
             $stateid = "";
-            if(!isset($request['state_id'])){
+            if(!isset($request['id'])){
                 $stateList = $this->statesTable->getStates4App(['limit' => 1, 'offset' => 0]);
                 $stateid = $stateList[0]['id'];
             }else{
-                $stateid = $request['state_id'];
+                $stateid = $request['id'];
             }
             $cityList = $this->citiesTable->getIndiaCities4App(['limit' => $request['limit'], 'offset' => $request['offset']], 0, $stateid);
             return new JsonModel(['places' => $cityList]);

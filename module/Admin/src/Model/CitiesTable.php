@@ -434,7 +434,7 @@ class CitiesTable extends BaseTable
             $query = $sql->select()
                 ->from($this->tableName)
                 ->columns(array("id", "name" =>  "city_name"))
-                ->join(array('co' => 'country'), 'c.country_id = co.id', array("country_name"))
+                ->join(array('co' => 'country'), 'c.country_id = co.id', array())
                 ->join(
                     array('cc' => $placesCountSubquery), 
                     'cc.city_id = c.id', 

@@ -445,7 +445,7 @@ class CountriesTable extends  BaseTable
     public function getCountries4App($data = array('limit' => 10, 'offset' => 0), $gc = 0){
         try {
             $where = new Where();
-            $where->equalTo('c.display', 1); // ->equalTo('cc.display', 1)->equalTo('p.display', 1);
+            $where->equalTo('c.display', 1) ->equalTo('cc.display', 1); //->equalTo('p.display', 1);
             $where->and->notEqualTo("c.id", '101');
             $order = array('country_name asc');
             $sql = $this->getSql();
@@ -519,7 +519,7 @@ class CountriesTable extends  BaseTable
                 )
                 ->where($where)
                 ->order($order); */
-            //   echo $sql->getSqlStringForSqlObject($query);exit;
+            //    echo $sql->getSqlStringForSqlObject($query);exit;
             if ($gc == 0) {
                 $query->limit($data['limit'])
                         ->offset($data['offset']);

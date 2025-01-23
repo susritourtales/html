@@ -438,7 +438,7 @@ class StatesTable extends BaseTable
     public function getStates4App($data = array('limit' => 10, 'offset' => 0), $gc = 0){
         try {
             $where = new Where();
-            $where->equalTo('s.display', 1); // ->equalTo('ci.display', 1)->equalTo('p.display', 1);
+            $where->equalTo('s.display', 1)->equalTo('cc.display', 1); //->equalTo('p.display', 1);
             $order = array('state_name asc');
         
             $sql = $this->getSql();

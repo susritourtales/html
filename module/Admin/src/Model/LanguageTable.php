@@ -33,6 +33,30 @@ class LanguageTable extends BaseTable
           }
     }
 
+    public function getField($where, $column)
+    {
+        try {
+            $sql = $this->getSql();
+            $query = $sql->select()
+                ->from($this->tableName)
+                ->columns(array("" . $column . ""))
+                ->where($where)
+                ->limit(1);
+            $field = array();
+            $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
+            foreach ($resultSet as $row) {
+                $field = $row['' . $column . ''];
+            }
+            if ($field) {
+                return $field;
+            } else {
+                return "";
+            }
+        } catch (\Exception $e) {
+            return "";
+        }
+    }
+
     public function getActiveLanguagesCount(){
         try{
             $sql = $this->getSql();

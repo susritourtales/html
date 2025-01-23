@@ -417,7 +417,7 @@ class CitiesTable extends BaseTable
     {
         try {
             $where = new Where();
-            $where->equalTo('c.display', 1)->equalTo('co.id', $countryId);
+            $where->equalTo('c.display', 1)->equalTo('c.display', 1)->equalTo('co.id', $countryId);
             $order = array('city_name asc');
             $sql = $this->getSql();
             $placeFiles = $sql->select()
@@ -469,7 +469,7 @@ class CitiesTable extends BaseTable
     {
         try {
             $where = new Where();
-            $where->equalTo('c.display', 1)->equalTo('s.id', $stateId);
+            $where->equalTo('c.display', 1)->equalTo('cc.display', 1)->equalTo('s.id', $stateId);
             $order = array('city_name asc');
             $sql = $this->getSql();
             $placeFiles = $sql->select()

@@ -1196,6 +1196,8 @@ class IndexController extends BaseController
       if(!$ures)
         return new JsonModel(array('success'=>false,'message'=>'unknown error'));
     }
+    $user['primary_language_name'] = $this->languageTable->getField(['id'=>$user['primary_language']], 'language_name');
+    $user['secondary_language_name'] = $this->languageTable->getField(['id'=>$user['secondary_language']], 'language_name');
     $user['isLoggedIn'] = true;
     $user['subscriptionType'] = "U";
     $user['access_token'] = $this->generateAccessToken(['userId' => $user['id'], 'loginId' => $user_login_id]);

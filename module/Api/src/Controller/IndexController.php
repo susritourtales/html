@@ -58,6 +58,8 @@ class IndexController extends BaseController
                         return new JsonModel(array('success'=>false,'message'=>$insertResult['message']));
                     }
                 }
+                $user['primary_language_name'] = $this->languageTable->getField(['id'=>$user['primary_language']], 'language_name');
+                $user['secondary_language_name'] = $this->languageTable->getField(['id'=>$user['secondary_language']], 'language_name');
                 $user['isLoggedIn'] = true;
                 $user['subscriptionType'] = "U";
                 $user['access_token'] = $this->generateAccessToken(['userId' => $user['id'], 'loginId' => $user_login_id]);
@@ -81,6 +83,8 @@ class IndexController extends BaseController
             $isProvidedPasswordValid = $this->userTable->checkPasswordWithUserId($user_login_id, $providedPassword);
             if ($isProvidedPasswordValid) {
                 $user = $this->userTable->getUserDetails(['user_login_id' => $user_login_id, 'display' => 1]);
+                $user['primary_language_name'] = $this->languageTable->getField(['id'=>$user['primary_language']], 'language_name');
+                $user['secondary_language_name'] = $this->languageTable->getField(['id'=>$user['secondary_language']], 'language_name');
                 $user['isLoggedIn'] = true;
                 $user['subscriptionType'] = "U";
                 $user['access_token'] = $this->generateAccessToken(['userId' => $user['id'], 'loginId' => $user_login_id]);
@@ -426,7 +430,7 @@ class IndexController extends BaseController
             }else{
                 $cityid = $request['city_id'];
             }
-            $placeList = $this->placesTable->getPlaces4App(['limit' => $request['limit'], 'offset' => $request['offset']], 0, $cityid);
+            $placeList = $this->placesTable->getPlaces4App(['limit' => $request['limit'], 'offset' => $request['offset']], 0, $cityid, true);
             // $totalCount = $this->placesTable->getIndiaPlaces4App(['limit' => 0, 'offset' => 0], 1, $cityid);
             return new JsonModel(['places' => $placeList]);
         }else{
@@ -452,7 +456,7 @@ class IndexController extends BaseController
             }else{
                 $cityid = $request['city_id'];
             }
-            $placeList = $this->placesTable->getPlaces4App(['limit' => $request['limit'], 'offset' => $request['offset']], 0, $cityid);
+            $placeList = $this->placesTable->getPlaces4App(['limit' => $request['limit'], 'offset' => $request['offset']], 0, $cityid, false);
             return new JsonModel(['places' => $placeList]);
         }else{
             return $tvResponse;

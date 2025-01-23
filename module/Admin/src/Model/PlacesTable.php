@@ -641,7 +641,7 @@ class PlacesTable extends  BaseTable
         }
     }
 
-    public function getPlaces4App($data, $gc, $cityId)
+    public function getPlaces4App($data, $gc, $cityId, $it)
     {
         try {
             $sql = $this->getSql();
@@ -652,22 +652,43 @@ class PlacesTable extends  BaseTable
                 ->from(array('tf' => 'tourism_files'))
                 ->columns(array("file_path", 'tourism_file_id', 'file_data_id', 'file_extension_type', 'file_language_id', 'file_name'))
                 ->where(array('tf.display' => 1, 'tf.file_data_type' => \Admin\Model\TourismFiles::file_data_type_places, 'tf.file_extension_type' => \Admin\Model\TourismFiles::file_extension_type_image));
-            $query = $sql->select()
-                ->from($this->tableName)
-                ->columns(array('id', "name" => "place_name"))
-                ->join(array('c' => 'city'), 'tp.city_id = c.id', array("city_id" => "id"))
-                ->join(array('co' => 'country'), 'tp.country_id = co.id', array())
-                ->join(
-                    array('tfl' => $placeFiles), 
-                    'tfl.file_data_id = tp.id', 
-                    array(
-                        'file_path' => new \Laminas\Db\Sql\Expression("COALESCE(tfl.file_path, 'data/images/ph150x150.png')")
-                    ), 
-                    Select::JOIN_LEFT
-                )
+            
+            if($it){
+                $query = $sql->select()
+                    ->from($this->tableName)
+                    ->columns(array('id', "name" => "place_name", "full_name" => new \Laminas\Db\Sql\Expression("CONCAT(s.state_name, ' - ', c.city_name, ' - ', tp.place_name)")))
+                    ->join(array('c' => 'city'), 'tp.city_id = c.id', array("city_id" => "id"))
+                    ->join(array('s' => 'state'), 'tp.state_id = s.id', array("state_id" => "id"))
+                    ->join(array('co' => 'country'), 'tp.country_id = co.id', array())
+                    ->join(
+                        array('tfl' => $placeFiles), 
+                        'tfl.file_data_id = tp.id', 
+                        array(
+                            'file_path' => new \Laminas\Db\Sql\Expression("COALESCE(tfl.file_path, 'data/images/ph150x150.png')")
+                        ), 
+                        Select::JOIN_LEFT
+                    )
+                    ->where($where)
+                    ->order($order);
+            }else{
+                $query = $sql->select()
+                    ->from($this->tableName)
+                    ->columns(array('id', "name" => "place_name", "full_name" => new \Laminas\Db\Sql\Expression("CONCAT(co.country_name, ' - ', c.city_name, ' - ', tp.place_name)")))
+                    ->join(array('c' => 'city'), 'tp.city_id = c.id', array("city_id" => "id"))
+                    ->join(array('co' => 'country'), 'tp.country_id = co.id', array())
+                    ->join(
+                        array('tfl' => $placeFiles), 
+                        'tfl.file_data_id = tp.id', 
+                        array(
+                            'file_path' => new \Laminas\Db\Sql\Expression("COALESCE(tfl.file_path, 'data/images/ph150x150.png')")
+                        ), 
+                        Select::JOIN_LEFT
+                    )
+                    ->where($where)
+                    ->order($order);
                 // ->join(array('tfl' => $placeFiles), 'tfl.file_data_id = tp.id', array('file_path'), Select::JOIN_LEFT)
-                ->where($where)
-                ->order($order);
+            }
+                
             if ($gc == 0) {
                 $query->limit($data['limit'])
                         ->offset($data['offset']);

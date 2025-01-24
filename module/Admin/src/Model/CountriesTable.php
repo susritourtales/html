@@ -527,6 +527,7 @@ class CountriesTable extends  BaseTable
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             $countries = array();
             foreach ($resultSet as $row) {
+                $row['full_name'] = "";
                 $countries[] = $row;
             }
             return $countries;

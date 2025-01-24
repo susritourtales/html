@@ -456,11 +456,12 @@ class CitiesTable extends BaseTable
             }
             // echo $sql->getSqlStringForSqlObject($query);exit;
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
-            $countries = array();
+            $cities = array();
             foreach ($resultSet as $row) {
-                $countries[] = $row;
+                $row['full_name'] = "";
+                $cities[] = $row;
             }
-            return $countries;
+            return $cities;
         } catch (\Exception $e) {
             return array();
         }
@@ -514,6 +515,7 @@ class CitiesTable extends BaseTable
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             $cities = array();
             foreach ($resultSet as $row) {
+                $row['full_name'] = "";
                 $cities[] = $row;
             }
             return $cities;

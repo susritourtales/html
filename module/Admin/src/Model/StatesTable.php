@@ -476,13 +476,14 @@ class StatesTable extends BaseTable
             //  echo $sql->getSqlStringForSqlObject($query);exit;
             if ($gc == 0) {
                 $query->limit($data['limit'])
-                        ->offset($data['offset']);
+                    ->offset($data['offset']);
             }
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             if ($gc == 1)
                 return count($resultSet);
             $states = array();
             foreach ($resultSet as $row) {
+                $row['full_name'] = "";
                 $states[] = $row;
             }
             return $states;

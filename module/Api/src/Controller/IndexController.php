@@ -468,4 +468,36 @@ class IndexController extends BaseController
         $placeList = $this->placesTable->getAllPlaceDetails($request['it'], ['limit' => $request['limit'], 'offset' => $request['offset']]);
         return new JsonModel(['places' => $placeList]);
     }
+
+    public function sampleAction(){
+        $logResult = $this->logRequest($this->getRequest()->toString());
+        $tvResponse = $this->validateAccessToken(request: $this->getRequest());
+        $respdata = $tvResponse->getVariables();
+        if($respdata['success']){
+            $request = $this->getRequest()->getPost();
+            if (!isset($request['limit']) || !isset($request['offset']))
+                return new JsonModel(array('success'=>false,'message'=>'required data missing..'));
+                return new JsonModel(['success' => true, 'message' => "Sampls Api called..."]);
+        }else{
+            return $tvResponse;
+        }
+    }
+
+    public function downloadTalesAction(){
+        $logResult = $this->logRequest($this->getRequest()->toString());
+        $tvResponse = $this->validateAccessToken(request: $this->getRequest());
+        $respdata = $tvResponse->getVariables();
+        if($respdata['success']){
+            $request = $this->getRequest()->getPost();
+            if (!isset($request['placeIds']) || !isset($request['primary_language']) || !isset($request['secondary_language']))
+                return new JsonModel(array('success'=>false,'message'=>'required data missing..'));
+            $csvPlaceIds = $request['placeIds'];
+            $csvPlaceIds = '51,52,55,59,60,85,87,88';
+            $placeIdsArray = explode(',', $csvPlaceIds); 
+            $talesFiles = $this->tourismFilesTable->getTourismFiles(['file_data_type' => \Admin\Model\TourismFiles::file_data_type_places, 'file_extension_type' => \Admin\Model\TourismFiles::file_extension_type_audio], $request['primary_language'],$request['secondary_language']); // 'file_data_id' => $placeIdsArray,
+            return new JsonModel(['files' => $talesFiles]);
+        }else{
+            return $tvResponse;
+        }
+    }
 }

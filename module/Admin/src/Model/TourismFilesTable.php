@@ -143,24 +143,33 @@ class TourismFilesTable extends  BaseTable
         } catch (\Exception $e) {
             print_r($e->getMessage());
             exit;
-            return array();
+            // return array();
         }
     }
-    public function getTourismFiles($where)
+    public function getTourismFiles($where, $primaryLanguage, $secondaryLanguage)
     {
         try {
             $sql = $this->getSql();
             $query = $sql->select()
                 ->from($this->tableName)
-                ->columns(array("tourism_file_id", 'file_upload_type', 'file_path', "duration", 'file_type', 'file_language_id', 'file_name'))
+                ->columns(array("tourism_file_id", 'file_path' => new \Laminas\Db\Sql\Expression("'data/attachments/ENG-ST-1-1-1A-Subhadra-AP-Tirupati-Tirumala+Sacred+Temple.mp3'"), "duration", 'file_name', //'file_path',
+                    'language_id' => new \Laminas\Db\Sql\Expression(
+                                "CASE 
+                                    WHEN file_language_id = {$primaryLanguage} THEN 1 
+                                    WHEN file_language_id = {$secondaryLanguage} THEN 2 
+                                    ELSE 3 
+                                END"
+                            )
+                ))
                 ->where($where);
-
+            //  echo $sql->getSqlStringForSqlObject($query);exit;
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             $tourismFiles = array();
 
             foreach ($resultSet as $row) {
                 $tourismFiles[] = $row;
             }
+            return $tourismFiles;
         } catch (\Exception $e) {
 
             return array();

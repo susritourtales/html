@@ -9,6 +9,8 @@
                 <?php } ?>
                 <th data-placeholder="city" data-input="city">City</th>
                 <th data-placeholder="place" data-input="place">Place</th>
+                <th data-placeholder="tale name" data-input="tale_name">TT</th>
+                <th data-placeholder="TT" data-input="tour_type">TT</th>
                 <th>Free</th>
             </tr>
         <?php } ?>
@@ -31,6 +33,8 @@
                     <?php } ?>
                     <td class="text-capitalize"><?php echo $places['city_name']; ?></td>
                     <td class="text-capitalize"><?php echo $places['place_name']; ?></td>
+                    <td class="text-capitalize"><?php echo $places['tale_name']; ?></td>
+                    <td class="text-capitalize"><?php echo $places['tour_type']; ?></td>
                     <td class="text-capitalize"><input class="m-2 freeCb" type="checkbox" data-id="<?php echo base64_encode($places['id']) ?>" <?php echo ($places['free'] == '1') ? 'checked' : '';?> /></td>
                 </tr>
             <?php $i++;

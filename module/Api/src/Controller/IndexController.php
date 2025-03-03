@@ -331,9 +331,9 @@ class IndexController extends BaseController
             $where['user_login_id'] = $request['user_login_id'];
             $updateResp = $this->userTable->updateUser($data, $where);
             if ($updateResp)
-            return new JsonModel(array('success' => true, "message" => 'languages updated successfull..'));
+                return new JsonModel(array('success' => true, "message" => 'languages updated successfull..'));
             else
-            return new JsonModel(array('success' => false, "message" => 'unable to update.. try after sometime..'));
+                return new JsonModel(array('success' => false, "message" => 'unable to update.. try after sometime..'));
         }else{
             return $tvResponse;
         }
@@ -477,7 +477,59 @@ class IndexController extends BaseController
             $request = $this->getRequest()->getPost();
             if (!isset($request['limit']) || !isset($request['offset']))
                 return new JsonModel(array('success'=>false,'message'=>'required data missing..'));
-                return new JsonModel(['success' => true, 'message' => "Sampls Api called..."]);
+            return new JsonModel(['success' => true, 'message' => "Sampls Api called..."]);
+        }else{
+            return $tvResponse;
+        }
+    }
+
+    public function getIndiaTalesAction(){
+        $logResult = $this->logRequest($this->getRequest()->toString());
+        $tvResponse = $this->validateAccessToken(request: $this->getRequest());
+        $respdata = $tvResponse->getVariables();
+        if($respdata['success']){
+            $request = $this->getRequest()->getPost();
+            $itList = $this->tourTalesTable->getPlacesList4App(['tour_type' => \Admin\Model\TourTales::tour_type_India_tour, 'limit' => 600, 'offset' => 0],0,1);
+            return new JsonModel(['tales' => $itList]);
+        }else{
+            return $tvResponse;
+        }
+    }
+
+    public function getWorldTalesAction(){
+        $logResult = $this->logRequest($this->getRequest()->toString());
+        $tvResponse = $this->validateAccessToken(request: $this->getRequest());
+        $respdata = $tvResponse->getVariables();
+        if($respdata['success']){
+            $request = $this->getRequest()->getPost();
+            $itList = $this->tourTalesTable->getPlacesList4App(['tour_type' => \Admin\Model\TourTales::tour_type_World_tour, 'limit' => 600, 'offset' => 0],0,1);
+            return new JsonModel(['tales' => $itList]);
+        }else{
+            return $tvResponse;
+        }
+    }
+
+    public function getFreeIndiaTalesAction(){
+        $logResult = $this->logRequest($this->getRequest()->toString());
+        $tvResponse = $this->validateAccessToken(request: $this->getRequest());
+        $respdata = $tvResponse->getVariables();
+        if($respdata['success']){
+            $request = $this->getRequest()->getPost();
+            $itList = $this->tourTalesTable->getPlacesList4App(['tour_type' => \Admin\Model\TourTales::tour_type_Free_India_tour, 'limit' => 600, 'offset' => 0],0,1);
+            return new JsonModel(['tales' => $itList]);
+        }else{
+            return $tvResponse;
+        }
+    }
+
+    public function getFreeWorldTalesAction(){
+        $logResult = $this->logRequest($this->getRequest()->toString());
+        $tvResponse = $this->validateAccessToken(request: $this->getRequest());
+        $respdata = $tvResponse->getVariables();
+        if($respdata['success']){
+            $request = $this->getRequest()->getPost();
+            $itList = $this->tourTalesTable->getPlacesList4App(['tour_type' => \Admin\Model\TourTales::tour_type_Free_World_tour, 'limit' => 600, 'offset' => 0],0,1);
+            return new JsonModel(['tales' => $itList]);
         }else{
             return $tvResponse;
         }
@@ -492,10 +544,71 @@ class IndexController extends BaseController
             if (!isset($request['placeIds']) || !isset($request['primary_language']) || !isset($request['secondary_language']))
                 return new JsonModel(array('success'=>false,'message'=>'required data missing..'));
             $csvPlaceIds = $request['placeIds'];
-            $csvPlaceIds = '51,52,55,59,60,85,87,88';
+            $csvPlaceIds = '510,520,521,522,523,524,525,526,527,528,529,530,39'; //'51,52,55,59,60,85,87,88';
             $placeIdsArray = explode(',', $csvPlaceIds); 
-            $talesFiles = $this->tourismFilesTable->getTourismFiles(['file_data_type' => \Admin\Model\TourismFiles::file_data_type_places, 'file_extension_type' => \Admin\Model\TourismFiles::file_extension_type_audio], $request['primary_language'],$request['secondary_language']); // 'file_data_id' => $placeIdsArray,
-            return new JsonModel(['files' => $talesFiles]);
+            // $talesFiles = $this->tourismFilesTable->getTourismFiles(['file_data_type' => \Admin\Model\TourismFiles::file_data_type_places, 'file_extension_type' => \Admin\Model\TourismFiles::file_extension_type_audio], $request['primary_language'],$request['secondary_language']); // 'file_data_id' => $placeIdsArray,
+            $talesFiles = $this->tourismFilesTable->getTourismFiles(['file_data_type' => \Admin\Model\TourismFiles::file_data_type_places, 'file_data_id' => $placeIdsArray], $request['primary_language'],$request['secondary_language']); 
+            $newArr = [];
+            array_walk($talesFiles, function ($item, $key) use (&$newArr) {
+                $item['file_path'] = $item['file_extension'] == 'mp3' ? 'data/attachments/ENG-ST-1-1-1A-Subhadra-AP-Tirupati-Tirumala+Sacred+Temple.mp3' : $item['file_path'];
+                $newArr[$key] = $item;
+            });
+            // return new JsonModel(['files' => $talesFiles]);
+            return new JsonModel(['files' => $newArr]);
+        }else{
+            return $tvResponse;
+        }
+    }
+
+    public function getUserProfileAction(){
+        $logResult = $this->logRequest($this->getRequest()->toString());
+        $tvResponse = $this->validateAccessToken(request: $this->getRequest());
+        $respdata = $tvResponse->getVariables();
+        if($respdata['success']){
+            $request = $this->getRequest()->getPost();
+            if (!isset($request['user_login_id']))
+                return new JsonModel(array('success'=>false,'message'=>'required data missing..'));
+            $userProfile = $this->userTable->getUserDetails(['user_login_id' => $request['user_login_id']]);
+            $userProfile['primary_language_name'] = $this->languageTable->getField(['id'=>$userProfile['primary_language']], 'language_name');
+            $userProfile['secondary_language_name'] = $this->languageTable->getField(['id'=>$userProfile['secondary_language']], 'language_name');
+            $userProfile['isSubscribed'] = $this->questtSubscriptionTable->isValidQuesttUser($userProfile['id']);
+            if($userProfile['isSubscribed']){
+                $qed = $this->questtSubscriptionTable->getField(['user_id' => $userProfile['id']], 'end_date');
+                $userProfile['subscriptionExpiry'] = date('Y-m-d', strtotime($qed));
+            }else{
+                $userProfile['subscriptionExpiry'] = "NA"; //date('10/03/2025');
+            }
+            $userProfile['pwdBalance'] = '0';
+            return new JsonModel(array('success' => true, "data" => $userProfile));
+        }else{
+            return $tvResponse;
+        }
+    }
+
+    public function setUserProfileAction(){
+        $logResult = $this->logRequest($this->getRequest()->toString());
+        $tvResponse = $this->validateAccessToken(request: $this->getRequest());
+        $respdata = $tvResponse->getVariables();
+        if($respdata['success']){
+            $request = $this->getRequest()->getPost();
+            if (!isset($request['user_login_id']))
+                return new JsonModel(array('success'=>false,'message'=>'required data missing..'));
+            if (!isset($request['username']) || !isset($request['country']) || !isset($request['email']))
+                return new JsonModel(array('success'=>false,'message'=>'required data missing..'));
+            $where = ['user_login_id' => $request['user_login_id']];
+            $saveData = [];
+            if(isset($request['username']))
+                $saveData['username'] = $request['username'];
+            if(isset($request['country']))
+                $saveData['country'] = $request['country'];
+            if(isset($request['email']))
+                $saveData['email'] = $request['email'];
+            if(count($saveData) > 0)
+                $updateResp = $this->userTable->setFields($saveData, $where);
+            if ($updateResp)
+                return new JsonModel(array('success' => true, "message" => 'profile updated successfull..'));
+            else
+                return new JsonModel(array('success' => false, "message" => 'unable to update.. try after sometime..'));
         }else{
             return $tvResponse;
         }

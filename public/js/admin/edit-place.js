@@ -471,22 +471,30 @@ $(document).ready(function ()
         if($(".image-preview").length==0)
         {
             messageDisplay("Please Upload Image Files");
+            element.html('submit');
+            element.prop('disabled',false);
             return false;
         }
         if($(".tn-preview").length==0)
         {
             messageDisplay("Please Upload Thumbnail Files");
+            element.html('submit');
+            element.prop('disabled',false);
             return false;
         }
         if($(".file-uploads").length==0)
         {
             messageDisplay("Please Upload Audio Files");
+            element.html('submit');
+            element.prop('disabled',false);
             return false;
         }
         if(mandatorytotalLanguages.length!=mandatoryLanguages.length)
         {
             uploadClicked=false;
             messageDisplay("Please Select mandatory languages hindi and english",2000);
+            element.html('submit');
+            element.prop('disabled',false);
             return false;
         }
         var formData=new FormData();

@@ -23,8 +23,10 @@ if (isset($audioFiles) && count($audioFiles))
                     <input type="file" class="upload-file" data-id="<?php echo $rowNumber ?>" accept=".mp3">
                     <span class="position-absolute file_name" data-id="<?php echo $rowNumber ?>">
                         <?php
-                            $file = explode('/', $audio['file_path']);
-                            echo $file[count($file) - 1];
+                            if($audio['file_path'] != null){
+                                $file = explode('/', $audio['file_path']);
+                                echo $file[count($file) - 1];
+                            }
                         ?>
                     </span>
                     <span class="position-absolute upload_btn">

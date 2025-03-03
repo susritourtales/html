@@ -1665,7 +1665,8 @@ class AdminController extends BaseController
             $countryId = $this->countriesTable->getField(array('country_name' => 'india', 'display' => 1), 'id');
             $data = [];
             foreach ($placeIdArr as $pid) {
-                $data[] = ['tour_type' => \Admin\Model\TourTales::tour_type_India_tour, 'display' => 1, 'country_id' => $countryId, 'state_id' => $stateId, 'city_id' => $cityId, 'free' => $ft, 'place_id' => $pid];
+                $tale_name = $this->placesTable->getField(['id' => $pid], 'place_name');
+                $data[] = ['tale_name'=>$tale_name,'tour_type' => \Admin\Model\TourTales::tour_type_India_tour, 'display' => 1, 'country_id' => $countryId, 'state_id' => $stateId, 'city_id' => $cityId, 'free' => $ft, 'place_id' => $pid];
             }
             if (!count($checkTaleAdded)) {
                 $saveData = $this->tourTalesTable->addMulipleTourTales($data);
@@ -1806,7 +1807,8 @@ class AdminController extends BaseController
                 return new JsonModel(array("success" => false, "message" => "Tale already added"));
             $data = [];
             foreach ($placeIdArr as $pid) {
-                $data[] = ['tour_type' => \Admin\Model\TourTales::tour_type_World_tour, 'display' => 1, 'country_id' => $countryId, 'city_id' => $cityId, 'free' => $ft, 'place_id' => $pid];
+                $tale_name = $this->placesTable->getField(['id' => $pid], 'place_name');
+                $data[] = ['tale_name'=>$tale_name, 'tour_type' => \Admin\Model\TourTales::tour_type_World_tour, 'display' => 1, 'country_id' => $countryId, 'city_id' => $cityId, 'free' => $ft, 'place_id' => $pid];
             }
             if (!count($checkTaleAdded)) {
                 $saveData = $this->tourTalesTable->addMulipleTourTales($data);

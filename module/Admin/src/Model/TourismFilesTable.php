@@ -150,22 +150,35 @@ class TourismFilesTable extends  BaseTable
     {
         try {
             $sql = $this->getSql();
-            $query = $sql->select()
-                ->from($this->tableName)
-                ->columns(array("tourism_file_id", 'file_path' => new \Laminas\Db\Sql\Expression("'data/attachments/ENG-ST-1-1-1A-Subhadra-AP-Tirupati-Tirumala+Sacred+Temple.mp3'"), "duration", 'file_name', //'file_path',
-                    'language_id' => new \Laminas\Db\Sql\Expression(
-                                "CASE 
-                                    WHEN file_language_id = {$primaryLanguage} THEN 1 
-                                    WHEN file_language_id = {$secondaryLanguage} THEN 2 
-                                    ELSE 3 
-                                END"
-                            )
-                ))
-                ->where($where);
+                $subQuery = $sql->select()
+                    ->from(['t1' => $this->tableName['tf']])
+                    ->where([
+                        new \Laminas\Db\Sql\Predicate\Expression(
+                            "t1.file_language_id = ? OR (t1.file_language_id = ? AND NOT EXISTS (
+                                SELECT 1 FROM {$this->tableName['tf']} t2 
+                                WHERE t2.tourism_file_id = t1.tourism_file_id 
+                                AND t2.file_language_id = ?
+                            ))
+                            OR t1.file_language_id = 0",
+                            [$primaryLanguage, $secondaryLanguage, $primaryLanguage]
+                        )
+                    ]);
+                $query = $sql->select()
+                    ->from(['selected' => $subQuery])
+                    ->columns([
+                        'tourism_file_id',
+                        'file_path',
+                        'duration',
+                        'file_name',
+                        'file_extension',
+                        'file_language_id',
+                        'file_data_id'
+                    ])
+                    ->where($where)
+                    ->join(array('p' => 'place'), 'selected.file_data_id=p.id', array('place_name'), Select::JOIN_LEFT);
             //  echo $sql->getSqlStringForSqlObject($query);exit;
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             $tourismFiles = array();
-
             foreach ($resultSet as $row) {
                 $tourismFiles[] = $row;
             }
@@ -177,7 +190,8 @@ class TourismFilesTable extends  BaseTable
     }
     public function getTourismFilesList($date)
     {
-        try {
+        try 
+        {
             $sql = $this->getSql();
             $where = new Where();
             if ($date != '') {

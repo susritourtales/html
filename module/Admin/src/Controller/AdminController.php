@@ -286,7 +286,6 @@ class AdminController extends BaseController
 
     public function fileUploadRowAction()
     {
-        /*if ($this->authService->hasIdentity()) {*/
             $request = $this->getRequest()->getPost();
             $languagesList = $this->languageTable->getActiveLanguagesList(['limit' => 0, 'offset' => 0]);
             $rowNumber = $request['row_number'];
@@ -294,9 +293,6 @@ class AdminController extends BaseController
             $view = new ViewModel(array("languages" => $languagesList, 'rowNumber' => $rowNumber, 'numberOfrows' => $rowCount));
             $view->setTerminal(true);
             return $view;
-        /*} else {
-            return new JsonModel(array("success" => false, "message" => "User logged out"));
-        }*/
     }
 
     public function editCountryAction()

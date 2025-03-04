@@ -14,7 +14,7 @@ var circle={};
 $(document).ready(function ()
 {
     addedRow=$(".file-uploads:last").data("id");
-    imageId=$(".image-preview:last").data("id");
+    imageId=($(".image-preview").length > 0 ) ? $(".image-preview:last").data("id") : 0;
     $("body").on("change","#country",function(){
         var countryId=$(this).val();
         var countryText=$('#country option:selected').text();
@@ -118,7 +118,90 @@ $(document).ready(function ()
 
         });
     })
-        .on("change",".image-upload",function(e){
+    $(document).on("change", ".image-upload", function(e) {
+        var files = e.target.files;
+        var element = $(this);
+        var increment = 0;
+    
+        $.each(files, function(i, file) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var FileType = file.type;
+                var fileExtension = FileType.substr((FileType.lastIndexOf('/') + 1)).toLowerCase();
+    
+                if ($.inArray(fileExtension, imageacceptedExtensions) === -1) {
+                    messageDisplay("Invalid File");
+                    return false;
+                }
+    
+                increment++;
+                imageId++; // Ensure each image has a unique ID
+                imageFiles[imageId] = [file];
+                uploadFiles['images'][imageId] = { "uploaded": false };
+    
+                let classId = 'circlechart-img-' + imageId; // Unique class for each progress bar
+    
+                // Append image with its own unique progress bar
+                $(".image-preview-wrapper").append(`
+                    <div class="col-sm-4 mt-2 position-relative image-preview overflow-hidden" data-id="${imageId}">
+                        <div class="position-absolute circlechart ${classId}" style="width: 100%; height: 100%" data-id="${imageId}"></div>
+                        <img src="${e.target.result}" style="width: 100%; height: 100%">
+                        <span class="bg-white circle close-icon" data-id="${imageId}">
+                            <i class="fas fa-times position-absolute" data-id="${imageId}"></i>
+                        </span>
+                    </div>
+                `);
+    
+                // Initialize radial progress bar separately for each image
+                setTimeout(() => {
+                    circle[imageId] = radialIndicator('.' + classId, {
+                        radius: 50,
+                        barColor: '#6dd873',
+                        barWidth: 8,
+                        initValue: 0,
+                        barBgColor: '#e4e4e4',
+                        percentage: true
+                    });
+                }, 50);
+    
+                // Handle file upload progress
+                filesData.ajaxCall(1, file, imageId, function(progress, fileID, response) {
+                    if (progress && circle[fileID]) {
+                        circle[fileID].animate(progress * 100);
+                    }
+    
+                    if (!progress && response.success) {
+                        uploadFiles['images'][fileID] = { "uploaded": true, 'id': response.id };
+    
+                        if (circle[fileID]) {
+                            circle[fileID].animate(100);
+                        }
+    
+                        if (uploadClicked) {
+                            $("#addPlace").prop('disabled', false).click();
+                        }
+                    }
+                });
+    
+                if (files.length === increment) {
+                    element.val(""); // Reset file input after all files are read
+                }
+            };
+    
+            reader.readAsDataURL(file);
+        });
+    
+        setTimeout(function() {
+            var height = $(".image-preview-wrapper").height();
+            var parentHeight = $(".image-upload-wrapper").height();
+            if (parentHeight < height) {
+                $(".image-upload").css("height", height);
+            }
+        }, 50);
+    })
+    
+    
+    /* .on("change",".image-upload1",function(e){
         var files = e.target.files;
         var element=$(this);
         var incerement=0;
@@ -197,7 +280,7 @@ $(document).ready(function ()
                 $(".image-upload").css("height",height);
             }
         },10);
-    })
+    }) */
     .on("click",".close-icon",function () {
     var id=$(this).data("id");
     var edit=$(this).data("edit");

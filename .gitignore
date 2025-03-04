@@ -7,3 +7,4 @@ module/Application/src/Handler/Razorpay.php
 public/logs/
 public/logs/httplogs/
 public/logs/httplogs/*.log
+/public/data/attachments

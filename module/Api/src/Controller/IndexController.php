@@ -504,6 +504,8 @@ class IndexController extends BaseController
         $respdata = $tvResponse->getVariables();
         if($respdata['success']){
             $request = $this->getRequest()->getPost();
+            if (!isset($request['limit']) || !isset($request['offset']))
+                return new JsonModel(array('success'=>false,'message'=>'required data missing..'));
             $itList = $this->tourTalesTable->getPlacesList4App(['tour_type' => \Admin\Model\TourTales::tour_type_World_tour, 'limit' => $request['limit'], 'offset' => $request['offset']],0,1);
             return new JsonModel(['tales' => $itList]);
         }else{
@@ -517,6 +519,8 @@ class IndexController extends BaseController
         $respdata = $tvResponse->getVariables();
         if($respdata['success']){
             $request = $this->getRequest()->getPost();
+            if (!isset($request['limit']) || !isset($request['offset']))
+                return new JsonModel(array('success'=>false,'message'=>'required data missing..'));
             $itList = $this->tourTalesTable->getPlacesList4App(['tour_type' => \Admin\Model\TourTales::tour_type_Free_India_tour, 'limit' => $request['limit'], 'offset' => $request['offset']],0,1);
             return new JsonModel(['tales' => $itList]);
         }else{
@@ -530,6 +534,8 @@ class IndexController extends BaseController
         $respdata = $tvResponse->getVariables();
         if($respdata['success']){
             $request = $this->getRequest()->getPost();
+            if (!isset($request['limit']) || !isset($request['offset']))
+                return new JsonModel(array('success'=>false,'message'=>'required data missing..'));
             $itList = $this->tourTalesTable->getPlacesList4App(['tour_type' => \Admin\Model\TourTales::tour_type_Free_World_tour, 'limit' => $request['limit'], 'offset' => $request['offset']],0,1);
             return new JsonModel(['tales' => $itList]);
         }else{

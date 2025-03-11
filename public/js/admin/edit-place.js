@@ -4,6 +4,7 @@ var imageFiles={};
 var tnFiles={};
 var mediaFiles={};
 var imageId=0;
+var tnImageId=0;
 var addedRow=1;
 var deletedImages=[];
 var deletedThumbnails=[];
@@ -15,6 +16,7 @@ $(document).ready(function ()
 {
     addedRow=$(".file-uploads:last").data("id");
     imageId=($(".image-preview").length > 0 ) ? $(".image-preview:last").data("id") : 0;
+    tnImageId=($(".tn-preview").length > 0 ) ? $(".tn-preview:last").data("id") : 0;
     $("body").on("change","#country",function(){
         var countryId=$(this).val();
         var countryText=$('#country option:selected').text();
@@ -324,14 +326,14 @@ $(document).ready(function ()
                     return false;
                 }
                 incerement++;
-                imageId++;
-                tnFiles[imageId]=[];
-                tnFiles[imageId].push(file);
-                uploadFiles['thumbnails'][imageId]={"uploaded":false};
+                tnImageId++;
+                tnFiles[tnImageId]=[];
+                tnFiles[tnImageId].push(file);
+                uploadFiles['thumbnails'][tnImageId]={"uploaded":false};
 
-                let classId='circlechart_img_'+imageId;
-                $(".tn-preview-wrapper").append('<div class="col-sm-4 mt-2 position-relative tn-preview overflow-hidden" data-id="'+imageId+'"><div class="position-absolute circlechart '+classId+'" style="width: 100%;height: 100%" data-id="'+imageId+'"></div><img src="'+e.target.result+'" style="width: 100%;height: 100%"><span class="bg-white circle tn-close-icon" data-id="'+imageId+'"><i class="fas fa-times position-absolute " data-id="'+imageId+'" ></i></span></div>');
-                circle[imageId] = radialIndicator('.'+classId,{
+                let classId='circlechart_img_'+tnImageId;
+                $(".tn-preview-wrapper").append('<div class="col-sm-4 mt-2 position-relative tn-preview overflow-hidden" data-id="'+tnImageId+'"><div class="position-absolute circlechart '+classId+'" style="width: 100%;height: 100%" data-id="'+tnImageId+'"></div><img src="'+e.target.result+'" style="width: 100%;height: 100%"><span class="bg-white circle tn-close-icon" data-id="'+tnImageId+'"><i class="fas fa-times position-absolute " data-id="'+tnImageId+'" ></i></span></div>');
+                circle[tnImageId] = radialIndicator('.'+classId,{
                     radius: 50,
                     barColor : '#6dd873',
                     barWidth : 8,
@@ -340,7 +342,7 @@ $(document).ready(function ()
                     percentage: true
                 });
                 
-                filesData.ajaxCall(3,file,imageId,function(progress,fileID,response)
+                filesData.ajaxCall(3,file,tnImageId,function(progress,fileID,response)
                 {
                     if(progress)
                     {
@@ -381,7 +383,7 @@ $(document).ready(function ()
             console.log(parentHeight,height);
             if(parentHeight<height)
             {
-                $(".image-upload").css("height",height);
+                $(".tn-upload").css("height",height);
             }
         },10);
 

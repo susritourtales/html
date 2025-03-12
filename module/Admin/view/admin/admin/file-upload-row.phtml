@@ -1,10 +1,12 @@
 <?php
+
+use function PHPUnit\Framework\isNull;
 if (isset($audioFiles) && count($audioFiles))
 {
     $rowNumber = 1;
     foreach ($audioFiles as $audio) :
         ?>
-        <div class="file-uploads row" data-id="<?php echo $rowNumber ?>" data-edit="<?php echo $audio['tourism_file_id']; ?>">
+        <div class="file-uploads row" data-id="<?php echo $rowNumber ?>" <?php if(!isNull($audio['tourism_file_id'])) {echo ("data-edit='" . $audio['tourism_file_id'] . "'");} ?>>
             <div class="col-12"><label class="text-black-50">File name</label>
                 <input type="text" class="form-control upload-file-name" data-id="<?php echo $rowNumber ?>" value="<?php echo $audio['file_name']; ?>">
             </div>

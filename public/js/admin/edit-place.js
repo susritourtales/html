@@ -605,6 +605,7 @@ $(document).ready(function ()
                 },2000);
             }else{
                 element.prop('disabled',false);
+                messageDisplay(response.message);
                 element.html('Submit');
             }
         });

@@ -307,24 +307,24 @@ class TourTalesTable extends  BaseTable
                 ->where(array(
                     'tf.display' => 1,
                     'tf.file_data_type' => \Admin\Model\TourismFiles::file_data_type_places,
-                    'tf.file_extension_type' => \Admin\Model\TourismFiles::file_extension_type_image
+                    'tf.file_extension_type' => \Admin\Model\TourismFiles::file_extension_type_thumbnail
                 ))
                 ->group('tf.file_data_id');
             $cityFiles = $sql->select()
                 ->from(array('tfc' => 'tourism_files'))
                 ->columns(array("file_path", 'tourism_file_id', 'file_data_id', 'file_extension_type', 'file_language_id', 'file_name'))
-                ->where(array('tfc.display' => 1, 'tfc.file_data_type' => \Admin\Model\TourismFiles::file_data_type_city, 'tfc.file_extension_type' => \Admin\Model\TourismFiles::file_extension_type_image));
+                ->where(array('tfc.display' => 1, 'tfc.file_data_type' => \Admin\Model\TourismFiles::file_data_type_city, 'tfc.file_extension_type' => \Admin\Model\TourismFiles::file_extension_type_thumbnail));
             $stateFiles = $sql->select()
                 ->from(array('tfs' => 'tourism_files'))
                 ->columns(array("file_path", 'tourism_file_id', 'file_data_id', 'file_extension_type', 'file_language_id', 'file_name'))
-                ->where(array('tfs.display' => 1, 'tfs.file_data_type' => \Admin\Model\TourismFiles::file_data_type_state, 'tfs.file_extension_type' => \Admin\Model\TourismFiles::file_extension_type_image));
+                ->where(array('tfs.display' => 1, 'tfs.file_data_type' => \Admin\Model\TourismFiles::file_data_type_state, 'tfs.file_extension_type' => \Admin\Model\TourismFiles::file_extension_type_thumbnail));
             
             if($data['tour_type'] ==  \Admin\Model\TourTales::tour_type_Free_World_tour || $data['tour_type'] ==  \Admin\Model\TourTales::tour_type_World_tour)
             {
                 $stateFiles = $sql->select()
                     ->from(array('tfs' => 'tourism_files'))
                     ->columns(array("file_path", 'tourism_file_id', 'file_data_id', 'file_extension_type', 'file_language_id', 'file_name'))
-                    ->where(array('tfs.display' => 1, 'tfs.file_data_type' => \Admin\Model\TourismFiles::file_data_type_country, 'tfs.file_extension_type' => \Admin\Model\TourismFiles::file_extension_type_image));
+                    ->where(array('tfs.display' => 1, 'tfs.file_data_type' => \Admin\Model\TourismFiles::file_data_type_country, 'tfs.file_extension_type' => \Admin\Model\TourismFiles::file_extension_type_thumbnail));
             }
 
             $query = $sql->select()

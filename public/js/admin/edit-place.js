@@ -120,7 +120,149 @@ $(document).ready(function ()
 
         });
     })
+    function resizeImage(file, maxWidth, maxHeight, callback) {
+        const reader = new FileReader();
+        reader.onload = function (event) {
+            const img = new Image();
+            img.onload = function () {
+                let width = img.width;
+                let height = img.height;
+    
+                // Maintain aspect ratio
+                if (width > height) {
+                    if (width > maxWidth) {
+                        height *= maxWidth / width;
+                        width = maxWidth;
+                    }
+                } else {
+                    if (height > maxHeight) {
+                        width *= maxHeight / height;
+                        height = maxHeight;
+                    }
+                }
+    
+                // Create canvas and draw resized image
+                const canvas = document.createElement("canvas");
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0, width, height);
+
+                // Convert canvas to Base64 (JPEG or PNG format)
+            let imageType = "image/jpeg"; // Default to JPEG (change to "image/png" if needed)
+            let resizedDataUrl = canvas.toDataURL(imageType, 0.9); // 90% quality
+            
+            // Convert Base64 to File object
+            let resizedFile = dataURLtoFile(resizedDataUrl, file.name.replace(/\.[^/.]+$/, "") + ".jpg");
+            callback(resizedFile);
+    
+                // Convert to Blob and send to callback
+                //canvas.toBlob(callback, file.type, 0.9); // 90% quality
+            };
+            img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function dataURLtoFile(dataUrl, fileName) {
+        let arr = dataUrl.split(",");
+        let mime = arr[0].match(/:(.*?);/)[1];
+        let bstr = atob(arr[1]);
+        let n = bstr.length;
+        let u8arr = new Uint8Array(n);
+        
+        while (n--) {
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+        
+        return new File([u8arr], fileName, { type: mime });
+    }
+    
     $(document).on("change", ".image-upload", function(e) {
+        var files = e.target.files;
+        var element = $(this);
+        var increment = 0;
+    
+        $.each(files, function(i, file) {
+            resizeImage(file, 350, 250, function(resizedBlob) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var FileType = file.type;
+                    var fileExtension = FileType.substr((FileType.lastIndexOf('/') + 1)).toLowerCase();
+    
+                    if ($.inArray(fileExtension, imageacceptedExtensions) === -1) {
+                        messageDisplay("Invalid File");
+                        return false;
+                    }
+    
+                    increment++;
+                    imageId++; // Ensure each image has a unique ID
+                    imageFiles[imageId] = [resizedBlob]; // Use resized image
+                    uploadFiles['images'][imageId] = { "uploaded": false };
+    
+                    let classId = 'circlechart-img-' + imageId; // Unique class for each progress bar
+    
+                    // Append resized image preview
+                    $(".image-preview-wrapper").append(`
+                        <div class="col-sm-4 mt-2 position-relative image-preview overflow-hidden" data-id="${imageId}">
+                            <div class="position-absolute circlechart ${classId}" style="width: 100%; height: 100%" data-id="${imageId}"></div>
+                            <img src="${e.target.result}" style="width: 100%; height: 100%">
+                            <span class="bg-white circle close-icon" data-id="${imageId}">
+                                <i class="fas fa-times position-absolute" data-id="${imageId}"></i>
+                            </span>
+                        </div>
+                    `);
+    
+                    // Initialize radial progress bar separately for each image
+                    setTimeout(() => {
+                        circle[imageId] = radialIndicator('.' + classId, {
+                            radius: 50,
+                            barColor: '#6dd873',
+                            barWidth: 8,
+                            initValue: 0,
+                            barBgColor: '#e4e4e4',
+                            percentage: true
+                        });
+                    }, 50);
+    
+                    // Upload resized image instead of original
+                    filesData.ajaxCall(1, resizedBlob, imageId, function(progress, fileID, response) {
+                        if (progress && circle[fileID]) {
+                            circle[fileID].animate(progress * 100);
+                        }
+    
+                        if (!progress && response.success) {
+                            uploadFiles['images'][fileID] = { "uploaded": true, 'id': response.id };
+    
+                            if (circle[fileID]) {
+                                circle[fileID].animate(100);
+                            }
+    
+                            if (uploadClicked) {
+                                $("#addPlace").prop('disabled', false).click();
+                            }
+                        }
+                    });
+    
+                    if (files.length === increment) {
+                        element.val(""); // Reset file input after all files are processed
+                    }
+                };
+    
+                reader.readAsDataURL(resizedBlob);
+            });
+        });
+    
+        setTimeout(function() {
+            var height = $(".image-preview-wrapper").height();
+            var parentHeight = $(".image-upload-wrapper").height();
+            if (parentHeight < height) {
+                $(".image-upload").css("height", height);
+            }
+        }, 50);
+    })
+    
+    /* $(document).on("change", ".image-upload", function(e) {
         var files = e.target.files;
         var element = $(this);
         var increment = 0;
@@ -200,7 +342,7 @@ $(document).ready(function ()
                 $(".image-upload").css("height", height);
             }
         }, 50);
-    })
+    })*/
     
     
     /* .on("change",".image-upload1",function(e){
@@ -303,7 +445,7 @@ $(document).ready(function ()
             delete uploadFiles['images'][id];
         }
 })
-    .on("change",".tn-upload",function(e){
+ /*   .on("change",".tn-upload",function(e){
         var elements = document.getElementsByClassName("tn-close-icon");
         for (var i = 0; i < elements.length; i++) {
             elements[i].click();
@@ -387,7 +529,92 @@ $(document).ready(function ()
             }
         },10);
 
-    }).on("click",".tn-close-icon",function () {
+    }) */
+       .on("change", ".tn-upload", function (e) {
+            var elements = document.getElementsByClassName("tn-close-icon");
+            for (var i = 0; i < elements.length; i++) {
+                elements[i].click();
+            }
+        
+            var files = e.target.files;
+            var element = $(this);
+            var increment = 0;
+        
+            $.each(files, function (i, file) {
+                resizeImage(file, 100, 150, function (resizedBlob) { // Resize image before processing
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        var FileType = file.type;
+                        var fileExtension = FileType.substr((FileType.lastIndexOf('/') + 1)).toLowerCase();
+        
+                        if ($.inArray(fileExtension, imageacceptedExtensions) === -1) {
+                            files=[];
+                            messageDisplay("Invalid File");
+                            return false;
+                        }
+        
+                        increment++;
+                        tnImageId++;
+                        tnFiles[tnImageId] = [resizedBlob]; // Use resized image
+                        uploadFiles['thumbnails'][tnImageId] = { "uploaded": false };
+        
+                        let classId = 'tn-circlechart-img-' + tnImageId;
+                        $(".tn-preview-wrapper").append(`
+                            <div class="col-sm-4 mt-2 position-relative tn-preview overflow-hidden" data-id="${tnImageId}">
+                                <div class="position-absolute circlechart ${classId}" style="width: 100%; height: 100%" data-id="${tnImageId}"></div>
+                                <img src="${e.target.result}" style="width: 100%; height: 100%">
+                                <span class="bg-white circle tn-close-icon" data-id="${tnImageId}">
+                                    <i class="fas fa-times position-absolute" data-id="${tnImageId}"></i>
+                                </span>
+                            </div>
+                        `);
+        
+                        // Initialize radial progress bar separately for each image
+                        setTimeout(() => {
+                            circle[tnImageId] = radialIndicator('.' + classId, {
+                                radius: 50,
+                                barColor: '#6dd873',
+                                barWidth: 8,
+                                initValue: 0,
+                                barBgColor: '#e4e4e4',
+                                percentage: true
+                            });
+                        }, 50);
+        
+                        // Upload resized image instead of original
+                        filesData.ajaxCall(3, resizedBlob, tnImageId, function (progress, fileID, response) {
+                            if (progress && circle[fileID]) {
+                                circle[fileID].animate(progress * 100);
+                            }
+        
+                            if (!progress && response.success) {
+                                uploadFiles['thumbnails'][fileID] = { "uploaded": true, 'id': response.id };
+        
+                                if (uploadClicked) {
+                                    $("#addPlace").prop('disabled', false).click();
+                                }
+                            }
+                        });
+        
+                        if (files.length === increment) {
+                            element.val(""); // Reset file input after all files are processed
+                        }
+                    };
+        
+                    reader.readAsDataURL(resizedBlob);
+                });
+            });
+        
+            setTimeout(function () {
+                var height = $(".tn-preview-wrapper").height();
+                var parentHeight = $(".image-upload-wrapper").height();
+                if (parentHeight < height) {
+                    $(".tn-upload").css("height", height);
+                }
+            }, 50);
+        })
+        
+   .on("click",".tn-close-icon",function () {
         var id=$(this).data("id");
         var edit=$(this).data("edit");
         if(edit)
@@ -484,7 +711,10 @@ $(document).ready(function ()
         }
         if(error)
         {
-            return  false;
+            messageDisplay('files not uploaded.. please try again..');
+            element.html('Submit');
+            element.prop('disabled',false);
+            return false;
         }
         let mandatorytotalLanguages=[];
         let totalLanguages=[];

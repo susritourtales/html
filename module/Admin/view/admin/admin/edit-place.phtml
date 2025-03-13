@@ -8,6 +8,7 @@
 </div>
 <link rel="stylesheet" href="<?php echo $this->basePath() ?>/css/main.css">
 <script src="<?php echo $this->basePath() ?>/js/radialIndicator.min.js"></script>
+<script src="<?php echo $this->basePath() ?>/js/imageResize.js"></script>
 <script src="<?php echo $this->basePath(); ?>/js/admin/edit-place.js?v=1.0.15"></script>
 <div class="wrapper">
     <div class="main-panel ">
@@ -49,6 +50,9 @@
                             <div class="col-12">
                                 <label class="text-black-50">Description</label>
                                 <textarea class="form-control" id="description"><?php echo $placeDetails['place_description']; ?></textarea>
+                            </div>
+                            <div class="col-12"><label class="text-black-50">File name</label>
+                                <input type="text" class="form-control upload-file-name" value="<?php echo $audioFiles[0]['file_name']; ?>">
                             </div>
                             <div class="col-12">
                                 <label class="text-black-50">Image Files</label>

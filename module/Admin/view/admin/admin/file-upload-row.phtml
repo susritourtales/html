@@ -7,9 +7,9 @@ if (isset($audioFiles) && count($audioFiles))
     foreach ($audioFiles as $audio) :
         ?>
         <div class="file-uploads row" data-id="<?php echo $rowNumber ?>" <?php if($audio['tourism_file_id'] != null) {echo ("data-edit='" . $audio['tourism_file_id'] . "'");} ?>>
-            <div class="col-12"><label class="text-black-50">File name</label>
+            <!-- <div class="col-12"><label class="text-black-50">File name</label>
                 <input type="text" class="form-control upload-file-name" data-id="<?php echo $rowNumber ?>" value="<?php echo $audio['file_name']; ?>">
-            </div>
+            </div> -->
             <div class="col-12"><label class="text-black-50">Language </label>
                 <select class="form-control file-language mr-3 lang" data-id="<?php echo $rowNumber ?>">
                     <option value="">--select language--</option>

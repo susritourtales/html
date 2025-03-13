@@ -69,69 +69,79 @@ $(document).ready(function() {
 			var ifile = e.target.files[0];
 			var element=$(this);
 			var incerement=0;
-			var reader = new FileReader();
-			reader.onload = function (e)
-			{
-				var FileType = ifile.type;
-				var filename = ifile.name;
-				var fileExtension = FileType.substr((FileType.lastIndexOf('/') + 1));
-				var Extension = fileExtension.toLowerCase();
-				if ($.inArray(Extension, imageacceptedExtensions) === -1)
+			resizeImage(ifile, 100, 150, function(resizedBlob) {
+				var reader = new FileReader();
+				reader.onload = function (e)
 				{
-					ifile=null;
-					messageDisplay("Invalid File");
-					return false;
-				}
-				incerement++;
-				imageId++;
-				imageFiles[imageId]=[];
-				imageFiles[imageId].push(ifile);
-				uploadFiles['images'][imageId]={"uploaded":false};
-				
-				let classId='circlechart_img_'+imageId;
-				$(".image-preview-wrapper").append('<div class="col-sm-4 mt-2 position-relative image-preview overflow-hidden" data-id="'+imageId+'"><div class="position-absolute circlechart '+classId+'" style="width: 100%;height: 100%" data-id="'+imageId+'"></div><img src="'+e.target.result+'" style="width: 100%;height: 100%"><span class="bg-white circle close-icon" data-id="'+imageId+'"><i class="fas fa-times position-absolute " data-id="'+imageId+'" ></i></span></div>');
-				circle[imageId] = radialIndicator('.'+classId,{
-					radius: 50,
-					barColor : '#6dd873',
-					barWidth : 8,
-					initValue : 0,
-					barBgColor: '#e4e4e4',
-					percentage: true
-				});
-				
-				filesData.ajaxCall(1,ifile,imageId,function(progress,fileID,response)
-				{
-					if(progress)
+					var FileType = ifile.type;
+					var filename = ifile.name;
+					var fileExtension = FileType.substr((FileType.lastIndexOf('/') + 1));
+					var Extension = fileExtension.toLowerCase();
+					if ($.inArray(Extension, imageacceptedExtensions) === -1)
 					{
-						if(circle[fileID]) {
-							circle[fileID].animate((fileID * 100));
-						}
+						// ifile=null;
+						messageDisplay("Invalid File");
+						return false;
 					}
-					if(!progress)
+					incerement++;
+					imageId++;
+					imageFiles[imageId] = [resizedBlob];
+					/*imageFiles[imageId]=[];
+					imageFiles[imageId].push(ifile);*/
+					uploadFiles['images'][imageId]={"uploaded":false};
+					
+					let classId='circlechart_img_'+imageId;
+					$(".image-preview-wrapper").append('<div class="col-sm-4 mt-2 position-relative image-preview overflow-hidden" data-id="'+imageId+'"><div class="position-absolute circlechart '+classId+'" style="width: 100%;height: 100%" data-id="'+imageId+'"></div><img src="'+e.target.result+'" style="width: 100%;height: 100%"><span class="bg-white circle close-icon" data-id="'+imageId+'"><i class="fas fa-times position-absolute " data-id="'+imageId+'" ></i></span></div>');
+
+					setTimeout(() => {
+						if (document.querySelector('.' + classId)) { // Ensure the element exists
+							circle[imageId] = radialIndicator('.'+classId,{
+								radius: 50,
+								barColor : '#6dd873',
+								barWidth : 8,
+								initValue : 0,
+								barBgColor: '#e4e4e4',
+								percentage: true
+							});
+						} else {
+							console.error("Radial progress element not found for imageId:", imageId);
+						}
+					}, 50); 
+					
+					filesData.ajaxCall(1,resizedBlob,imageId,function(progress,fileID,response)
 					{
-						if(response.success)
+						if(progress)
 						{
-							if(uploadFiles['images'][fileID]!=undefined)
+							if(circle[fileID]) {
+								circle[fileID].animate((fileID * 100));
+							}
+						}
+						if(!progress)
+						{
+							if(response.success)
 							{
-								uploadFiles['images'][fileID] = {
-									"uploaded": true,
-									'id': response.id
-								};
-								if(circle[fileID]) {
-									circle[fileID].animate(100);
-								}
-								if (uploadClicked) {
-									var countryElement = $("#editbt");
-									countryElement.prop('disabled', false);
-									countryElement.click();
+								if(uploadFiles['images'][fileID]!=undefined)
+								{
+									uploadFiles['images'][fileID] = {
+										"uploaded": true,
+										'id': response.id
+									};
+									if(circle[fileID]) {
+										circle[fileID].animate(100);
+									}
+									if (uploadClicked) {
+										var countryElement = $("#editbt");
+										countryElement.prop('disabled', false);
+										countryElement.click();
+									}
 								}
 							}
 						}
-					}
-				});
-				element.val("");
-			};
-			reader.readAsDataURL(ifile);
+					});
+					element.val("");
+				};
+				reader.readAsDataURL(ifile);
+			});
 			setTimeout(function(){
 				var height=$(".image-preview-wrapper").height();
 				var parentHeight=$(".image-upload-wrapper").height();

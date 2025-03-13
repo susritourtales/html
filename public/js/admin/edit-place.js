@@ -309,7 +309,8 @@ $(document).ready(function ()
                         tnImageId++;
                         tnFiles[tnImageId] = [resizedBlob]; // Use resized image
                         uploadFiles['thumbnails'][tnImageId] = { "uploaded": false };
-        
+
+                        console.log("Initializing radial progress for tnImageId:", tnImageId);
                         let classId = 'circlechart_img_' + tnImageId;
                         $(".tn-preview-wrapper").append(`
                             <div class="col-sm-4 mt-2 position-relative tn-preview overflow-hidden" data-id="${tnImageId}">
@@ -320,9 +321,26 @@ $(document).ready(function ()
                                 </span>
                             </div>
                         `);
+
+                        console.log("Checking element:", document.querySelector('.' + classId));
         
                         // Initialize radial progress bar separately for each image
                         setTimeout(() => {
+                            if (document.querySelector('.' + classId)) { // Ensure the element exists
+                                circle[tnImageId] = radialIndicator('.' + classId, {
+                                    radius: 50,
+                                    barColor: '#6dd873',
+                                    barWidth: 8,
+                                    initValue: 0,
+                                    barBgColor: '#e4e4e4',
+                                    percentage: true
+                                });
+                            } else {
+                                console.error("Radial progress element not found for tnImageId:", tnImageId);
+                            }
+                        }, 100); // Short delay to allow the DOM to update
+                        
+                        /*setTimeout(() => {
                             circle[tnImageId] = radialIndicator('.' + classId, {
                                 radius: 50,
                                 barColor: '#6dd873',
@@ -331,7 +349,7 @@ $(document).ready(function ()
                                 barBgColor: '#e4e4e4',
                                 percentage: true
                             });
-                        }, 50);
+                        }, 50);*/
         
                         // Upload resized image instead of original
                         filesData.ajaxCall(3, resizedBlob, tnImageId, function (progress, fileID, response) {

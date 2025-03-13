@@ -10,7 +10,8 @@
 </div>
 <link rel="stylesheet" href="<?php echo $this->basePath() ?>/css/main.css">
 <script src="<?php echo $this->basePath() ?>/js/radialIndicator.min.js"></script>
-<script src="<?php echo $this->basePath(); ?>/js/admin/add-place.js?v=1.0.3"></script>
+<script src="<?php echo $this->basePath() ?>/js/imageResize.js"></script>
+<script src="<?php echo $this->basePath(); ?>/js/admin/add-place.js?v=1.0.4"></script>
 <div class="wrapper">
     <div class="main-panel ">
         <?php echo $this->partial("/application/index/app-header"); ?>
@@ -46,6 +47,9 @@
                                 <div class="col-12">
                                     <label class="text-black-50">Description</label>
                                     <textarea class="form-control" id="description"></textarea>
+                                </div>
+                                <div class="col-12"><label class="text-black-50">Place Code</label>
+                                    <input type="text" class="form-control upload-file-name" value="">
                                 </div>
                                 <div class="col-12">
                                     <label class="text-black-50">Image Files</label>

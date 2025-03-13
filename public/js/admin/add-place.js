@@ -4,6 +4,7 @@ var imageFiles={};
 var tnFiles={};
 var mediaFiles={};
 var imageId=0;
+var tnImageId=0;
 var addedRow=1;
 var totalFilesCount;
 var uploadClicked=false;
@@ -128,73 +129,96 @@ $(document).ready(function ()
             var incerement=0;
             $.each(files, function (i, file)
             {
-                var reader = new FileReader();
-                reader.onload = function (e)
-                {
-                    var FileType = files[i].type;
-                    var filename = files[i].name;
-                    var fileExtension = FileType.substr((FileType.lastIndexOf('/') + 1));
-                    var Extension = fileExtension.toLowerCase();
-                    if ($.inArray(Extension, imageacceptedExtensions) === -1)
+                resizeImage(file, 350, 250, function(resizedBlob) {
+                    var reader = new FileReader();
+                    reader.onload = function (e)
                     {
-                        files=[];
-                        //  element.val("");
-                        messageDisplay("Invalid File");
-                        return false;
-                    }
-                    incerement++;
-                    imageId++;
-                    imageFiles[imageId]=[];
-                    imageFiles[imageId].push(file);
-                    uploadFiles['images'][imageId]={"uploaded":false};
-                    // circle[imageId]  = $('.circlechart').data('radialIndicator');
-                    
-                    let classId='circlechart_img_'+imageId;
-                    $(".image-preview-wrapper").append('<div class="col-sm-4 mt-2 position-relative image-preview overflow-hidden" data-id="'+imageId+'"><div class="position-absolute circlechart '+classId+'" style="width: 100%;height: 100%" data-id="'+imageId+'"></div><img src="'+e.target.result+'" style="width: 100%;height: 100%"><span class="bg-white circle close-icon" data-id="'+imageId+'"><i class="fas fa-times position-absolute " data-id="'+imageId+'" ></i></span></div>');
-                    circle[imageId] = radialIndicator('.'+classId,{
-                        radius: 50,
-                        barColor : '#6dd873',
-                        barWidth : 8,
-                        initValue : 0,
-                        barBgColor: '#e4e4e4',
-                        percentage: true
-                    });
-                    
-                    filesData.ajaxCall(1,file,imageId,function(progress,fileID,response)
-                    {
-                        console.log( circle[fileID]);
-                        if(progress)
+                        var FileType = files[i].type;
+                        var filename = files[i].name;
+                        var fileExtension = FileType.substr((FileType.lastIndexOf('/') + 1));
+                        var Extension = fileExtension.toLowerCase();
+                        if ($.inArray(Extension, imageacceptedExtensions) === -1)
                         {
-                            circle[fileID].animate((fileID * 100));
+                            files=[];
+                            //  element.val("");
+                            messageDisplay("Invalid File");
+                            return false;
                         }
-                        if(!progress)
+                        incerement++;
+                        imageId++;
+                        imageFiles[imageId] = [resizedBlob];
+                        /*imageFiles[imageId]=[];
+                        imageFiles[imageId].push(file);*/
+                        uploadFiles['images'][imageId]={"uploaded":false};
+                        // circle[imageId]  = $('.circlechart').data('radialIndicator');
+                        
+                        let classId='circlechart_img_'+imageId;
+                        $(".image-preview-wrapper").append('<div class="col-sm-4 mt-2 position-relative image-preview overflow-hidden" data-id="'+imageId+'"><div class="position-absolute circlechart '+classId+'" style="width: 100%;height: 100%" data-id="'+imageId+'"></div><img src="'+e.target.result+'" style="width: 100%;height: 100%"><span class="bg-white circle close-icon" data-id="'+imageId+'"><i class="fas fa-times position-absolute " data-id="'+imageId+'" ></i></span></div>');
+
+                        setTimeout(() => {
+                            circle[imageId] = radialIndicator('.' + classId, {
+                                radius: 50,
+                                barColor: '#6dd873',
+                                barWidth: 8,
+                                initValue: 0,
+                                barBgColor: '#e4e4e4',
+                                percentage: true
+                            });
+                        }, 50);
+                        
+                        filesData.ajaxCall(1,resizedBlob,imageId,function(progress,fileID,response)
                         {
-                            if(response.success)
-                            {
-                                if(uploadFiles['images'][fileID]!=undefined)
-                                {
-                                    uploadFiles['images'][fileID] = {
-                                        "uploaded": true,
-                                        'id': response.id
-                                    };
-                                    if(circle[fileID]) {
-                                        circle[fileID].animate(100);
-                                    }
-                                    if (uploadClicked) {
-                                        var countryElement = $("#addPlace");
-                                        countryElement.prop('disabled', false);
-                                        countryElement.click();
-                                    }
+                            if (progress && circle[fileID]) {
+                                circle[fileID].animate(progress * 100);
+                            }
+        
+                            if (!progress && response.success) {
+                                uploadFiles['images'][fileID] = { "uploaded": true, 'id': response.id };
+        
+                                if (circle[fileID]) {
+                                    circle[fileID].animate(100);
+                                }
+        
+                                if (uploadClicked) {
+                                    var countryElement = $("#addPlace");
+                                    countryElement.prop('disabled', false);
+                                    countryElement.click();
                                 }
                             }
+                            // console.log( circle[fileID]);
+                            /* if(progress)
+                            {
+                                circle[fileID].animate((fileID * 100));
+                            }
+                            if(!progress)
+                            {
+                                if(response.success)
+                                {
+                                    if(uploadFiles['images'][fileID]!=undefined)
+                                    {
+                                        uploadFiles['images'][fileID] = {
+                                            "uploaded": true,
+                                            'id': response.id
+                                        };
+                                        if(circle[fileID]) {
+                                            circle[fileID].animate(100);
+                                        }
+                                        if (uploadClicked) {
+                                            var countryElement = $("#addPlace");
+                                            countryElement.prop('disabled', false);
+                                            countryElement.click();
+                                        }
+                                    }
+                                }
+                            } */
+                        });
+                        if(files.length == incerement)
+                        {
+                            element.val("");
                         }
-                    });
-                    if(files.length == incerement)
-                    {
-                        element.val("");
-                    }
-                };
-                reader.readAsDataURL(file);
+                    };
+                    reader.readAsDataURL(resizedBlob);
+                });
             });
             setTimeout(function(){},10);
         })
@@ -208,72 +232,101 @@ $(document).ready(function ()
             var incerement=0;
             $.each(files, function (i, file)
             {
-                var reader = new FileReader();
-                reader.onload = function (e)
-                {
-                    var FileType = files[i].type;
-                    var filename = files[i].name;
-                    var fileExtension = FileType.substr((FileType.lastIndexOf('/') + 1));
-                    var Extension = fileExtension.toLowerCase();
-                    if ($.inArray(Extension, imageacceptedExtensions) === -1)
+                resizeImage(file, 100, 150, function (resizedBlob) { 
+                    var reader = new FileReader();
+                    reader.onload = function (e)
                     {
-                        files=[];
-                        //  element.val("");
-                        messageDisplay("Invalid File");
-                        return false;
-                    }
-                    incerement++;
-                    imageId++;
-                    tnFiles[imageId]=[];
-                    tnFiles[imageId].push(file);
-                    uploadFiles['thumbnails'][imageId]={"uploaded":false};
-                    // circle[imageId]  = $('.circlechart').data('radialIndicator');
-                    
-                    filesData.ajaxCall(3,file,imageId,function(progress,fileID,response)
-                    {
-                        console.log( circle[fileID]);
-                        if(progress)
+                        var FileType = files[i].type;
+                        var filename = files[i].name;
+                        var fileExtension = FileType.substr((FileType.lastIndexOf('/') + 1));
+                        var Extension = fileExtension.toLowerCase();
+                        if ($.inArray(Extension, imageacceptedExtensions) === -1)
                         {
-                                circle[fileID].animate((fileID * 100));
+                            files=[];
+                            //  element.val("");
+                            messageDisplay("Invalid File");
+                            return false;
                         }
-                        if(!progress)
+                        incerement++;
+                        tnImageId++;
+                        tnFiles[tnImageId] = [resizedBlob];
+                        /*tnFiles[imageId]=[];
+                        tnFiles[imageId].push(file);*/
+                        uploadFiles['thumbnails'][tnImageId]={"uploaded":false};
+                        // circle[imageId]  = $('.circlechart').data('radialIndicator');
+
+                        let classId='circlechart_img_'+tnImageId;
+                        $(".tn-preview-wrapper").append('<div class="col-sm-4 mt-2 position-relative image-preview overflow-hidden" data-id="'+tnImageId+'"><div class="position-absolute circlechart '+classId+'" style="width: 100%;height: 100%" data-id="'+tnImageId+'"></div><img src="'+e.target.result+'" style="width: 100%;height: 100%"><span class="bg-white circle tn-close-icon" data-id="'+tnImageId+'"><i class="fas fa-times position-absolute " data-id="'+tnImageId+'" ></i></span></div>');
+                        
+                        setTimeout(() => {
+                            if (document.querySelector('.' + classId)) { // Ensure the element exists
+                                circle[tnImageId] = radialIndicator('.' + classId, {
+                                    radius: 50,
+                                    barColor: '#6dd873',
+                                    barWidth: 8,
+                                    initValue: 0,
+                                    barBgColor: '#e4e4e4',
+                                    percentage: true
+                                });
+                            } else {
+                                console.error("Radial progress element not found for tnImageId:", tnImageId);
+                            }
+                        }, 50); 
+                        
+                        filesData.ajaxCall(3,resizedBlob,imageId,function(progress,fileID,response)
                         {
-                            if(response.success)
-                            {
-                                if(uploadFiles['thumbnails'][fileID]!=undefined)
-                                {
-                                    uploadFiles['thumbnails'][fileID] = {
-                                        "uploaded": true,
-                                        'id': response.id
-                                    };
-                                    if(circle[fileID]) {
-                                        circle[fileID].animate(100);
-                                    }
-                                    if (uploadClicked) {
-                                        var countryElement = $("#addPlace");
-                                        countryElement.prop('disabled', false);
-                                        countryElement.click();
-                                    }
+                            if (progress && circle[fileID]) {
+                                circle[fileID].animate(progress * 100);
+                            }
+                                
+                            if (!progress && response.success) {
+                                uploadFiles['thumbnails'][fileID] = { "uploaded": true, 'id': response.id };
+
+                                if (circle[fileID]) {
+                                    circle[fileID].animate(100);
+                                }
+        
+                                if (uploadClicked) {
+                                    var countryElement = $("#addPlace");
+                                    countryElement.prop('disabled', false);
+                                    countryElement.click();
                                 }
                             }
+                            /* console.log( circle[fileID]);
+                            if(progress)
+                            {
+                                    circle[fileID].animate((fileID * 100));
+                            }
+                            if(!progress)
+                            {
+                                if(response.success)
+                                {
+                                    if(uploadFiles['thumbnails'][fileID]!=undefined)
+                                    {
+                                        uploadFiles['thumbnails'][fileID] = {
+                                            "uploaded": true,
+                                            'id': response.id
+                                        };
+                                        if(circle[fileID]) {
+                                            circle[fileID].animate(100);
+                                        }
+                                        if (uploadClicked) {
+                                            var countryElement = $("#addPlace");
+                                            countryElement.prop('disabled', false);
+                                            countryElement.click();
+                                        }
+                                    }
+                                }
+                            } */
+                        });
+                        if(files.length == incerement)
+                        {
+                            element.val("");
                         }
-                    });
-                    if(files.length == incerement)
-                    {
-                        element.val("");
-                    }
-                    let classId='circlechart_img_'+imageId;
-                    $(".tn-preview-wrapper").append('<div class="col-sm-4 mt-2 position-relative image-preview overflow-hidden" data-id="'+imageId+'"><div class="position-absolute circlechart '+classId+'" style="width: 100%;height: 100%" data-id="'+imageId+'"></div><img src="'+e.target.result+'" style="width: 100%;height: 100%"><span class="bg-white circle tn-close-icon" data-id="'+imageId+'"><i class="fas fa-times position-absolute " data-id="'+imageId+'" ></i></span></div>');
-                    circle[imageId] = radialIndicator('.'+classId,{
-                        radius: 50,
-                        barColor : '#6dd873',
-                        barWidth : 8,
-                        initValue : 0,
-                        barBgColor: '#e4e4e4',
-                        percentage: true
-                    });
-                };
-                reader.readAsDataURL(file);
+                        
+                    };
+                    reader.readAsDataURL(resizedBlob);
+                });
             });
             setTimeout(function(){},10);
         })
@@ -386,7 +439,7 @@ $(document).ready(function ()
         }
         $(".file-uploads").each(function(){
             var rowId=$(this).data("id");
-            var fileNameElement=$(".upload-file-name[data-id='"+rowId+"']");
+            var fileNameElement=$(".upload-file-name");
             var fileLanguageElement=$(".file-language[data-id='"+rowId+"']");
             var tmp={};
             var fileName=fileNameElement.val();

@@ -8,7 +8,7 @@ if (isset($audioFiles) && count($audioFiles))
         ?>
         <div class="file-uploads row" data-id="<?php echo $rowNumber ?>" <?php if($audio['tourism_file_id'] != null) {echo ("data-edit='" . $audio['tourism_file_id'] . "'");} ?>>
             <!-- <div class="col-12"><label class="text-black-50">File name</label>
-                <input type="text" class="form-control upload-file-name" data-id="<?php echo $rowNumber ?>" value="<?php echo $audio['file_name']; ?>">
+                <input type="text" class="form-control upload-file-name" data-id="<?php //echo $rowNumber ?>" value="<?php //echo $audio['file_name']; ?>">
             </div> -->
             <div class="col-12"><label class="text-black-50">Language </label>
                 <select class="form-control file-language mr-3 lang" data-id="<?php echo $rowNumber ?>">
@@ -50,9 +50,9 @@ if (isset($audioFiles) && count($audioFiles))
     ?>
     <div class="file-uploads" data-id="<?php echo $rowNumber ?>">
         <div class="row">
-            <div class="col-12"><label class="text-black-50">File name</label>
-                <input type="text" class="form-control upload-file-name" data-id="<?php echo $rowNumber ?>">
-            </div>
+            <!-- <div class="col-12"><label class="text-black-50">File name</label>
+                <input type="text" class="form-control upload-file-name" data-id="<?php //echo $rowNumber ?>">
+            </div> -->
             <div class="col-12">
                 <label class="text-black-50">Language </label>
                 <select class="form-control file-language mr-3 lang" data-id="<?php echo $rowNumber ?>">

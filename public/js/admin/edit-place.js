@@ -414,7 +414,7 @@ $(document).ready(function ()
         }
         if(error)
         {
-            messageDisplay('files not uploaded.. please try again..');
+            messageDisplay('files not uploaded.. please try again..', 2000);
             element.html('Submit');
             element.prop('disabled',false);
             return false;

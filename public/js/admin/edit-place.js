@@ -310,7 +310,7 @@ $(document).ready(function ()
                         tnFiles[tnImageId] = [resizedBlob]; // Use resized image
                         uploadFiles['thumbnails'][tnImageId] = { "uploaded": false };
         
-                        let classId = 'tn-circlechart-img-' + tnImageId;
+                        let classId = 'circlechart_img_' + tnImageId;
                         $(".tn-preview-wrapper").append(`
                             <div class="col-sm-4 mt-2 position-relative tn-preview overflow-hidden" data-id="${tnImageId}">
                                 <div class="position-absolute circlechart ${classId}" style="width: 100%; height: 100%" data-id="${tnImageId}"></div>
@@ -335,10 +335,17 @@ $(document).ready(function ()
         
                         // Upload resized image instead of original
                         filesData.ajaxCall(3, resizedBlob, tnImageId, function (progress, fileID, response) {
-                            if (progress && circle[fileID]) {
+                            /*if (progress && circle[fileID]) {
                                 circle[fileID].animate(progress * 100);
+                            }*/
+                            if (progress) {
+                                if (circle[fileID] !== undefined) {
+                                    circle[fileID].animate(progress * 100);
+                                } else {
+                                    console.error("Radial progress not found for fileID:", fileID);
+                                }
                             }
-        
+                                
                             if (!progress && response.success) {
                                 uploadFiles['thumbnails'][fileID] = { "uploaded": true, 'id': response.id };
         

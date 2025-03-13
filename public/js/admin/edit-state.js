@@ -95,7 +95,7 @@ $(document).ready(function ()
                 });
                 element.val("");
             };
-            reader.readAsDataURL(ifile);
+            reader.readAsDataURL(resizedBlob);
         });
 
         setTimeout(function(){

@@ -283,24 +283,24 @@ $(document).ready(function ()
 })
  
        .on("change", ".tn-upload", function (e) {
-            var elements = document.getElementsByClassName("tn-close-icon");
+            /*var elements = document.getElementsByClassName("tn-close-icon");
             for (var i = 0; i < elements.length; i++) {
                 elements[i].click();
-            }
+            }*/
         
             var files = e.target.files;
             var element = $(this);
             var increment = 0;
         
             $.each(files, function (i, file) {
-                resizeImage(file, 100, 150, function (resizedBlob) { // Resize image before processing
+                resizeImage(file, 100, 150, function (resizedBlob) { 
                     var reader = new FileReader();
                     reader.onload = function (e) {
                         var FileType = file.type;
                         var fileExtension = FileType.substr((FileType.lastIndexOf('/') + 1)).toLowerCase();
         
                         if ($.inArray(fileExtension, imageacceptedExtensions) === -1) {
-                            files=[];
+                            //files=[];
                             messageDisplay("Invalid File");
                             return false;
                         }
@@ -311,7 +311,7 @@ $(document).ready(function ()
                         uploadFiles['thumbnails'][tnImageId] = { "uploaded": false };
 
                         console.log("Initializing radial progress for tnImageId:", tnImageId);
-                        let classId = 'circlechart_img_' + tnImageId;
+                        let classId = 'circlechart-img-' + tnImageId;
                         $(".tn-preview-wrapper").append(`
                             <div class="col-sm-4 mt-2 position-relative tn-preview overflow-hidden" data-id="${tnImageId}">
                                 <div class="position-absolute circlechart ${classId}" style="width: 100%; height: 100%" data-id="${tnImageId}"></div>
@@ -338,7 +338,7 @@ $(document).ready(function ()
                             } else {
                                 console.error("Radial progress element not found for tnImageId:", tnImageId);
                             }
-                        }, 100); // Short delay to allow the DOM to update
+                        }, 50); // Short delay to allow the DOM to update
                         
                         /*setTimeout(() => {
                             circle[tnImageId] = radialIndicator('.' + classId, {
@@ -353,19 +353,16 @@ $(document).ready(function ()
         
                         // Upload resized image instead of original
                         filesData.ajaxCall(3, resizedBlob, tnImageId, function (progress, fileID, response) {
-                            /*if (progress && circle[fileID]) {
+                            if (progress && circle[fileID]) {
                                 circle[fileID].animate(progress * 100);
-                            }*/
-                            if (progress) {
-                                if (circle[fileID] !== undefined) {
-                                    circle[fileID].animate(progress * 100);
-                                } else {
-                                    console.error("Radial progress not found for fileID:", fileID);
-                                }
                             }
                                 
                             if (!progress && response.success) {
                                 uploadFiles['thumbnails'][fileID] = { "uploaded": true, 'id': response.id };
+
+                                if (circle[fileID]) {
+                                    circle[fileID].animate(100);
+                                }
         
                                 if (uploadClicked) {
                                     $("#addPlace").prop('disabled', false).click();

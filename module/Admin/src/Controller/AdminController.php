@@ -157,42 +157,39 @@ class AdminController extends BaseController
         }
     }
 
-    public function loadCountryListAction()
-    {
-        if ($this->authService->hasIdentity()) {
-            if ($this->getRequest()->isXmlHttpRequest()) {
-                $request = $this->getRequest()->getPost();
-                $searchData = array('limit' => 10, 'offset' => 0);
-                $type = $request['type'];
-                $offset = 0;
-                $filterData = $request['filter'];
-                if ($filterData) {
-                    $filterData = json_decode($filterData, true);
-                    if (isset($filterData['country'])) {
-                        if (isset($filterData['country']['text']) && !empty($filterData['country']['text'])) {
-                            $searchData['country'] = $filterData['country']['text'];
-                        }
-                        if (isset($filterData['country']['order']) && $filterData['country']['order']) {
-                            $searchData['country_order'] = $filterData['country']['order'];
-                        }
+    public function loadCountryListAction(){
+        if ($this->getRequest()->isXmlHttpRequest()) {
+            $request = $this->getRequest()->getPost();
+            $searchData = array('limit' => 10, 'offset' => 0);
+            $type = $request['type'];
+            $offset = 0;
+            $filterData = $request['filter'];
+            if ($filterData) {
+                $filterData = json_decode($filterData, true);
+                if (isset($filterData['country'])) {
+                    if (isset($filterData['country']['text']) && !empty($filterData['country']['text'])) {
+                        $searchData['country'] = $filterData['country']['text'];
+                    }
+                    if (isset($filterData['country']['order']) && $filterData['country']['order']) {
+                        $searchData['country_order'] = $filterData['country']['order'];
                     }
                 }
-                if (isset($request['page_number'])) {
-                    $pageNumber = $request['page_number'];
-                    $offset = ($pageNumber * 10 - 10);
-                    $limit = 10;
-                    $searchData['offset'] = $offset;
-                    $searchData['limit'] = $limit;
-                }
-                $totalCount = 0;
-                if ($type && $type == 'search') {
-                    $totalCount = $this->countriesTable->getCountries4Admin(['limit' => 0, 'offset' => 0], 1);
-                }
-                $countryList = $this->countriesTable->getCountries4Admin($searchData);
-                $view = new ViewModel(['countryList' => $countryList, 'totalCount' => $totalCount, 'offset' => $offset, 'type' => $type]);
-                $view->setTerminal(true);
-                return $view;
             }
+            if (isset($request['page_number'])) {
+                $pageNumber = $request['page_number'];
+                $offset = ($pageNumber * 10 - 10);
+                $limit = 10;
+                $searchData['offset'] = $offset;
+                $searchData['limit'] = $limit;
+            }
+            $totalCount = 0;
+            if ($type && $type == 'search') {
+                $totalCount = $this->countriesTable->getCountries4Admin(['limit' => 0, 'offset' => 0], 1);
+            }
+            $countryList = $this->countriesTable->getCountries4Admin($searchData);
+            $view = new ViewModel(['countryList' => $countryList, 'totalCount' => $totalCount, 'offset' => $offset, 'type' => $type]);
+            $view->setTerminal(true);
+            return $view;
         } else {
             return $this->redirect()->toUrl($this->getBaseUrl() . '/a_dMin/login');
         }

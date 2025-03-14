@@ -118,7 +118,7 @@ return [
                     ],
                 ],
             ],
-            'country-list' => [
+            'countries-list' => [
                 'type' => Segment::class,
                 'options' => [
                     'route'    => '/admin/load-country-list',

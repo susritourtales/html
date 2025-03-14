@@ -360,23 +360,7 @@ $(document).ready(function ()
                 delete uploadFiles['thumbnails'][id];
             }
         })
-        .on("click","#addPlace",function(){
-            var formData=new FormData();
-            formData.append("place_name","new place");
-            ajaxData('/a_dMin/add-place',formData,function(response){
-                if(response.success)
-                {
-                    messageDisplay(response.message);
-                    setTimeout(function(){
-                        window.location.href=BASE_URL+'/a_dMin/places';
-                    },2000);
-                }else{
-                    messageDisplay(response.message);
-                    element.prop('disabled',false);
-                    element.html('Submit');
-                }
-            });
-
+        .on("click","#addPlace",function(){ 
         var countryElement=$("#country");
         var stateElement=$("#states");
         var cityElement=$("#cities");

@@ -1219,9 +1219,19 @@ class AdminController extends BaseController
             $placeId = $request['place_id'];
             $placeName = $request['place_name'];
             $description = $request['description'];
-            $fileDetails = $request['file_details'];
+            $fileDetailsReq = $request['file_details'];
             $audioFiles = array('mp3', 'wav', 'mpeg');
-            $fileDetails = json_decode($fileDetails, true);
+            // $fileDetails = json_decode($fileDetails, true);
+            if ($fileDetailsReq !== null) {
+                $fileDetails = json_decode($fileDetailsReq, true);
+                if ($fileDetails === null && json_last_error() !== JSON_ERROR_NONE) {
+                    $fileDetails = []; 
+                    return new JsonModel(array("success" => false, "message" => "Invalid JSON: " . json_last_error_msg()));
+                }
+            } else {
+                $fileDetails = [];
+                return new JsonModel(array("success" => false, "message" => "File details null"));
+            }
             $uploadFileDetails = array();
             $deletedImages = json_decode($request['deleted_images'], true);
             $deletedThumbnails = json_decode($request['deleted_thumbnails'], true);

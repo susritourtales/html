@@ -121,7 +121,6 @@ $(document).ready(function ()
                 };
                 reader.readAsDataURL(file);
             });
-
         })
         .on("change",".image-upload",function(e){
             var files = e.target.files;
@@ -255,8 +254,17 @@ $(document).ready(function ()
                         uploadFiles['thumbnails'][tnImageId]={"uploaded":false};
                         // circle[imageId]  = $('.circlechart').data('radialIndicator');
 
-                        let classId='circlechart_img_'+tnImageId;
-                        $(".tn-preview-wrapper").append('<div class="col-sm-4 mt-2 position-relative image-preview overflow-hidden" data-id="'+tnImageId+'"><div class="position-absolute circlechart '+classId+'" style="width: 100%;height: 100%" data-id="'+tnImageId+'"></div><img src="'+e.target.result+'" style="width: 100%;height: 100%"><span class="bg-white circle tn-close-icon" data-id="'+tnImageId+'"><i class="fas fa-times position-absolute " data-id="'+tnImageId+'" ></i></span></div>');
+                        let classId='tn_circlechart_img_'+tnImageId;
+                        /* $(".tn-preview-wrapper").append('<div class="col-sm-4 mt-2 position-relative tn-preview overflow-hidden" data-id="'+tnImageId+'"><div class="position-absolute circlechart '+classId+'" style="width: 100%;height: 100%" data-id="'+tnImageId+'"></div><img src="'+e.target.result+'" style="width: 100%;height: 100%"><span class="bg-white circle tn-close-icon" data-id="'+tnImageId+'"><i class="fas fa-times position-absolute " data-id="'+tnImageId+'" ></i></span></div>'); */
+                        $(".tn-preview-wrapper").append(`
+                            <div class="col-sm-4 mt-2 position-relative tn-preview overflow-hidden" data-id="${tnImageId}">
+                                <div class="position-absolute circlechart ${classId}" style="width: 100%; height: 100%" data-id="${tnImageId}"></div>
+                                <img src="${e.target.result}" style="width: 100%; height: 100%">
+                                <span class="bg-white circle tn-close-icon" data-id="${tnImageId}">
+                                    <i class="fas fa-times position-absolute" data-id="${tnImageId}"></i>
+                                </span>
+                            </div>
+                        `);
                         
                         setTimeout(() => {
                             if (document.querySelector('.' + classId)) { // Ensure the element exists
@@ -273,7 +281,7 @@ $(document).ready(function ()
                             }
                         }, 50); 
                         
-                        filesData.ajaxCall(3,resizedBlob,imageId,function(progress,fileID,response)
+                        filesData.ajaxCall(3,resizedBlob,tnImageId,function(progress,fileID,response)
                         {
                             if (progress && circle[fileID]) {
                                 circle[fileID].animate(progress * 100);
@@ -343,7 +351,7 @@ $(document).ready(function ()
         })
         .on("click",".tn-close-icon",function () {
             var id=$(this).data("id");
-            $(".image-preview[data-id='"+id+"']").remove();
+            $(".tn-preview[data-id='"+id+"']").remove();
             if(tnFiles[id]!=undefined)
             {
                 delete tnFiles[id];
@@ -353,6 +361,21 @@ $(document).ready(function ()
             }
         })
         .on("click","#addPlace",function(){
+            var formData=new FormData();
+            formData.append("place_name","new place");
+            ajaxData('/a_dMin/add-place',formData,function(response){
+                if(response.success)
+                {
+                    messageDisplay(response.message);
+                    setTimeout(function(){
+                        window.location.href=BASE_URL+'/a_dMin/places';
+                    },2000);
+                }else{
+                    messageDisplay(response.message);
+                    element.prop('disabled',false);
+                    element.html('Submit');
+                }
+            });
 
         var countryElement=$("#country");
         var stateElement=$("#states");
@@ -393,14 +416,12 @@ $(document).ready(function ()
             return  false;
         }
         var element=$(this);
-        element.html('Please wait...');
-        element.prop('disabled',true);
-        let mandatorytotalLanguages=[];
-        let totalLanguages=[];
         var imageFileIds=[];
         var tnFileIds=[];
         var fileIds=[];
         uploadClicked=true;
+        element.html('Please wait...');
+        element.prop('disabled',true);
         for(var k in uploadFiles['images'])
         {
             if(!uploadFiles['images'][k]['uploaded'])
@@ -432,11 +453,13 @@ $(document).ready(function ()
         }
         if(error)
         {
-            messageDisplay("file upload error",2000);
+            messageDisplay("files not uploaded.. please try again..",2000);
             element.html('Submit');
             element.prop('disabled',false);
             return  false;
         }
+        let mandatorytotalLanguages=[];
+        let totalLanguages=[];
         $(".file-uploads").each(function(){
             var rowId=$(this).data("id");
             var fileNameElement=$(".upload-file-name");

@@ -1085,7 +1085,7 @@ class AdminController extends BaseController
             $uploadFileDetails = array();
             $placeName = trim($placeName);
             if ($placeName == '') {
-                return new JsonModel(array("success" => false, "message" => "Please enter city name"));
+                return new JsonModel(array("success" => false, "message" => "Please enter place name"));
             }
             $check = $this->placesTable->getField(array('place_name' => $placeName, 'display' => 1), 'id');
             if ($check) {
@@ -1175,20 +1175,20 @@ class AdminController extends BaseController
             $response = $this->placesTable->addPlace($data);
             if ($response['success']) {
                 $placeId = $response['id'];
+                $counter = -1;
+                if (count($uploadFileDetails)) {
+                    foreach ($uploadFileDetails as $details) {
+                        $counter++;
+                        $uploadFileDetails[$counter]['file_data_id'] = $placeId;
+                        $uploadFileDetails[$counter]["created_at"] = date("Y-m-d H:i:s");
+                        $uploadFileDetails[$counter]["updated_at"] = date("Y-m-d H:i:s");
+                    }
+                    $this->tourismFilesTable->addMutipleTourismFiles($uploadFileDetails);
+                }
+                return new JsonModel(array('success' => true, 'message' => 'added successfully'));
             } else {
                 return new JsonModel(array('success' => false, 'message' => 'unable to add Place'));
             }
-            $counter = -1;
-            if (count($uploadFileDetails)) {
-                foreach ($uploadFileDetails as $details) {
-                    $counter++;
-                    $uploadFileDetails[$counter]['file_data_id'] = $placeId;
-                    $uploadFileDetails[$counter]["created_at"] = date("Y-m-d H:i:s");
-                    $uploadFileDetails[$counter]["updated_at"] = date("Y-m-d H:i:s");
-                }
-                $this->tourismFilesTable->addMutipleTourismFiles($uploadFileDetails);
-            }
-            return new JsonModel(array('success' => true, 'message' => 'added successfully'));
         }
         $countriesList = $this->countriesTable->getCountries();
         $languagesList = $this->languageTable->getActiveLanguagesList(['limit' => 0, 'offset' => 0]);

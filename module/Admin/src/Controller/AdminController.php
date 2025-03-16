@@ -1567,8 +1567,8 @@ class AdminController extends BaseController
                 $encodeContent = $aes->encrypt(file_get_contents($uploadFile['tmp_name']));
                 $encodeString = $encodeContent['password'];
                 $hash = $encodeContent['hash'];
-                fwrite($fp, $encodeString);
-                fclose($fp);
+                $fwres = fwrite($fp, $encodeString);
+                $fcres = fclose($fp);
                 $ext = strtolower($ext);
                 $uploadStatus =  $this->pushFiles("tmp/" . $filePath, getcwd() . "/public/" . $filePath, $ext);
                 if (!$uploadStatus) {

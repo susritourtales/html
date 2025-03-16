@@ -68,6 +68,9 @@ $(document).ready(function ()
             var rowId=$(this).data("id");
             var element=$(this);
             var incerement=0;
+            $(".add-control").hide();
+            $('#addPlace').html('File uploading..');
+            $('#addPlace').prop('disabled',true);
             $.each(files, function (i, file) {
                 var reader = new FileReader();
                 reader.onload = function (e)
@@ -107,10 +110,14 @@ $(document).ready(function ()
                                         countryElement.click();
                                     }
                                 }
+                                $(".add-control").show();
+                                $('#addPlace').prop('disabled',false);
+                                $('#addPlace').html('Submit');
                             }else{
                                 messageDisplay(response.message, 2000);
-                                element.prop('disabled',false);
-                                element.html('Submit');
+                                $(".add-control").show();
+                                $('#addPlace').prop('disabled',false);
+                                $('#addPlace').html('Submit');
                             }
                         }
 
@@ -563,10 +570,13 @@ $(document).ready(function ()
         addedRow++;
        var rowsCount= $(".file-uploads").length;
          postData('/admin/file-upload-row',{'row_number':addedRow,"rows_count":rowsCount},function(response){
-            if(!response.success){
-                messageDisplay(response.message, 2000);
+            if(response.success != null){
+                if(!response.success){
+                    messageDisplay(response.message, 2000);
+                }
+            }else{
+                $("#file-upload-wrapper").append(response);
             }
-             $("#file-upload-wrapper").append(response);
          });
     }).on("click",".remove-control",function(){
         var id=$(this).data("id");

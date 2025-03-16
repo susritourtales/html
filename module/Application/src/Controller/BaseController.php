@@ -399,8 +399,13 @@ class BaseController extends AbstractActionController
     public function checkAdmin()
     {
         if (!$this->authService->hasIdentity()) {
-            return $this->redirect()->toUrl($this->getBaseUrl() . '/a_dMin/login');
-        }
+            header("Location: " . $this->getBaseUrl() . '/a_dMin/login');
+            exit();
+            // return $this->redirect()->toUrl($this->getBaseUrl() . '/a_dMin/login');
+            /* return new JsonModel(array("success" => false, "message" => "invalid user.. please login..")); */
+        }/*else{
+            return new JsonModel(array("success" => true, "message" => "valid user"));
+        }*/
     }
 
     public function destroySessionAction()
@@ -448,8 +453,9 @@ class BaseController extends AbstractActionController
         try {
             if (count($value)) {
                 $results = CommandPool::batch($this->s3, $value);
+                $i = -1;
                 foreach ($results as $result) {
-
+                    $i++;
                     if ($result instanceof ResultInterface) {
                         // Result handling here
                         array_push($copiedFiles, $fileIds[$i]);

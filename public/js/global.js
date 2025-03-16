@@ -173,6 +173,9 @@ AjaxCallFiles.prototype.ajaxCall=function(fileType,file,fileID,callback)
             },
             success: function(data)
             {
+                if(data['success'] == false){
+                    callback(data);
+                }
                 if (typeof callback == "function")
                 {
                     callback(false,fileID,data);

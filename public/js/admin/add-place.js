@@ -107,6 +107,10 @@ $(document).ready(function ()
                                         countryElement.click();
                                     }
                                 }
+                            }else{
+                                messageDisplay(response.message, 2000);
+                                element.prop('disabled',false);
+                                element.html('Submit');
                             }
                         }
 
@@ -559,6 +563,9 @@ $(document).ready(function ()
         addedRow++;
        var rowsCount= $(".file-uploads").length;
          postData('/admin/file-upload-row',{'row_number':addedRow,"rows_count":rowsCount},function(response){
+            if(!response.success){
+                messageDisplay(response.message, 2000);
+            }
              $("#file-upload-wrapper").append(response);
          });
     }).on("click",".remove-control",function(){

@@ -283,6 +283,8 @@ class AdminController extends BaseController
 
     public function fileUploadRowAction()
     {
+        if ($this->getRequest()->isXmlHttpRequest()) {
+            $this->checkAdmin();
             $request = $this->getRequest()->getPost();
             $languagesList = $this->languageTable->getActiveLanguagesList(['limit' => 0, 'offset' => 0]);
             $rowNumber = $request['row_number'];
@@ -290,6 +292,7 @@ class AdminController extends BaseController
             $view = new ViewModel(array("languages" => $languagesList, 'rowNumber' => $rowNumber, 'numberOfrows' => $rowCount));
             $view->setTerminal(true);
             return $view;
+        }
     }
 
     public function editCountryAction()
@@ -859,6 +862,7 @@ class AdminController extends BaseController
     public function editStateAction()
     {
         $this->checkAdmin();
+
         if ($this->getRequest()->isXmlHttpRequest()) {
             set_time_limit(0);
             ini_set('mysql.connect_timeout', '0');
@@ -985,13 +989,24 @@ class AdminController extends BaseController
 
     public function placesAction()
     {
-        if ($this->authService->hasIdentity()) {
+        if ($this->getRequest()->isXmlHttpRequest()) {
+            // This is an AJAX request
+            $this->checkAdmin();
             $tourismList = $this->placesTable->getPlacesList4Admin(array('limit' => 10, 'offset' => 0));
             $totalCount = $this->placesTable->getPlacesList4Admin(array('limit' => 0, 'offset' => 0), 1);
             return new ViewModel(['tourismList' => $tourismList, 'totalCount' => $totalCount]);
         } else {
-            return $this->redirect()->toUrl($this->getBaseUrl() . '/a_dMin/login');
+            // This is a normal HTTP request (including redirects)
+            if ($this->authService->hasIdentity()) {
+                $tourismList = $this->placesTable->getPlacesList4Admin(array('limit' => 10, 'offset' => 0));
+                $totalCount = $this->placesTable->getPlacesList4Admin(array('limit' => 0, 'offset' => 0), 1);
+                return new ViewModel(['tourismList' => $tourismList, 'totalCount' => $totalCount]);
+            } else {
+                return $this->redirect()->toUrl($this->getBaseUrl() . '/a_dMin/login');
+            }
         }
+        
+        
     }
 
     public function loadPlacesListAction()
@@ -1067,13 +1082,14 @@ class AdminController extends BaseController
 
     public function addPlaceAction()
     {
-        $this->checkAdmin();
         if ($this->getRequest()->isXmlHttpRequest()) {
-            $request = $this->getRequest()->getPost();
+            $this->checkAdmin();
             set_time_limit(0);
             ini_set('mysql.connect_timeout', '0');
             ini_set('max_execution_time', '0');
             ini_set("memory_limit", "-1");
+            
+            $request = $this->getRequest()->getPost();
             $countryName = $request['country_id'];
             $stateName = $request['state_id'];
             $cityName = $request['city_id'];
@@ -1154,6 +1170,13 @@ class AdminController extends BaseController
                         'id' => $audioFiles[$fileDetail['file_id']]['temporary_files_id']
                     );
                 }
+                /*$copyFiles = $this->copypushFiles($uploadFiles);
+                if (count($copyFiles['copied'])) {
+                    $this->temporaryFiles->updateCopiedFiles($copyFiles['copied']);
+                }
+                if (!$copyFiles['status']) {
+                    return new JsonModel(array('success' => false, 'message' => 'unable to add Place'));
+                }*/
                 $uploadFileDetails[] = array(
                     'file_path' => $filePath,
                     'file_data_type' => \Admin\Model\TourismFiles::file_data_type_places,
@@ -1465,6 +1488,7 @@ class AdminController extends BaseController
     public function uploadFilesAction()
     {
         if ($this->getRequest()->isXmlHttpRequest()) {
+            $this->checkAdmin();
             //$request = $this->getRequest()->getPost();
             $files = $this->getRequest()->getFiles();
 
@@ -1570,10 +1594,11 @@ class AdminController extends BaseController
             if ($response['success']) {
                 return new JsonModel(array('success' => true, "message" => 'uploaded', 'id' => $response['id']));
             } else {
-                return new JsonModel(array('success' => false, "message" => 'something went wrong try agian'));
+                return new JsonModel(array('success' => false, "message" => 'unable to upload file..'));
             }
+        }else{
+            return $this->redirect()->toUrl($this->getBaseUrl() . "/a_dMin/login");
         }
-        return $this->redirect()->toUrl($this->getBaseUrl() . "/a_dMin/login");
     }
     //Upload files - end
 
@@ -3582,7 +3607,7 @@ public function loadSalesListAction()
 
     public function loginAction()
     {
-        if ($this->getRequest()->isXmlHttpRequest()) {
+         if ($this->getRequest()->isXmlHttpRequest()) {
             $request = $this->getRequest()->getPost();
             $this->authService->getAdapter()
                 ->setIdentity($request['user_name'])

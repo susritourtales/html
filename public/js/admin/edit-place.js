@@ -533,7 +533,7 @@ $(document).ready(function ()
         ajaxData('/a_dMin/edit-place',formData,function(response){
             if(response.success)
             {
-                messageDisplay(response.message);
+                messageDisplay(response.message, 2000);
                 setTimeout(function(){
                     window.location.href=BASE_URL+'/a_dMin/places';
                 },2000);

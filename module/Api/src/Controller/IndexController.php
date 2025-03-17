@@ -375,8 +375,8 @@ class IndexController extends BaseController
             $wtList = $this->tourTalesTable->getPlacesList4App(['tour_type' => \Admin\Model\TourTales::tour_type_World_tour, 'limit' => 0, 'offset' => 0],0,1);
             $uniqueCountryIds = [];
             foreach ($wtList as $tale) {
-                if (isset($tale['state_id']) && !in_array($tale['state_id'], $uniqueCountryIds)) {
-                    $uniqueCountryIds[] = $tale['state_id'];
+                if (isset($tale['country_id']) && !in_array($tale['country_id'], $uniqueCountryIds)) {
+                    $uniqueCountryIds[] = $tale['country_id'];
                 }
             } 
             $countryList = $this->countriesTable->getCountries4App(['limit' => $request['limit'], 'offset' => $request['offset'], 'country_id' => $uniqueCountryIds]);
@@ -396,8 +396,11 @@ class IndexController extends BaseController
                 return new JsonModel(array('success'=>false,'message'=>'required data missing..'));
             $countryid = "";
             if(!isset($request['id'])){
-                $countryList = $this->countriesTable->getCountries4App(['limit' => 1, 'offset' => 0]);
-                $countryid = $countryList[0]['id'];
+                // $countryList = $this->countriesTable->getCountries4App(['limit' => 1, 'offset' => 0]);
+                // $countryid = $countryList[0]['id'];
+                $wtList = $this->tourTalesTable->getPlacesList4App(['tour_type' => \Admin\Model\TourTales::tour_type_World_tour, 'limit' => 1, 'offset' => 0],0,1);
+                return new JsonModel(['places' => $wtList]);
+                $countryid = $wtList[0]['country_id'];
             }else{
                 $countryid = $request['id'];
             }

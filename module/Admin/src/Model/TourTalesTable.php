@@ -405,12 +405,15 @@ class TourTalesTable extends  BaseTable
                     ->where($where)
                     ->order($order);
             }
-            //  echo $sql->getSqlStringForSqlObject($query);exit;
-            //$query = $query->order($order);
+            
             if ($gc == 0) {
-                $query->limit($data['limit'])
-                    ->offset($data['offset']);
+                if($data['limit'] > 0){
+                    $query->limit($data['limit'])
+                        ->offset($data['offset']);
+                }
             }
+            // echo $sql->getSqlStringForSqlObject($query);exit;
+            //$query = $query->order($order);
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             if ($gc == 1) {
                 if (count($resultSet))

@@ -375,8 +375,8 @@ class IndexController extends BaseController
             $wtList = $this->tourTalesTable->getPlacesList4App(['tour_type' => \Admin\Model\TourTales::tour_type_World_tour, 'limit' => 0, 'offset' => 0],0,1);
             $uniqueCountryIds = [];
             foreach ($wtList as $tale) {
-                if (isset($tale['country_id']) && !in_array($tale['country_id'], $uniqueCountryIds)) {
-                    $uniqueCountryIds[] = $tale['country_id'];
+                if (isset($tale['state_id']) && !in_array($tale['state_id'], $uniqueCountryIds)) {
+                    $uniqueCountryIds[] = $tale['state_id'];
                 }
             } 
             $countryList = $this->countriesTable->getCountries4App(['limit' => $request['limit'], 'offset' => $request['offset'], 'country_id' => $uniqueCountryIds]);
@@ -399,8 +399,7 @@ class IndexController extends BaseController
                 // $countryList = $this->countriesTable->getCountries4App(['limit' => 1, 'offset' => 0]);
                 // $countryid = $countryList[0]['id'];
                 $wtList = $this->tourTalesTable->getPlacesList4App(['tour_type' => \Admin\Model\TourTales::tour_type_World_tour, 'limit' => 1, 'offset' => 0],0,1);
-                return new JsonModel(['places' => $wtList]);
-                $countryid = $wtList[0]['country_id'];
+                $countryid = $wtList[0]['state_id'];
             }else{
                 $countryid = $request['id'];
             }
@@ -420,8 +419,10 @@ class IndexController extends BaseController
                 return new JsonModel(array('success'=>false,'message'=>'required data missing..'));
             $stateid = "";
             if(!isset($request['id'])){
-                $stateList = $this->statesTable->getStates4App(['limit' => 1, 'offset' => 0]);
-                $stateid = $stateList[0]['id'];
+                // $stateList = $this->statesTable->getStates4App(['limit' => 1, 'offset' => 0]);
+                // $stateid = $stateList[0]['id'];
+                $itList = $this->tourTalesTable->getPlacesList4App(['tour_type' => \Admin\Model\TourTales::tour_type_India_tour, 'limit' => 0, 'offset' => 0],0,1);
+                $stateid = $itList[0]['state_id'];
             }else{
                 $stateid = $request['id'];
             }
@@ -441,8 +442,10 @@ class IndexController extends BaseController
             if (!isset($request['limit']) || !isset($request['offset']))
                 return new JsonModel(array('success'=>false,'message'=>'required data missing..'));
             $stateid = "";
-            $stateList = $this->statesTable->getStates4App(['limit' => 1, 'offset' => 0]);
-            $stateid = $stateList[0]['id'];
+            // $stateList = $this->statesTable->getStates4App(['limit' => 1, 'offset' => 0]);
+            // $stateid = $stateList[0]['id'];
+            $itList = $this->tourTalesTable->getPlacesList4App(['tour_type' => \Admin\Model\TourTales::tour_type_India_tour, 'limit' => 0, 'offset' => 0],0,1);
+            $stateid = $itList[0]['state_id'];
             $cityid = "";
             if(!isset($request['city_id'])){
                 $cityList = $this->citiesTable->getIndiaCities4App(['limit' => 1, 'offset' => 0],0, $stateid);
@@ -467,8 +470,10 @@ class IndexController extends BaseController
             if (!isset($request['limit']) || !isset($request['offset']))
                 return new JsonModel(array('success'=>false,'message'=>'required data missing..'));
             $countryid = "";
-            $countryList = $this->countriesTable->getCountries4App(['limit' => 1, 'offset' => 0]);
-            $countryid = $countryList[0]['id'];
+            // $countryList = $this->countriesTable->getCountries4App(['limit' => 1, 'offset' => 0]);
+            // $countryid = $countryList[0]['id'];
+            $wtList = $this->tourTalesTable->getPlacesList4App(['tour_type' => \Admin\Model\TourTales::tour_type_World_tour, 'limit' => 1, 'offset' => 0],0,1);
+            $countryid = $wtList[0]['state_id'];
             $cityid = "";
             if(!isset($request['city_id'])){
                 $cityList = $this->citiesTable->getWorldCities4App(['limit' => 1, 'offset' => 0],0, $countryid);

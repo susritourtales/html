@@ -690,8 +690,10 @@ class PlacesTable extends  BaseTable
             }
                 
             if ($gc == 0) {
-                $query->limit($data['limit'])
+                if($data['limit'] > 0){
+                    $query->limit($data['limit'])
                         ->offset($data['offset']);
+                }
             }
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             $places = array();

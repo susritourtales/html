@@ -451,8 +451,10 @@ class CitiesTable extends BaseTable
                 ->where($where)
                 ->order($order);
             if ($gc == 0) {
-                $query->limit($data['limit'])
+                if($data['limit'] > 0){
+                    $query->limit($data['limit'])
                         ->offset($data['offset']);
+                }
             }
             // echo $sql->getSqlStringForSqlObject($query);exit;
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
@@ -508,8 +510,10 @@ class CitiesTable extends BaseTable
             
             // echo $sql->getSqlStringForSqlObject($query);exit;
             if ($gc == 0) {
-                $query->limit($data['limit'])
+                if($data['limit'] > 0){
+                    $query->limit($data['limit'])
                         ->offset($data['offset']);
+                }
             }
               
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();

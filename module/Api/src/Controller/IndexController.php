@@ -347,8 +347,17 @@ class IndexController extends BaseController
             $request = $this->getRequest()->getPost();
             if (!isset($request['limit']) || !isset($request['offset']))
                 return new JsonModel(array('success'=>false,'message'=>'required data missing..'));
-            $stateList = $this->statesTable->getStates4App(['limit' => $request['limit'], 'offset' => $request['offset']]);
-            return new JsonModel(['places' => $stateList]);
+            //  $stateList = $this->statesTable->getStates4App(['limit' => $request['limit'], 'offset' => $request['offset']]);
+             $itList = $this->tourTalesTable->getPlacesList4App(['tour_type' => \Admin\Model\TourTales::tour_type_India_tour, 'limit' => 0, 'offset' => 0],0,1);
+             $uniqueStateIds = [];
+             foreach ($itList as $tale) {
+                 if (isset($tale['state_id']) && !in_array($tale['state_id'], $uniqueStateIds)) {
+                     $uniqueStateIds[] = $tale['state_id'];
+                 }
+             } 
+             $stateList = $this->statesTable->getStates4App(['limit' => $request['limit'], 'offset' => $request['offset'], 'state_id' => $uniqueStateIds]);
+             return new JsonModel(['places' => $stateList]);
+            // return new JsonModel(['stateList' => $stateList, 'uniqueStateIds' => $uniqueStateIds, 'itList' => $itList]);
         }else{
             return $tvResponse;
         }
@@ -362,7 +371,15 @@ class IndexController extends BaseController
             $request = $this->getRequest()->getPost();
             if (!isset($request['limit']) || !isset($request['offset']))
                 return new JsonModel(array('success'=>false,'message'=>'required data missing..'));
-            $countryList = $this->countriesTable->getCountries4App(['limit' => $request['limit'], 'offset' => $request['offset']]);
+            // $countryList = $this->countriesTable->getCountries4App(['limit' => $request['limit'], 'offset' => $request['offset']]);
+            $wtList = $this->tourTalesTable->getPlacesList4App(['tour_type' => \Admin\Model\TourTales::tour_type_World_tour, 'limit' => 0, 'offset' => 0],0,1);
+            $uniqueCountryIds = [];
+            foreach ($wtList as $tale) {
+                if (isset($tale['state_id']) && !in_array($tale['state_id'], $uniqueCountryIds)) {
+                    $uniqueCountryIds[] = $tale['state_id'];
+                }
+            } 
+            $countryList = $this->countriesTable->getCountries4App(['limit' => $request['limit'], 'offset' => $request['offset'], 'country_id' => $uniqueCountryIds]);
             return new JsonModel(['places' => $countryList]);
         }else{
             return $tvResponse;

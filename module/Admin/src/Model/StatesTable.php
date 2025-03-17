@@ -439,6 +439,8 @@ class StatesTable extends BaseTable
         try {
             $where = new Where();
             $where->equalTo('s.display', 1)->equalTo('cc.display', 1); //->equalTo('p.display', 1);
+            if($data['state_id'])
+                $where->and->in('s.id', $data['state_id']);
             $order = array('state_name asc');
         
             $sql = $this->getSql();
@@ -473,10 +475,12 @@ class StatesTable extends BaseTable
                 )
                 ->where($where)
                 ->order($order);
-            //  echo $sql->getSqlStringForSqlObject($query);exit;
+            //   echo $sql->getSqlStringForSqlObject($query);exit;
             if ($gc == 0) {
-                $query->limit($data['limit'])
+                if($data['limit'] > 0){
+                    $query->limit($data['limit'])
                     ->offset($data['offset']);
+                }
             }
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             if ($gc == 1)

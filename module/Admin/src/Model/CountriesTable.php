@@ -447,6 +447,8 @@ class CountriesTable extends  BaseTable
             $where = new Where();
             $where->equalTo('c.display', 1) ->equalTo('cc.display', 1); //->equalTo('p.display', 1);
             $where->and->notEqualTo("c.id", '101');
+            if($data['country_id'])
+                $where->and->in('c.id', $data['country_id']);
             $order = array('country_name asc');
             $sql = $this->getSql();
             $placeFiles = $sql->select()
@@ -521,8 +523,10 @@ class CountriesTable extends  BaseTable
                 ->order($order); */
             //    echo $sql->getSqlStringForSqlObject($query);exit;
             if ($gc == 0) {
-                $query->limit($data['limit'])
+                if($data['limit'] > 0){
+                    $query->limit($data['limit'])
                         ->offset($data['offset']);
+                }
             }
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             $countries = array();

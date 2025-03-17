@@ -446,13 +446,14 @@ class IndexController extends BaseController
             // $stateid = $stateList[0]['id'];
             $itList = $this->tourTalesTable->getPlacesList4App(['tour_type' => \Admin\Model\TourTales::tour_type_India_tour, 'limit' => 0, 'offset' => 0],0,1);
             $stateid = $itList[0]['state_id'];
-            $cityid = "";
+            $cityid = $itList[0]['city_id'];
+            /*$cityid = "";
             if(!isset($request['city_id'])){
                 $cityList = $this->citiesTable->getIndiaCities4App(['limit' => 1, 'offset' => 0],0, $stateid);
                 $cityid = $cityList[0]['id'];
             }else{
                 $cityid = $request['city_id'];
-            }
+            }*/
             $placeList = $this->placesTable->getPlaces4App(['limit' => $request['limit'], 'offset' => $request['offset']], 0, $cityid, true);
             // $totalCount = $this->placesTable->getIndiaPlaces4App(['limit' => 0, 'offset' => 0], 1, $cityid);
             return new JsonModel(['places' => $placeList]);

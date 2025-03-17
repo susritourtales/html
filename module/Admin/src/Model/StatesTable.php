@@ -40,7 +40,8 @@ class StatesTable extends BaseTable
             $query = $sql->select()
                 ->from($this->tableName)
                 ->columns(array("id", "state_name", 'country_id'))
-                ->where($where);
+                ->where($where)
+                ->order('state_name asc');
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             $states = array();
             foreach ($resultSet as $row) {

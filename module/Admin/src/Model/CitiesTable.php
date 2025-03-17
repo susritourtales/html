@@ -160,7 +160,8 @@ class CitiesTable extends BaseTable
             $query = $sql->select()
                 ->from($this->tableName)
                 ->columns(array("id", "city_name", 'state_id', 'country_id'))
-                ->where($where);
+                ->where($where)
+                ->order('city_name asc');
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             $cities = array();
             foreach ($resultSet as $row) {

@@ -556,7 +556,7 @@ class IndexController extends BaseController
                 $cityid = $request['city_id'];
             }
             $placeList = $this->placesTable->getPlaces4App(['limit' => $request['limit'], 'offset' => $request['offset']], 0, $cityid, false); */
-            return new JsonModel(['places' => $filtered_tales]);
+            return new JsonModel(['places' => $filtered_tales, 'tales' => $wtList]);
         }else{
             return $tvResponse;
         }

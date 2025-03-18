@@ -337,6 +337,7 @@ class TourTalesTable extends  BaseTable
                 }else{
                     $order = array('c.country_name asc', 'ci.city_name asc', 'tp.place_name asc');
                 } */
+                $order = array('c.country_name asc', 'ci.city_name asc', 'tp.place_name asc');
                 $query = $query->join(array('tp' => 'place'), 
                     new \Laminas\Db\Sql\Expression("FIND_IN_SET(`tp`.`id`,`p`.`place_id`)"), array('place_name' => new \Laminas\Db\Sql\Expression("GROUP_CONCAT(tp.place_name SEPARATOR ', ')"), 'place_id' => 'id', "full_name" => new \Laminas\Db\Sql\Expression("CONCAT(tp.place_name, ' - ', ci.city_name, ' - ', c.country_name)")), 
                     Select::JOIN_LEFT)

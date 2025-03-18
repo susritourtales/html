@@ -332,11 +332,11 @@ class TourTalesTable extends  BaseTable
                 ->columns(array("id", "tale_name", 'tale_description', 'free', 'tour_type'));
                 
             if($data['tour_type'] ==  \Admin\Model\TourTales::tour_type_Free_World_tour || $data['tour_type'] ==  \Admin\Model\TourTales::tour_type_World_tour){
-                if($forApp){
+                /* if($forApp){
                     $order = array('tp.place_name asc', 'ci.city_name asc', 'c.country_name asc');
                 }else{
                     $order = array('c.country_name asc', 'ci.city_name asc', 'tp.place_name asc');
-                }
+                } */
                 $query = $query->join(array('tp' => 'place'), 
                     new \Laminas\Db\Sql\Expression("FIND_IN_SET(`tp`.`id`,`p`.`place_id`)"), array('place_name' => new \Laminas\Db\Sql\Expression("GROUP_CONCAT(tp.place_name SEPARATOR ', ')"), 'place_id' => 'id', "full_name" => new \Laminas\Db\Sql\Expression("CONCAT(tp.place_name, ' - ', ci.city_name, ' - ', c.country_name)")), 
                     Select::JOIN_LEFT)
@@ -370,9 +370,9 @@ class TourTalesTable extends  BaseTable
                     ->group('p.id')
                     ->order($order);
             }else{
-                if($forApp){
+                /* if($forApp){
                     $order = array('tp.place_name asc', 'ci.city_name asc', 's.state_name asc','c.country_name asc');
-                }
+                } */
                 $query = $query->join(array('tp' => 'place'), 
                     new \Laminas\Db\Sql\Expression("FIND_IN_SET(`tp`.`id`,`p`.`place_id`)"), array('place_name' => 'place_name', 'place_id' => 'id', "full_name" => new \Laminas\Db\Sql\Expression("CONCAT(tp.place_name, ' - ', ci.city_name, ' - ', s.state_name)")), Select::JOIN_LEFT)
                     ->join(array('c' => 'country'), 'p.country_id=c.id', array('country_name', 'country_id' => 'id'), Select::JOIN_LEFT)
@@ -412,7 +412,7 @@ class TourTalesTable extends  BaseTable
                         ->offset($data['offset']);
                 }
             }
-            // echo $sql->getSqlStringForSqlObject($query);exit;
+            //  echo $sql->getSqlStringForSqlObject($query);exit;
             //$query = $query->order($order);
             $resultSet = $sql->prepareStatementForSqlObject($query)->execute();
             if ($gc == 1) {

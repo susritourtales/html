@@ -511,7 +511,8 @@ class IndexController extends BaseController
             // }
             $placeList = $this->placesTable->getPlaces4App(['limit' => $request['limit'], 'offset' => $request['offset']], 0, $cityid, true);
             // $totalCount = $this->placesTable->getIndiaPlaces4App(['limit' => 0, 'offset' => 0], 1, $cityid); */
-            return new JsonModel(['places' => $filtered_tales, 'tales' => $itList]);
+            // return new JsonModel(['places' => $filtered_tales, 'tales' => $itList]);
+            return new JsonModel(['places' => $filtered_tales]);
         }else{
             return $tvResponse;
         }
@@ -556,7 +557,8 @@ class IndexController extends BaseController
                 $cityid = $request['city_id'];
             }
             $placeList = $this->placesTable->getPlaces4App(['limit' => $request['limit'], 'offset' => $request['offset']], 0, $cityid, false); */
-            return new JsonModel(['places' => $filtered_tales, 'tales' => $wtList]);
+            // return new JsonModel(['places' => $filtered_tales, 'tales' => $wtList]);
+            return new JsonModel(['places' => $filtered_tales]);
         }else{
             return $tvResponse;
         }

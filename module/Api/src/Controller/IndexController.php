@@ -395,15 +395,31 @@ class IndexController extends BaseController
             if (!isset($request['limit']) || !isset($request['offset']))
                 return new JsonModel(array('success'=>false,'message'=>'required data missing..'));
             $countryid = "";
-            if(!isset($request['id'])){
-                // $countryList = $this->countriesTable->getCountries4App(['limit' => 1, 'offset' => 0]);
-                // $countryid = $countryList[0]['id'];
-                $wtList = $this->tourTalesTable->getPlacesList4App(['tour_type' => \Admin\Model\TourTales::tour_type_World_tour, 'limit' => 1, 'offset' => 0],0,1);
+            $wtList = $this->tourTalesTable->getPlacesList4App(['tour_type' => \Admin\Model\TourTales::tour_type_World_tour, 'limit' => 0, 'offset' => 0],0,1);
+            if(isset($request['id'])){
+                $countryid = $request['id'];
+            }else{
                 $countryid = $wtList[0]['state_id'];
+            }
+            // Filter tales by state_id
+            $filtered_tales = array_filter($wtList, function($tale) use ($countryid) {
+                return $tale["state_id"] == $countryid;
+            });
+            $uniqueCityIds = [];
+            foreach ($filtered_tales as $tale) {
+                if (isset($tale['city_id']) && !in_array($tale['city_id'], $uniqueCityIds)) {
+                    $uniqueCityIds[] = $tale['city_id'];
+                }
+            } 
+            $cityList = $this->citiesTable->getWorldCities4App(['limit' => $request['limit'], 'offset' => $request['offset'], 'city_id' => $uniqueCityIds], 0, $countryid);
+
+            /* if(!isset($request['id'])){
+                $countryList = $this->countriesTable->getCountries4App(['limit' => 1, 'offset' => 0]);
+                $countryid = $countryList[0]['id'];
             }else{
                 $countryid = $request['id'];
             }
-            $cityList = $this->citiesTable->getWorldCities4App(['limit' => $request['limit'], 'offset' => $request['offset']], 0, $countryid);
+            $cityList = $this->citiesTable->getWorldCities4App(['limit' => $request['limit'], 'offset' => $request['offset']], 0, $countryid); */
             return new JsonModel(['places' => $cityList]);
         }else{
             return $tvResponse;
@@ -418,7 +434,24 @@ class IndexController extends BaseController
             if (!isset($request['limit']) || !isset($request['offset']))
                 return new JsonModel(array('success'=>false,'message'=>'required data missing..'));
             $stateid = "";
-            if(!isset($request['id'])){
+            $itList = $this->tourTalesTable->getPlacesList4App(['tour_type' => \Admin\Model\TourTales::tour_type_India_tour, 'limit' => 0, 'offset' => 0],0,1);
+            if(isset($request['id'])){
+                $stateid = $request['id'];
+            }else{
+                $stateid = $itList[0]['state_id'];
+            }
+            // Filter tales by state_id
+            $filtered_tales = array_filter($itList, function($tale) use ($stateid) {
+                return $tale["state_id"] == $stateid;
+            });
+            $uniqueCityIds = [];
+            foreach ($filtered_tales as $tale) {
+                if (isset($tale['city_id']) && !in_array($tale['city_id'], $uniqueCityIds)) {
+                    $uniqueCityIds[] = $tale['city_id'];
+                }
+            } 
+            $cityList = $this->citiesTable->getIndiaCities4App(['limit' => $request['limit'], 'offset' => $request['offset'], 'city_id' => $uniqueCityIds], 0, $stateid);
+            /* if(!isset($request['id'])){
                 // $stateList = $this->statesTable->getStates4App(['limit' => 1, 'offset' => 0]);
                 // $stateid = $stateList[0]['id'];
                 $itList = $this->tourTalesTable->getPlacesList4App(['tour_type' => \Admin\Model\TourTales::tour_type_India_tour, 'limit' => 0, 'offset' => 0],0,1);
@@ -426,7 +459,7 @@ class IndexController extends BaseController
             }else{
                 $stateid = $request['id'];
             }
-            $cityList = $this->citiesTable->getIndiaCities4App(['limit' => $request['limit'], 'offset' => $request['offset']], 0, $stateid);
+            $cityList = $this->citiesTable->getIndiaCities4App(['limit' => $request['limit'], 'offset' => $request['offset']], 0, $stateid); */
             return new JsonModel(['places' => $cityList]);
         }else{
             return $tvResponse;
@@ -441,22 +474,44 @@ class IndexController extends BaseController
             $request = $this->getRequest()->getPost();
             if (!isset($request['limit']) || !isset($request['offset']))
                 return new JsonModel(array('success'=>false,'message'=>'required data missing..'));
-            $stateid = "";
+            $itList = $this->tourTalesTable->getPlacesList4App(['tour_type' => \Admin\Model\TourTales::tour_type_India_tour, 'limit' => 0, 'offset' => 0],0,1);
+            if(isset($request['id'])){
+                $cityid = $request['id'];
+            }else{
+                $cityid = $itList[0]['city_id'];
+            }
+            // Filter tales by city_id
+           /*  $filtered_tales = array_filter($itList, function($tale) use ($cityid) {
+                return $tale["city_id"] == $cityid;
+            }); */
+            $filtered_tales = array_values(array_map(function($tale) {
+                return [
+                    "id" => $tale["id"],
+                    "name" => $tale["place_name"],
+                    "full_name" => $tale["full_name"],
+                    "city_id" => $tale["city_id"],
+                    "file_path" => $tale["file_path"]
+                ];
+            }, array_filter($itList, function($tale) use ($cityid) {
+                return $tale["city_id"] == $cityid;
+            })));
+            
+/* 
             // $stateList = $this->statesTable->getStates4App(['limit' => 1, 'offset' => 0]);
             // $stateid = $stateList[0]['id'];
             $itList = $this->tourTalesTable->getPlacesList4App(['tour_type' => \Admin\Model\TourTales::tour_type_India_tour, 'limit' => 0, 'offset' => 0],0,1);
             $stateid = $itList[0]['state_id'];
             $cityid = $itList[0]['city_id'];
-            /*$cityid = "";
-            if(!isset($request['city_id'])){
-                $cityList = $this->citiesTable->getIndiaCities4App(['limit' => 1, 'offset' => 0],0, $stateid);
-                $cityid = $cityList[0]['id'];
-            }else{
-                $cityid = $request['city_id'];
-            }*/
+            // $cityid = "";
+            // if(!isset($request['city_id'])){
+            //     $cityList = $this->citiesTable->getIndiaCities4App(['limit' => 1, 'offset' => 0],0, $stateid);
+            //     $cityid = $cityList[0]['id'];
+            // }else{
+            //     $cityid = $request['city_id'];
+            // }
             $placeList = $this->placesTable->getPlaces4App(['limit' => $request['limit'], 'offset' => $request['offset']], 0, $cityid, true);
-            // $totalCount = $this->placesTable->getIndiaPlaces4App(['limit' => 0, 'offset' => 0], 1, $cityid);
-            return new JsonModel(['places' => $placeList]);
+            // $totalCount = $this->placesTable->getIndiaPlaces4App(['limit' => 0, 'offset' => 0], 1, $cityid); */
+            return new JsonModel(['places' => $filtered_tales, 'tales' => $itList]);
         }else{
             return $tvResponse;
         }
@@ -470,8 +525,26 @@ class IndexController extends BaseController
             $request = $this->getRequest()->getPost();
             if (!isset($request['limit']) || !isset($request['offset']))
                 return new JsonModel(array('success'=>false,'message'=>'required data missing..'));
-            $countryid = "";
-            // $countryList = $this->countriesTable->getCountries4App(['limit' => 1, 'offset' => 0]);
+            $wtList = $this->tourTalesTable->getPlacesList4App(['tour_type' => \Admin\Model\TourTales::tour_type_World_tour, 'limit' => 0, 'offset' => 0],0,1);
+            if(isset($request['id'])){
+                $cityid = $request['id'];
+            }else{
+                $cityid = $wtList[0]['city_id'];
+            }
+            // Filter tales by city_id
+            $filtered_tales = array_values(array_map(function($tale) {
+                return [
+                    "id" => $tale["id"],
+                    "name" => $tale["place_name"],
+                    "full_name" => $tale["full_name"],
+                    "city_id" => $tale["city_id"],
+                    "file_path" => $tale["file_path"]
+                ];
+            }, array_filter($wtList, function($tale) use ($cityid) {
+                return $tale["city_id"] == $cityid;
+            })));
+            
+            /* // $countryList = $this->countriesTable->getCountries4App(['limit' => 1, 'offset' => 0]);
             // $countryid = $countryList[0]['id'];
             $wtList = $this->tourTalesTable->getPlacesList4App(['tour_type' => \Admin\Model\TourTales::tour_type_World_tour, 'limit' => 1, 'offset' => 0],0,1);
             $countryid = $wtList[0]['state_id'];
@@ -482,8 +555,8 @@ class IndexController extends BaseController
             }else{
                 $cityid = $request['city_id'];
             }
-            $placeList = $this->placesTable->getPlaces4App(['limit' => $request['limit'], 'offset' => $request['offset']], 0, $cityid, false);
-            return new JsonModel(['places' => $placeList]);
+            $placeList = $this->placesTable->getPlaces4App(['limit' => $request['limit'], 'offset' => $request['offset']], 0, $cityid, false); */
+            return new JsonModel(['places' => $filtered_tales, 'tales' => $wtList]);
         }else{
             return $tvResponse;
         }

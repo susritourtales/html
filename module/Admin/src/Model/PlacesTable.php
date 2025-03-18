@@ -647,6 +647,8 @@ class PlacesTable extends  BaseTable
             $sql = $this->getSql();
             $where = new Where();
             $where->equalTo('tp.display', 1)->equalTo('c.id', $cityId);
+            if($data['place_id'])
+                $where->and->in('tp.id', $data['place_id']);
             $order = array('place_name asc');
             $placeFiles = $sql->select()
                 ->from(array('tf' => 'tourism_files'))

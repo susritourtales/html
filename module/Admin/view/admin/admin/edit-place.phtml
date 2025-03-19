@@ -55,24 +55,6 @@
                                 <input type="text" class="form-control upload-file-name" value="<?php echo $audioFiles[0]['file_name']; ?>">
                             </div>
                             <div class="col-12">
-                                <label class="text-black-50">Image Files</label>
-                                <div class="position-relative w-100 image-upload-wrapper">
-                                    <input type="file" class="image-upload" name="image-file" multiple>
-                                    <span class="position-absolute upload_btn"><img class="w-100" src="<?php echo $this->basePath(); ?>/img/upload-img.svg"> </span>
-                                </div>
-                                <div class="col-12 mb-3">
-                                    <div class="image-preview-wrapper row">
-                                        <?php foreach ($imageFiles as $image) { ?>
-                                            <div class="col-sm-4 mt-2 position-relative image-preview overflow-hidden" data-id="<?php echo $image['tourism_file_id']; ?>">
-                                                <img src="<?php echo $imageUrl . $image['file_path']; ?>" style="width: 100%;height: 100%">
-                                                <span class="bg-white circle close-icon" data-id="<?php echo $image['tourism_file_id']; ?>" data-edit="1">
-                                                    <i class="fas fa-times position-absolute " data-id="<?php echo $image['tourism_file_id']; ?>" data-edit="1"></i></span>
-                                            </div>
-                                        <?php } ?>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-12">
                                 <label class="text-black-50">Thumbnail Files</label>
                                 <div class="position-relative w-100 image-upload-wrapper">
                                     <input type="file" class="tn-upload" name="thumbnail" id="thumbnail">
@@ -89,6 +71,24 @@
                                                 </div>
                                         <?php }
                                         } ?>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <label class="text-black-50">Image Files</label>
+                                <div class="position-relative w-100 image-upload-wrapper">
+                                    <input type="file" class="image-upload" name="image-file" multiple>
+                                    <span class="position-absolute upload_btn"><img class="w-100" src="<?php echo $this->basePath(); ?>/img/upload-img.svg"> </span>
+                                </div>
+                                <div class="col-12 mb-3">
+                                    <div class="image-preview-wrapper row">
+                                        <?php foreach ($imageFiles as $image) { ?>
+                                            <div class="col-sm-4 mt-2 position-relative image-preview overflow-hidden" data-id="<?php echo $image['tourism_file_id']; ?>">
+                                                <img src="<?php echo $imageUrl . $image['file_path']; ?>" style="width: 100%;height: 100%">
+                                                <span class="bg-white circle close-icon" data-id="<?php echo $image['tourism_file_id']; ?>" data-edit="1">
+                                                    <i class="fas fa-times position-absolute " data-id="<?php echo $image['tourism_file_id']; ?>" data-edit="1"></i></span>
+                                            </div>
+                                        <?php } ?>
                                     </div>
                                 </div>
                             </div>

@@ -904,17 +904,17 @@ class IndexController extends BaseController
             $startDate = date('Y-m-d', strtotime($plansList[0]['sqs_start_date']));
             $endDate = date('Y-m-d', strtotime($plansList[0]['sqs_end_date']));
             if ($this->isDateBetween($startDate, $endDate)) {
-                $cc == '91' ? $planDetails['qrp'] = $plansList[0]['sqsp_inr'] : $planDetails['qrp'] = $plansList[0]['sqsp_usd'];
+                $planDetails['qrp'] = $cc == '91' ? $plansList[0]['sqsp_inr'] : $plansList[0]['sqsp_usd'];
             } else {
-                $cc == '91' ? $planDetails['qrp'] = $plansList[0]['qrp_inr'] : $planDetails['qrp'] = $plansList[0]['qrp_usd'];
+                $planDetails['qrp'] = $cc == '91' ? $plansList[0]['qrp_inr'] : $plansList[0]['qrp_usd'];
             }
             // check for seasonal TWISTT plan
             $startDate = date('Y-m-d', strtotime($plansList[0]['sts_start_date']));
             $endDate = date('Y-m-d', strtotime($plansList[0]['sts_end_date']));
             if ($this->isDateBetween($startDate, $endDate)) {
-                $cc == '91' ? $planDetails['topp'] = $plansList[0]['stsp_inr'] : $planDetails['topp'] = $plansList[0]['stsp_usd'];
+                $planDetails['topp'] = $cc == '91' ? $plansList[0]['stsp_inr'] : $plansList[0]['stsp_usd'];
             } else {
-                $cc == '91' ? $planDetails['topp'] = $plansList[0]['topp_inr'] : $planDetails['topp'] = $plansList[0]['topp_usd'];
+                $planDetails['topp'] = $cc == '91' ? $plansList[0]['topp_inr'] : $plansList[0]['topp_usd'];
             }
 
             return new JsonModel(['success' => true, 'details' => $planDetails]);

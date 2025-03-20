@@ -743,20 +743,6 @@ class IndexController extends BaseController
         return new JsonModel(['places' => $placeList]);
     }
 
-    public function sampleAction(){
-        $logResult = $this->logRequest($this->getRequest()->toString());
-        $tvResponse = $this->validateAccessToken(request: $this->getRequest());
-        $respdata = $tvResponse->getVariables();
-        if($respdata['success']){
-            $request = $this->getRequest()->getPost();
-            if (!isset($request['limit']) || !isset($request['offset']))
-                return new JsonModel(array('success'=>false,'message'=>'required data missing..'));
-            return new JsonModel(['success' => true, 'message' => "Sampls Api called..."]);
-        }else{
-            return $tvResponse;
-        }
-    }
-
     public function getIndiaTalesAction(){
         $logResult = $this->logRequest($this->getRequest()->toString());
         $tvResponse = $this->validateAccessToken(request: $this->getRequest());
@@ -891,6 +877,61 @@ class IndexController extends BaseController
                 return new JsonModel(array('success' => true, "message" => 'profile updated successfull..'));
             else
                 return new JsonModel(array('success' => false, "message" => 'unable to update.. try after sometime..'));
+        }else{
+            return $tvResponse;
+        }
+    }
+
+    public function getSubscriptionPlanAction(){
+        $logResult = $this->logRequest($this->getRequest()->toString());
+        $tvResponse = $this->validateAccessToken(request: $this->getRequest());
+        $respdata = $tvResponse->getVariables();
+        if($respdata['success']){
+            $request = $this->getRequest()->getPost();
+            if (!isset($request['id']))
+                return new JsonModel(array('success'=>false,'message'=>'required data missing..'));
+            $cc = $this->userTable->getField(['user_login_id' => $request['id']], 'country_phone_code');
+            $plansList = $this->subscriptionPlanTable->getPlans(['active' => \Admin\Model\SubscriptionPlan::ActivePlans], ['limit' => 0, 'offset' => 0]);
+            $planDetails = [];
+            $planDetails['id'] = $plansList[0]['id'];
+            $planDetails['plan_name'] = $plansList[0]['plan_name'];
+            $planDetails['twistt_duration'] = $plansList[0]['twistt_duration'];
+            $planDetails['questt_text'] = $plansList[0]['questt_text'];
+            $planDetails['twistt_text'] = $plansList[0]['twistt_text'];
+            $cc == '91' ? $planDetails['currency'] = 'INR' : 'USD';
+
+            // check for seasonal QUESTT plan
+            $startDate = date('Y-m-d', strtotime($plansList[0]['sqs_start_date']));
+            $endDate = date('Y-m-d', strtotime($plansList[0]['sqs_end_date']));
+            if ($this->isDateBetween($startDate, $endDate)) {
+                $cc == '91' ? $planDetails['qrp'] = $plansList[0]['sqsp_inr'] : $planDetails['qrp'] = $plansList[0]['sqsp_usd'];
+            } else {
+                $cc == '91' ? $planDetails['qrp'] = $plansList[0]['qrp_inr'] : $planDetails['qrp'] = $plansList[0]['qrp_usd'];
+            }
+            // check for seasonal TWISTT plan
+            $startDate = date('Y-m-d', strtotime($plansList[0]['sts_start_date']));
+            $endDate = date('Y-m-d', strtotime($plansList[0]['sts_end_date']));
+            if ($this->isDateBetween($startDate, $endDate)) {
+                $cc == '91' ? $planDetails['topp'] = $plansList[0]['stsp_inr'] : $planDetails['topp'] = $plansList[0]['stsp_usd'];
+            } else {
+                $cc == '91' ? $planDetails['topp'] = $plansList[0]['topp_inr'] : $planDetails['topp'] = $plansList[0]['topp_usd'];
+            }
+
+            return new JsonModel(['success' => true, 'details' => $planDetails]);
+        }else{
+            return $tvResponse;
+        }
+    }
+
+    public function sampleAction(){
+        $logResult = $this->logRequest($this->getRequest()->toString());
+        $tvResponse = $this->validateAccessToken(request: $this->getRequest());
+        $respdata = $tvResponse->getVariables();
+        if($respdata['success']){
+            $request = $this->getRequest()->getPost();
+            if (!isset($request['limit']) || !isset($request['offset']))
+                return new JsonModel(array('success'=>false,'message'=>'required data missing..'));
+            return new JsonModel(['success' => true, 'message' => "Sample Api called..."]);
         }else{
             return $tvResponse;
         }

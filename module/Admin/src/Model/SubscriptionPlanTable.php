@@ -57,7 +57,7 @@ class SubscriptionPlanTable extends BaseTable
       $query = $sql->select()
         ->from($this->tableName)
         ->where($where);
-      if ($data['limit'] != -1) {
+      if ($data['limit'] > 0) {
         $query->limit($data['limit'])
           ->offset($data['offset']);
       }

@@ -2427,7 +2427,8 @@ class AdminController extends BaseController
             $data['tax'] = $request['tax'];
             $data['cd_percentage'] = $request['cdp'];
             $data['web_text'] = $request['wt'];
-            $data['app_text'] = $request['at'];
+            $data['questt_text'] = $request['qt'];
+            $data['twistt_text'] = $request['tt'];
 
             // $data = $request->getArrayCopy();
             $nullKeys = [];

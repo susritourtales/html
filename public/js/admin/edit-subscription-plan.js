@@ -53,7 +53,8 @@ $(document).ready(function(){
         var ccp_usd=$.trim($("#ccp_usd").val());
         var tax=$.trim($("#tax").val());
         var cdp=$.trim($("#cdp").val());
-        var atxt=$.trim($("#atxt").val());
+        var qtxt=$.trim($("#qtxt").val());
+        var ttxt=$.trim($("#ttxt").val());
         var wtxt=$.trim($("#wtxt").val());
 
         if(pn=='')
@@ -196,9 +197,14 @@ $(document).ready(function(){
             messageDisplay("Please enter tax");
             return false;
         } 
-        if(atxt=="")
+        if(qtxt=="")
         {
-            messageDisplay("Please enter app text");
+            messageDisplay("Please enter questt text");
+            return false;
+        }
+        if(ttxt=="")
+        {
+            messageDisplay("Please enter twistt text");
             return false;
         }
         if(wtxt=="")
@@ -237,7 +243,8 @@ $(document).ready(function(){
         formData.append("tax",tax);
         formData.append("cdp",cdp);
         formData.append("wt",wtxt);
-        formData.append("at",atxt);
+        formData.append("qt",qtxt);
+        formData.append("tt",ttxt);
         formData.append("pid",pid);
                 
         var element=$(this);

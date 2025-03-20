@@ -413,7 +413,10 @@ class BaseController extends AbstractActionController
         // Destroy the session
         $this->sessionManager->destroy();
     }
-
+    public function isDateBetween($startDate, $endDate) {
+        $currentDate = date('Y-m-d'); 
+        return $currentDate >= $startDate && $currentDate <= $endDate;
+    }
     public function filesUrl()
     {
         return 'https://s3.amazonaws.com/files.susri/';

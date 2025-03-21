@@ -898,6 +898,7 @@ class IndexController extends BaseController
             $planDetails['twistt_duration'] = $plansList[0]['twistt_duration'];
             $planDetails['questt_text'] = $plansList[0]['questt_text'];
             $planDetails['twistt_text'] = $plansList[0]['twistt_text'];
+            $planDetails['tax'] = $plansList[0]['tax'];
             $cc == '91' ? $planDetails['currency'] = 'INR' : 'USD';
 
             // check for seasonal QUESTT plan
@@ -918,6 +919,53 @@ class IndexController extends BaseController
             }
 
             return new JsonModel(['success' => true, 'details' => $planDetails]);
+        }else{
+            return $tvResponse;
+        }
+    }
+
+    public function verifyCouponAction(){
+        $logResult = $this->logRequest($this->getRequest()->toString());
+        $tvResponse = $this->validateAccessToken(request: $this->getRequest());
+        $respdata = $tvResponse->getVariables();
+        if($respdata['success']){
+            $request = $this->getRequest()->getPost();
+            if (!isset($request['cc']) || !isset($request['id']) || !isset($request['st']))
+                return new JsonModel(array('success'=>false,'message'=>'required data missing..'));
+            $coupon_code = $request['cc'];
+            $checkCoupon = $this->couponsTable->getCoupon(['coupon_code' => $coupon_code]);
+            if ($checkCoupon) {
+                if ($checkCoupon[0]['coupon_status'] == \Admin\Model\Coupons::Coupon_Status_Redeemed)
+                    return new JsonModel(array('success' => false, "message" => 'Coupon code already redeemed..'));
+                if ($checkCoupon[0]['banned'] == \Admin\Model\ExecutiveDetails::Is_Banned)
+                    return new JsonModel(array('success' => false, "message" => 'Coupon code cannot be redeemed.. TWISTT executive banned..'));
+                $today = date('Y-m-d');
+                if ($checkCoupon[0]['validity_end_date'] < $today)
+                    return new JsonModel(array('success' => false, "message" => 'This coupon code expired..'));
+                if ($checkCoupon[0]['coupon_type'] == \Admin\Model\Coupons::Coupon_Type_Complimentary) {
+                    return new JsonModel(array('success' => false, "message" => 'invalid coupon code..'));
+                } else {
+                    $cc = $this->userTable->getField(['user_login_id' => $request['id']], 'country_phone_code');
+                    $plansList = $this->subscriptionPlanTable->getPlans(['active' => \Admin\Model\SubscriptionPlan::ActivePlans], ['limit' => 0, 'offset' => 0]);
+                    $price = "0.00";
+                    if($request['st'] ==  'Q'){
+                        $startDate = date('Y-m-d', strtotime($plansList[0]['sqs_start_date']));
+                        $endDate = date('Y-m-d', strtotime($plansList[0]['sqs_end_date']));
+                        if ($this->isDateBetween($startDate, $endDate)) {
+                            $price = $cc == '91' ? $plansList[0]['sqsp_inr'] : $plansList[0]['sqsp_usd'];
+                        } else {
+                            $price = $cc == '91' ? $plansList[0]['qrp_inr'] : $plansList[0]['qrp_usd'];
+                        }
+                    }else{
+                        return new JsonModel(array('success' => false, "message" => 'invalid subscription type..'));
+                    }
+                    $discount = ($plansList[0]['cd_percentage']);
+                    $discount = number_format((float)$discount, 2);
+                    return new JsonModel(array('success' => true, "discount" => $discount));
+                }
+            } else {
+                return new JsonModel(array('success' => false, "message" => 'This coupon code is not valid..'));
+            }
         }else{
             return $tvResponse;
         }

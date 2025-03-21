@@ -1240,6 +1240,7 @@ class IndexController extends BaseController
         ->setIdentity($userdetails['user_login_id'])
         ->setCredential($userdetails['password']);
       $ares = $this->authService->authenticateEnabler();
+      // $ares = $this->authService->authenticate();
       return new JsonModel(array('success' => true, "message" => 'credentials valid'));
     } else {
       return new JsonModel(array('success' => false, "message" => 'invalid credentials'));
@@ -1774,7 +1775,7 @@ class IndexController extends BaseController
               return new JsonModel(array('success' => false, "message" => 'Coupon code already redeemed..'));
             if ($checkCoupon[0]['banned'] == \Admin\Model\ExecutiveDetails::Is_Banned)
               return new JsonModel(array('success' => false, "message" => 'Coupon code cannot be redeemed.. TWISTT executive banned..'));
-              $today = date('Y-m-d');
+            $today = date('Y-m-d');
             if ($checkCoupon[0]['validity_end_date'] < $today)
               return new JsonModel(array('success' => false, "message" => 'This coupon code expired..'));
 
